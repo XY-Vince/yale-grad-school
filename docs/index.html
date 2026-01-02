@@ -748,18 +748,18 @@
                 if (this.getItem('idea') > 0) {
                     actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: 'Develop preliminary results' });
                 }
-                if (this.getItem('preliminary_result') > 0) {
-                    actions.push({ id: 'work_preliminary', name: '🔬 Work on Preliminary', desc: 'Get major results' });
+                if (this.getItem('initial_findings') > 0) {
+                    actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: 'Work toward Key Discovery' });
                 }
-                if (this.getItem('major_result') > 0) {
+                if (this.getItem('key_discovery') > 0) {
                     if (this.hasStatus('brokenEquipment')) {
                         actions.push({ id: 'work_figures_blocked', name: '📊 Work on Figures', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
                     } else {
                         actions.push({ id: 'work_figures', name: '📊 Work on Figures', desc: 'Create figures' });
                     }
                 }
-                if (this.getItem('major_result') > 0 && this.getItem('figure') >= 3) {
-                    actions.push({ id: 'write_paper', name: '📝 Write Paper', desc: 'Submit your paper' });
+                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
+                    actions.push({ id: 'write_paper', name: '📝 Write Paper', desc: 'Submit for review' });
                 }
                 if (this.getItem('rejected_paper') > 0) {
                     actions.push({ id: 'revise', name: '✏️ Revise Paper', desc: 'Revise and resubmit' });
@@ -799,11 +799,21 @@
 
                 switch (id) {
                     case 'read':
+                        const readSuccess = [
+                            '💡 A paper sparked a new research idea!',
+                            '💡 Interesting! You see a gap in the literature...',
+                            '💡 This could lead somewhere - new idea gained!'
+                        ];
+                        const readFail = [
+                            '📚 You read papers but nothing clicked today.',
+                            '📚 Dense reading. You learned, but no ideas yet.',
+                            '📚 Most papers were tangential to your work.'
+                        ];
                         if (this.random() < 0.4) {
                             this.addItem('idea');
-                            msg = '💡 After reading several papers, you have a new research idea!';
+                            msg = this.pick(readSuccess);
                         } else {
-                            msg = '📚 You read some papers. No ideas yet, but you\'re learning...';
+                            msg = this.pick(readFail);
                         }
                         if (this.random() < 0.05) {
                             this.addStatus('exhaustion');
@@ -812,24 +822,44 @@
                         break;
 
                     case 'work_idea':
+                        const ideaSuccess = [
+                            '🎉 Initial Findings achieved! (+5 morale)',
+                            '🎉 The experiment worked - Initial Findings! (+5 morale)',
+                            '🎉 Promising results documented! (+5 morale)'
+                        ];
+                        const ideaFail = [
+                            '😔 The idea didn\'t pan out...',
+                            '😔 Inconclusive results. Back to the drawing board.',
+                            '😔 This approach isn\'t working...'
+                        ];
                         if (this.random() < 0.45) {
                             this.removeItem('idea');
-                            this.addItem('preliminary_result');
+                            this.addItem('initial_findings');
                             s.morale = Math.min(100, s.morale + 5);
-                            msg = '🎉 Success! You\'ve made a Preliminary Result! (+5 morale)';
+                            msg = this.pick(ideaSuccess);
                         } else {
-                            msg = '😔 You worked hard but didn\'t make progress...';
+                            msg = this.pick(ideaFail);
                         }
                         break;
 
-                    case 'work_preliminary':
+                    case 'work_findings':
+                        const findSuccess = [
+                            '🎉 Key Discovery made! This is publication-worthy! (+5 morale)',
+                            '🎉 Breakthrough! Key Discovery achieved! (+5 morale)',
+                            '🎉 Excellent! Your results are solid! (+5 morale)'
+                        ];
+                        const findFail = [
+                            '😔 The findings aren\'t strong enough yet...',
+                            '😔 More work needed to solidify these results.',
+                            '😔 Peer review would tear this apart...'
+                        ];
                         if (this.random() < 0.35) {
-                            this.removeItem('preliminary_result');
-                            this.addItem('major_result');
+                            this.removeItem('initial_findings');
+                            this.addItem('key_discovery');
                             s.morale = Math.min(100, s.morale + 5);
-                            msg = '🎉 Success! You\'ve made a Major Result! (+5 morale)';
+                            msg = this.pick(findSuccess);
                         } else {
-                            msg = '😔 You worked hard but didn\'t make progress...';
+                            msg = this.pick(findFail);
                         }
                         break;
 
@@ -837,9 +867,14 @@
                         if (this.random() < 0.6) {
                             this.addItem('figure');
                             s.morale = Math.min(100, s.morale + 3);
-                            msg = `📊 You created a figure! (${this.getItem('figure')}/3 needed) (+3 morale)`;
+                            msg = '📊 Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)';
                         } else {
-                            msg = '😔 The figures didn\'t come out right...';
+                            const figFail = [
+                                '😔 The visualization isn\'t clear enough...',
+                                '😔 Reviewer 2 would hate this figure.',
+                                '😔 The data doesn\'t look right plotted this way.'
+                            ];
+                            msg = this.pick(figFail);
                         }
                         if (this.random() < 0.05) {
                             this.addStatus('brokenEquipment');
@@ -985,7 +1020,7 @@
 
                 // Items
                 const itemsEl = document.getElementById('items');
-                const itemNames = { idea: 'Idea', preliminary_result: 'Preliminary', major_result: 'Major Result', figure: 'Figure', paper: 'Paper', rejected_paper: 'Rejected' };
+                const itemNames = { idea: 'Idea', initial_findings: 'Initial Findings', key_discovery: 'Key Discovery', figure: 'Figure', paper: 'Paper', rejected_paper: 'Rejected' };
                 const itemEntries = Object.entries(s.items).filter(([k, v]) => v > 0);
                 if (itemEntries.length > 0) {
                     itemsEl.innerHTML = itemEntries.map(([k, v]) =>
