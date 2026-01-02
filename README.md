@@ -16,7 +16,7 @@ python -m gradquest.main
 cd GradQuest
 python run_web.py
 ```
-Then open **http://localhost:5000** in your browser.
+Then open **http://localhost:8080** in your browser.
 
 ### Options
 - `--seed 42` - Reproducible gameplay (CLI only)
