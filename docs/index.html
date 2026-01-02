@@ -586,6 +586,7 @@
                     strategicAlignment: 0,
                     // V2.2 Pro: Track pending by type
                     pendingConference: [],
+                    confPaperCount: 0, // V2.5: Published conference papers
                     msOutOffered: false,
                     // V2.2: Event log for history
                     eventLog: []
@@ -749,16 +750,16 @@
                 }
             },
 
-            // V2.2: Show event history modal
+            // V2.5: Show full event history modal
             showHistory() {
                 const log = this.state.eventLog || [];
-                const last20 = log.slice(-20).reverse();
-                let html = '<h3 style="margin-bottom: 12px;">📜 Event History (Recent 20)</h3>';
+                const allEvents = log.slice().reverse(); // V2.5: Show all events
+                let html = `<h3 style="margin-bottom: 12px;">📜 Event History (${log.length} events)</h3>`;
                 html += '<div style="max-height: 400px; overflow-y: auto; font-size: 0.85rem; line-height: 1.6;">';
-                if (last20.length === 0) {
+                if (allEvents.length === 0) {
                     html += '<p style="color: var(--text-secondary);">No events yet.</p>';
                 } else {
-                    last20.forEach(e => {
+                    allEvents.forEach(e => {
                         html += `<p style="margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px;"><strong>Month ${e.month}:</strong> ${e.text.replace(/\n/g, '<br>')}</p>`;
                     });
                 }
@@ -791,6 +792,8 @@
                 if (this.hasStatus('unhappyAdvisor')) decay += 6;
                 if (this.hasStatus('burnout')) decay += 2; // V2.4: Burnout penalty
                 // V2.4: Strategic alignment reduces decay (1 point per 25 alignment)
+                // V2.5: TA duty also causes morale decay
+                if (this.state.isTeaching) decay += 3;
                 const alignmentReduce = Math.floor((this.state.strategicAlignment || 0) / 25);
                 decay = Math.max(1, decay - alignmentReduce);
                 this.state.morale = Math.max(0, this.state.morale - decay);
@@ -954,11 +957,14 @@
                         const wait = s.totalMonths - conf.submitted;
                         if (wait >= 4) {
                             s.pendingConference.splice(i, 1);
-                            const confAccept = 0.6 + (s.strategicAlignment * 0.002); // 60% base + alignment bonus
+                            // V2.5: Network boosts acceptance (60% base + alignment + network bonus)
+                            const networkBonus = (s.peerNetwork || 0) * 0.002; // +0.2% per network point
+                            const confAccept = 0.6 + (s.strategicAlignment * 0.002) + networkBonus;
                             if (this.random() < confAccept) {
+                                s.confPaperCount = (s.confPaperCount || 0) + 1; // V2.5: Track count
                                 s.peerNetwork = Math.min(100, s.peerNetwork + 15);
                                 s.morale = Math.min(100, s.morale + 8);
-                                this.appendMessage('📋 CONFERENCE ACCEPTED! (+15 peer network, +8 morale)');
+                                this.appendMessage(`📋 CONFERENCE ACCEPTED! (Total: ${s.confPaperCount}C, +15 network, +8 morale)`);
                             } else {
                                 this.addItem('rejected_paper'); // Can revise for journal
                                 this.appendMessage('📋 Conference rejected. Consider revising for journal submission.');
@@ -1053,16 +1059,20 @@
                 if (this.getItem('key_discovery') > 0) {
                     const figures = this.getItem('figure') || 0;
                     if (this.hasStatus('brokenEquipment')) {
-                        actions.push({ id: 'work_figures_blocked', name: '📊 Document Findings', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
+                        actions.push({ id: 'work_figures_blocked', name: '📊 Doc Findings', desc: '⚠️ BLOCKED - Equipment!', disabled: true });
                     } else {
-                        actions.push({ id: 'work_figures', name: '📊 Document Findings', desc: `Figures: ${figures}/3` });
+                        actions.push({ id: 'work_figures', name: '📊 Doc Findings', desc: `Figures: ${figures}/3` });
                     }
                 }
                 if (this.getItem('rejected_paper') > 0) {
                     actions.push({ id: 'revise', name: '✏️ Revise Paper', desc: 'Revise and resubmit' });
                 }
-                if (this.getItem('paper') >= 3) {
-                    actions.push({ id: 'thesis', name: '🎓 Work on Thesis', desc: 'Defend and graduate!' });
+                // V2.5: Thesis requires 3 "journal equivalents" (2 conf papers = 1 journal)
+                const journalPapers = this.getItem('paper') || 0;
+                const confPapers = s.confPaperCount || 0;
+                const journalEquivalent = journalPapers + Math.floor(confPapers / 2);
+                if (journalEquivalent >= 3) {
+                    actions.push({ id: 'thesis', name: '🎓 Work on Thesis', desc: `Defend! (${journalPapers}J + ${confPapers}C)` });
                 }
                 // V1.8: Show pending papers
                 if (s.pendingPapers && s.pendingPapers.length > 0) {

@@ -2,6 +2,25 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.5.0] - 2026-01-02
+
+### Added
+- **2 Conference = 1 Journal**: Thesis now counts conference papers (2C = 1J equivalent)
+- **Conference Paper Count**: Track and display published conference papers
+- **Network Utility**: Peer network boosts conf paper acceptance (+0.2% per point)
+- **TA Morale Decay**: Teaching duty adds +3 to monthly morale decay
+- **Dual Event Display**: "This Month" + "Last Month" side by side
+- **Full Event History**: Shows all events (not just 20)
+
+### Changed
+- Conference button always visible with (x/3 remaining for this yr)
+- Journal Paper next to Conference Paper in actions
+- Thesis shows "(XJ + YC)" paper count
+- Shortened "Doc Findings" for better display
+- Single-line spacing between appended messages
+
+---
+
 ## [2.4.0] - 2026-01-02
 
 ### Added
