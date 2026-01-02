@@ -440,6 +440,4 @@ class VariableStore {
 
 ## License
 
-MIT License - see [LICENSE](./LICENSE)
-
-**Author**: Mianzhi Wang
+MIT License
