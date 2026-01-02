@@ -541,8 +541,7 @@
                 this.seedState = this.seed;
 
                 this.state = this.initState();
-                const shareLink = `${window.location.origin}${window.location.pathname}?seed=${this.seed}`;
-                this.showMessage(`🎓 Welcome to your PhD program!\n\nYou start in September. Your goal: publish 3 papers and defend your thesis.\n\n🌱 Seed: ${this.seed}\n🔗 Share: ${shareLink}`);
+                this.showMessage('🎓 Welcome to your PhD program!\n\nYou start in September. Your goal: publish 3 papers and defend your thesis.');
                 document.getElementById('start-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'block';
                 this.updateUI();
