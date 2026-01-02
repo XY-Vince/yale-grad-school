@@ -455,3 +455,15 @@ Based on this plan, please:
 
 1. **Draft the "Strategic Alignment" Logic**: Define exactly how matching an advisor's trait with an action type (e.g., Pitching a High-Risk Idea) contributes to the meta-skill.
 2. **Design the "Path-Dependent" Endings**: Map specific MS-out outcomes to the "Industry Experience" and "Network" variables for the reapplication epilogue.
+
+
+
+Actionable Plan for V2.4
+
+
+ (The "Resilience & Refinement" Update)1. Adaptive Consequences (The "Cramming Hangover")The Issue: Currently, "Cramming" allows a player to pass Quals and move on immediately.The Fix: Add a delayed penalty to the Last-Minute Cram.Mechanic: Cramming now triggers a "Burnout Risk" status or a permanent -2 reduction in max Morale for the remainder of Year 2.Action: Update the cram logic in index.html to include a flavored warning: "You passed, but the toll on your mind is permanent".2. Narrative Honesty (Early MS-Out)The Issue: MS-out is currently locked until Year 2.The Fix: Allow rare, early MS-out triggers under severe conditions.Mechanic: If Morale < 15 in Year 1, trigger a "Heart-to-Heart" event with the Advisor.Outcome: The player can exit early as "The Great Escape" profile.3. Morale Dampening (Strategic Alignment Utility)The Issue: Late-game morale decay can feel overwhelming regardless of player skill.The Fix: Use Strategic Alignment as a "shield".Mechanic: High Strategic Alignment (learned via Pitch Sessions) now reduces base monthly Morale decay by 1–2 points.UI Signaling: Add a small note in the "Help" or "Advisor Status" hover: "Alignment with advisor reduces monthly stress".4. Enhancing Reviewer #2 & Advisor FlavorThe Issue: Feedback is becoming mechanical; it needs more personality.The Fix: Expand the "Snark" library.Reviewer #2: Add 5–10 new snarky comments to the rejected_paper logic (e.g., "The author's grasp of basic statistics is... novel").Advisor Signals: Link Pitch Session messages more tightly to hidden traits. A "Strict" advisor should give specific critiques on the "Figures" count.5. Figure Pipeline TransparencyThe Issue: Players are frustrated when figures reset upon submission.The Fix: UI Explanation.Visual: Update the pipelineEl to include a sub-caption: "Figures are integrated into the final manuscript upon submission".III. Summary of V2.4 Target MetricsFeatureProposed ChangeTarget ImpactCrammingAdd "Burnout" status penalty.Prevents dominant strategy abuse.MS-OutUnlock in Year 1 if Morale is critical.Improves narrative honesty.MoraleStrategic Alignment dampens decay.Rewards high-skill play and "alignment".RNGCaps on "Scooped" events; more snark for Reviewer #2.Keeps "Fair RNG" while adding personality.
+
+ in the end, pls fix the "latest events" display, it is not working properly
+in the following case, only month 3 activity is shown, month 2 was never shown in latest events, they should be appearing simultaneously
+"Month 3: 💡 A sudden flash of inspiration strikes! (+15 morale, +1 idea)
+Month 2: 📖 Decent study session!"

@@ -769,16 +769,29 @@
                     }
                 }
 
-                // Monthly morale decay - V2.1: 20% steeper
+                // Monthly morale decay - V2.4: Alignment reduces decay
                 let decay = 4;
                 if (this.hasStatus('exhaustion')) decay += 6;
                 if (this.hasStatus('unhappyAdvisor')) decay += 6;
+                if (this.hasStatus('burnout')) decay += 2; // V2.4: Burnout penalty
+                // V2.4: Strategic alignment reduces decay (1 point per 25 alignment)
+                const alignmentReduce = Math.floor((this.state.strategicAlignment || 0) / 25);
+                decay = Math.max(1, decay - alignmentReduce);
                 this.state.morale = Math.max(0, this.state.morale - decay);
+                // V2.4: Respect maxMorale cap (reduced by burnout)
+                const maxMorale = this.state.maxMorale || 100;
+                this.state.morale = Math.min(maxMorale, this.state.morale);
 
                 // Check morale death
                 if (this.state.morale <= 0) {
                     this.endGame(false, 'morale', 'You ran out of morale and dropped out.');
                     return;
+                }
+
+                // V2.4: Early MS-Out in Year 1 if morale critical (<15)
+                if (this.state.year === 1 && this.state.morale < 15 && !this.state.msOutOffered) {
+                    this.state.msOutOffered = true;
+                    this.appendMessage('💔 Your advisor takes you aside: "This isn\'t working out. Maybe consider a Master\'s exit?"');
                 }
 
                 // V1.8: Process pending papers
@@ -804,12 +817,18 @@
                                     s.morale = Math.min(100, s.morale + 10);
                                     this.appendMessage('🎉 ACCEPTED! Paper published! (+10 morale)');
                                 } else if (roll < acceptRate + 0.25 && !isRevision) {
-                                    // V3.0: Major revision request (25% for new papers)
+                                    // V2.4: Expanded Reviewer #2 snark library
                                     this.addItem('rejected_paper');
                                     const reviewer2Msgs = [
                                         '📝 MAJOR REVISION. Reviewer #2 demands more experiments...',
                                         '📝 MAJOR REVISION. "The novelty is unclear..."',
-                                        '📝 MAJOR REVISION. "Please address 47 minor comments..."'
+                                        '📝 MAJOR REVISION. "Please address 47 minor comments..."',
+                                        '📝 MAJOR REVISION. "The author\'s grasp of statistics is... novel."',
+                                        '📝 MAJOR REVISION. "I stopped reading at Figure 2."',
+                                        '📝 MAJOR REVISION. "This work is incremental at best."',
+                                        '📝 MAJOR REVISION. "Have the authors read ANY related work?"',
+                                        '📝 MAJOR REVISION. "The writing quality is unacceptable."',
+                                        '📝 MAJOR REVISION. "I am not convinced this is publishable."'
                                     ];
                                     this.appendMessage(reviewer2Msgs[Math.floor(this.random() * reviewer2Msgs.length)]);
                                 } else {
@@ -1257,12 +1276,15 @@
                         }
                         break;
 
-                    // V2.3: Last-Minute Cram
+                    // V2.4: Last-Minute Cram with Burnout Penalty
                     case 'cram':
                         s.qualifyLevel = Math.max(s.qualifyLevel, 2); // Guarantee pass
                         s.morale = Math.max(0, s.morale - 25);
-                        msg = '🆘 EMERGENCY CRAM SESSION!\nYou pulled an all-nighter. Exhausted but ready for quals. (-25 morale)';
+                        // V2.4: Permanent penalty - reduce max morale
+                        s.maxMorale = (s.maxMorale || 100) - 10;
                         this.addStatus('exhaustion');
+                        this.addStatus('burnout'); // V2.4: New status
+                        msg = '🆘 EMERGENCY CRAM SESSION!\nYou passed, but the toll on your mind is permanent. (-25 morale, max morale reduced)';
                         break;
 
                     case 'thesis':

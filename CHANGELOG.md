@@ -2,6 +2,21 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.4.0] - 2026-01-02
+
+### Added
+- **Burnout Penalty**: Last-Minute Cram now reduces max morale by 10 and adds "burnout" status
+- **Early MS-Out**: Year 1 advisor heart-to-heart if morale drops below 15
+- **Strategic Alignment Shield**: Alignment reduces monthly morale decay (1 point per 25 alignment)
+- **Expanded Reviewer #2**: 9 snarky revision request messages
+
+### Changed
+- Burnout status adds +2 to monthly morale decay
+- Morale now capped by maxMorale (can be reduced by burnout)
+- Alignment rewards skilled play with reduced stress
+
+---
+
 ## [2.3.0] - 2026-01-02
 
 ### Added
