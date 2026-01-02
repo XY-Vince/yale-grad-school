@@ -683,10 +683,10 @@
                     }
                 }
 
-                // Monthly morale decay
-                let decay = 3;
-                if (this.hasStatus('exhaustion')) decay += 5;
-                if (this.hasStatus('unhappyAdvisor')) decay += 5;
+                // Monthly morale decay - V2.1: 20% steeper
+                let decay = 4;
+                if (this.hasStatus('exhaustion')) decay += 6;
+                if (this.hasStatus('unhappyAdvisor')) decay += 6;
                 this.state.morale = Math.max(0, this.state.morale - decay);
 
                 // Check morale death
@@ -1014,7 +1014,8 @@
 
                     case 'write_paper':
                         this.removeItem('key_discovery');
-                        this.removeItem('figure', 3);
+                        // V2.1: Clear ALL figures (can't reuse for next paper)
+                        delete this.state.items['figure'];
                         // V1.8: Paper goes to pending review
                         s.pendingPapers.push({ submitted: s.totalMonths, type: 'new' });
                         msg = '📮 Paper submitted! Now we wait for the reviewers...';

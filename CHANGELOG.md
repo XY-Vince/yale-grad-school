@@ -2,7 +2,7 @@
 
 All notable changes to GradQuest are documented here.
 
-## [3.0.0] - 2026-01-02
+## [2.1.0] - 2026-01-02
 
 ### Added
 - **Imposter Syndrome** (~8% chance per month): Morale hit with flavored messages
@@ -12,8 +12,9 @@ All notable changes to GradQuest are documented here.
 - **Reviewer #2** (25% on papers): Major revision requests with snarky messages
 
 ### Changed
-- Paper acceptance rate adjusted (50% new, 70% revision)
-- TA status now shows in pipeline display
+- **Morale decay 20% steeper**: Base 4/month (was 3), +6 per status (was +5)
+- **Figures cleared on submit**: Can't reuse figures for next paper
+- Paper acceptance rate: 50% new, 70% revision
 
 ---
 
