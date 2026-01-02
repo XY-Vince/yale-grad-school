@@ -641,37 +641,43 @@
                 // V1.8: Process pending papers
                 const s = this.state;
                 if (s.pendingPapers && s.pendingPapers.length > 0) {
-                    const resolved = [];
                     for (let i = s.pendingPapers.length - 1; i >= 0; i--) {
                         const paper = s.pendingPapers[i];
                         const wait = s.totalMonths - paper.submitted;
                         const isRevision = paper.type === 'revision';
-                        const minWait = isRevision ? 1 : 2;
-                        const maxWait = isRevision ? 3 : 5;
+                        const minWait = isRevision ? 2 : 3;  // Minimum 2-3 months
+                        const maxWait = isRevision ? 4 : 6;  // Maximum 4-6 months
 
-                        if (wait >= minWait && (wait >= maxWait || this.random() < 0.4)) {
-                            s.pendingPapers.splice(i, 1);
-                            const acceptRate = isRevision ? 0.7 : 0.6;
-                            if (this.random() < acceptRate) {
-                                this.addItem('paper');
-                                s.advisorScore = Math.min(100, s.advisorScore + 15);
-                                s.morale = Math.min(100, s.morale + 10);
-                                this.appendMessage('🎉 ACCEPTED! Paper published! (' + this.getItem('paper') + '/3 complete) (+10 morale)');
-                            } else {
-                                this.addItem('rejected_paper');
-                                this.appendMessage('😢 REJECTED. The reviewers were not convinced. You can revise and resubmit.');
+                        // Only check after minimum wait time
+                        if (wait >= minWait) {
+                            // Guaranteed result at max wait, 30% chance per month after min
+                            if (wait >= maxWait || this.random() < 0.3) {
+                                s.pendingPapers.splice(i, 1);
+                                const acceptRate = isRevision ? 0.7 : 0.6;
+                                if (this.random() < acceptRate) {
+                                    this.addItem('paper');
+                                    s.advisorScore = Math.min(100, s.advisorScore + 15);
+                                    s.morale = Math.min(100, s.morale + 10);
+                                    this.appendMessage('🎉 ACCEPTED! Paper published! (' + this.getItem('paper') + '/3 complete) (+10 morale)');
+                                } else {
+                                    this.addItem('rejected_paper');
+                                    this.appendMessage('😢 REJECTED. The reviewers were not convinced. You can revise and resubmit.');
+                                }
                             }
                         }
                     }
                 }
 
-                // Equipment repair
+                // Equipment repair - requires minimum 2 months
                 if (this.hasStatus('brokenEquipment')) {
                     this.state.equipmentBrokenMonths++;
-                    if (this.state.equipmentBrokenMonths >= 3 || this.random() < 0.5) {
-                        this.removeStatus('brokenEquipment');
-                        this.state.equipmentBrokenMonths = 0;
-                        this.appendMessage('🔧 Good news! The equipment has been fixed.');
+                    // Minimum 2 months, then 40% chance, guaranteed at 4 months
+                    if (this.state.equipmentBrokenMonths >= 2) {
+                        if (this.state.equipmentBrokenMonths >= 4 || this.random() < 0.4) {
+                            this.removeStatus('brokenEquipment');
+                            this.state.equipmentBrokenMonths = 0;
+                            this.appendMessage('🔧 Good news! The equipment has been fixed.');
+                        }
                     }
                 }
 
@@ -777,7 +783,7 @@
                 // V1.8: Conference limited to 3/year
                 const confLeft = 3 - (s.conferencesThisYear || 0);
                 if (confLeft > 0) {
-                    actions.push({ id: 'conference', name: '🎤 Conference', desc: '35% idea (' + confLeft + ' left)' });
+                    actions.push({ id: 'conference', name: '🎤 Conference', desc: '35% idea (' + confLeft + ' this year)' });
                 }
 
                 // Qual prep
@@ -883,7 +889,7 @@
                         break;
 
                     case 'write_paper':
-                        this.removeItem('major_result');
+                        this.removeItem('key_discovery');
                         this.removeItem('figure', 3);
                         // V1.8: Paper goes to pending review
                         s.pendingPapers.push({ submitted: s.totalMonths, type: 'new' });
