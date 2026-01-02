@@ -820,8 +820,9 @@
 
                 actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest and recover' });
 
-                // V1.8: Conference limited to 3/year
-                const confLeft = 3 - (s.conferencesThisYear || 0);
+                // V1.9: Conference limited - 1 first year, 3 after
+                const maxConf = s.year === 1 ? 1 : 3;
+                const confLeft = maxConf - (s.conferencesThisYear || 0);
                 if (confLeft > 0) {
                     actions.push({ id: 'conference', name: '🎤 Conference', desc: 'May inspire ideas (' + confLeft + ' this year)' });
                 }

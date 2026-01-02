@@ -37,12 +37,18 @@ data/rulesets/       # Game data (YAML files)
 
 ## Version History
 
-### V1.8 (Current)
-- **Paper submission delay**: 2-5 months wait for reviews (realistic timeline!)
+### V1.9 (Current)
+- **Load button in-game**: Load saved games during gameplay
+- **Typewriter effect**: Messages type out smoothly
+- **Cleaner UI**: Removed explicit timing hints and progress fractions
+- **Renamed actions**: "Document Findings", "May inspire ideas"
+- **Conference balance**: 1 per year in Year 1, 3 per year after
+
+### V1.8
+- **Paper submission delay**: Realistic wait for reviews
 - **"Take a Break"**: Renamed from "Slack Off"
-- **Conference limit**: Max 3 per academic year
 - **Initial Findings / Key Discovery**: Renamed research stages
-- **Diverse messages**: Varied responses for read/work/figures actions
+- **Diverse messages**: Varied responses for actions
 
 ### V1.7
 - **Help button**: Game mechanics modal on start screen
