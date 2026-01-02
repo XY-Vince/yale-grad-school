@@ -812,9 +812,9 @@
                 }
                 if (this.getItem('key_discovery') > 0) {
                     if (this.hasStatus('brokenEquipment')) {
-                        actions.push({ id: 'work_figures_blocked', name: '📊 Document<br>Findings', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
+                        actions.push({ id: 'work_figures_blocked', name: '📊 Document Findings', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
                     } else {
-                        actions.push({ id: 'work_figures', name: '📊 Document<br>Findings', desc: 'Prepare results for paper' });
+                        actions.push({ id: 'work_figures', name: '📊 Document Findings', desc: 'Prepare results for paper' });
                     }
                 }
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
