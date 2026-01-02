@@ -344,7 +344,6 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest</h1>
-            <p>A PhD Life Simulator</p>
         </header>
 
         <div id="app">
@@ -372,14 +371,10 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">💪 Morale</div>
-                        <div class="stat-value"><span id="morale">50</span>%</div>
+                        <div class="stat-value" style="font-size: 1.2rem;" id="morale-status">😊 Good</div>
                         <div class="progress-bar">
                             <div class="progress-fill high" id="morale-bar" style="width: 50%"></div>
                         </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">📰 Papers Published</div>
-                        <div class="stat-value"><span id="papers">0</span></div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">👨‍🏫 Advisor</div>
@@ -387,6 +382,10 @@
                         <div class="progress-bar">
                             <div class="progress-fill high" id="advisor-bar" style="width: 50%"></div>
                         </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">📰 Papers</div>
+                        <div class="stat-value"><span id="papers">0</span></div>
                     </div>
                 </div>
 
@@ -419,6 +418,17 @@
                             </button>
                             <button class="action-btn save-btn" onclick="game.loadFromSave()" style="flex: 1;">
                                 <div class="action-name">📂 Load</div>
+                            </button>
+                        </div>
+                        <!-- V2.0.1: Footer buttons -->
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="action-btn save-btn" onclick="game.showHelp()"
+                                style="flex: 1; padding: 6px;">
+                                <div class="action-name" style="font-size: 0.85rem;">❓ Help</div>
+                            </button>
+                            <button class="action-btn save-btn" onclick="game.showSeed()"
+                                style="flex: 1; padding: 6px;">
+                                <div class="action-name" style="font-size: 0.85rem;">🎲 Seed</div>
                             </button>
                         </div>
                     </div>
@@ -827,7 +837,7 @@
                 const maxConf = s.year === 1 ? 1 : 3;
                 const confLeft = maxConf - (s.conferencesThisYear || 0);
                 if (confLeft > 0) {
-                    actions.push({ id: 'conference', name: '🎤 Conference', desc: 'May inspire ideas (' + confLeft + ' this year)' });
+                    actions.push({ id: 'conference', name: '🎤 Conference', desc: 'May inspire ideas<br><small>(' + confLeft + ' this year)</small>' });
                 }
 
                 // Qual prep
@@ -1021,6 +1031,13 @@
                 document.getElementById('help-modal').classList.remove('active');
             },
 
+            // V2.0.1: Show seed info
+            showSeed() {
+                const seed = this.state.seed || 'random';
+                const url = window.location.origin + window.location.pathname + '?seed=' + seed;
+                alert('Current Seed: ' + seed + '\n\nShare this URL:\n' + url);
+            },
+
             thesisStay() {
                 document.getElementById('thesis-modal').classList.remove('active');
                 this.state.morale = Math.min(100, this.state.morale + 20);
@@ -1036,13 +1053,19 @@
                 // Stats
                 document.getElementById('date').textContent = `${this.months[s.month]}, Year ${s.year}`;
                 document.getElementById('total-months').textContent = s.totalMonths;
-                document.getElementById('morale').textContent = s.morale;
                 document.getElementById('papers').textContent = this.getItem('paper');
 
-                // Morale bar
+                // V2.0.1: Morale as descriptive text
                 const moraleBar = document.getElementById('morale-bar');
                 moraleBar.style.width = `${s.morale}%`;
-                moraleBar.className = 'progress-fill ' + (s.morale > 60 ? 'high' : s.morale > 30 ? 'medium' : 'low');
+                let moraleText, moraleClass;
+                if (s.morale > 75) { moraleText = '😄 Great'; moraleClass = 'high'; }
+                else if (s.morale > 50) { moraleText = '😊 Good'; moraleClass = 'high'; }
+                else if (s.morale > 30) { moraleText = '😐 Okay'; moraleClass = 'medium'; }
+                else if (s.morale > 15) { moraleText = '😟 Low'; moraleClass = 'low'; }
+                else { moraleText = '😰 Critical'; moraleClass = 'low'; }
+                document.getElementById('morale-status').textContent = moraleText;
+                moraleBar.className = 'progress-fill ' + moraleClass;
 
                 // Advisor
                 const advisorBar = document.getElementById('advisor-bar');
