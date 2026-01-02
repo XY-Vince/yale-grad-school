@@ -2,6 +2,22 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.3.0] - 2026-01-02
+
+### Added
+- **Quals Urgency Warning**: Visual indicator 3 months before exam deadline
+- **Last-Minute Cram**: Emergency action in August Y2 (-25 morale, +exhaustion, passes quals)
+- **Study Group Buff**: Peer Network ≥50 counts as +1 quals prep session
+- **Figure Progress**: Document Findings now shows "Figures: X/3"
+- **Event Log History**: All events stored and viewable via History button
+
+### Changed
+- Quals button shows urgency when unprepared and deadline approaching
+- TriggerQuals respects Study Group buff
+- Help modal comprehensively updated for V2.2 Pro features
+
+---
+
 ## [2.2.0 Pro] - 2026-01-02
 
 ### Added

@@ -945,10 +945,18 @@
             triggerQuals() {
                 let msg = '═══════════════════════════════════\n📝 QUALIFYING EXAM TIME! 📝\n═══════════════════════════════════\n\n';
 
-                if (this.state.qualifyLevel >= 2) {
+                // V2.3: Study Group buff (network >= 50 counts as +1 prep)
+                const hasStudyGroup = (this.state.peerNetwork || 0) >= 50;
+                const effectiveLevel = this.state.qualifyLevel + (hasStudyGroup ? 1 : 0);
+
+                if (effectiveLevel >= 2) {
                     msg += '✅ QUALS PASSED! ✅\n';
-                    msg += this.state.qualifyLevel >= 3 ? 'Your thorough preparation paid off!' : 'You passed the qualifying exam!';
-                    this.state.morale = Math.min(100, this.state.morale + (this.state.qualifyLevel >= 3 ? 25 : 15));
+                    if (hasStudyGroup && this.state.qualifyLevel < 2) {
+                        msg += 'Your study group helped you pass!';
+                    } else {
+                        msg += effectiveLevel >= 3 ? 'Your thorough preparation paid off!' : 'You passed the qualifying exam!';
+                    }
+                    this.state.morale = Math.min(100, this.state.morale + (effectiveLevel >= 3 ? 25 : 15));
                     this.state.qualsPassed = true;
                 } else {
                     msg += '❌ QUALS FAILED ❌\nYou needed at least 2 preparation sessions.';
@@ -1008,10 +1016,11 @@
                     actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: 'Work toward Key Discovery' });
                 }
                 if (this.getItem('key_discovery') > 0) {
+                    const figures = this.getItem('figure') || 0;
                     if (this.hasStatus('brokenEquipment')) {
                         actions.push({ id: 'work_figures_blocked', name: '📊 Document Findings', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
                     } else {
-                        actions.push({ id: 'work_figures', name: '📊 Document Findings', desc: 'Prepare results for paper' });
+                        actions.push({ id: 'work_figures', name: '📊 Document Findings', desc: `Figures: ${figures}/3` });
                     }
                 }
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
@@ -1052,9 +1061,40 @@
                     actions.push({ id: 'pending_conf', name: '📋 Pending Conf', desc: s.pendingConference.length + ' under review', disabled: true });
                 }
 
-                // Qual prep
+                // V2.3: Qual prep with urgency warnings and Study Group
                 if ((s.year === 1) || (s.year === 2 && s.month < 9)) {
-                    actions.push({ id: 'quals', name: '📖 Prep for Quals', desc: 'Study for exam' });
+                    const monthsLeft = s.year === 1 ? (12 + 9 - s.month) : (9 - s.month);
+                    const preps = s.qualifyLevel || 0;
+                    const needed = 2 - preps;
+
+                    // Study Group: High network counts as 1 prep
+                    const hasStudyGroup = (s.peerNetwork || 0) >= 50;
+                    const effectiveNeeded = hasStudyGroup && preps < 2 ? Math.max(0, needed - 1) : needed;
+
+                    let qualsDesc = 'Study for exam';
+                    let qualsName = '📖 Prep for Quals';
+
+                    // V2.3: Urgency warnings
+                    if (s.year === 2 && monthsLeft <= 3 && effectiveNeeded > 0) {
+                        qualsName = '⚠️📖 URGENT: Quals Prep';
+                        qualsDesc = `${monthsLeft}mo left! Need ${effectiveNeeded} more session${effectiveNeeded > 1 ? 's' : ''}`;
+                    } else if (preps > 0) {
+                        qualsDesc = `Progress: ${preps}/2 sessions`;
+                    }
+                    if (hasStudyGroup && preps < 2) {
+                        qualsDesc += ' (+1 from Study Group)';
+                    }
+
+                    actions.push({ id: 'quals', name: qualsName, desc: qualsDesc });
+
+                    // V2.3: Last-Minute Cram in August Y2
+                    if (s.year === 2 && s.month === 8 && effectiveNeeded > 0) {
+                        actions.push({
+                            id: 'cram',
+                            name: '🆘 Last-Minute Cram',
+                            desc: 'Emergency! Pass quals but -25 morale'
+                        });
+                    }
                 }
 
                 // V2.2 Pro: MS-Out option (when offered)
@@ -1215,6 +1255,14 @@
                         } else {
                             msg = '📖 Great progress on exam prep!';
                         }
+                        break;
+
+                    // V2.3: Last-Minute Cram
+                    case 'cram':
+                        s.qualifyLevel = Math.max(s.qualifyLevel, 2); // Guarantee pass
+                        s.morale = Math.max(0, s.morale - 25);
+                        msg = '🆘 EMERGENCY CRAM SESSION!\nYou pulled an all-nighter. Exhausted but ready for quals. (-25 morale)';
+                        this.addStatus('exhaustion');
                         break;
 
                     case 'thesis':
