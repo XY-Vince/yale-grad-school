@@ -464,13 +464,14 @@
             <div style="margin-top: 16px; line-height: 1.8;">
                 <p><strong>Goal:</strong> Publish 3 papers and defend your thesis!</p>
                 <p style="margin-top: 12px;"><strong>Research Pipeline:</strong></p>
-                <p>📚 Read Papers → 💡 Idea → 🔬 Preliminary → 📊 Major Result</p>
-                <p>📊 Create 3 Figures → 📝 Write Paper → 🎓 Thesis</p>
+                <p>📚 Read Papers / 🎤 Conference / 💡 Inspiration</p>
+                <p>→ 💡 Idea → 🔬 Initial Findings → 🎯 Key Discovery</p>
+                <p>→ 📊 Document Findings (×3) → 📝 Write Paper → 🎓 Thesis</p>
                 <p style="margin-top: 12px;"><strong>Tips:</strong></p>
                 <ul style="margin-left: 20px;">
                     <li>Keep morale above 0 or you'll drop out!</li>
-                    <li>Prepare for quals before September Year 2</li>
-                    <li>Slack off to recover morale (but advisor may notice!)</li>
+                    <li>Qual exam takes place at Month 12</li>
+                    <li>Take a break to recover morale (but your advisor may notice!)</li>
                     <li>Conferences give ideas + morale boost</li>
                 </ul>
             </div>
@@ -812,9 +813,9 @@
                 }
                 if (this.getItem('key_discovery') > 0) {
                     if (this.hasStatus('brokenEquipment')) {
-                        actions.push({ id: 'work_figures_blocked', name: '📊 Document Findings', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
+                        actions.push({ id: 'work_figures_blocked', name: '📊 Document<br>Findings', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
                     } else {
-                        actions.push({ id: 'work_figures', name: '📊 Document Findings', desc: 'Prepare results for paper' });
+                        actions.push({ id: 'work_figures', name: '📊 Document<br>Findings', desc: 'Prepare results for paper' });
                     }
                 }
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
@@ -974,8 +975,9 @@
 
                     case 'conference':
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
-                        s.morale = Math.min(100, s.morale + 8);
-                        msg = '🎤 You attended a conference! (+8 morale)';
+                        const confMorale = 2 + Math.floor(this.random() * 3); // 2-4
+                        s.morale = Math.min(100, s.morale + confMorale);
+                        msg = '🎤 You attended a conference! (+' + confMorale + ' morale)';
                         if (this.random() < 0.35) {
                             this.addItem('idea');
                             msg += '\n💡 The talks inspired a new idea!';
