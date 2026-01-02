@@ -403,8 +403,11 @@
 
                     <div>
                         <div class="panel">
-                            <h3>📦 Inventory</h3>
-                            <div class="badge-list" id="items"><span class="empty-text">No items yet</span></div>
+                            <h3>🔬 Research Pipeline</h3>
+                            <div id="pipeline"
+                                style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.85rem;">
+                                <!-- Pipeline steps rendered by JS -->
+                            </div>
                         </div>
                         <div class="panel">
                             <h3>⚡ Status Effects</h3>
@@ -1065,16 +1068,35 @@
                 </button>
             `).join('');
 
-                // Items
-                const itemsEl = document.getElementById('items');
-                const itemNames = { idea: 'Idea', initial_findings: 'Initial Findings', key_discovery: 'Key Discovery', figure: 'Figure', paper: 'Paper', rejected_paper: 'Rejected' };
-                const itemEntries = Object.entries(s.items).filter(([k, v]) => v > 0);
-                if (itemEntries.length > 0) {
-                    itemsEl.innerHTML = itemEntries.map(([k, v]) =>
-                        `<span class="item-badge">${itemNames[k] || k} ×${v}</span>`
-                    ).join('');
-                } else {
-                    itemsEl.innerHTML = '<span class="empty-text">No items yet</span>';
+                // V2.0: Pipeline Visualizer
+                const pipelineEl = document.getElementById('pipeline');
+                const stages = [
+                    { icon: '📚', label: 'Ideas', count: this.getItem('idea') },
+                    { icon: '→', label: '' },
+                    { icon: '🔬', label: 'Findings', count: this.getItem('initial_findings') },
+                    { icon: '→', label: '' },
+                    { icon: '🎯', label: 'Discovery', count: this.getItem('key_discovery') },
+                    { icon: '→', label: '' },
+                    { icon: '📊', label: 'Figures', count: this.getItem('figure') },
+                    { icon: '→', label: '' },
+                    { icon: '📝', label: 'Papers', count: this.getItem('paper') }
+                ];
+
+                pipelineEl.innerHTML = stages.map(st => {
+                    if (st.label === '') return `<span style="color: var(--text-secondary);">${st.icon}</span>`;
+                    const hasItems = st.count > 0;
+                    const style = hasItems
+                        ? 'background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 4px 10px; border-radius: 12px;'
+                        : 'color: var(--text-secondary);';
+                    return `<span style="${style}">${st.icon} ${st.label}${hasItems ? ' ×' + st.count : ''}</span>`;
+                }).join('');
+
+                // Pending/Rejected
+                const extras = [];
+                if (this.getItem('rejected_paper') > 0) extras.push('❌ Rejected ×' + this.getItem('rejected_paper'));
+                if (s.pendingPapers && s.pendingPapers.length > 0) extras.push('⏳ Under Review ×' + s.pendingPapers.length);
+                if (extras.length > 0) {
+                    pipelineEl.innerHTML += '<br><span style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">' + extras.join(' | ') + '</span>';
                 }
 
                 // Statuses

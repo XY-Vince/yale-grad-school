@@ -1,97 +1,126 @@
-# GradQuest
+# 🎓 GradQuest
 
-A Python port of the PhD Simulator game with modular architecture designed for future LLM API expansion.
+> *Can you survive the PhD? Publish 3 papers before your morale runs out!*
 
-## Quick Start
+[![Play Now](https://img.shields.io/badge/▶_Play_Now-GitHub_Pages-blue?style=for-the-badge)](https://xy-vince.github.io/GradQuest/)
+[![Version](https://img.shields.io/badge/Version-2.0-green?style=flat-square)](https://github.com/XY-Vince/GradQuest/releases)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-### Command Line
+---
+
+## 🎮 Play Now
+
+**[▶ Play GradQuest](https://xy-vince.github.io/GradQuest/)** - No download required!
+
+---
+
+## 📖 About
+
+GradQuest is a text-based PhD life simulator inspired by the classic [PhD Simulator](http://research.wmz.ninja/projects/phd). Navigate the challenging journey of graduate school: read papers, develop ideas, publish research, and manage your relationship with your advisor—all while keeping your morale above zero!
+
+### The Research Pipeline
+
+```
+📚 Read Papers → 💡 Idea → 🔬 Initial Findings → 🎯 Key Discovery
+                                                      ↓
+                        🎓 Thesis ← 📝 Paper ← 📊 Document Findings (×3)
+```
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| **Research Pipeline** | Realistic progression from ideas to publication |
+| **Advisor Relationship** | Keep your advisor happy or face morale penalties |
+| **Paper Submission** | Experience realistic review delays |
+| **Qualifying Exams** | Prepare for quals in Year 2 |
+| **Save/Load** | Continue your PhD journey anytime |
+| **Shareable Seeds** | Share your timeline with `?seed=X` URLs |
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  GradQuest                          │
+├─────────────────────┬───────────────────────────────┤
+│   Static Web UI     │      Python Backend           │
+│   (docs/index.html) │      (gradquest/)             │
+├─────────────────────┼───────────────────────────────┤
+│ • Pure JavaScript   │ • Core Engine (VariableStore) │
+│ • GitHub Pages      │ • Event System (YAML-driven)  │
+│ • localStorage      │ • CLI Interface               │
+│ • Typewriter effect │ • LLM Integration Prep        │
+└─────────────────────┴───────────────────────────────┘
+```
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Play Online (Recommended)
+Visit **[xy-vince.github.io/GradQuest](https://xy-vince.github.io/GradQuest/)**
+
+### Option 2: Run Locally
 ```bash
+git clone https://github.com/XY-Vince/GradQuest.git
 cd GradQuest
 pip install -r requirements.txt
-python -m gradquest.main
-```
-
-### Web Browser (New in V1.2!)
-```bash
-cd GradQuest
 python run_web.py
 ```
-Then open **http://localhost:8080** in your browser.
+Open **http://localhost:8080**
 
-### Options
-- `--seed 42` - Reproducible gameplay (CLI only)
-- `--port 8080` - Custom port (Web UI)
-
-## Project Structure
-
-```
-gradquest/           # Main package
-├── core/            # Core engine (VariableStore, EventEngine, etc.)
-├── effects/         # Effect system (Items, Status, Attributes)
-├── events/          # Event handling and YAML loading
-├── interface/       # CLI interface
-└── extensions/      # LLM integration preparation
-
-data/rulesets/       # Game data (YAML files)
-```
-
-## Version History
-
-### V1.9 (Current)
-- **Load button in-game**: Load saved games during gameplay
-- **Typewriter effect**: Messages type out smoothly
-- **Cleaner UI**: Removed explicit timing hints and progress fractions
-- **Renamed actions**: "Document Findings", "May inspire ideas"
-- **Conference balance**: 1 per year in Year 1, 3 per year after
-
-### V1.8
-- **Paper submission delay**: Realistic wait for reviews
-- **"Take a Break"**: Renamed from "Slack Off"
-- **Initial Findings / Key Discovery**: Renamed research stages
-- **Diverse messages**: Varied responses for actions
-
-### V1.7
-- **Help button**: Game mechanics modal on start screen
-- **Shareable seeds**: `?seed=X` URL for reproducible games
-- **Morale on success**: +5 for findings, +3 for figures
-
-### V1.6
-- **Automated tests**: pytest suite with 11 passing tests
-- **Save/Load**: Game state persists to browser localStorage
-
-### V1.5
-- **Equipment bug fixed**: Repair now handled in web app (guaranteed within 3 months)
-- **Total months counter**: Shows elapsed time
-- **Advisor happiness bar**: Visual indicator in stats
-
-### V1.2
-- **Fixed qual exam timing**: Triggers in September year 2 (one full year)
-- **Thesis action**: Explicit "Work on Thesis" when you have 3+ papers
-- **Graduation works**: Thesis defense properly ends the game
-
-### V1.1
-- **Status recovery**: Slacking cures exhaustion (35%) and advisor anger (25%)
-- **Balanced gameplay**: Higher success rates
-- **Renamed Hope→Morale**
-
-### V1.0
-- Core engine port from TypeScript PhD Simulator
-- Full research pipeline, CLI interface, LLM preparation
-
-## LLM Expansion
-
-Configure via environment variables:
+### Option 3: CLI Mode
 ```bash
-export GRADQUEST_LLM_PROVIDER=openai  # or anthropic, local
-export GRADQUEST_LLM_API_KEY=your-key
-export GRADQUEST_LLM_MODEL=gpt-4
+python -m gradquest.main --seed 42
 ```
 
-## Requirements
+---
 
-- Python 3.8+
-- PyYAML
+## 📁 Project Structure
 
-## License
+```
+GradQuest/
+├── docs/               # Static web version (GitHub Pages)
+│   └── index.html      # Complete game in one file
+├── gradquest/          # Python backend
+│   ├── core/           # Engine: VariableStore, GameEngine
+│   ├── events/         # Event handling, YAML loading
+│   └── web/            # Flask web interface
+├── data/rulesets/      # Game data (YAML)
+└── tests/              # pytest suite
+```
 
-MIT License
+---
+
+## 📋 Version History
+
+See [CHANGELOG.md](CHANGELOG.md) for full history.
+
+| Version | Highlights |
+|---------|------------|
+| **v2.0** | Professional README, pipeline visualizer, CI/CD |
+| v1.9 | Typewriter effect, load button, cleaner UI |
+| v1.8 | Paper delays, diverse messages |
+| v1.7 | Shareable seeds, help modal |
+
+---
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+<p align="center">
+  <i>Made with ☕ and existential dread</i>
+</p>

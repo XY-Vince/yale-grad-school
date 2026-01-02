@@ -1,0 +1,83 @@
+# Changelog
+
+All notable changes to GradQuest are documented here.
+
+## [2.0.0] - 2026-01-02
+
+### Added
+- Professional README with badges and architecture diagram
+- CONTRIBUTING.md with contribution guidelines
+- CHANGELOG.md (this file)
+- Pipeline visualizer in UI
+- Enhanced stats display
+
+### Changed
+- README completely rewritten for clarity
+
+---
+
+## [1.9.0] - 2026-01-02
+
+### Added
+- Load button in-game (next to Save)
+- Typewriter effect for messages
+
+### Changed
+- "35% idea" → "May inspire ideas"
+- "Work on Figures" → "Document Findings"
+- Papers display: removed "/3"
+- Quals prep: removed progress fraction
+- Conference limit: 1 in Year 1, 3 after
+
+---
+
+## [1.8.0] - 2026-01-01
+
+### Added
+- Paper submission delay (3-6 months wait)
+- Pending papers display
+- Diverse message variants for actions
+
+### Changed
+- "Slack Off" → "Take a Break"  
+- "Preliminary Result" → "Initial Findings"
+- "Major Result" → "Key Discovery"
+
+---
+
+## [1.7.0] - 2026-01-01
+
+### Added
+- Help button with game mechanics modal
+- Shareable seed URLs (?seed=X)
+- Morale boost on successful actions
+
+---
+
+## [1.6.0] - 2026-01-01
+
+### Added
+- pytest suite with automated tests
+- Save/Load to browser localStorage
+- Load button on start screen
+
+---
+
+## [1.5.0] - 2025-12-31
+
+### Fixed
+- Equipment repair bug (now guaranteed within 3 months)
+
+### Added
+- Total months counter
+- Advisor happiness bar
+
+---
+
+## [1.0.0] - 2025-12-30
+
+### Added
+- Initial release
+- Core engine port from TypeScript PhD Simulator
+- Full research pipeline
+- CLI and web interfaces

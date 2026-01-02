@@ -194,3 +194,47 @@ remove the "/3" in papers, just keep the count
 there's only "save" but no "load"
 repharase "work on figures" as it's kinda narrow
 "Latest Event" updates too fast, change to typing style
+
+
+V2.0
+To transition GradQuest from a functional prototype into a credible software artifact, we must bridge the gap between your modular Python backend and the user-facing experience. The "hard truth" is that while the engine is capable, the lack of transparency in the Research Pipeline and the absence of professional repository standards (documentation, CI/CD, community guides) limit its impact.
+I. Consolidated Critical Observations
+Based on the project's current state on GitHub and the underlying logic of the PhD Simulator:
+The "Invisible" Engine: The UI obscures the complex state machine (Paper Pipeline, Advisor Happiness, and absolute month counts) required to win.
+Documentation Void: The lack of a comprehensive README, CONTRIBUTING.md, and Roadmap makes the project appear "unmaintained" to outsiders.
+Mechanical Mismatch: There is a disconnect between UI terminology (e.g., "Morale") and the original engine's variables (e.g., player.hope), which can break event triggers.
+Quality Assurance: The project lacks visible test coverage and automated CI (GitHub Actions), which is essential for a modular Python project.
+II. Ranked Action Plan for Revision
+🔥 Phase 1: Professionalization & Visibility (Immediate)
+Goal: Treat the project like a "software artifact" rather than a hobby script.
+README Overhaul: Include a clear value proposition, architectural diagram (Core Engine vs. GUI), and high-quality screenshots or GIFs of the gameplay.
+Repository Standards: Add CONTRIBUTING.md, issue templates, and CHANGELOG.md. Use Conventional Commits (e.g., feat:, fix:) for all future updates.
+CI/CD Integration: Set up GitHub Actions to run Python tests on every push. Add status badges to the README to signal build health.
+Tagging: Create a formal semantic version release (e.g., v0.1.0-alpha).
+⚙️ Phase 2: Mechanical Fidelity & UI Transparency (1–2 Weeks)
+Goal: Align the web UI with the "Research Pipeline" and "Advisor" logic from the source.
+Pipeline Visualizer: Replace the generic inventory list with a linear stepper: Idea $\rightarrow$ Preliminary $\rightarrow$ Major Result $\rightarrow$ Figures (0/3) $\rightarrow$ Submit.
+Status Mapping: Ensure UI "Morale" maps exactly to player.hope in the VariableStore.
+The "Advisor" Bar: Add a dedicated Advisor Happiness meter. Low satisfaction should visually trigger the unhappyAdvisor status penalty.
+Contextual Actions: Greyscale or disable buttons based on status (e.g., Disable "Generate Figures" if Brokenequipment is active).
+🚀 Phase 3: North American Extensions (Long-term)
+Goal: Implement your modular vision for MS/PhD transitions and financial survival.
+Financial Ruleset: Load an optional north_america.yaml that introduces player.money and player.debt variables.
+The MS Pivot: Create a starting state where the player must earn 30 credits (Stage 1) before triggering the "PhD Application" event (Stage 2).
+Opportunity Cost Display: Add a UI element showing "Projected Industry Wealth Lost" to emphasize the "frustrating realism" of the simulation.
+III. Proposed Revised Roadmap (ROADMAP.md)
+Milestone
+Deliverables
+Target
+v0.2.0 (The Faithful Port)
+Full Research Pipeline UI; Advisor Relationship meter; Logic-mapped Morale.
+Next Week
+v0.3.0 (The Robust Engine)
+Safe Expression Parser (AST); GitHub Actions CI; 80% test coverage.
+2 Weeks
+v0.4.0 (US Grad Life)
+Finance Module; MS track; Opportunity Cost tracker.
+1 Month
+v1.0.0 (The AI Integration)
+LLM-generated event descriptions based on player state.
+TBD
