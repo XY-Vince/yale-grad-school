@@ -388,6 +388,11 @@
                         <div class="stat-label">📰 Papers</div>
                         <div class="stat-value"><span id="papers">0</span></div>
                     </div>
+                    <!-- V2.2 Pro: Peer Network -->
+                    <div class="stat-card">
+                        <div class="stat-label">🤝 Network</div>
+                        <div class="stat-value"><span id="peer-network">10</span></div>
+                    </div>
                 </div>
 
                 <div class="event-panel">
@@ -521,9 +526,21 @@
                     endState: null,
                     conferencesThisYear: 0,
                     pendingPapers: [],
-                    // V3.0: Teaching duty
+                    // V2.1: Teaching duty
                     isTeaching: false,
-                    teachingMonths: 0
+                    teachingMonths: 0,
+                    // V2.2 Pro: Advisor profiling
+                    advisor: {
+                        riskTolerance: 30 + Math.floor(Math.random() * 40),  // 30-70
+                        attentionSpan: 30 + Math.floor(Math.random() * 40),  // 30-70
+                        strictness: 30 + Math.floor(Math.random() * 40)       // 30-70
+                    },
+                    // V2.2 Pro: Peer network and strategic alignment
+                    peerNetwork: 10,
+                    strategicAlignment: 0,
+                    // V2.2 Pro: Track pending by type
+                    pendingConference: [],
+                    msOutOffered: false
                 };
             },
 
@@ -826,6 +843,32 @@
                     }
                 }
 
+                // V2.2 Pro: Process pending conference papers (4 month review)
+                if (s.pendingConference && s.pendingConference.length > 0) {
+                    for (let i = s.pendingConference.length - 1; i >= 0; i--) {
+                        const conf = s.pendingConference[i];
+                        const wait = s.totalMonths - conf.submitted;
+                        if (wait >= 4) {
+                            s.pendingConference.splice(i, 1);
+                            const confAccept = 0.6 + (s.strategicAlignment * 0.002); // 60% base + alignment bonus
+                            if (this.random() < confAccept) {
+                                s.peerNetwork = Math.min(100, s.peerNetwork + 15);
+                                s.morale = Math.min(100, s.morale + 8);
+                                this.appendMessage('📋 CONFERENCE ACCEPTED! (+15 peer network, +8 morale)');
+                            } else {
+                                this.addItem('rejected_paper'); // Can revise for journal
+                                this.appendMessage('📋 Conference rejected. Consider revising for journal submission.');
+                            }
+                        }
+                    }
+                }
+
+                // V2.2 Pro: MS-Out trigger (morale < 20, year >= 2, not already offered)
+                if (s.morale < 20 && s.year >= 2 && !s.msOutOffered) {
+                    s.msOutOffered = true;
+                    this.appendMessage('🤔 Your advisor notices your struggle. "Have you considered the Master\'s exit?"');
+                }
+
                 this.updateUI();
             },
 
@@ -903,6 +946,11 @@
 
                 actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest and recover' });
 
+                // V2.2 Pro: Pitch Session (always available after first year)
+                if (!s.statuses.has('firstYear')) {
+                    actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: 'Get advisor feedback on ideas' });
+                }
+
                 // V1.9: Conference limited - 1 first year, 3 after
                 const maxConf = s.year === 1 ? 1 : 3;
                 const confLeft = maxConf - (s.conferencesThisYear || 0);
@@ -910,9 +958,24 @@
                     actions.push({ id: 'conference', name: '🎤 Conference', desc: 'May inspire ideas<br><small>(' + confLeft + ' this year)</small>' });
                 }
 
+                // V2.2 Pro: Conference paper submission (if has figures but want quick publish)
+                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
+                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (4mo, +network)' });
+                }
+
+                // V2.2 Pro: Show pending conference papers
+                if (s.pendingConference && s.pendingConference.length > 0) {
+                    actions.push({ id: 'pending_conf', name: '📋 Pending Conf', desc: s.pendingConference.length + ' under review', disabled: true });
+                }
+
                 // Qual prep
                 if ((s.year === 1) || (s.year === 2 && s.month < 9)) {
                     actions.push({ id: 'quals', name: '📖 Prep for Quals', desc: 'Study for exam' });
+                }
+
+                // V2.2 Pro: MS-Out option (when offered)
+                if (s.msOutOffered && s.morale < 30) {
+                    actions.push({ id: 'ms_out', name: '🚪 Master\'s Exit', desc: 'Leave with MS degree' });
                 }
 
                 actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Skip to next month' });
@@ -1077,6 +1140,46 @@
                     case 'advance':
                         msg = 'Time passes...';
                         break;
+
+                    // V2.2 Pro: Pitch Session
+                    case 'pitch':
+                        const adv = s.advisor;
+                        const pitchMsgs = [];
+                        if (adv.riskTolerance > 55) {
+                            pitchMsgs.push('💬 "I like bold ideas - what\'s your craziest hypothesis?"');
+                            s.strategicAlignment += 2;
+                        } else if (adv.riskTolerance < 45) {
+                            pitchMsgs.push('💬 "Let\'s stick to proven methods for now..."');
+                        }
+                        if (adv.strictness > 55) {
+                            pitchMsgs.push('💬 "Every comma matters. Polish before showing me."');
+                        } else if (adv.strictness < 45) {
+                            pitchMsgs.push('💬 "Don\'t worry about perfection, show me progress!"');
+                        }
+                        if (adv.attentionSpan > 55) {
+                            pitchMsgs.push('💬 "Send it over, I\'ll review tonight."');
+                        } else if (adv.attentionSpan < 45) {
+                            pitchMsgs.push('💬 "I\'ll get to it when I can... busy month."');
+                        }
+                        msg = pitchMsgs.length > 0 ? this.pick(pitchMsgs) : '💬 Your advisor nods thoughtfully.';
+                        s.peerNetwork = Math.min(100, s.peerNetwork + 3);
+                        msg += '\n+3 peer network (learned advisor style)';
+                        break;
+
+                    // V2.2 Pro: Conference Paper (quick publish track)
+                    case 'conf_paper':
+                        this.removeItem('key_discovery');
+                        delete this.state.items['figure'];
+                        s.pendingConference.push({ submitted: s.totalMonths });
+                        msg = '📋 Conference paper submitted! (4 month review)';
+                        break;
+
+                    // V2.2 Pro: MS-Out (Master's exit)
+                    case 'ms_out':
+                        const profile = s.peerNetwork > 60 ? 'Industry R&D Lead' :
+                            this.getItem('paper') >= 2 ? 'Data Scientist' : 'The Great Escape';
+                        this.endGame(true, 'ms_out', 'You left with a Master\'s degree as: ' + profile);
+                        return;
                 }
 
                 this.showMessage(msg);
@@ -1126,6 +1229,8 @@
                 document.getElementById('date').textContent = `${this.months[s.month]}, Year ${s.year}`;
                 document.getElementById('total-months').textContent = s.totalMonths;
                 document.getElementById('papers').textContent = this.getItem('paper');
+                // V2.2 Pro: Peer Network
+                document.getElementById('peer-network').textContent = s.peerNetwork || 10;
 
                 // V2.0.1: Morale as descriptive text
                 const moraleBar = document.getElementById('morale-bar');

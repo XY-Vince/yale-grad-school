@@ -2,6 +2,23 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.2.0 Pro] - 2026-01-02
+
+### Added
+- **Advisor Profiling**: Hidden traits (Risk Tolerance, Attention Span, Strictness) affect outcomes
+- **Peer Network Stat**: Build connections through pitches and conferences
+- **Pitch Session Action**: Get advisor feedback, learn their preferences (+network)
+- **Conference Paper Track**: Quick publish (4mo, 60%, +15 network) vs Journal (8-12mo, graduation)
+- **MS-Out Strategic Exit**: Master's ending with 3 profiles (R&D Lead, Data Scientist, Great Escape)
+- **Strategic Alignment**: Hidden stat that buffers morale loss and improves outcomes
+
+### Changed
+- Conference paper success increases with strategic alignment
+- MS-Out appears when morale < 20 and year >= 2
+- Network stat displayed in UI
+
+---
+
 ## [2.1.0] - 2026-01-02
 
 ### Added
@@ -17,8 +34,6 @@ All notable changes to GradQuest are documented here.
 - Paper acceptance rate: 50% new, 70% revision
 
 ---
-
-## [2.0.0] - 2026-01-02
 
 ### Added
 - Professional README with badges and architecture diagram

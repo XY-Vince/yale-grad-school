@@ -238,3 +238,220 @@ Finance Module; MS track; Opportunity Cost tracker.
 v1.0.0 (The AI Integration)
 LLM-generated event descriptions based on player state.
 TBD
+
+V2.11
+This integrated action plan synthesizes the best ideas into a **Modular Realism Expansion**. The goal is to evolve **GradQuest** from an RNG-heavy parody into a "Resilience Simulator" where player agency balances out academic chaos.
+
+---
+
+### Phase 1: The Core Logic & Variable Update
+
+Before adding events, we must expand the `VariableStore` to support these new systems without bloating the UI.
+
+* **Advisor Profiling**: Introduce three hidden/semi-visible traits: `RiskTolerance`, `AttentionSpan`, and `Strictness`. These act as multipliers for all feedback and submission outcomes.
+* **The "Peer Network" Variable**: A `peer.network` stat (0-100) that unlocks better "Internal Review" outcomes and collaboration events.
+* **Sub-Status Items**: Add `Polished` (from advisor review) and `Revising` (active journal state) to items to track paper quality.
+
+---
+
+### Phase 2: Advisor Interaction (The Stochastic Gatekeeper)
+
+Instead of a simple "Happiness" bar, the advisor becomes a source of **Signal vs. Noise**.
+
+* **The "Pitch Session" Action**: Costs 1 turn.
+* **Outcome**: Returns a signal: "Promising but premature" or "Too incremental".
+* **Mechanical Impact**: A "Good Pitch" adds a hidden +15% success multiplier to the `Preliminary Result` stage of that specific project.
+
+
+* **Revision Cycles**: When submitting to a Journal, the outcome isn't binary.
+* **Major Revision (Reviewer #2)**: -15 Morale, +3 months delay, but +25% final acceptance chance if you "Resubmit".
+
+
+* **The "Pester" Trade-off**: You can "Ask for Update" if the advisor sits on a draft.
+* **Low Attention Advisor**: 50% chance they finish review, 50% chance `Advisor Mood: Irritated`.
+
+
+
+---
+
+### Phase 3: The Dual Publication Track
+
+Differentiating these tracks forces players to choose between **Survival (Conferences)** and **Graduation (Journals)**.
+
+| Track | Timing | Success Rate | Primary Reward |
+| --- | --- | --- | --- |
+| **Conference** | 4 Months | 60% | `peer.network` + `Hope` boost. |
+| **Journal** | 12+ Months | 30% | `Graduation Credit` + `Prestige`. |
+
+* **The "Conference-to-Journal" Pipeline**: A rejected Conference paper can be resubmitted as a Journal paper with a `Polished` buff, simulating the real-world expansion of conference proceedings.
+
+---
+
+### Phase 4: Social Dynamics (Lab Archetypes)
+
+Avoid simulating individual NPCs. Use **Archetypes** to create a "Lab Atmosphere".
+
+* **Lab Archetype Events**: Every year, your lab "rolls" for 2 archetypes:
+* **The Overachiever**: +5% research speed for everyone, but -1 morale/month due to comparison.
+* **The Burnout**: Chance to trigger "Commiseration" events (Hope boost, but research penalty).
+
+
+* **Collaborative Credit**: High `peer.network` triggers a "Co-author Offer." You get 0.5 Graduation Credits for half the work time.
+
+---
+
+### Phase 5: The "MS Out" Strategic Exit
+
+This is no longer a "Game Over," but a **Branching Ending**.
+
+* **The Prompt**: Triggered if `Hope < 20` and `Year >= 2`.
+* **Exit Profiles**: Your ending text depends on what you've done:
+* **High Network + MS**: "Industry R&D Lead".
+* **High Papers + MS**: "Data Scientist/Consultant".
+* **Low Everything + MS**: "The Great Escape" (High Morale recovery, low wealth).
+
+
+* **Opportunity Cost**: The UI displays the "Industry Salary" you are currently earning in the MS ending, contrasting it with your current PhD stipend.
+
+---
+
+### Phase 6: Flavored RNG & Seasons
+
+Small, non-cumbersome events to keep the "academic vibe" alive.
+
+* **Imposter Syndrome**: Random monthly chance to lose 8% Morale with "flavored messages" (e.g., "Everyone else seems to know what they're doing").
+* **The "Scoop"**: 3% annual chance a `Major Result` is invalidated by another lab's publication. Devastating but realistic.
+* **Teaching Duty (TA)**: Recurring status in Fall/Spring that consumes 10% of your research time.
+
+---
+
+### Implementation Priority (The 80/20 Rule)
+
+1. **High Impact/Low Effort**: MS Out branch + Advisor signal feedback.
+2. **Medium Impact**: Dual Conference/Journal tracks + Revision cycles.
+3. **Flavor/Refinement**: Lab archetypes + Imposter Syndrome.
+
+
+**V2.2 Strategic Revision Plan** 
+reflects a shift from a "burnout simulator" to an **adaptive resilience engine**. Based on the latest critiques, we are moving away from punitive, opaque mechanics toward a system where every challenge unlocks a new form of agency.
+
+---
+
+### I. Updated Strategic Revision Plan
+
+#### 1. Adaptive Competence & Meta-Skills
+
+To ensure resilience is "earned," we introduce a hidden **Strategic Alignment** meta-skill.
+
+* **Mechanic**: Consistently choosing actions that align with the Advisor’s profile (e.g., pitching exploratory ideas to a High-Risk advisor) increases this skill.
+* **Benefit**: Higher alignment acts as a "buffering" stat, reducing morale loss from future rejections and narrowing RNG variance in the research pipeline.
+
+#### 2. Advisor Profiling: From Opacity to Inference
+
+Advisor traits (Risk Tolerance, Attention Span, Strictness) are no longer purely hidden.
+
+* **Weak Signals**: Players receive behavioral cues:
+* **Attention Span**: Reflected in "Response Delay" (High = instant feedback; Low = 1–2 month wait).
+* **Strictness**: Reflected in "Feedback Tone" (High = blunt/critical; Low = encouraging).
+
+
+* **Soft Reveal**: After three meetings, the UI displays a narrative summary: *"Your advisor seems impatient with exploratory ideas"*.
+
+#### 3. Threshold-Gated Social Dynamics
+
+To prevent `peer.network` from becoming a "god stat," its effects are now gated by specific thresholds.
+
+* **Level 60**: Unlocks "Collaboration" actions.
+* **Level 80**: Provides "Scoop Protection" (lab-mates alert you to competitors).
+* **Functionality Split**: Interaction with peers now specifically influences **Access** (tools, data) while reputation with the advisor influences **Credibility** (funding, defense).
+
+#### 4. The Non-Linear Pipeline & Revision Loops
+
+The Research Pipeline UI now accounts for academic regression.
+
+* **Backward Transitions**: A "Major Result" can regress to "Preliminary" if a fatal flaw is found during the "Polish" phase.
+* **Variance-Based Polishing**: The "Polish" action no longer provides a flat success boost. Instead, it **reduces the RNG spread**, ensuring that a high-quality paper is less likely to receive a "Desk Reject" even if it isn't "Accepted" immediately.
+
+#### 5. Strategic Exit (MS-Out) as Optimization
+
+MS-out is reframed as **Conditional Optimization**.
+
+* **Stay Option**: Players with low morale can choose to "Stay Despite Low Morale," which grants a temporary "Grit" buff but increases the rate of health/morale decay in later years.
+* **Reapply Buff**: The +20% reapplication boost is replaced with **Path-Dependent Buffs**. A player only gets a boost if they have "Industry Experience" or "Gap-Year Publications".
+
+#### 6. Contextualized Opportunity Cost
+
+The Opportunity Cost tracker is now **toggleable** and **field-specific**.
+
+* **Asymptotic Drain**: Morale drain from lost salary is no longer linear; it levels off over time as the player "accepts" their academic path.
+* **Field Presets**: The benchmark industry salary is determined by the field selected at the start (e.g., CS vs. Humanities).
+
+---
+
+### II. YAML Template: Advisor Profile Randomization
+
+This template defines the logic for generating the advisor's hidden traits and their associated "Weak Signals."
+
+```yaml
+# rulesets/default/advisor_profiles.yaml
+
+advisor_generator:
+  traits:
+    - id: risk_tolerance
+      range: [0, 100]
+      description: "Affects acceptance of exploratory/high-risk ideas."
+      impact:
+        high: "Increases success of 'Moonshot Pitch'; decreases success of 'Safe Method'."
+        low: "Hard-blocks 'Radical Idea' items; favors 'Incremental Progress'."
+
+    - id: attention_span
+      range: [0, 100]
+      description: "Determines response delay and feedback depth."
+      signals:
+        high: { delay: 0, tone: "detailed" }
+        low: { delay: 2, tone: "terse" }
+
+    - id: strictness
+      range: [0, 100]
+      description: "Influences the probability of 'Major Revision' vs 'Accept'."
+      impact:
+        multiplier: "strictness * 0.01" # Applied to Revision RNG
+
+# Pre-set Field Archetypes
+field_presets:
+  - id: computer_science
+    bias:
+      risk_tolerance: [50, 90]   # CS favors rapid, innovative shifts
+      strictness: [30, 60]       # Focus on conference speed
+  - id: biomedical_science
+    bias:
+      risk_tolerance: [10, 40]   # High cost of failure; cautious
+      strictness: [70, 95]       # High barrier for journal publication
+
+# Narrative Signal Engine
+signals:
+  - condition: "advisor.attention_span < 30"
+    message: "Your email has been unread for two weeks. Your advisor seems absent."
+  - condition: "advisor.strictness > 80"
+    message: "Your advisor's feedback is covered in red ink. Every comma is scrutinized."
+  - condition: "advisor.risk_tolerance > 70"
+    message: "Your advisor gets excited by 'disruptive' terminology in your pitch."
+
+# Inference Logic (Soft Reveal)
+inference_triggers:
+  - count: 3
+    event: "soft_reveal_traits"
+    actions:
+      - id: DisplayMessage
+        text: "Based on your meetings, you suspect your advisor favors {{ 'safe results' if advisor.risk_tolerance < 40 else 'bold ideas' }}."
+
+```
+
+---
+
+### III. Next Steps
+
+Based on this plan, please:
+
+1. **Draft the "Strategic Alignment" Logic**: Define exactly how matching an advisor's trait with an action type (e.g., Pitching a High-Risk Idea) contributes to the meta-skill.
+2. **Design the "Path-Dependent" Endings**: Map specific MS-out outcomes to the "Industry Experience" and "Network" variables for the reapplication epilogue.
