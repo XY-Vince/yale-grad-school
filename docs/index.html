@@ -1058,9 +1058,6 @@
                         actions.push({ id: 'work_figures', name: '📊 Document Findings', desc: `Figures: ${figures}/3` });
                     }
                 }
-                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
-                    actions.push({ id: 'write_paper', name: '📝 Write Paper', desc: 'Submit for review' });
-                }
                 if (this.getItem('rejected_paper') > 0) {
                     actions.push({ id: 'revise', name: '✏️ Revise Paper', desc: 'Revise and resubmit' });
                 }
@@ -1092,6 +1089,7 @@
                 // V2.2 Pro: Conference paper submission (if has figures but want quick publish)
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
                     actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (4mo, +network)' });
+                    actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (8-12mo)' });
                 }
 
                 // V2.2 Pro: Show pending conference papers
