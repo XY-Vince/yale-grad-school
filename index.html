@@ -924,13 +924,28 @@
                 document.getElementById('game-screen').style.display = 'none';
                 document.getElementById('end-screen').style.display = 'block';
                 document.getElementById('end-screen').className = `end-screen panel ${won ? 'won' : 'lost'}`;
-                document.getElementById('end-title').textContent = won ? '🎓🎉 Congratulations, Doctor! 🎉🎓' : '💔 Game Over 💔';
-                document.getElementById('end-message').textContent = won ? 'Congratulations, you have earned your PhD!' : message;
+
+                // V2.2 Pro: Different messages for MS-Out vs PhD
+                let title, endMessage;
+                if (reason === 'ms_out') {
+                    title = '🎓 Master\'s Degree Earned! 🎓';
+                    endMessage = message;
+                } else if (won) {
+                    title = '🎓🎉 Congratulations, Doctor! 🎉🎓';
+                    endMessage = 'You have defended your thesis and earned your PhD!';
+                } else {
+                    title = '💔 Game Over 💔';
+                    endMessage = message;
+                }
+
+                document.getElementById('end-title').textContent = title;
+                document.getElementById('end-message').textContent = endMessage;
                 document.getElementById('end-stats').innerHTML = `
                 <p style="color: var(--text-secondary);">
                     Months elapsed: ${this.state.totalMonths}<br>
                     Papers published: ${this.getItem('paper')}<br>
-                    Final morale: ${this.state.morale}%
+                    Final morale: ${this.state.morale}%<br>
+                    Peer Network: ${this.state.peerNetwork || 0}
                 </p>
             `;
             },
