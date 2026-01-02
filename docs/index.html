@@ -436,6 +436,10 @@
                                 style="flex: 1; padding: 6px;">
                                 <div class="action-name" style="font-size: 0.85rem;">🎲 Seed</div>
                             </button>
+                            <button class="action-btn save-btn" onclick="game.showHistory()"
+                                style="flex: 1; padding: 6px;">
+                                <div class="action-name" style="font-size: 0.85rem;">📜 History</div>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -460,6 +464,13 @@
                 <button class="modal-btn primary" onclick="game.thesisDefend()">🎓 Defend Thesis</button>
                 <button class="modal-btn secondary" onclick="game.thesisStay()">📖 Stay for Research</button>
             </div>
+        </div>
+    </div>
+
+    <!-- V2.2: History Modal -->
+    <div class="modal-overlay" id="history-modal">
+        <div class="modal" style="max-width: 550px; text-align: left;">
+            <div id="history-modal-content"></div>
         </div>
     </div>
 
@@ -566,7 +577,9 @@
                     strategicAlignment: 0,
                     // V2.2 Pro: Track pending by type
                     pendingConference: [],
-                    msOutOffered: false
+                    msOutOffered: false,
+                    // V2.2: Event log for history
+                    eventLog: []
                 };
             },
 
@@ -696,6 +709,10 @@
                     el.textContent += msg[i++];
                     if (i >= msg.length) clearInterval(this.typeTimer);
                 }, 15);
+                // V2.2: Log to event history
+                if (this.state && this.state.eventLog) {
+                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg });
+                }
             },
 
             // Append message
@@ -710,6 +727,32 @@
                     el.textContent = current + '\n\n' + msg.slice(0, ++i);
                     if (i >= msg.length) clearInterval(this.typeTimer);
                 }, 15);
+                // V2.2: Log to event history
+                if (this.state && this.state.eventLog) {
+                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg });
+                }
+            },
+
+            // V2.2: Show event history modal
+            showHistory() {
+                const log = this.state.eventLog || [];
+                const last20 = log.slice(-20).reverse();
+                let html = '<h3 style="margin-bottom: 12px;">📜 Event History (Recent 20)</h3>';
+                html += '<div style="max-height: 400px; overflow-y: auto; font-size: 0.85rem; line-height: 1.6;">';
+                if (last20.length === 0) {
+                    html += '<p style="color: var(--text-secondary);">No events yet.</p>';
+                } else {
+                    last20.forEach(e => {
+                        html += `<p style="margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px;"><strong>Month ${e.month}:</strong> ${e.text.replace(/\n/g, '<br>')}</p>`;
+                    });
+                }
+                html += '</div><button class="modal-btn primary" onclick="game.hideHistory()" style="margin-top: 16px;">Close</button>';
+                document.getElementById('history-modal-content').innerHTML = html;
+                document.getElementById('history-modal').classList.add('active');
+            },
+
+            hideHistory() {
+                document.getElementById('history-modal').classList.remove('active');
             },
 
             // Advance month
