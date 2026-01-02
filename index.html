@@ -358,6 +358,7 @@
                 <button class="start-btn" onclick="game.start()">🚀 Start PhD Journey</button>
                 <button class="start-btn secondary" id="load-btn" onclick="game.load()" style="display: none;">💾 Load
                     Game</button>
+                <button class="start-btn secondary" onclick="game.showHelp()">❓ Help</button>
             </div>
 
             <!-- Game Screen -->
@@ -438,6 +439,29 @@
         </div>
     </div>
 
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="help-modal">
+        <div class="modal" style="max-width: 550px; text-align: left;">
+            <h2 style="text-align: center;">❓ How to Play</h2>
+            <div style="margin-top: 16px; line-height: 1.8;">
+                <p><strong>Goal:</strong> Publish 3 papers and defend your thesis!</p>
+                <p style="margin-top: 12px;"><strong>Research Pipeline:</strong></p>
+                <p>📚 Read Papers → 💡 Idea → 🔬 Preliminary → 📊 Major Result</p>
+                <p>📊 Create 3 Figures → 📝 Write Paper → 🎓 Thesis</p>
+                <p style="margin-top: 12px;"><strong>Tips:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Keep morale above 0 or you'll drop out!</li>
+                    <li>Prepare for quals before September Year 2</li>
+                    <li>Slack off to recover morale (but advisor may notice!)</li>
+                    <li>Conferences give ideas + morale boost</li>
+                </ul>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn primary" onclick="game.hideHelp()">Got it!</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // GradQuest - Pure JavaScript Game Engine
         const game = {
@@ -445,6 +469,19 @@
 
             // Month names
             months: ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+
+            // V1.7: Seed for reproducible randomness
+            seed: null,
+            seedState: null,
+
+            // V1.7: Seeded random number generator
+            random() {
+                if (!this.seedState) {
+                    this.seedState = this.seed || Math.floor(Math.random() * 999999);
+                }
+                this.seedState = (this.seedState * 1103515245 + 12345) & 0x7fffffff;
+                return (this.seedState / 0x7fffffff);
+            },
 
             // Initialize new game state
             initState() {
@@ -472,8 +509,14 @@
 
             // Start new game
             start() {
+                // V1.7: Check for seed in URL
+                const urlParams = new URLSearchParams(window.location.search);
+                this.seed = urlParams.get('seed') ? parseInt(urlParams.get('seed')) : Math.floor(Math.random() * 999999);
+                this.seedState = this.seed;
+
                 this.state = this.initState();
-                this.showMessage("🎓 Welcome to your PhD program!\n\nYou start in September. Your goal: publish 3 papers and defend your thesis.\n\nGood luck!");
+                const shareLink = `${window.location.origin}${window.location.pathname}?seed=${this.seed}`;
+                this.showMessage(`🎓 Welcome to your PhD program!\n\nYou start in September. Your goal: publish 3 papers and defend your thesis.\n\n🌱 Seed: ${this.seed}\n🔗 Share: ${shareLink}`);
                 document.getElementById('start-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'block';
                 this.updateUI();
@@ -649,10 +692,10 @@
                 document.getElementById('end-screen').style.display = 'block';
                 document.getElementById('end-screen').className = `end-screen panel ${won ? 'won' : 'lost'}`;
                 document.getElementById('end-title').textContent = won ? '🎓🎉 Congratulations, Doctor! 🎉🎓' : '💔 Game Over 💔';
-                document.getElementById('end-message').textContent = message;
+                document.getElementById('end-message').textContent = won ? 'Congratulations, you have earned your PhD!' : message;
                 document.getElementById('end-stats').innerHTML = `
                 <p style="color: var(--text-secondary);">
-                    Years in program: ${this.state.year}<br>
+                    Months elapsed: ${this.state.totalMonths}<br>
                     Papers published: ${this.getItem('paper')}<br>
                     Final morale: ${this.state.morale}%
                 </p>
@@ -728,7 +771,8 @@
                         if (this.random() < 0.45) {
                             this.removeItem('idea');
                             this.addItem('preliminary_result');
-                            msg = '🎉 Success! You\'ve made a Preliminary Result!';
+                            s.morale = Math.min(100, s.morale + 5);
+                            msg = '🎉 Success! You\'ve made a Preliminary Result! (+5 morale)';
                         } else {
                             msg = '😔 You worked hard but didn\'t make progress...';
                         }
@@ -738,7 +782,8 @@
                         if (this.random() < 0.35) {
                             this.removeItem('preliminary_result');
                             this.addItem('major_result');
-                            msg = '🎉 Success! You\'ve made a Major Result!';
+                            s.morale = Math.min(100, s.morale + 5);
+                            msg = '🎉 Success! You\'ve made a Major Result! (+5 morale)';
                         } else {
                             msg = '😔 You worked hard but didn\'t make progress...';
                         }
@@ -747,7 +792,8 @@
                     case 'work_figures':
                         if (this.random() < 0.6) {
                             this.addItem('figure');
-                            msg = `📊 You created a figure! (${this.getItem('figure')}/3 needed)`;
+                            s.morale = Math.min(100, s.morale + 3);
+                            msg = `📊 You created a figure! (${this.getItem('figure')}/3 needed) (+3 morale)`;
                         } else {
                             msg = '😔 The figures didn\'t come out right...';
                         }
@@ -847,7 +893,16 @@
                 } else {
                     this.showMessage('😅 The defense was rough, but you passed with major revisions!');
                 }
-                this.endGame(true, 'graduation', 'You are now Dr. You!');
+                this.endGame(true, 'graduation', 'Congratulations, you have earned your PhD!');
+            },
+
+            // V1.7: Help modal
+            showHelp() {
+                document.getElementById('help-modal').classList.add('active');
+            },
+
+            hideHelp() {
+                document.getElementById('help-modal').classList.remove('active');
             },
 
             thesisStay() {

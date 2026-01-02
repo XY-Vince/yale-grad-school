@@ -155,3 +155,20 @@ YAML Integration: Extend GameEvent schema:YAML- id: publish_paper
       value: advisor.score + 15  # Or expression: min(100, advisor.score + 15)
 Random/Choice Variety: For events like conferences, score delta could RNG (e.g., +5-15) or choice-based (e.g., "Network with advisor's peers: +10 score but -morale").
 Testing: Sim runs to ensure average score ~60-70 for balanced play; low score increases dropout risk (e.g., via hope decay).
+
+V1.7
+1. HTML deployment 
+2. change"You are now Dr. You!" to the original version
+3. change "Years in program" to "months elapsed"
+4. any successful events should boost morale
+5. add:Seed The seed for the current timeline is XXX. Shareable link:
+6. add:Help button, click to show the game's help
+
+General Recommendations
+Priority,Suggestion,Rationale/Details
+High,Polish Docs Site,"Build on new index.html: Add sections from README (e.g., mechanics flowchart, YAML mod guide). Embed web UI as playable demo (iframe run_web.py output). Use MkDocs for auto-gen from MD files—quick, keeps it lightweight."
+High,Release V1.7 Properly,"Cut a GitHub Release with binaries (e.g., zipped CLI/web), changelog from IMPLEMENTATION_PLAN.md. Add badges (e.g., pytest passing) to README."
+Medium,Light Testing Expansion,"Add pytest for sim runs (e.g., 100 games: check avg years ~5-6, win rate 20-30%). Log to CSV (pandas optional) for balance insights."
+Medium,Advisor Scoring as Minimal Add,"Per prior: Add subtle score var (0-100) in YAML (e.g., +15 paper, -5 slack) with thresholds (e.g., <50: -morale/month). Test in V1.7 as optional ruleset."
+Low,Outreach Tweaks,"Post to Reddit (r/gamedev, r/academia) or itch.io for feedback. Add CONTRIBUTING.md for mods (e.g., ""Submit YAML rulesets!"")."
+Low,LLM First Steps,"Demo in README: Env var setup for simple AI (e.g., GPT-4 generates random event messages). Gate as experimental."
