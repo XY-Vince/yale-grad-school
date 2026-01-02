@@ -184,3 +184,13 @@ c. other interactions (e.g.,paperrejection, advisor's mood, advisor's availabili
 5. the responses to actions (e.g., read papers, developing an idea, prepare for qual, etc.) should be more diverse
 6. completely change the wording of "preliminary results" and "major results"
 7. set a delay of 2-5 months (mean 3 months) between submitting an paper and getting results (rejects come in 1-2 months)
+
+V1.9
+in general: make things slightly harder
+don't be too specific on the time durations, are they are always implicit
+remove the " (2-5 months)" " (1-3 months)"
+rephrase "35% idea"
+remove the "/3" in papers, just keep the count
+there's only "save" but no "load"
+repharase "work on figures" as it's kinda narrow
+"Latest Event" updates too fast, change to typing style
