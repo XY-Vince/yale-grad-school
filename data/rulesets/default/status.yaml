@@ -1,0 +1,89 @@
+# GradQuest Default Ruleset - Status Effects
+# Buffs and debuffs affecting the player
+
+- id: firstYear
+  name: First Year Student
+  description: The excitement of being new carries you forward
+  duration: 12
+  icon: "🌟"
+  modifiers:
+    - attribute: player.hopeRegen
+      value: 1
+      operation: add
+
+- id: exhaustion
+  name: Exhausted
+  description: You're running on empty
+  duration: Infinity
+  icon: "😫"
+  modifiers:
+    - attribute: player.hopeRegen
+      value: -5
+      operation: add
+
+- id: unhappyAdvisor
+  name: Unhappy Advisor
+  description: Your advisor is disappointed in your progress
+  duration: Infinity
+  icon: "😠"
+  modifiers:
+    - attribute: player.hopeRegen
+      value: -5
+      operation: add
+
+- id: lateYearAnxiety
+  name: Late Year Anxiety
+  description: The pressure of getting older in the program
+  duration: Infinity
+  icon: "😰"
+  modifiers:
+    - attribute: player.hopeRegen
+      value: -1
+      operation: add
+
+- id: brokenEquipment
+  name: Broken Equipment
+  description: Lab equipment is down, blocking experimental work
+  duration: 1
+  icon: "🔧"
+  modifiers:
+    - attribute: player.experimentBoost
+      value: -1
+      operation: add
+
+- id: upgradedEquipment
+  name: Upgraded Equipment
+  description: State-of-the-art lab equipment
+  duration: Infinity
+  icon: "🔬"
+  modifiers:
+    - attribute: player.experimentBoost
+      value: 0.3
+      operation: add
+
+- id: cloudStorage
+  name: Cloud Storage
+  description: Your data is safely backed up
+  duration: Infinity
+  icon: "☁️"
+  modifiers: []
+
+- id: caffeinated
+  name: Caffeinated
+  description: Extra alertness from too much coffee
+  duration: 1
+  icon: "☕"
+  modifiers:
+    - attribute: player.experimentBoost
+      value: 0.1
+      operation: add
+
+- id: inspired
+  name: Inspired
+  description: A burst of creative energy
+  duration: 3
+  icon: "✨"
+  modifiers:
+    - attribute: player.hopeRegen
+      value: 2
+      operation: add

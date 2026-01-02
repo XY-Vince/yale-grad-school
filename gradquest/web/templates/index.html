@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 GradQuest - PhD Life Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #22c55e;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #475569;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        /* Morale Bar */
+        .morale-bar {
+            background: var(--bg-card);
+            border-radius: 10px;
+            height: 24px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .morale-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease, background 0.3s;
+        }
+
+        .morale-fill.high {
+            background: linear-gradient(90deg, #22c55e, #4ade80);
+        }
+
+        .morale-fill.medium {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .morale-fill.low {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        /* Main Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Actions Panel */
+        .panel {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .action-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .action-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .action-btn:hover .action-desc {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .action-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #1e293b;
+        }
+
+        .action-btn.disabled:hover {
+            transform: none;
+            background: #1e293b;
+            border-color: var(--border-color);
+        }
+
+        .action-btn.disabled .action-desc {
+            color: var(--accent-danger);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Items & Status */
+        .item-list,
+        .status-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .item-badge {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-badge.negative {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        .empty-text {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Message Log - V1.4 Enhanced */
+        .event-panel {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 24px;
+            border: 2px solid var(--accent-primary);
+            margin-bottom: 30px;
+        }
+
+        .event-panel .panel-title {
+            color: var(--accent-primary);
+        }
+
+        .message-log {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 80px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .event-history {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .event-history-item {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .event-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        /* Advisor Bar */
+        .advisor-bar {
+            background: var(--bg-card);
+            border-radius: 10px;
+            height: 16px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .advisor-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #22c55e, #4ade80);
+        }
+
+        .advisor-fill.unhappy {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        /* Status tooltip */
+        .status-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: help;
+            position: relative;
+        }
+
+        .status-badge:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10;
+            margin-bottom: 4px;
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 16px;
+            padding: 20px 48px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        /* End Screen */
+        .end-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .end-screen.won {
+            background: linear-gradient(180deg, rgba(34, 197, 94, 0.1) 0%, transparent 100%);
+        }
+
+        .end-screen.lost {
+            background: linear-gradient(180deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%);
+        }
+
+        .end-title {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .end-message {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal h2 {
+            margin-bottom: 16px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .modal-btn.primary {
+            background: var(--accent-success);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Loading */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎓 GradQuest</h1>
+            <p>A PhD Life Simulator</p>
+        </header>
+
+        <div id="app">
+            <!-- Start Screen -->
+            <div id="start-screen" class="start-screen panel">
+                <h2 style="font-size: 1.5rem; margin-bottom: 16px;">Welcome to GradQuest!</h2>
+                <p
+                    style="color: var(--text-secondary); margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    You're about to embark on the challenging journey of a PhD student.<br>
+                    Your goal: Publish 3 papers and complete your thesis before running out of morale or time.
+                </p>
+                <button class="start-btn" onclick="startGame()">🚀 Start PhD Journey</button>
+                <button class="start-btn" id="load-btn" onclick="loadGame()"
+                    style="background: var(--bg-card); margin-left: 12px; display: none;">💾 Load Game</button>
+            </div>
+
+            <!-- Game Screen -->
+            <div id="game-screen" style="display: none;">
+                <!-- Stats Bar -->
+                <div class="stats-bar">
+                    <div class="stat-card">
+                        <div class="stat-label">📅 Date</div>
+                        <div class="stat-value" id="date" style="font-size: 1.25rem;">Sep, Year 1</div>
+                        <div style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 4px;">Month <span
+                                id="total-months">1</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">💪 Morale</div>
+                        <div class="stat-value"><span id="morale">50</span>%</div>
+                        <div class="morale-bar">
+                            <div class="morale-fill high" id="morale-bar" style="width: 50%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">📰 Papers Published</div>
+                        <div class="stat-value"><span id="papers">0</span>/<span id="papers-required">3</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">👨‍🏫 Advisor</div>
+                        <div class="stat-value" style="font-size: 1.25rem;"><span id="advisor-status">🙂 Happy</span>
+                        </div>
+                        <div class="advisor-bar">
+                            <div class="advisor-fill" id="advisor-bar" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- V1.4: Enhanced Event Display -->
+                <div class="event-panel">
+                    <h2 class="panel-title">📢 Latest Event</h2>
+                    <div class="message-log" id="message-log">
+                        Your PhD journey begins...
+                    </div>
+                    <div class="event-history" id="event-history"></div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Actions -->
+                    <div class="panel">
+                        <h2 class="panel-title">📋 Actions</h2>
+                        <div class="actions-grid" id="actions"></div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="sidebar">
+                        <!-- Items -->
+                        <div class="panel">
+                            <h2 class="panel-title">📦 Inventory</h2>
+                            <div class="item-list" id="items">
+                                <span class="empty-text">No items yet</span>
+                            </div>
+                        </div>
+
+                        <!-- Status Effects -->
+                        <div class="panel">
+                            <h2 class="panel-title">⚡ Status Effects</h2>
+                            <div class="status-list" id="statuses">
+                                <span class="empty-text">No active effects</span>
+                            </div>
+                        </div>
+
+                        <!-- V1.6: Save Button -->
+                        <button class="action-btn" onclick="saveGame()" style="width: 100%; text-align: center;">
+                            <div class="action-name">💾 Save Game</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End Screen -->
+            <div id="end-screen" class="end-screen panel" style="display: none;">
+                <div class="end-title" id="end-title">🎓 Congratulations!</div>
+                <div class="end-message" id="end-message">You've completed your PhD!</div>
+                <div id="end-stats" style="margin-bottom: 30px;"></div>
+                <button class="start-btn" onclick="restartGame()">🔄 Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thesis Modal -->
+    <div class="modal-overlay" id="thesis-modal">
+        <div class="modal">
+            <h2>📚 Thesis Time!</h2>
+            <p>You have enough papers to graduate. What would you like to do?</p>
+            <div class="modal-actions">
+                <button class="modal-btn primary" onclick="thesisAction('defend')">🎓 Defend Thesis</button>
+                <button class="modal-btn secondary" onclick="thesisAction('stay')">📖 Stay for Research</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = null;
+
+        // V1.6: Check for saved game on load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('gradquest_save')) {
+                document.getElementById('load-btn').style.display = 'inline-block';
+            }
+        });
+
+        async function startGame() {
+            const response = await fetch('/api/start', { method: 'POST' });
+            gameState = await response.json();
+            updateUI();
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+        }
+
+        async function restartGame() {
+            localStorage.removeItem('gradquest_save');
+            const response = await fetch('/api/restart', { method: 'POST' });
+            gameState = await response.json();
+            updateUI();
+            document.getElementById('end-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+        }
+
+        // V1.6: Save game to localStorage
+        async function saveGame() {
+            const response = await fetch('/api/save');
+            const saveData = await response.json();
+            localStorage.setItem('gradquest_save', JSON.stringify(saveData));
+            alert('💾 Game saved!');
+        }
+
+        // V1.6: Load game from localStorage
+        async function loadGame() {
+            const saveData = localStorage.getItem('gradquest_save');
+            if (!saveData) {
+                alert('No saved game found!');
+                return;
+            }
+
+            const response = await fetch('/api/load', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: saveData
+            });
+
+            gameState = await response.json();
+            if (gameState.error) {
+                alert('Failed to load: ' + gameState.error);
+                return;
+            }
+
+            updateUI();
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+        }
+
+        async function performAction(actionId) {
+            document.getElementById('game-screen').classList.add('loading');
+
+            const response = await fetch('/api/action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: actionId })
+            });
+
+            gameState = await response.json();
+
+            if (gameState.result?.showThesisChoice) {
+                document.getElementById('thesis-modal').classList.add('active');
+            }
+
+            if (gameState.result?.message) {
+                document.getElementById('message-log').textContent = gameState.result.message;
+            }
+
+            updateUI();
+            document.getElementById('game-screen').classList.remove('loading');
+        }
+
+        async function thesisAction(choice) {
+            document.getElementById('thesis-modal').classList.remove('active');
+            const action = choice === 'defend' ? 'thesis_defend' : 'thesis_stay';
+            await performAction(action);
+        }
+
+        function updateUI() {
+            if (!gameState) return;
+
+            // Check end state
+            if (gameState.isEnded) {
+                showEndScreen();
+                return;
+            }
+
+            // Update stats - use abbreviated month
+            const shortMonth = gameState.monthName ? gameState.monthName.substring(0, 3) : 'Sep';
+            document.getElementById('date').textContent = `${shortMonth}, Year ${gameState.year}`;
+            document.getElementById('morale').textContent = gameState.morale;
+            document.getElementById('papers').textContent = gameState.papers;
+            document.getElementById('papers-required').textContent = gameState.papersRequired;
+
+            // V1.4: Total months counter
+            if (gameState.totalMonths) {
+                document.getElementById('total-months').textContent = gameState.totalMonths;
+            }
+
+            // V1.4: Advisor happiness
+            if (gameState.advisorHappiness !== undefined) {
+                const advisorBar = document.getElementById('advisor-bar');
+                const advisorStatus = document.getElementById('advisor-status');
+                const happiness = gameState.advisorHappiness;
+
+                advisorBar.style.width = `${happiness}%`;
+                advisorBar.className = 'advisor-fill';
+
+                const hasUnhappy = gameState.statuses.some(s => s.id === 'unhappyAdvisor');
+                if (hasUnhappy || happiness < 30) {
+                    advisorBar.classList.add('unhappy');
+                    advisorStatus.textContent = '😠 Unhappy';
+                } else if (happiness < 50) {
+                    advisorStatus.textContent = '😐 Neutral';
+                } else {
+                    advisorStatus.textContent = '🙂 Happy';
+                }
+            }
+
+            // Morale bar
+            const moraleBar = document.getElementById('morale-bar');
+            moraleBar.style.width = `${gameState.morale}%`;
+            moraleBar.className = 'morale-fill';
+            if (gameState.morale > 60) moraleBar.classList.add('high');
+            else if (gameState.morale > 30) moraleBar.classList.add('medium');
+            else moraleBar.classList.add('low');
+
+            // Actions - handle disabled state
+            const actionsEl = document.getElementById('actions');
+            actionsEl.innerHTML = gameState.actions.map(action => {
+                const isDisabled = action.disabled;
+                const disabledClass = isDisabled ? ' disabled' : '';
+                const onclick = isDisabled ? '' : `onclick="performAction('${action.id}')"`;
+                return `
+                <button class="action-btn${disabledClass}" ${onclick}>
+                    <div class="action-name">${action.name}</div>
+                    <div class="action-desc">${action.description}</div>
+                </button>
+            `}).join('');
+
+            // Items
+            const itemsEl = document.getElementById('items');
+            if (gameState.items.length > 0) {
+                itemsEl.innerHTML = gameState.items.map(item =>
+                    `<span class="item-badge">${item.name} ×${item.count}</span>`
+                ).join('');
+            } else {
+                itemsEl.innerHTML = '<span class="empty-text">No items yet</span>';
+            }
+
+            // Status effects with tooltips
+            const statusesEl = document.getElementById('statuses');
+            if (gameState.statuses.length > 0) {
+                statusesEl.innerHTML = gameState.statuses.map(status => {
+                    const isNegative = ['exhaustion', 'unhappyAdvisor', 'brokenEquipment'].includes(status.id);
+                    const tooltip = status.description || '';
+                    return `<span class="status-badge${isNegative ? ' negative' : ''}" data-tooltip="${tooltip}">${status.name}</span>`;
+                }).join('');
+            } else {
+                statusesEl.innerHTML = '<span class="empty-text">No active effects</span>';
+            }
+        }
+
+        function showEndScreen() {
+            document.getElementById('game-screen').style.display = 'none';
+            const endScreen = document.getElementById('end-screen');
+            endScreen.style.display = 'block';
+
+            const won = gameState.endState?.won;
+            endScreen.className = `end-screen panel ${won ? 'won' : 'lost'}`;
+
+            document.getElementById('end-title').textContent = won
+                ? '🎓🎉 Congratulations, Doctor! 🎉🎓'
+                : '💔 Game Over 💔';
+
+            document.getElementById('end-message').textContent = gameState.endState?.message || '';
+
+            document.getElementById('end-stats').innerHTML = `
+                <p style="color: var(--text-secondary);">
+                    Years in program: ${gameState.year}<br>
+                    Papers published: ${gameState.papers}<br>
+                    Final morale: ${gameState.morale}%
+                </p>
+            `;
+        }
+    </script>
+</body>
+
+</html>

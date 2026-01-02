@@ -1,0 +1,367 @@
+# GradQuest Default Ruleset - Events
+# Core game events for the research pipeline
+
+# === GAME START ===
+- id: GameStart
+  trigger: GameStart
+  once: true
+  priority: 100
+  actions:
+    - id: DisplayMessage
+      message: |
+        Welcome to GradQuest!
+        
+        You're about to embark on the challenging journey of a PhD student.
+        Your goal: Publish 3 papers and complete your thesis before running out of hope or time.
+        
+        May your experiments succeed and your reviewers be kind!
+
+# === PhD OFFER ===
+- id: PhDOffer
+  trigger: GameStart
+  once: true
+  priority: 90
+  actions:
+    - id: DisplayChoices
+      choices:
+        - text: "Accept the PhD offer"
+          actions:
+            - id: DisplayMessage
+              message: "You've accepted the offer. Your PhD journey begins!"
+            - id: SetStatus
+              status: firstYear
+        - text: "Decline and pursue industry"
+          actions:
+            - id: DisplayMessage
+              message: "You've decided academia isn't for you. Good luck in industry!"
+            - id: EndGame
+              won: true
+              reason: industry
+              message: "You chose a different path. Perhaps the road less traveled..."
+
+# === MONTHLY EVENTS ===
+- id: MonthlyHopeDecay
+  trigger: MonthBegin
+  actions:
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope - 1
+
+- id: ExhaustionEffect
+  trigger: MonthBegin
+  conditions:
+    - id: Expression
+      expression: hasStatus('exhaustion')
+  actions:
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope - 5
+    - id: DisplayMessage
+      message: "😫 Your exhaustion is draining your energy... (-5 morale)"
+
+- id: UnhappyAdvisorEffect
+  trigger: MonthBegin
+  conditions:
+    - id: Expression
+      expression: hasStatus('unhappyAdvisor')
+  actions:
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope - 5
+    - id: DisplayMessage
+      message: "😠 Your advisor's disappointment weighs on you... (-5 morale)"
+
+- id: FirstYearBonus
+  trigger: MonthBegin
+  conditions:
+    - id: Expression
+      expression: hasStatus('firstYear')
+  actions:
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope + 1
+
+- id: LateYearAnxiety
+  trigger: MonthBegin
+  conditions:
+    - id: Expression
+      expression: year >= 4
+  actions:
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope - 1
+
+# === FIRST YEAR END ===
+- id: FirstYearEnds
+  trigger: MonthBegin
+  once: true
+  conditions:
+    - id: Expression
+      expression: year === 2 && month === 9
+  actions:
+    - id: RemoveStatus
+      status: firstYear
+    - id: DisplayMessage
+      message: |
+        🎓 Your first year is over!
+        The honeymoon period is ending. Time to get serious about research.
+
+# === QUALIFYING EXAM ===
+# V1.2: Triggers in September year 2 (one full year after start)
+# Requires 2/3 preps to pass reliably
+- id: QualifyingExam
+  trigger: MonthBegin
+  once: true
+  conditions:
+    - id: Expression
+      expression: "year === 2 && month === 9"
+  actions:
+    - id: DisplayMessage
+      message: |
+        ══════════════════════════════════════
+        📝 QUALIFYING EXAM TIME! 📝
+        ══════════════════════════════════════
+    - id: Switch
+      cases:
+        - condition: "player.qualifyLevel >= 3"
+          actions:
+            - id: DisplayMessage
+              message: |
+                ✅ ═══════════════════════════════════ ✅
+                🎉 QUALS PASSED - EXCELLENT! 🎉
+                Your thorough preparation paid off!
+                ✅ ═══════════════════════════════════ ✅
+            - id: UpdateVariable
+              variable: player.hope
+              value: player.hope + 25
+        - condition: "player.qualifyLevel >= 2"
+          actions:
+            - id: DisplayMessage
+              message: |
+                ✅ ═══════════════════════════════════ ✅
+                🎉 QUALS PASSED! 🎉
+                You passed the qualifying exam!
+                ✅ ═══════════════════════════════════ ✅
+            - id: UpdateVariable
+              variable: player.hope
+              value: player.hope + 15
+      default:
+        - id: DisplayMessage
+          message: |
+            ❌ ═══════════════════════════════════ ❌
+            💔 QUALS FAILED 💔
+            You needed at least 2 preparation sessions.
+            ❌ ═══════════════════════════════════ ❌
+        - id: EndGame
+          won: false
+          reason: quals_failed
+          message: "You were dismissed from the program after failing quals."
+
+# === RANDOM EVENTS ===
+- id: RandomEquipmentBreakdown
+  trigger: MonthBegin
+  probability: 0.05
+  conditions:
+    - id: Expression
+      expression: "!hasStatus('brokenEquipment')"
+  actions:
+    - id: SetStatus
+      status: brokenEquipment
+    - id: DisplayMessage
+      message: |
+        ⚠️ Your lab equipment has broken down!
+        You won't be able to work on figures until it's fixed.
+
+# V1.4: Track how long equipment has been broken
+- id: EquipmentBrokenTick
+  trigger: MonthBegin
+  conditions:
+    - id: Expression
+      expression: hasStatus('brokenEquipment')
+  actions:
+    - id: UpdateVariable
+      variable: equipment.brokenMonths
+      value: equipment.brokenMonths + 1
+
+# V1.4: Equipment repairs - 50% each month, guaranteed after 3 months
+- id: EquipmentFixed
+  trigger: MonthBegin
+  conditions:
+    - id: Expression
+      expression: hasStatus('brokenEquipment')
+  actions:
+    - id: Switch
+      cases:
+        - condition: "equipment.brokenMonths >= 3"
+          actions:
+            - id: RemoveStatus
+              status: brokenEquipment
+            - id: UpdateVariable
+              variable: equipment.brokenMonths
+              value: 0
+            - id: DisplayMessage
+              message: "🔧 After 3 months, the equipment has finally been fixed!"
+      default:
+        - id: CoinFlip
+          probability: 0.5
+          success:
+            - id: RemoveStatus
+              status: brokenEquipment
+            - id: UpdateVariable
+              variable: equipment.brokenMonths
+              value: 0
+            - id: DisplayMessage
+              message: "🔧 Good news! The equipment has been fixed."
+
+- id: RandomInspiration
+  trigger: MonthBegin
+  probability: 0.03
+  actions:
+    - id: DisplayMessage
+      message: "💡 A sudden flash of inspiration strikes!"
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope + 15
+    - id: GiveItem
+      item: idea
+      count: 1
+
+- id: RandomStress
+  trigger: MonthBegin
+  probability: 0.05
+  actions:
+    - id: DisplayMessage
+      message: "😰 The stress of academia is getting to you..."
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope - 10
+
+- id: GoodAdvisorMeeting
+  trigger: MonthBegin
+  probability: 0.08
+  conditions:
+    - id: Expression
+      expression: "!hasStatus('unhappyAdvisor')"
+  actions:
+    - id: DisplayMessage
+      message: "😊 Your advisor seems pleased with your progress!"
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope + 10
+
+# V1.1: Advisor forgiveness event
+- id: AdvisorForgives
+  trigger: MonthBegin
+  probability: 0.15
+  conditions:
+    - id: Expression
+      expression: hasStatus('unhappyAdvisor')
+  actions:
+    - id: DisplayMessage
+      message: "🤝 Your advisor seems to have moved past the earlier issue."
+    - id: RemoveStatus
+      status: unhappyAdvisor
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope + 5
+
+# V1.1: Natural exhaustion recovery
+- id: NaturalRecovery
+  trigger: MonthBegin
+  probability: 0.12
+  conditions:
+    - id: Expression
+      expression: hasStatus('exhaustion')
+  actions:
+    - id: DisplayMessage
+      message: "💆 After some rest, you're feeling better!"
+    - id: RemoveStatus
+      status: exhaustion
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope + 5
+
+# === THESIS READY ===
+# V1.2: Removed once:true so thesis can be triggered multiple times
+- id: ThesisReady
+  trigger: ThesisReady
+  actions:
+    - id: DisplayMessage
+      message: |
+        📚 You've published enough papers!
+        It's time to write your thesis and defend.
+    - id: DisplayChoices
+      choices:
+        - text: "Write the thesis and defend"
+          actions:
+            - id: DisplayMessage
+              message: "📖 After months of writing, you're ready to defend..."
+            - id: CoinFlip
+              probability: 0.9
+              success:
+                - id: DisplayMessage
+                  message: |
+                    🎓🎉 CONGRATULATIONS, DOCTOR! 🎉🎓
+                    
+                    You've successfully defended your thesis and earned your PhD!
+                - id: EndGame
+                  won: true
+                  reason: graduation
+                  message: "You are now Dr. You!"
+              failure:
+                - id: DisplayMessage
+                  message: "😅 The defense was rough, but you passed with major revisions."
+                - id: EndGame
+                  won: true
+                  reason: graduation
+                  message: "It wasn't easy, but you made it!"
+        - text: "Stay for another year of research"
+          actions:
+            - id: DisplayMessage
+              message: "You decide to stay and do more research. Your advisor is pleased."
+            - id: UpdateVariable
+              variable: player.hope
+              value: player.hope + 20
+
+# === YEAR MILESTONES ===
+- id: Year3Warning
+  trigger: MonthBegin
+  once: true
+  conditions:
+    - id: Expression
+      expression: year === 3 && month === 9
+  actions:
+    - id: DisplayMessage
+      message: |
+        ⏰ You're entering your third year.
+        You should have at least one paper by now...
+
+- id: Year5Crisis
+  trigger: MonthBegin
+  once: true
+  conditions:
+    - id: Expression
+      expression: year === 5 && month === 9
+  actions:
+    - id: DisplayMessage
+      message: |
+        ⚠️ Fifth year already!
+        The pressure is mounting. You need to graduate soon.
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope - 15
+
+- id: Year7Ultimatum
+  trigger: MonthBegin
+  once: true
+  conditions:
+    - id: Expression
+      expression: year === 7 && month === 9
+  actions:
+    - id: DisplayMessage
+      message: |
+        🚨 FINAL YEAR WARNING 🚨
+        This is your last year. Graduate or be dismissed!
+    - id: UpdateVariable
+      variable: player.hope
+      value: player.hope - 25

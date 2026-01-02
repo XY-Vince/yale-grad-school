@@ -1,0 +1,58 @@
+# GradQuest Default Ruleset - Attributes
+# Player and game attributes
+
+- id: player.hope
+  name: Hope
+  description: Your mental and emotional wellbeing
+  baseValue: 50
+  minValue: 0
+  maxValue: 100
+
+- id: player.readPapers
+  name: Papers Read
+  description: Number of papers you've read
+  baseValue: 0
+  minValue: 0
+  maxValue: 1000
+
+- id: player.qualifyLevel
+  name: Qualifying Preparation
+  description: How prepared you are for quals
+  baseValue: 0
+  minValue: 0
+  maxValue: 10
+
+- id: player.experimentBoost
+  name: Experiment Boost
+  description: Bonus chance for experiment success
+  baseValue: 0
+  minValue: -1
+  maxValue: 1
+
+- id: player.hopeRegen
+  name: Hope Regeneration
+  description: Monthly hope change modifier
+  baseValue: 0
+  minValue: -100
+  maxValue: 100
+
+- id: advisor.happiness
+  name: Advisor Happiness
+  description: Your advisor's satisfaction with you
+  baseValue: 50
+  minValue: 0
+  maxValue: 100
+
+- id: rule.papersRequired
+  name: Papers Required
+  description: Number of papers needed to graduate
+  baseValue: 3
+  minValue: 1
+  maxValue: 10
+
+- id: rule.maxYear
+  name: Maximum Year
+  description: Year limit before dismissal
+  baseValue: 8
+  minValue: 4
+  maxValue: 12

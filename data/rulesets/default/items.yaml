@@ -1,0 +1,52 @@
+# GradQuest Default Ruleset - Items
+# Research pipeline items
+
+- id: idea
+  name: Research Idea
+  description: A potential research direction worth exploring
+  rarity: common
+  icon: "💡"
+
+- id: preliminary_result
+  name: Preliminary Result
+  description: Initial findings that show promise
+  rarity: uncommon
+  icon: "🔬"
+
+- id: major_result
+  name: Major Result
+  description: Significant findings ready for publication
+  rarity: rare
+  icon: "⭐"
+
+- id: figure
+  name: Figure
+  description: A polished figure for your paper
+  rarity: common
+  maxCount: 10
+  icon: "📊"
+
+- id: paper
+  name: Published Paper
+  description: A peer-reviewed publication in a top venue
+  rarity: legendary
+  icon: "📄"
+
+- id: rejected_paper
+  name: Rejected Paper
+  description: A manuscript that needs revision
+  rarity: uncommon
+  icon: "📝"
+
+- id: coffee
+  name: Coffee
+  description: Fuel for late-night research sessions
+  rarity: common
+  maxCount: 5
+  icon: "☕"
+
+- id: data_backup
+  name: Data Backup
+  description: Protection against data loss
+  rarity: rare
+  icon: "💾"

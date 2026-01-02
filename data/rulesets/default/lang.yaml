@@ -1,0 +1,60 @@
+# GradQuest Default Ruleset - Localization
+# English language strings
+
+game:
+  title: GradQuest
+  subtitle: A PhD Life Simulator
+
+ui:
+  continue: Press Enter to continue...
+  choose: Choose an option
+  quit: Quit
+  yes: Yes
+  no: No
+
+stats:
+  year: Year
+  month: Month
+  hope: Hope
+  papers: Papers
+
+months:
+  1: January
+  2: February
+  3: March
+  4: April
+  5: May
+  6: June
+  7: July
+  8: August
+  9: September
+  10: October
+  11: November
+  12: December
+
+actions:
+  read_papers: Read Papers
+  work_idea: Work on Idea
+  work_preliminary: Work on Preliminary Result
+  work_figures: Work on Figures
+  write_paper: Write Paper
+  revise_paper: Revise Paper
+  slack_off: Slack Off
+  prepare_quals: Prepare for Quals
+  advance: Next Month
+
+messages:
+  game_start: Welcome to GradQuest! Your PhD journey begins...
+  paper_accepted: Your paper has been accepted!
+  paper_rejected: Your paper was rejected. Revisions needed.
+  idea_found: You have a new research idea!
+  hope_low: Your hope is running low...
+  exhausted: You're feeling exhausted.
+  year_warning: Time is running out!
+
+endings:
+  graduation: Congratulations, Doctor!
+  no_hope: You've lost all hope and dropped out.
+  overdue: You exceeded the time limit.
+  industry: You chose a different path.
+  quals_failed: Failed the qualifying exam.
