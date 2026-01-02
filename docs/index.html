@@ -736,11 +736,11 @@
                 const el = document.getElementById('message-log');
                 if (this.typeTimer) clearInterval(this.typeTimer);
                 const current = el.textContent;
-                const full = current + '\n\n' + msg;
-                el.textContent = current + '\n\n';
+                const full = current + '\n' + msg;
+                el.textContent = current + '\n';
                 let i = 0;
                 this.typeTimer = setInterval(() => {
-                    el.textContent = current + '\n\n' + msg.slice(0, ++i);
+                    el.textContent = current + '\n' + msg.slice(0, ++i);
                     if (i >= msg.length) clearInterval(this.typeTimer);
                 }, 15);
                 // V2.2: Log to event history
