@@ -1082,9 +1082,12 @@
                 // V1.9: Conference limited - 1 first year, 3 after
                 const maxConf = s.year === 1 ? 1 : 3;
                 const confLeft = maxConf - (s.conferencesThisYear || 0);
-                if (confLeft > 0) {
-                    actions.push({ id: 'conference', name: '🎤 Conference', desc: 'May inspire ideas<br><small>(' + confLeft + ' this year)</small>' });
-                }
+                actions.push({
+                    id: confLeft > 0 ? 'conference' : 'conference_disabled',
+                    name: '🎤 Conference',
+                    desc: `(${confLeft}/${maxConf} remaining for this yr)`,
+                    disabled: confLeft <= 0
+                });
 
                 // V2.2 Pro: Conference paper submission (if has figures but want quick publish)
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
