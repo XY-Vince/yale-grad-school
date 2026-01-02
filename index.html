@@ -519,7 +519,10 @@
                     isEnded: false,
                     endState: null,
                     conferencesThisYear: 0,
-                    pendingPapers: []
+                    pendingPapers: [],
+                    // V3.0: Teaching duty
+                    isTeaching: false,
+                    teachingMonths: 0
                 };
             },
 
@@ -706,12 +709,22 @@
                             // Guaranteed result at max wait, 30% chance per month after min
                             if (wait >= maxWait || this.random() < 0.3) {
                                 s.pendingPapers.splice(i, 1);
-                                const acceptRate = isRevision ? 0.7 : 0.6;
-                                if (this.random() < acceptRate) {
+                                const acceptRate = isRevision ? 0.7 : 0.5; // V3.0: Adjusted
+                                const roll = this.random();
+                                if (roll < acceptRate) {
                                     this.addItem('paper');
                                     s.advisorScore = Math.min(100, s.advisorScore + 15);
                                     s.morale = Math.min(100, s.morale + 10);
-                                    this.appendMessage('🎉 ACCEPTED! Paper published! (' + this.getItem('paper') + '/3 complete) (+10 morale)');
+                                    this.appendMessage('🎉 ACCEPTED! Paper published! (+10 morale)');
+                                } else if (roll < acceptRate + 0.25 && !isRevision) {
+                                    // V3.0: Major revision request (25% for new papers)
+                                    this.addItem('rejected_paper');
+                                    const reviewer2Msgs = [
+                                        '📝 MAJOR REVISION. Reviewer #2 demands more experiments...',
+                                        '📝 MAJOR REVISION. "The novelty is unclear..."',
+                                        '📝 MAJOR REVISION. "Please address 47 minor comments..."'
+                                    ];
+                                    this.appendMessage(reviewer2Msgs[Math.floor(this.random() * reviewer2Msgs.length)]);
                                 } else {
                                     this.addItem('rejected_paper');
                                     this.appendMessage('😢 REJECTED. The reviewers were not convinced. You can revise and resubmit.');
@@ -754,6 +767,62 @@
                     this.state.morale = Math.min(100, this.state.morale + 15);
                     this.addItem('idea');
                     this.appendMessage('💡 A sudden flash of inspiration strikes! (+15 morale, +1 idea)');
+                }
+
+                // V3.0: Imposter Syndrome (~8% chance)
+                if (this.random() < 0.08) {
+                    const imposterMsgs = [
+                        '😰 You wonder if you really belong here...',
+                        '😔 Everyone else seems so much smarter than you...',
+                        '😓 Did they make a mistake admitting you?',
+                        '🥺 Your labmate just published - why can\'t you?'
+                    ];
+                    const loss = 3 + Math.floor(this.random() * 5); // 3-7
+                    this.state.morale = Math.max(0, this.state.morale - loss);
+                    this.appendMessage(imposterMsgs[Math.floor(this.random() * imposterMsgs.length)] + ' (-' + loss + ' morale)');
+                }
+
+                // V3.0: Getting Scooped (~3% if you have ideas)
+                if (this.getItem('idea') > 0 && this.random() < 0.03) {
+                    this.removeItem('idea');
+                    const scoopLoss = 5 + Math.floor(this.random() * 5);
+                    this.state.morale = Math.max(0, this.state.morale - scoopLoss);
+                    this.appendMessage('📢 Another lab just published YOUR idea! (-1 idea, -' + scoopLoss + ' morale)');
+                }
+
+                // V3.0: Seasonal Events
+                const month = this.state.month;
+                if (month === 12) { // December holidays
+                    if (this.random() < 0.5) {
+                        this.appendMessage('🎄 Holiday break! Time to rest. (+5 morale)');
+                        this.state.morale = Math.min(100, this.state.morale + 5);
+                    }
+                } else if (month >= 6 && month <= 8) { // Summer
+                    if (this.random() < 0.15) {
+                        this.appendMessage('☀️ Summer focus! Fewer distractions. (+3 morale)');
+                        this.state.morale = Math.min(100, this.state.morale + 3);
+                    }
+                } else if (month === 9) { // September - new semester chaos
+                    if (this.random() < 0.3) {
+                        this.appendMessage('📚 New semester chaos! So many meetings... (-3 morale)');
+                        this.state.morale = Math.max(0, this.state.morale - 3);
+                    }
+                }
+
+                // V3.0: Teaching Duty (random TA assignment ~10% in fall/spring)
+                if (!this.state.isTeaching && (month >= 9 || month <= 5) && this.random() < 0.1) {
+                    this.state.isTeaching = true;
+                    this.state.teachingMonths = 3 + Math.floor(this.random() * 2); // 3-4 months
+                    this.appendMessage('📝 You\'ve been assigned to TA a course for the semester!');
+                }
+                if (this.state.isTeaching) {
+                    this.state.teachingMonths--;
+                    if (this.state.teachingMonths <= 0) {
+                        this.state.isTeaching = false;
+                        const teachBonus = 5 + Math.floor(this.random() * 5);
+                        this.state.morale = Math.min(100, this.state.morale + teachBonus);
+                        this.appendMessage('🎓 TA duty complete! Students appreciated you. (+' + teachBonus + ' morale)');
+                    }
                 }
 
                 this.updateUI();
@@ -1115,10 +1184,11 @@
                     return `<span style="${style}">${st.icon} ${st.label}${hasItems ? ' ×' + st.count : ''}</span>`;
                 }).join('');
 
-                // Pending/Rejected
+                // Pending/Rejected/TA
                 const extras = [];
                 if (this.getItem('rejected_paper') > 0) extras.push('❌ Rejected ×' + this.getItem('rejected_paper'));
                 if (s.pendingPapers && s.pendingPapers.length > 0) extras.push('⏳ Under Review ×' + s.pendingPapers.length);
+                if (s.isTeaching) extras.push('📝 TA Duty (' + s.teachingMonths + ' mo)');
                 if (extras.length > 0) {
                     pipelineEl.innerHTML += '<br><span style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">' + extras.join(' | ') + '</span>';
                 }

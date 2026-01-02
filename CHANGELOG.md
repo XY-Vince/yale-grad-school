@@ -2,6 +2,21 @@
 
 All notable changes to GradQuest are documented here.
 
+## [3.0.0] - 2026-01-02
+
+### Added
+- **Imposter Syndrome** (~8% chance per month): Morale hit with flavored messages
+- **Getting Scooped** (~3% chance): Another lab publishes your idea first
+- **Seasonal Events**: December holiday boost, summer focus, September chaos
+- **Teaching Duty** (~10% in fall/spring): Random TA assignment for 3-4 months
+- **Reviewer #2** (25% on papers): Major revision requests with snarky messages
+
+### Changed
+- Paper acceptance rate adjusted (50% new, 70% revision)
+- TA status now shows in pipeline display
+
+---
+
 ## [2.0.0] - 2026-01-02
 
 ### Added
