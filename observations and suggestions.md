@@ -172,3 +172,15 @@ Medium,Light Testing Expansion,"Add pytest for sim runs (e.g., 100 games: check 
 Medium,Advisor Scoring as Minimal Add,"Per prior: Add subtle score var (0-100) in YAML (e.g., +15 paper, -5 slack) with thresholds (e.g., <50: -morale/month). Test in V1.7 as optional ruleset."
 Low,Outreach Tweaks,"Post to Reddit (r/gamedev, r/academia) or itch.io for feedback. Add CONTRIBUTING.md for mods (e.g., ""Submit YAML rulesets!"")."
 Low,LLM First Steps,"Demo in README: Env var setup for simple AI (e.g., GPT-4 generates random event messages). Gate as experimental."
+
+v1.8
+1. change "slack off" to "take a break" or whatever feels appropriate
+2. add more feedback and interaction with advisor
+a. feedback on ideas (good to go/not good enough)
+b. too tired to do anything, need to take a break
+c. other interactions (e.g.,paperrejection, advisor's mood, advisor's availability) that has little actual impact on the game
+3. add more events （UNIVERSITY NEWS/General Events）
+4. conference: no more than 3 per year
+5. the responses to actions (e.g., read papers, developing an idea, prepare for qual, etc.) should be more diverse
+6. completely change the wording of "preliminary results" and "major results"
+7. set a delay of 2-5 months (mean 3 months) between submitting an paper and getting results (rejects come in 1-2 months)

@@ -498,8 +498,15 @@
                     totalMonths: 1,
                     isRunning: true,
                     isEnded: false,
-                    endState: null
+                    endState: null,
+                    conferencesThisYear: 0,
+                    pendingPapers: []
                 };
+            },
+
+            // V1.8: Pick random from array
+            pick(arr) {
+                return arr[Math.floor(this.random() * arr.length)];
             },
 
             // Random number generator
@@ -613,6 +620,7 @@
                 if (this.state.month > 12) {
                     this.state.month = 1;
                     this.state.year++;
+                    this.state.conferencesThisYear = 0; // V1.8: Reset conference count
                     if (this.state.year === 2) {
                         this.removeStatus('firstYear');
                     }
@@ -628,6 +636,33 @@
                 if (this.state.morale <= 0) {
                     this.endGame(false, 'morale', 'You ran out of morale and dropped out.');
                     return;
+                }
+
+                // V1.8: Process pending papers
+                const s = this.state;
+                if (s.pendingPapers && s.pendingPapers.length > 0) {
+                    const resolved = [];
+                    for (let i = s.pendingPapers.length - 1; i >= 0; i--) {
+                        const paper = s.pendingPapers[i];
+                        const wait = s.totalMonths - paper.submitted;
+                        const isRevision = paper.type === 'revision';
+                        const minWait = isRevision ? 1 : 2;
+                        const maxWait = isRevision ? 3 : 5;
+
+                        if (wait >= minWait && (wait >= maxWait || this.random() < 0.4)) {
+                            s.pendingPapers.splice(i, 1);
+                            const acceptRate = isRevision ? 0.7 : 0.6;
+                            if (this.random() < acceptRate) {
+                                this.addItem('paper');
+                                s.advisorScore = Math.min(100, s.advisorScore + 15);
+                                s.morale = Math.min(100, s.morale + 10);
+                                this.appendMessage('🎉 ACCEPTED! Paper published! (' + this.getItem('paper') + '/3 complete) (+10 morale)');
+                            } else {
+                                this.addItem('rejected_paper');
+                                this.appendMessage('😢 REJECTED. The reviewers were not convinced. You can revise and resubmit.');
+                            }
+                        }
+                    }
                 }
 
                 // Equipment repair
@@ -732,13 +767,22 @@
                 if (this.getItem('paper') >= 3) {
                     actions.push({ id: 'thesis', name: '🎓 Work on Thesis', desc: 'Defend and graduate!' });
                 }
+                // V1.8: Show pending papers
+                if (s.pendingPapers && s.pendingPapers.length > 0) {
+                    actions.push({ id: 'pending', name: '⏳ Pending Papers', desc: s.pendingPapers.length + ' under review', disabled: true });
+                }
 
-                actions.push({ id: 'slack', name: '😴 Slack Off', desc: 'Recover morale' });
-                actions.push({ id: 'conference', name: '🎤 Conference', desc: '35% idea chance' });
+                actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest and recover' });
+
+                // V1.8: Conference limited to 3/year
+                const confLeft = 3 - (s.conferencesThisYear || 0);
+                if (confLeft > 0) {
+                    actions.push({ id: 'conference', name: '🎤 Conference', desc: '35% idea (' + confLeft + ' left)' });
+                }
 
                 // Qual prep
                 if ((s.year === 1) || (s.year === 2 && s.month < 9)) {
-                    actions.push({ id: 'quals', name: `📖 Prep for Quals (${s.qualifyLevel}/3)`, desc: 'Study for exam' });
+                    actions.push({ id: 'quals', name: '📖 Prep for Quals (' + s.qualifyLevel + '/3)', desc: 'Study for exam' });
                 }
 
                 actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Skip to next month' });
@@ -806,48 +850,35 @@
                     case 'write_paper':
                         this.removeItem('major_result');
                         this.removeItem('figure', 3);
-                        if (this.random() < 0.6) {
-                            this.addItem('paper');
-                            s.advisorScore = Math.min(100, s.advisorScore + 15);
-                            msg = `🎉 ACCEPTED! Paper published! (${this.getItem('paper')}/3 complete)`;
-                        } else {
-                            this.addItem('rejected_paper');
-                            msg = '😢 REJECTED. The reviewers were not convinced.';
-                        }
+                        // V1.8: Paper goes to pending review
+                        s.pendingPapers.push({ submitted: s.totalMonths, type: 'new' });
+                        msg = '� Paper submitted! Now we wait for reviews... (2-5 months)';
                         break;
 
                     case 'revise':
                         this.removeItem('rejected_paper');
-                        if (this.random() < 0.7) {
-                            this.addItem('paper');
-                            s.advisorScore = Math.min(100, s.advisorScore + 15);
-                            msg = `🎉 ACCEPTED on revision! (${this.getItem('paper')}/3 complete)`;
-                        } else {
-                            this.addItem('rejected_paper');
-                            msg = '😢 Rejected again... Keep trying!';
-                        }
+                        // V1.8: Revision goes to pending
+                        s.pendingPapers.push({ submitted: s.totalMonths, type: 'revision' });
+                        msg = '📮 Revision submitted! Waiting for decision... (1-3 months)';
                         break;
 
-                    case 'slack':
+                    case 'break':
                         const gain = 5 + Math.floor(this.random() * 10);
                         s.morale = Math.min(100, s.morale + gain);
-                        s.advisorScore = Math.max(0, s.advisorScore - 5);
-                        msg = `😌 You took some time to relax. (+${gain} morale)`;
-                        if (this.hasStatus('exhaustion') && this.random() < 0.35) {
+                        s.advisorScore = Math.max(0, s.advisorScore - 3);
+                        msg = '☕ You took some time to recharge. (+' + gain + ' morale)';
+                        if (this.hasStatus('exhaustion') && this.random() < 0.4) {
                             this.removeStatus('exhaustion');
-                            msg += '\n💆 You\'re feeling refreshed!';
+                            msg += '\n💆 You feel refreshed!';
                         }
                         if (this.hasStatus('unhappyAdvisor') && this.random() < 0.25) {
                             this.removeStatus('unhappyAdvisor');
                             msg += '\n🤝 Your advisor has cooled down.';
                         }
-                        if (!this.hasStatus('unhappyAdvisor') && this.random() < 0.1) {
-                            this.addStatus('unhappyAdvisor');
-                            msg += '\n😠 Your advisor noticed you weren\'t working...';
-                        }
                         break;
 
                     case 'conference':
+                        s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
                         s.morale = Math.min(100, s.morale + 8);
                         msg = '🎤 You attended a conference! (+8 morale)';
                         if (this.random() < 0.35) {
