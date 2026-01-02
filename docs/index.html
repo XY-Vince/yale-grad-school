@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 GradQuest - PhD Life Simulator</title>
+    <meta name="description"
+        content="A text-based PhD life simulator game. Can you publish papers and graduate before running out of morale?">
+    <meta name="author" content="XY-Vince">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #22c55e;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #475569;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            background: var(--bg-card);
+            border-radius: 8px;
+            height: 12px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.3s;
+        }
+
+        .progress-fill.high {
+            background: linear-gradient(90deg, #22c55e, #4ade80);
+        }
+
+        .progress-fill.medium {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .progress-fill.low {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .event-panel {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid var(--accent-primary);
+            margin-bottom: 20px;
+        }
+
+        .event-panel h3 {
+            color: var(--accent-primary);
+            margin-bottom: 12px;
+        }
+
+        .message-log {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 80px;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .panel h3 {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            color: var(--text-primary);
+        }
+
+        .action-btn:hover {
+            background: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .action-btn.disabled:hover {
+            background: var(--bg-card);
+            transform: none;
+        }
+
+        .action-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .action-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .action-btn:hover .action-desc {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .item-badge {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .status-badge.negative {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        .empty-text {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        .start-screen,
+        .end-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 14px;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .start-btn.secondary {
+            background: var(--bg-card);
+        }
+
+        .end-screen.won {
+            background: linear-gradient(180deg, rgba(34, 197, 94, 0.1) 0%, transparent 100%);
+        }
+
+        .end-screen.lost {
+            background: linear-gradient(180deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal h2 {
+            margin-bottom: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .modal-btn.primary {
+            background: var(--accent-success);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .save-btn {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎓 GradQuest</h1>
+            <p>A PhD Life Simulator</p>
+        </header>
+
+        <div id="app">
+            <!-- Start Screen -->
+            <div id="start-screen" class="start-screen panel">
+                <h2 style="margin-bottom: 16px;">Welcome to GradQuest!</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 30px; max-width: 500px; margin: 0 auto 30px;">
+                    You're about to embark on the challenging journey of a PhD student.<br>
+                    Publish 3 papers and defend your thesis before running out of morale!
+                </p>
+                <button class="start-btn" onclick="game.start()">🚀 Start PhD Journey</button>
+                <button class="start-btn secondary" id="load-btn" onclick="game.load()" style="display: none;">💾 Load
+                    Game</button>
+            </div>
+
+            <!-- Game Screen -->
+            <div id="game-screen" style="display: none;">
+                <div class="stats-bar">
+                    <div class="stat-card">
+                        <div class="stat-label">📅 Date</div>
+                        <div class="stat-value" id="date">Sep, Year 1</div>
+                        <div style="color: var(--text-secondary); font-size: 0.8rem;">Month <span
+                                id="total-months">1</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">💪 Morale</div>
+                        <div class="stat-value"><span id="morale">50</span>%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill high" id="morale-bar" style="width: 50%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">📰 Papers</div>
+                        <div class="stat-value"><span id="papers">0</span>/3</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">👨‍🏫 Advisor</div>
+                        <div class="stat-value" style="font-size: 1.2rem;" id="advisor-status">🙂 Happy</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill high" id="advisor-bar" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-panel">
+                    <h3>📢 Latest Event</h3>
+                    <div class="message-log" id="message-log">Your PhD journey begins...</div>
+                </div>
+
+                <div class="main-content">
+                    <div class="panel">
+                        <h3>📋 Actions</h3>
+                        <div class="actions-grid" id="actions"></div>
+                    </div>
+
+                    <div>
+                        <div class="panel">
+                            <h3>📦 Inventory</h3>
+                            <div class="badge-list" id="items"><span class="empty-text">No items yet</span></div>
+                        </div>
+                        <div class="panel">
+                            <h3>⚡ Status Effects</h3>
+                            <div class="badge-list" id="statuses"><span class="empty-text">No effects</span></div>
+                        </div>
+                        <button class="action-btn save-btn" onclick="game.save()">
+                            <div class="action-name">💾 Save Game</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End Screen -->
+            <div id="end-screen" class="end-screen panel" style="display: none;">
+                <div id="end-title" style="font-size: 1.8rem; margin-bottom: 16px;">🎓 Congratulations!</div>
+                <div id="end-message" style="color: var(--text-secondary); margin-bottom: 20px;"></div>
+                <div id="end-stats" style="margin-bottom: 30px;"></div>
+                <button class="start-btn" onclick="game.restart()">🔄 Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thesis Modal -->
+    <div class="modal-overlay" id="thesis-modal">
+        <div class="modal">
+            <h2>📚 Thesis Time!</h2>
+            <p>You have enough papers to graduate. What would you like to do?</p>
+            <div class="modal-actions">
+                <button class="modal-btn primary" onclick="game.thesisDefend()">🎓 Defend Thesis</button>
+                <button class="modal-btn secondary" onclick="game.thesisStay()">📖 Stay for Research</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GradQuest - Pure JavaScript Game Engine
+        const game = {
+            state: null,
+
+            // Month names
+            months: ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+
+            // Initialize new game state
+            initState() {
+                return {
+                    year: 1,
+                    month: 9,
+                    morale: 50,
+                    advisorScore: 50,
+                    qualifyLevel: 0,
+                    qualsPassed: false,
+                    items: {},
+                    statuses: new Set(['firstYear']),
+                    equipmentBrokenMonths: 0,
+                    totalMonths: 1,
+                    isRunning: true,
+                    isEnded: false,
+                    endState: null
+                };
+            },
+
+            // Random number generator
+            random() {
+                return Math.random();
+            },
+
+            // Start new game
+            start() {
+                this.state = this.initState();
+                this.showMessage("🎓 Welcome to your PhD program!\n\nYou start in September. Your goal: publish 3 papers and defend your thesis.\n\nGood luck!");
+                document.getElementById('start-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'block';
+                this.updateUI();
+            },
+
+            // Restart game
+            restart() {
+                localStorage.removeItem('gradquest_save');
+                document.getElementById('end-screen').style.display = 'none';
+                this.start();
+            },
+
+            // Save game
+            save() {
+                const saveData = {
+                    ...this.state,
+                    statuses: Array.from(this.state.statuses),
+                    version: '1.7'
+                };
+                localStorage.setItem('gradquest_save', JSON.stringify(saveData));
+                alert('💾 Game saved!');
+            },
+
+            // Load game
+            load() {
+                const data = localStorage.getItem('gradquest_save');
+                if (!data) {
+                    alert('No saved game found!');
+                    return;
+                }
+                const saveData = JSON.parse(data);
+                this.state = {
+                    ...saveData,
+                    statuses: new Set(saveData.statuses)
+                };
+                document.getElementById('start-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'block';
+                this.updateUI();
+            },
+
+            // Check for saved game on page load
+            checkSave() {
+                if (localStorage.getItem('gradquest_save')) {
+                    document.getElementById('load-btn').style.display = 'inline-block';
+                }
+            },
+
+            // Get item count
+            getItem(id) {
+                return this.state.items[id] || 0;
+            },
+
+            // Add item
+            addItem(id, count = 1) {
+                this.state.items[id] = (this.state.items[id] || 0) + count;
+            },
+
+            // Remove item
+            removeItem(id, count = 1) {
+                this.state.items[id] = Math.max(0, (this.state.items[id] || 0) - count);
+                if (this.state.items[id] === 0) delete this.state.items[id];
+            },
+
+            // Check status
+            hasStatus(id) {
+                return this.state.statuses.has(id);
+            },
+
+            // Add status
+            addStatus(id) {
+                this.state.statuses.add(id);
+            },
+
+            // Remove status
+            removeStatus(id) {
+                this.state.statuses.delete(id);
+            },
+
+            // Show message
+            showMessage(msg) {
+                document.getElementById('message-log').textContent = msg;
+            },
+
+            // Append message
+            appendMessage(msg) {
+                document.getElementById('message-log').textContent += '\n\n' + msg;
+            },
+
+            // Advance month
+            advanceMonth() {
+                this.state.month++;
+                this.state.totalMonths++;
+
+                if (this.state.month > 12) {
+                    this.state.month = 1;
+                    this.state.year++;
+                    if (this.state.year === 2) {
+                        this.removeStatus('firstYear');
+                    }
+                }
+
+                // Monthly morale decay
+                let decay = 3;
+                if (this.hasStatus('exhaustion')) decay += 5;
+                if (this.hasStatus('unhappyAdvisor')) decay += 5;
+                this.state.morale = Math.max(0, this.state.morale - decay);
+
+                // Check morale death
+                if (this.state.morale <= 0) {
+                    this.endGame(false, 'morale', 'You ran out of morale and dropped out.');
+                    return;
+                }
+
+                // Equipment repair
+                if (this.hasStatus('brokenEquipment')) {
+                    this.state.equipmentBrokenMonths++;
+                    if (this.state.equipmentBrokenMonths >= 3 || this.random() < 0.5) {
+                        this.removeStatus('brokenEquipment');
+                        this.state.equipmentBrokenMonths = 0;
+                        this.appendMessage('🔧 Good news! The equipment has been fixed.');
+                    }
+                }
+
+                // Random recovery events
+                if (this.hasStatus('exhaustion') && this.random() < 0.12) {
+                    this.removeStatus('exhaustion');
+                    this.appendMessage('💆 You feel refreshed! Exhaustion has faded.');
+                }
+                if (this.hasStatus('unhappyAdvisor') && this.random() < 0.15) {
+                    this.removeStatus('unhappyAdvisor');
+                    this.appendMessage('🤝 Your advisor seems to have forgiven you.');
+                }
+
+                // Qualifying exam in September Year 2
+                if (this.state.year === 2 && this.state.month === 9 && !this.state.qualsPassed) {
+                    this.triggerQuals();
+                }
+
+                // Random inspiration
+                if (this.random() < 0.03) {
+                    this.state.morale = Math.min(100, this.state.morale + 15);
+                    this.addItem('idea');
+                    this.appendMessage('💡 A sudden flash of inspiration strikes! (+15 morale, +1 idea)');
+                }
+
+                this.updateUI();
+            },
+
+            // Trigger qualifying exam
+            triggerQuals() {
+                let msg = '═══════════════════════════════════\n📝 QUALIFYING EXAM TIME! 📝\n═══════════════════════════════════\n\n';
+
+                if (this.state.qualifyLevel >= 2) {
+                    msg += '✅ QUALS PASSED! ✅\n';
+                    msg += this.state.qualifyLevel >= 3 ? 'Your thorough preparation paid off!' : 'You passed the qualifying exam!';
+                    this.state.morale = Math.min(100, this.state.morale + (this.state.qualifyLevel >= 3 ? 25 : 15));
+                    this.state.qualsPassed = true;
+                } else {
+                    msg += '❌ QUALS FAILED ❌\nYou needed at least 2 preparation sessions.';
+                    this.endGame(false, 'quals_failed', 'You were dismissed after failing quals.');
+                }
+
+                this.showMessage(msg);
+            },
+
+            // End game
+            endGame(won, reason, message) {
+                this.state.isRunning = false;
+                this.state.isEnded = true;
+                this.state.endState = { won, reason, message };
+
+                document.getElementById('game-screen').style.display = 'none';
+                document.getElementById('end-screen').style.display = 'block';
+                document.getElementById('end-screen').className = `end-screen panel ${won ? 'won' : 'lost'}`;
+                document.getElementById('end-title').textContent = won ? '🎓🎉 Congratulations, Doctor! 🎉🎓' : '💔 Game Over 💔';
+                document.getElementById('end-message').textContent = message;
+                document.getElementById('end-stats').innerHTML = `
+                <p style="color: var(--text-secondary);">
+                    Years in program: ${this.state.year}<br>
+                    Papers published: ${this.getItem('paper')}<br>
+                    Final morale: ${this.state.morale}%
+                </p>
+            `;
+            },
+
+            // Get available actions
+            getActions() {
+                const s = this.state;
+                const actions = [];
+
+                // Always available
+                actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Search for ideas' });
+
+                if (this.getItem('idea') > 0) {
+                    actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: 'Develop preliminary results' });
+                }
+                if (this.getItem('preliminary_result') > 0) {
+                    actions.push({ id: 'work_preliminary', name: '🔬 Work on Preliminary', desc: 'Get major results' });
+                }
+                if (this.getItem('major_result') > 0) {
+                    if (this.hasStatus('brokenEquipment')) {
+                        actions.push({ id: 'work_figures_blocked', name: '📊 Work on Figures', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
+                    } else {
+                        actions.push({ id: 'work_figures', name: '📊 Work on Figures', desc: 'Create figures' });
+                    }
+                }
+                if (this.getItem('major_result') > 0 && this.getItem('figure') >= 3) {
+                    actions.push({ id: 'write_paper', name: '📝 Write Paper', desc: 'Submit your paper' });
+                }
+                if (this.getItem('rejected_paper') > 0) {
+                    actions.push({ id: 'revise', name: '✏️ Revise Paper', desc: 'Revise and resubmit' });
+                }
+                if (this.getItem('paper') >= 3) {
+                    actions.push({ id: 'thesis', name: '🎓 Work on Thesis', desc: 'Defend and graduate!' });
+                }
+
+                actions.push({ id: 'slack', name: '😴 Slack Off', desc: 'Recover morale' });
+                actions.push({ id: 'conference', name: '🎤 Conference', desc: '35% idea chance' });
+
+                // Qual prep
+                if ((s.year === 1) || (s.year === 2 && s.month < 9)) {
+                    actions.push({ id: 'quals', name: `📖 Prep for Quals (${s.qualifyLevel}/3)`, desc: 'Study for exam' });
+                }
+
+                actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Skip to next month' });
+
+                return actions;
+            },
+
+            // Perform action
+            doAction(id) {
+                if (this.state.isEnded) return;
+
+                let msg = '';
+                const s = this.state;
+
+                switch (id) {
+                    case 'read':
+                        if (this.random() < 0.4) {
+                            this.addItem('idea');
+                            msg = '💡 After reading several papers, you have a new research idea!';
+                        } else {
+                            msg = '📚 You read some papers. No ideas yet, but you\'re learning...';
+                        }
+                        if (this.random() < 0.05) {
+                            this.addStatus('exhaustion');
+                            msg += '\n😫 All that reading has left you exhausted...';
+                        }
+                        break;
+
+                    case 'work_idea':
+                        if (this.random() < 0.45) {
+                            this.removeItem('idea');
+                            this.addItem('preliminary_result');
+                            msg = '🎉 Success! You\'ve made a Preliminary Result!';
+                        } else {
+                            msg = '😔 You worked hard but didn\'t make progress...';
+                        }
+                        break;
+
+                    case 'work_preliminary':
+                        if (this.random() < 0.35) {
+                            this.removeItem('preliminary_result');
+                            this.addItem('major_result');
+                            msg = '🎉 Success! You\'ve made a Major Result!';
+                        } else {
+                            msg = '😔 You worked hard but didn\'t make progress...';
+                        }
+                        break;
+
+                    case 'work_figures':
+                        if (this.random() < 0.6) {
+                            this.addItem('figure');
+                            msg = `📊 You created a figure! (${this.getItem('figure')}/3 needed)`;
+                        } else {
+                            msg = '😔 The figures didn\'t come out right...';
+                        }
+                        if (this.random() < 0.05) {
+                            this.addStatus('brokenEquipment');
+                            msg += '\n⚠️ Your equipment just broke down!';
+                        }
+                        break;
+
+                    case 'write_paper':
+                        this.removeItem('major_result');
+                        this.removeItem('figure', 3);
+                        if (this.random() < 0.6) {
+                            this.addItem('paper');
+                            s.advisorScore = Math.min(100, s.advisorScore + 15);
+                            msg = `🎉 ACCEPTED! Paper published! (${this.getItem('paper')}/3 complete)`;
+                        } else {
+                            this.addItem('rejected_paper');
+                            msg = '😢 REJECTED. The reviewers were not convinced.';
+                        }
+                        break;
+
+                    case 'revise':
+                        this.removeItem('rejected_paper');
+                        if (this.random() < 0.7) {
+                            this.addItem('paper');
+                            s.advisorScore = Math.min(100, s.advisorScore + 15);
+                            msg = `🎉 ACCEPTED on revision! (${this.getItem('paper')}/3 complete)`;
+                        } else {
+                            this.addItem('rejected_paper');
+                            msg = '😢 Rejected again... Keep trying!';
+                        }
+                        break;
+
+                    case 'slack':
+                        const gain = 5 + Math.floor(this.random() * 10);
+                        s.morale = Math.min(100, s.morale + gain);
+                        s.advisorScore = Math.max(0, s.advisorScore - 5);
+                        msg = `😌 You took some time to relax. (+${gain} morale)`;
+                        if (this.hasStatus('exhaustion') && this.random() < 0.35) {
+                            this.removeStatus('exhaustion');
+                            msg += '\n💆 You\'re feeling refreshed!';
+                        }
+                        if (this.hasStatus('unhappyAdvisor') && this.random() < 0.25) {
+                            this.removeStatus('unhappyAdvisor');
+                            msg += '\n🤝 Your advisor has cooled down.';
+                        }
+                        if (!this.hasStatus('unhappyAdvisor') && this.random() < 0.1) {
+                            this.addStatus('unhappyAdvisor');
+                            msg += '\n😠 Your advisor noticed you weren\'t working...';
+                        }
+                        break;
+
+                    case 'conference':
+                        s.morale = Math.min(100, s.morale + 8);
+                        msg = '🎤 You attended a conference! (+8 morale)';
+                        if (this.random() < 0.35) {
+                            this.addItem('idea');
+                            msg += '\n💡 The talks inspired a new idea!';
+                        }
+                        if (this.random() < 0.1) {
+                            s.advisorScore = Math.min(100, s.advisorScore + 10);
+                            msg += '\n🤝 Your advisor heard good things!';
+                        }
+                        break;
+
+                    case 'quals':
+                        const points = Math.floor(this.random() * 3);
+                        s.qualifyLevel += points;
+                        if (points === 0) {
+                            msg = `📖 You studied but didn\'t retain much. (${s.qualifyLevel}/3)`;
+                        } else if (points === 1) {
+                            msg = `📖 Decent study session! (${s.qualifyLevel}/3)`;
+                        } else {
+                            msg = `📖 Great progress! (${s.qualifyLevel}/3)`;
+                        }
+                        break;
+
+                    case 'thesis':
+                        document.getElementById('thesis-modal').classList.add('active');
+                        return; // Don't advance month yet
+
+                    case 'advance':
+                        msg = 'Time passes...';
+                        break;
+                }
+
+                this.showMessage(msg);
+                this.advanceMonth();
+            },
+
+            // Thesis actions
+            thesisDefend() {
+                document.getElementById('thesis-modal').classList.remove('active');
+                if (this.random() < 0.9) {
+                    this.showMessage('🎓🎉 CONGRATULATIONS, DOCTOR! 🎉🎓\n\nYou\'ve successfully defended your thesis!');
+                } else {
+                    this.showMessage('😅 The defense was rough, but you passed with major revisions!');
+                }
+                this.endGame(true, 'graduation', 'You are now Dr. You!');
+            },
+
+            thesisStay() {
+                document.getElementById('thesis-modal').classList.remove('active');
+                this.state.morale = Math.min(100, this.state.morale + 20);
+                this.state.advisorScore = Math.min(100, this.state.advisorScore + 10);
+                this.showMessage('You decide to stay and do more research. Your advisor is pleased. (+20 morale)');
+                this.advanceMonth();
+            },
+
+            // Update UI
+            updateUI() {
+                const s = this.state;
+
+                // Stats
+                document.getElementById('date').textContent = `${this.months[s.month]}, Year ${s.year}`;
+                document.getElementById('total-months').textContent = s.totalMonths;
+                document.getElementById('morale').textContent = s.morale;
+                document.getElementById('papers').textContent = this.getItem('paper');
+
+                // Morale bar
+                const moraleBar = document.getElementById('morale-bar');
+                moraleBar.style.width = `${s.morale}%`;
+                moraleBar.className = 'progress-fill ' + (s.morale > 60 ? 'high' : s.morale > 30 ? 'medium' : 'low');
+
+                // Advisor
+                const advisorBar = document.getElementById('advisor-bar');
+                advisorBar.style.width = `${s.advisorScore}%`;
+                const hasUnhappy = this.hasStatus('unhappyAdvisor');
+                if (hasUnhappy || s.advisorScore < 30) {
+                    document.getElementById('advisor-status').textContent = '😠 Unhappy';
+                    advisorBar.className = 'progress-fill low';
+                } else if (s.advisorScore < 50) {
+                    document.getElementById('advisor-status').textContent = '😐 Neutral';
+                    advisorBar.className = 'progress-fill medium';
+                } else {
+                    document.getElementById('advisor-status').textContent = '🙂 Happy';
+                    advisorBar.className = 'progress-fill high';
+                }
+
+                // Actions
+                const actionsEl = document.getElementById('actions');
+                actionsEl.innerHTML = this.getActions().map(a => `
+                <button class="action-btn${a.disabled ? ' disabled' : ''}" ${a.disabled ? '' : `onclick="game.doAction('${a.id}')"`}>
+                    <div class="action-name">${a.name}</div>
+                    <div class="action-desc">${a.desc}</div>
+                </button>
+            `).join('');
+
+                // Items
+                const itemsEl = document.getElementById('items');
+                const itemNames = { idea: 'Idea', preliminary_result: 'Preliminary', major_result: 'Major Result', figure: 'Figure', paper: 'Paper', rejected_paper: 'Rejected' };
+                const itemEntries = Object.entries(s.items).filter(([k, v]) => v > 0);
+                if (itemEntries.length > 0) {
+                    itemsEl.innerHTML = itemEntries.map(([k, v]) =>
+                        `<span class="item-badge">${itemNames[k] || k} ×${v}</span>`
+                    ).join('');
+                } else {
+                    itemsEl.innerHTML = '<span class="empty-text">No items yet</span>';
+                }
+
+                // Statuses
+                const statusesEl = document.getElementById('statuses');
+                const statusNames = { exhaustion: 'Exhaustion', unhappyAdvisor: 'Unhappy Advisor', brokenEquipment: 'Broken Equipment', firstYear: 'First Year' };
+                const negatives = ['exhaustion', 'unhappyAdvisor', 'brokenEquipment'];
+                if (s.statuses.size > 0) {
+                    statusesEl.innerHTML = Array.from(s.statuses).map(id =>
+                        `<span class="status-badge${negatives.includes(id) ? ' negative' : ''}">${statusNames[id] || id}</span>`
+                    ).join('');
+                } else {
+                    statusesEl.innerHTML = '<span class="empty-text">No effects</span>';
+                }
+            }
+        };
+
+        // Check for saved game on load
+        document.addEventListener('DOMContentLoaded', () => game.checkSave());
+    </script>
+</body>
+
+</html>
