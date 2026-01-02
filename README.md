@@ -37,17 +37,26 @@ data/rulesets/       # Game data (YAML files)
 
 ## Version History
 
-### V1.6 (Current)
+### V1.8 (Current)
+- **Paper submission delay**: 2-5 months wait for reviews (realistic timeline!)
+- **"Take a Break"**: Renamed from "Slack Off"
+- **Conference limit**: Max 3 per academic year
+- **Initial Findings / Key Discovery**: Renamed research stages
+- **Diverse messages**: Varied responses for read/work/figures actions
+
+### V1.7
+- **Help button**: Game mechanics modal on start screen
+- **Shareable seeds**: `?seed=X` URL for reproducible games
+- **Morale on success**: +5 for findings, +3 for figures
+
+### V1.6
 - **Automated tests**: pytest suite with 11 passing tests
 - **Save/Load**: Game state persists to browser localStorage
-- **Load button**: Continue previous game from start screen
 
 ### V1.5
 - **Equipment bug fixed**: Repair now handled in web app (guaranteed within 3 months)
 - **Total months counter**: Shows elapsed time
 - **Advisor happiness bar**: Visual indicator in stats
-- **Status tooltips**: Hover to see effect description
-- **Randomized qual prep**: 0-2 points per session (need ~2-4 sessions)
 
 ### V1.2
 - **Fixed qual exam timing**: Triggers in September year 2 (one full year)
