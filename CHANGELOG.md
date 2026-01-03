@@ -2,6 +2,26 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.9.0] - 2026-01-03 "Fairness & Clarity"
+
+**Theme**: A player should never lose because they misunderstood priority, timing, or invisible mechanics.
+
+### Bug Fixes
+- **Copy Game Link**: Fixed! Now copies full game URL with seed parameter
+  - Click "🔗 Copy Game Link" to share your run
+
+### Quals Countdown UI
+- **Year 1, Month 9**: "⚠️ QUALS APPROACHING" warning (12 months out)
+- **Year 2, Month 7**: "⏳ QUALS IN 2 MONTHS" with prep level shown
+- **Year 2, Month 8**: "🚨 QUALS NEXT MONTH - CRITICAL" 
+
+### Quals Soft Fail (Once)
+- **First failure**: -25 morale, +Exhaustion, 3-month delay for retake
+- **Second failure**: Game over (as before)
+- Gives players ONE second chance - still punishing, but not opaque
+
+---
+
 ## [2.8.0] - 2026-01-03 "Adaptive Resilience Phase 2"
 
 Based on V2.7 73-month stress test (6-year PhD run). Tunes dominant loops while preserving realism.

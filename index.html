@@ -784,6 +784,18 @@
                 document.getElementById('history-modal').classList.remove('active');
             },
 
+            // V2.9: Copy game link with seed
+            copyGameLink() {
+                const baseUrl = window.location.origin + window.location.pathname;
+                const gameLink = `${baseUrl}?seed=${this.state.seed}`;
+                navigator.clipboard.writeText(gameLink).then(() => {
+                    alert('Game link copied!\n\n' + gameLink);
+                }).catch(err => {
+                    // Fallback for older browsers
+                    prompt('Copy this link:', gameLink);
+                });
+            },
+
             // Advance month
             advanceMonth() {
                 this.state.month++;
@@ -930,9 +942,27 @@
                     this.appendMessage('🤝 Your advisor seems to have forgiven you.');
                 }
 
+                // V2.9: Quals countdown warnings
+                if (!this.state.qualsPassed && this.state.year <= 2) {
+                    if (this.state.year === 1 && this.state.month === 9) {
+                        this.appendMessage('⚠️ QUALS APPROACHING: Your qualifying exam is in 12 months (September Year 2). Start preparing!');
+                    } else if (this.state.year === 2 && this.state.month === 7) {
+                        this.appendMessage('⏳ QUALS IN 2 MONTHS: Prep level = ' + (this.state.qualifyLevel || 0) + '. You need 2 to pass!');
+                    } else if (this.state.year === 2 && this.state.month === 8) {
+                        this.appendMessage('🚨 QUALS NEXT MONTH! Prep level = ' + (this.state.qualifyLevel || 0) + '. CRITICAL - prepare now!');
+                    }
+                }
+
                 // Qualifying exam in September Year 2
-                if (this.state.year === 2 && this.state.month === 9 && !this.state.qualsPassed) {
+                if (this.state.year === 2 && this.state.month === 9 && !this.state.qualsPassed && !this.state.qualsFailedOnce) {
                     this.triggerQuals();
+                }
+
+                // V2.9: Quals retake trigger (3 months after first failure)
+                if (this.state.qualsDelayMonth && this.state.totalMonths >= this.state.qualsDelayMonth && !this.state.qualsPassed) {
+                    this.appendMessage('🚨 QUALS RETAKE TIME! This is your last chance!');
+                    this.triggerQuals();
+                    this.state.qualsDelayMonth = null; // Clear so it doesn't repeat
                 }
 
                 // V2.8: Random inspiration (capped at 2/year, diminishing returns)
@@ -1084,8 +1114,22 @@
                     this.state.morale = Math.min(100, this.state.morale + (effectiveLevel >= 3 ? 25 : 15));
                     this.state.qualsPassed = true;
                 } else {
-                    msg += '❌ QUALS FAILED ❌\nYou needed at least 2 preparation sessions.';
-                    this.endGame(false, 'quals_failed', 'You were dismissed after failing quals.');
+                    // V2.9: Soft fail option (once)
+                    if (!this.state.qualsFailedOnce) {
+                        this.state.qualsFailedOnce = true;
+                        this.state.morale = Math.max(0, this.state.morale - 25);
+                        this.addStatus('exhaustion');
+                        this.state.qualsDelayMonth = this.state.totalMonths + 3; // Retry in 3 months
+                        msg += '❌ QUALS FAILED ❌\n';
+                        msg += 'Your committee is giving you ONE more chance.\n';
+                        msg += 'You have 3 months to prepare for the retake.\n';
+                        msg += '(-25 morale, +Exhaustion)';
+                    } else {
+                        msg += '❌ QUALS FAILED AGAIN ❌\nYou needed at least 2 preparation sessions.';
+                        this.showMessage(msg);
+                        this.endGame(false, 'quals_failed', 'You were dismissed after failing quals twice.');
+                        return;
+                    }
                 }
 
                 this.showMessage(msg);
@@ -1131,7 +1175,7 @@
                     Seed: ${this.state.seed}
                 </p>
                 <button class="modal-btn" onclick="game.showHistory()" style="margin-right: 8px;">📜 View History</button>
-                <button class="modal-btn" onclick="navigator.clipboard.writeText('${this.state.seed}')">📋 Copy Seed</button>
+                <button class="modal-btn" onclick="game.copyGameLink()">🔗 Copy Game Link</button>
             `;
             },
 

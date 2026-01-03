@@ -615,3 +615,267 @@ Goal: Emotional arc; catharsis.
 - Pytest: 100 sims pre/post (track confs/yr, inspiration freq, scoop clusters, MS triggers).
 - Stress: Long seeds—no >120mo without choice; morale curves varied.
 - Metrics: 30-40% PhD win, avg morale 45-60% end.
+
+V2.9
+Below is a concrete, execution-oriented V2.9 Improvement Plan that integrates the expert review and respects your stated design philosophy: interesting, realistic, not cumbersome. I’ll be blunt where tradeoffs exist and explicit about scope control.
+
+⸻
+
+GradQuest V2.9 — Solid Improvement Plan
+
+Theme: Stability, Transparency, and Preventing “Unfair Loss”
+Non-goal: No weekly-scale realism, no Pro-mode depth, no new major subsystems
+
+V2.9 should feel like “the fair version” of GradQuest: losses are still harsh, but never opaque or accidental.
+
+⸻
+
+1. Core Objective for V2.9 (Design Anchor)
+
+A player should never lose because they misunderstood priority, timing, or invisible mechanics.
+
+Failure is allowed. Confusion is not.
+
+Every item below serves this principle.
+
+⸻
+
+2. High-Priority Gameplay Fixes (Must Ship)
+
+2.1 Quals Failure Gate → Quals Priority System
+
+Problem
+	•	Quals is the #1 failure point
+	•	Loss feels abrupt and non-strategic
+
+Actionable Changes
+	1.	3-Month Countdown UI
+	•	August Y1: yellow “⚠ Quals Approaching”
+	•	July Y2: orange “⏳ High Priority”
+	•	August Y2: red “🚨 Critical”
+	2.	Action Highlighting
+	•	“Prep for Quals” button pulses / glows during urgency window
+	•	Tooltip explicitly states:
+“Failure to prepare = automatic game over in September.”
+	3.	Soft Fail Option (Once)
+	•	First failure triggers:
+	•	−25 morale
+	•	+Exhaustion
+	•	Forced 3-month delay (retest)
+	•	Second failure = game over
+
+Why this works
+	•	Keeps realism
+	•	Removes “I didn’t know” losses
+	•	Still punishing
+
+⸻
+
+2.2 Research Pipeline Buffers (Anti-Frustration)
+
+Problem
+	•	Full figure reset after rejection feels excessive
+	•	Especially bad after long review times
+
+Actionable Changes
+	1.	Major Revision Carryover
+	•	On Major Revision:
+	•	Retain 1 figure
+	•	UI shows “Figure salvaged from revisions”
+	2.	Advisor Trait Interaction
+	•	High Attention Span advisor → higher chance of carryover
+	•	High Strictness → no carryover
+	3.	Explicit Messaging
+	•	Event text explains why carryover happened or didn’t
+
+Why this works
+	•	Keeps grind real
+	•	Rewards alignment
+	•	Reduces rage quits
+
+⸻
+
+3. Advisor & Resilience Systems (Light, Not Pro-Mode)
+
+3.1 Strategic Alignment (Visible, Simple)
+
+Problem
+	•	Advisor traits are opaque
+	•	Players can’t tell if they’re “playing well”
+
+Actionable Changes
+	1.	Add visible stat: Strategic Alignment (0–100)
+	2.	Increases when:
+	•	Acting in line with advisor feedback
+	•	Using Pitch Sessions effectively
+	3.	Effects:
+	•	−10–25% morale decay
+	•	Slightly reduced review RNG variance
+
+Explicit Non-Goal
+	•	No weekly modeling
+	•	No advisor micromanagement
+
+Why this works
+	•	Makes “learning your advisor” legible
+	•	Reinforces resilience framing
+
+⸻
+
+3.2 Advisor Feedback Signal Clarity
+
+Actionable Changes
+	•	Every advisor quote tagged internally as:
+	•	Positive
+	•	Neutral
+	•	Warning
+	•	UI hint on hover:
+“This feedback improves success odds if followed.”
+
+This preserves ambiguity without hiding mechanics.
+
+⸻
+
+4. UI / UX Transparency Fixes (High ROI, Low Cost)
+
+4.1 Pipeline Visibility Upgrade
+
+Problem
+	•	Players don’t know how close they are to submission
+
+Actionable Changes
+	1.	Inventory line:
+	•	“Figures: 2 / 3”
+	2.	Action button subtitle:
+	•	“1 more figure needed to submit”
+
+Zero mechanical change, massive clarity gain.
+
+⸻
+
+4.2 Status Impact Explanations
+
+Problem
+	•	Status effects silently block actions
+
+Actionable Changes
+	•	Disabled buttons show tooltip:
+	•	“Blocked due to: Broken Equipment”
+	•	“Expected resolution: 2 months”
+
+This converts confusion into planning.
+
+⸻
+
+4.3 Event History Expansion
+
+Actionable Changes
+	•	Increase history cap from 20 → 50
+	•	Add category icons (Advisor / Research / RNG / Personal)
+
+This reinforces GradQuest as a debuggable system, not chaos.
+
+⸻
+
+5. RNG & Event Fairness Adjustments
+
+5.1 Action Hijacking Guardrails
+
+Problem
+	•	Player-selected actions overridden by events
+
+Actionable Changes
+	1.	Priority Lock
+	•	Time-critical actions (Quals, Submission) cannot be hijacked
+	2.	Event Deferral
+	•	Seasonal events can delay but not cancel chosen actions
+	3.	Explicit Messaging
+	•	“Your conference trip was delayed due to Holiday Break.”
+
+This preserves realism without stealing agency.
+
+⸻
+
+5.2 RNG Caps & Cooldowns
+
+Actionable Changes
+	•	Scooped events:
+	•	Cooldown: 6–9 months
+	•	Imposter syndrome:
+	•	Reduced impact if morale already low
+	•	Reviewer #2:
+	•	No consecutive Major Revisions without a neutral outcome in between
+
+⸻
+
+6. MS-Out Reframe (Narrative, Not Mechanics)
+
+6.1 MS-Out as Strategic Ending
+
+Actionable Changes
+	1.	Rename button:
+	•	“Strategic Master’s Exit”
+	2.	Ending cards emphasize:
+	•	Salary outcomes
+	•	Career momentum
+	3.	Ending tone:
+	•	“You chose stability over uncertainty.”
+
+No new systems needed, just reframing and copy changes.
+
+⸻
+
+7. Technical Debt Reduction (Minimal, Realistic)
+
+7.1 Ruleset Parity Safeguard (V2.9 Scope)
+
+Problem
+	•	Dual-engine drift
+
+Actionable V2.9 Compromise
+	•	Define one authoritative ruleset (JS or YAML)
+	•	Add a “logic checksum” comment block
+	•	Manual but auditable parity for now
+
+Explicitly defer
+	•	Full YAML runtime parsing → V3.x
+
+⸻
+
+8. Opportunity Cost Visualization (Passive, Optional)
+
+8.1 Toggleable Opportunity Cost Panel
+
+Actionable Changes
+	•	Optional UI toggle:
+	•	“Industry Salary vs Stipend”
+	•	Morale drain:
+	•	Slow, asymptotic
+	•	Never lethal alone
+
+Important
+	•	No forced guilt
+	•	Player can hide it
+
+⸻
+
+9. What V2.9 Will NOT Do (Critical)
+
+To avoid collapse:
+	•	❌ Weekly time scale
+	•	❌ Pro-mode realism
+	•	❌ Multiple advisor personalities in one run
+	•	❌ New major stats
+	•	❌ Agent-based simulation
+
+V2.9 is about fairness and clarity, not depth.
+
+⸻
+
+Final Assessment
+
+If implemented cleanly, V2.9 will be the first version that:
+	•	Feels fair even when brutal
+	•	Teaches players why they failed
+	•	Can survive Reddit / Hacker News scrutiny
+	•	Creates trust for future Pro mode
