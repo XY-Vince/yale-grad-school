@@ -2,6 +2,40 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.7.0] - 2026-01-03 "Adaptive Resilience"
+
+Based on 256-month stress test observations. Prevents infinite equilibrium and adds friction.
+
+### Breaking Dominant Loops
+
+#### Advisor Fatigue
+- New state: `advisorInterventions` tracks vacation suggestions
+- After 5 interventions: Reduced enthusiasm ("You really need to manage your energy...")
+- After 10 interventions: Advisor stops offering (no more vacation suggestions)
+- 10% chance of "advisor stopped checking" message when struggling alone
+
+#### Vacation Diminishing Returns
+- New state: `vacationsThisYear` resets each year
+- Each vacation reduces next gain by -5 morale (base 15-25 → min 5)
+- Only first vacation of year clears burnout status
+- Message changes to "diminishing returns" after 2+ vacations
+
+#### Conference Caps
+- Reduced from 3/year to **2/year** (after Year 1)
+- Conferences now give +5 network (or +2 if network > 80)
+- Morale gain halved when network > 80
+
+#### Hard Variable Bounds
+- Figures capped at 3 (prevents "4/3 needed" bug)
+- Ideas capped at 5 (prevents hoarding)
+- Key discoveries capped at 3
+
+### Balance Changes
+- Advisor happiness level effects (added in V2.6)
+- Network panel layout fixed
+
+---
+
 ## [2.6.0] - 2026-01-03
 
 ### Added

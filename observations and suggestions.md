@@ -467,3 +467,82 @@ Actionable Plan for V2.4
 in the following case, only month 3 activity is shown, month 2 was never shown in latest events, they should be appearing simultaneously
 "Month 3: 💡 A sudden flash of inspiration strikes! (+15 morale, +1 idea)
 Month 2: 📖 Decent study session!"
+
+
+V2.7
+
+### Critical Observations on V2.6 Stress Test Run (256-Month PhD)
+
+#### **Key Strengths (Stable & Thematic)**
+- **Engine Robustness**: Handles 365+ events, 255 turns without overflow/soft-locks. Graduation triggers correctly despite extremes.
+- **Cathartic Realism**: Advisor "week off" insists (x30+), imposter/labmate hits, scoops (x3), equipment cycles, frequent confs (x50+) capture PhD chaos—morale volatility feels authentic (dips to low, recovers via breaks).
+- **Network Payoff**: Max 100 via confs enables late accepts—strategic, not useless (contra Expert #1 partial critique).
+- **Flavor Depth**: Diverse events (holidays/TA/inspirations) prevent total monotony; MS out suggested early (Month 7).
+
+#### **Critical Issues (Unbounded Loops & Fiction Cracks)**
+| Issue | Observation from Log | Expert Alignment | Impact |
+|-------|----------------------|------------------|--------|
+| **Advisor Intervention Dominance** | "Week off" insists x40+, clearing exhaustion +15-25 morale routinely (e.g., Months 11-199 cycles). Benevolent regulator, not constraint. | Both experts: Stall loop (Expert #1); overpowered sustain (Expert #2). | Trivializes burnout; stabilizes morale too well (35% end after 21yrs). |
+| **Time Off Overpowered** | No cooldown/diminishing; erases exhaustion freely. | Expert #2 dominant. | Infinite equilibrium—prevents Game Over but stalls progress. |
+| **Conference Spam** | x50+ attends (multiple/year); max network early, idea/morale farm. | Expert #2 farming. | Events lose meaning; inflation vs real limits (1-3/yr typical). |
+| **Numerical Leakage** | Figures "4/3 needed" (Month 189); no hard caps. | Expert #2 leakage. | Harmless short-term but signals unbounded vars in extremes. |
+| **Advisor No Memory/Trajectory** | Feedback oscillates endlessly (harsh → praise → harsh); no aging/impatience. | Expert #2 memory lack; Expert #1 routing need. | Flattens narrative—21yr advisor unchanged. |
+| **Emotional Repetition** | Imposter/labmate x20+; flat deltas, blur over time. | Expert #2 lose impact. | Mechanical, not psychological depth. |
+| **No Institutional Pressure** | Infinite duration tolerated; no funding cliffs/reviews. | Expert #2 infinite institution. | Fictionally absurd (real caps 7-10yrs). |
+| **Late-Game Friction Mismatch** | 4th paper struggles like 1st (Reviewer #2 streaks, redos). | Expert #1 #2 dominance/no experience buff. | Undermines progression sense. |
+
+### Solid Action Plan for V2.7+ "Adaptive Resilience"
+
+Incorporate experts holistically: Expert #1's narrative agency (Field Authority, Peer Pre-print, Financial Pivot, Sunken Cost); Expert #2's systems rigor (fatigue/cooldowns/caps/memory/pressure). Phased, YAML-modular (new `rulesets/adaptive.yaml`). Prioritize high-impact/low-effort; test via 100 sims (target: avg 72-96mo, 30-40% PhD win, 40% MS out, end-morale 50%+).
+
+#### **Phase 1: Break Dominant Loops (Immediate, 1-2 Weeks)**
+Goal: Prevent infinite sustain; add friction memory.
+1. **Advisor Fatigue/Desensitization** (Expert #2 A + Expert #1 routing):
+   - New var: `advisor.interventions` (count).
+   - After 10+: Reduced morale gain (50%), or "Stops noticing" (no more insists).
+   - YAML: Counter + conditional actions.
+2. **Time Off Diminishing Returns/Cooldown** (Expert #2 B):
+   - Rolling 12mo: Each subsequent -5 morale gain; or "Advisor disapproves repeated breaks" (-advisor score).
+   - No cooldown exploit—real advisors burnout too.
+3. **Conference Caps** (Expert #2 C):
+   - Hard: Max 2/year (RNG 1-3 early, taper late).
+   - Diminishing: >Network 80: +morale halved.
+   - Keeps events special.
+
+#### **Phase 2: Add Progression & Agency (2-4 Weeks)**
+Goal: Experience buffs; bypass options.
+1. **Field Authority Buff** (Expert #1 1):
+   - New var: `field_authority` (+10/paper published).
+   - Reduces harsh feedback % (e.g., -20% "tear apart" per 20 authority); +submit success.
+   - Late papers easier—real expertise growth.
+2. **Peer Pre-print Bypass** (Expert #1 3):
+   - Unlock Network ≥80: Action "Peer Feedback" (skips 1 advisor review month, +idea chance, risk irritation -10 score).
+   - Breaks stalls; agency vs toxic advisor.
+3. **Hard Var Bounds** (Expert #2 D):
+   - Clamp figures/ideas (max 3/required); no overshoot.
+   - Prevent leakage in extremes.
+
+#### **Phase 3: Narrative Depth & Pressure (4-6 Weeks)**
+Goal: Evolving humans/institution; scaled emotion.
+1. **Advisor Memory/Trajectory** (Expert #2 E):
+   - Patience var: Decreases yearly (>Year 10: +harsh %, "Impatient" events).
+   - Feedback evolves: Early technical → late political/funding.
+2. **Scaled Emotional Events** (Expert #2 F):
+   - Imposter/labmate: Early hard hits (-8); late milder/cynical ("Disengaged" -research speed).
+   - Transform over time.
+3. **Institutional Pressure** (Expert #2 G):
+   - >Year 8: Funding questions (-morale); Year 12+: Department review (forced milestones or MS nudge).
+   - Ends infinite runs realistically.
+4. **Sunken Cost & MS Refinement** (Expert #1 4):
+   - >Year 10: MS out → "Academic Martyrdom" (slow morale decay, but +health risks or cynicism).
+   - Early triggers stronger; profiles richer (e.g., high authority → "Professor Path" hint).
+
+#### **Phase 4: Polish & Extensions (Ongoing)**
+1. **Financial Pivot/Opportunity Cost** (future update):
+   - Threshold ($500k lost): "Industry Gig" choice (+money/morale, -advisor irritation).
+   - Ties macro interest.
+2. **Ivy Overlay** (future update):
+   - Optional ruleset: Higher quals, salary benchmark, field-specific (e.g., comp bio events).
+3. **Testing/Validation**:
+   - Pytest: 100 sims pre/post changes (track avg months, morale curves, loop escapes).
+   - Stress: Force 200+mo seeds—verify no infinite equilibrium.
