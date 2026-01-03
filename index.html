@@ -934,19 +934,36 @@
                     }
                 }
 
-                // V3.0: Teaching Duty (random TA assignment ~10% in fall/spring)
-                if (!this.state.isTeaching && (month >= 9 || month <= 5) && this.random() < 0.1) {
+                // V2.5: Teaching Duty aligned with semesters
+                // Spring: Jan-May (months 1-5), Fall: Sep-Dec (months 9-12), Summer: Jun-Aug (rare)
+                const isSemesterStart = (month === 1 || month === 6 || month === 9);
+                const isSummer = (month === 6);
+                const taChance = isSummer ? 0.03 : 0.1; // 3% summer, 10% fall/spring
+
+                if (!this.state.isTeaching && isSemesterStart && this.random() < taChance) {
                     this.state.isTeaching = true;
-                    this.state.teachingMonths = 3 + Math.floor(this.random() * 2); // 3-4 months
-                    this.appendMessage('📝 You\'ve been assigned to TA a course for the semester!');
+                    // Duration based on semester
+                    if (month === 1) {
+                        this.state.teachingMonths = 5; // Spring: Jan-May
+                        this.appendMessage('📝 You\'ve been assigned to TA for Spring semester! (Jan-May)');
+                    } else if (month === 6) {
+                        this.state.teachingMonths = 3; // Summer: Jun-Aug
+                        this.appendMessage('📝 You\'ve been assigned to TA for Summer session! (Jun-Aug)');
+                    } else {
+                        this.state.teachingMonths = 4; // Fall: Sep-Dec
+                        this.appendMessage('📝 You\'ve been assigned to TA for Fall semester! (Sep-Dec)');
+                    }
+                    this.addStatus('teaching'); // V2.5: Add as status effect
                 }
                 if (this.state.isTeaching) {
                     this.state.teachingMonths--;
                     if (this.state.teachingMonths <= 0) {
                         this.state.isTeaching = false;
+                        this.removeStatus('teaching');
                         const teachBonus = 5 + Math.floor(this.random() * 5);
                         this.state.morale = Math.min(100, this.state.morale + teachBonus);
-                        this.appendMessage('🎓 TA duty complete! Students appreciated you. (+' + teachBonus + ' morale)');
+                        this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5); // V2.5: +network
+                        this.appendMessage('🎓 TA duty complete! Students appreciated you. (+' + teachBonus + ' morale, +5 network)');
                     }
                 }
 
