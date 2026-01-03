@@ -824,6 +824,12 @@
                 if (advScore < 40 && advScore >= 20 && this.random() < 0.1) {
                     this.appendMessage('🧑‍🏫 Your advisor seems impatient lately. Consider showing progress.');
                 }
+                // V2.7: Serious morale warnings before death
+                if (this.state.morale <= 10 && this.state.morale > 5) {
+                    this.appendMessage('⚠️ CRITICAL: Your mental health is severely compromised. You feel disconnected from everything.');
+                } else if (this.state.morale <= 5 && this.state.morale > 0) {
+                    this.appendMessage('🚨 EMERGENCY: You can barely function. One more setback and you\'re done.');
+                }
 
                 // Check morale death
                 if (this.state.morale <= 0) {
@@ -1087,13 +1093,22 @@
 
                 document.getElementById('end-title').textContent = title;
                 document.getElementById('end-message').textContent = endMessage;
+                // V2.7: Include more stats, history, and seed access on end screen
+                const journalPapers = this.getItem('paper') || 0;
+                const confPapers = this.state.confPaperCount || 0;
                 document.getElementById('end-stats').innerHTML = `
-                <p style="color: var(--text-secondary);">
+                <p style="color: var(--text-secondary); margin-bottom: 12px;">
                     Months elapsed: ${this.state.totalMonths}<br>
-                    Papers published: ${this.getItem('paper')}<br>
+                    Publications: ${journalPapers + confPapers} (${journalPapers} Journal + ${confPapers} Conference)<br>
                     Final morale: ${this.state.morale}%<br>
-                    Peer Network: ${this.state.peerNetwork || 0}
+                    Peer Network: ${this.state.peerNetwork || 0}<br>
+                    Advisor Happiness: ${this.state.advisorScore}%
                 </p>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">
+                    Seed: ${this.state.seed}
+                </p>
+                <button class="modal-btn" onclick="game.showHistory()" style="margin-right: 8px;">📜 View History</button>
+                <button class="modal-btn" onclick="navigator.clipboard.writeText('${this.state.seed}')">📋 Copy Seed</button>
             `;
             },
 
