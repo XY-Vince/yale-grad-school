@@ -1106,7 +1106,7 @@
 
                 // V2.5: Advisor-suggested vacation (fast recovery, optional)
                 if (s.vacationOffered && !s.onVacation) {
-                    actions.push({ id: 'vacation', name: '🏖️ Advisor Vacation', desc: '+30 morale (advisor suggested)' });
+                    actions.push({ id: 'vacation', name: '🏖️ Take Time Off', desc: 'Advisor suggested rest' });
                 }
 
                 // V2.2 Pro: Pitch Session (always available after first year)
@@ -1308,11 +1308,12 @@
 
                     // V2.5: Advisor-suggested vacation (fast recovery)
                     case 'vacation':
-                        s.morale = Math.min(s.maxMorale || 100, s.morale + 30);
+                        const vacGain = 15 + Math.floor(this.random() * 11); // +15 to +25
+                        s.morale = Math.min(s.maxMorale || 100, s.morale + vacGain);
                         s.vacationOffered = false; // Used up the offer
                         if (this.hasStatus('exhaustion')) this.removeStatus('exhaustion');
                         if (this.hasStatus('burnout')) this.removeStatus('burnout');
-                        msg = '🏖️ You took a week off as your advisor suggested.\nYou feel completely refreshed! (+30 morale, cleared exhaustion)';
+                        msg = '🏖️ You took time off as your advisor suggested.\nYou feel refreshed! (+' + vacGain + ' morale, cleared exhaustion)';
                         break;
 
                     case 'conference':
@@ -1511,8 +1512,10 @@
                     return `<span style="${style}">${st.icon} ${st.label}${hasItems ? ' ×' + st.count : ''}</span>`;
                 }).join('');
 
-                // Pending/Rejected/TA
+                // Pending/Rejected/TA/Conference Papers
                 const extras = [];
+                const confPapers = s.confPaperCount || 0;
+                if (confPapers > 0) extras.push('📋 Conf Papers ×' + confPapers);
                 if (this.getItem('rejected_paper') > 0) extras.push('❌ Rejected ×' + this.getItem('rejected_paper'));
                 if (s.pendingPapers && s.pendingPapers.length > 0) extras.push('⏳ Under Review ×' + s.pendingPapers.length);
                 if (s.isTeaching) extras.push('📝 TA Duty (' + s.teachingMonths + ' mo)');
