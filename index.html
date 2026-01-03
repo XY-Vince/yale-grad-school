@@ -807,6 +807,12 @@
                     return;
                 }
 
+                // V2.5: Advisor suggests vacation at critical morale
+                if (this.state.morale < 25 && !this.state.vacationOffered && !this.state.onVacation) {
+                    this.state.vacationOffered = true;
+                    this.appendMessage('🧑‍🏫 Your advisor notices you\'re struggling:\n"You look exhausted. Why don\'t you take a week off? I insist."');
+                }
+
                 // V2.4: Early MS-Out in Year 1 if morale critical (<15)
                 if (this.state.year === 1 && this.state.morale < 15 && !this.state.msOutOffered) {
                     this.state.msOutOffered = true;
@@ -1098,6 +1104,11 @@
 
                 actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest and recover' });
 
+                // V2.5: Advisor-suggested vacation (fast recovery, optional)
+                if (s.vacationOffered && !s.onVacation) {
+                    actions.push({ id: 'vacation', name: '🏖️ Advisor Vacation', desc: '+30 morale (advisor suggested)' });
+                }
+
                 // V2.2 Pro: Pitch Session (always available after first year)
                 if (!s.statuses.has('firstYear')) {
                     actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: 'Get advisor feedback on ideas' });
@@ -1207,31 +1218,33 @@
                             '🎉 The experiment worked - Initial Findings! (+5 morale)',
                             '🎉 Promising results documented! (+5 morale)'
                         ];
+                        // V2.5: Advisor feedback on ideas
                         const ideaFail = [
-                            '😔 The idea didn\'t pan out...',
-                            '😔 Inconclusive results. Back to the drawing board.',
-                            '😔 This approach isn\'t working...'
+                            '🧑‍🏫 Advisor: "This approach needs more thought..."',
+                            '🧑‍🏫 Advisor: "Inconclusive. Try a different angle."',
+                            '🧑‍🏫 Advisor: "Not quite what I had in mind..."'
                         ];
                         if (this.random() < 0.45) {
                             this.removeItem('idea');
                             this.addItem('initial_findings');
                             s.morale = Math.min(100, s.morale + 5);
-                            msg = this.pick(ideaSuccess);
+                            msg = '🧑‍🏫 Advisor: "This is promising! Keep going." (+5 morale)\n' + this.pick(ideaSuccess);
                         } else {
                             msg = this.pick(ideaFail);
                         }
                         break;
 
                     case 'work_findings':
+                        // V2.5: Advisor feedback on findings
                         const findSuccess = [
-                            '🎉 Key Discovery made! This is publication-worthy! (+5 morale)',
-                            '🎉 Breakthrough! Key Discovery achieved! (+5 morale)',
-                            '🎉 Excellent! Your results are solid! (+5 morale)'
+                            '🧑‍🏫 Advisor: "Excellent work! This is publishable." (+5 morale)',
+                            '🧑‍🏫 Advisor: "Great results! Write this up." (+5 morale)',
+                            '🧑‍🏫 Advisor: "Solid discovery! I\'m impressed." (+5 morale)'
                         ];
                         const findFail = [
-                            '😔 The findings aren\'t strong enough yet...',
-                            '😔 More work needed to solidify these results.',
-                            '😔 Peer review would tear this apart...'
+                            '🧑‍🏫 Advisor: "The findings aren\'t strong enough yet..."',
+                            '🧑‍🏫 Advisor: "More controls needed. Redo the experiment."',
+                            '🧑‍🏫 Advisor: "Reviewers would tear this apart..."'
                         ];
                         if (this.random() < 0.35) {
                             this.removeItem('initial_findings');
@@ -1291,6 +1304,15 @@
                             this.removeStatus('unhappyAdvisor');
                             msg += '\n🤝 Your advisor has cooled down.';
                         }
+                        break;
+
+                    // V2.5: Advisor-suggested vacation (fast recovery)
+                    case 'vacation':
+                        s.morale = Math.min(s.maxMorale || 100, s.morale + 30);
+                        s.vacationOffered = false; // Used up the offer
+                        if (this.hasStatus('exhaustion')) this.removeStatus('exhaustion');
+                        if (this.hasStatus('burnout')) this.removeStatus('burnout');
+                        msg = '🏖️ You took a week off as your advisor suggested.\nYou feel completely refreshed! (+30 morale, cleared exhaustion)';
                         break;
 
                     case 'conference':
