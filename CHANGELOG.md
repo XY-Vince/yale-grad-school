@@ -2,6 +2,23 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.6.0] - 2026-01-03
+
+### Added
+- **Read Papers Incentives**: Now gives +2 alignment or +2 network even when no idea gained
+- **Advisor Vacation**: Optional rest when morale drops below 25 (+15-25 morale)
+- **Advisor Research Feedback**: Ideas/findings feedback now comes from advisor
+
+### Changed
+- Publication breakdown: "0 Journal + 0 Conference" (full words)
+- Removed "📝 Papers" from Research Pipeline (now in Publications panel)
+- Publications panel shows total with J+C breakdown
+- "Take Time Off" renamed from "Advisor Vacation"
+- Action buttons: "🔬 Develop Findings" and "📊 Validate Discovery"
+- TA aligned with semester schedules (Spring Jan-May, Fall Sep-Dec, Summer rare)
+
+---
+
 ## [2.5.0] - 2026-01-02
 
 ### Added
