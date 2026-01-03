@@ -390,78 +390,80 @@
                         <div style="color: var(--text-secondary); font-size: 0.7rem;"><span id="pub-breakdown">0 Journal
                                 + 0 Conference</span></div>
                     </div>
-                </div>
-                <!-- V2.2 Pro: Peer Network -->
-                <div class="stat-card">
-                    <div class="stat-label">🤝 Network</div>
-                    <div class="stat-value"><span id="peer-network">10</span></div>
-                </div>
-            </div>
-
-            <!-- V2.4: Dual event display for current and previous month -->
-            <div class="event-panel" style="display: flex; gap: 12px;">
-                <div style="flex: 1;">
-                    <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📢 This Month</h3>
-                    <div class="message-log" id="message-log" style="min-height: 80px;">Your PhD journey begins...
+                    <!-- V2.2 Pro: Peer Network -->
+                    <div class="stat-card">
+                        <div class="stat-label">🤝 Network</div>
+                        <div class="stat-value"><span id="peer-network">10</span></div>
                     </div>
                 </div>
-                <div style="flex: 1; opacity: 0.7;">
-                    <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📜 Last Month</h3>
-                    <div class="message-log" id="message-log-prev" style="min-height: 80px; font-size: 0.85rem;">-
-                    </div>
-                </div>
-            </div>
 
-            <div class="main-content">
-                <div class="panel">
-                    <h3>📋 Actions</h3>
-                    <div class="actions-grid" id="actions"></div>
-                </div>
-
-                <div>
-                    <div class="panel">
-                        <h3>🔬 Research Pipeline</h3>
-                        <div id="pipeline"
-                            style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.85rem;">
-                            <!-- Pipeline steps rendered by JS -->
+                <!-- V2.4: Dual event display for current and previous month -->
+                <div class="event-panel" style="display: flex; gap: 12px;">
+                    <div style="flex: 1;">
+                        <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📢 This Month</h3>
+                        <div class="message-log" id="message-log" style="min-height: 80px;">Your PhD journey begins...
                         </div>
                     </div>
+                    <div style="flex: 1; opacity: 0.7;">
+                        <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📜 Last Month</h3>
+                        <div class="message-log" id="message-log-prev" style="min-height: 80px; font-size: 0.85rem;">-
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-content">
                     <div class="panel">
-                        <h3>⚡ Status Effects</h3>
-                        <div class="badge-list" id="statuses"><span class="empty-text">No effects</span></div>
+                        <h3>📋 Actions</h3>
+                        <div class="actions-grid" id="actions"></div>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button class="action-btn save-btn" onclick="game.save()" style="flex: 1;">
-                            <div class="action-name">💾 Save</div>
-                        </button>
-                        <button class="action-btn save-btn" onclick="game.loadFromSave()" style="flex: 1;">
-                            <div class="action-name">📂 Load</div>
-                        </button>
-                    </div>
-                    <!-- V2.0.1: Footer buttons -->
-                    <div style="display: flex; gap: 8px; margin-top: 12px;">
-                        <button class="action-btn save-btn" onclick="game.showHelp()" style="flex: 1; padding: 6px;">
-                            <div class="action-name" style="font-size: 0.85rem;">❓ Help</div>
-                        </button>
-                        <button class="action-btn save-btn" onclick="game.showSeed()" style="flex: 1; padding: 6px;">
-                            <div class="action-name" style="font-size: 0.85rem;">🎲 Seed</div>
-                        </button>
-                        <button class="action-btn save-btn" onclick="game.showHistory()" style="flex: 1; padding: 6px;">
-                            <div class="action-name" style="font-size: 0.85rem;">📜 History</div>
-                        </button>
+
+                    <div>
+                        <div class="panel">
+                            <h3>🔬 Research Pipeline</h3>
+                            <div id="pipeline"
+                                style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.85rem;">
+                                <!-- Pipeline steps rendered by JS -->
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <h3>⚡ Status Effects</h3>
+                            <div class="badge-list" id="statuses"><span class="empty-text">No effects</span></div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button class="action-btn save-btn" onclick="game.save()" style="flex: 1;">
+                                <div class="action-name">💾 Save</div>
+                            </button>
+                            <button class="action-btn save-btn" onclick="game.loadFromSave()" style="flex: 1;">
+                                <div class="action-name">📂 Load</div>
+                            </button>
+                        </div>
+                        <!-- V2.0.1: Footer buttons -->
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="action-btn save-btn" onclick="game.showHelp()"
+                                style="flex: 1; padding: 6px;">
+                                <div class="action-name" style="font-size: 0.85rem;">❓ Help</div>
+                            </button>
+                            <button class="action-btn save-btn" onclick="game.showSeed()"
+                                style="flex: 1; padding: 6px;">
+                                <div class="action-name" style="font-size: 0.85rem;">🎲 Seed</div>
+                            </button>
+                            <button class="action-btn save-btn" onclick="game.showHistory()"
+                                style="flex: 1; padding: 6px;">
+                                <div class="action-name" style="font-size: 0.85rem;">📜 History</div>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- End Screen -->
-        <div id="end-screen" class="end-screen panel" style="display: none;">
-            <div id="end-title" style="font-size: 1.8rem; margin-bottom: 16px;">🎓 Congratulations!</div>
-            <div id="end-message" style="color: var(--text-secondary); margin-bottom: 20px;"></div>
-            <div id="end-stats" style="margin-bottom: 30px;"></div>
-            <button class="start-btn" onclick="game.restart()">🔄 Play Again</button>
+            <!-- End Screen -->
+            <div id="end-screen" class="end-screen panel" style="display: none;">
+                <div id="end-title" style="font-size: 1.8rem; margin-bottom: 16px;">🎓 Congratulations!</div>
+                <div id="end-message" style="color: var(--text-secondary); margin-bottom: 20px;"></div>
+                <div id="end-stats" style="margin-bottom: 30px;"></div>
+                <button class="start-btn" onclick="game.restart()">🔄 Play Again</button>
+            </div>
         </div>
-    </div>
     </div>
 
     <!-- Thesis Modal -->
@@ -800,6 +802,20 @@
                 // V2.4: Respect maxMorale cap (reduced by burnout)
                 const maxMorale = this.state.maxMorale || 100;
                 this.state.morale = Math.min(maxMorale, this.state.morale);
+
+                // V2.6: Advisor happiness level effects
+                const advScore = this.state.advisorScore;
+                if (advScore < 20 && !this.hasStatus('unhappyAdvisor')) {
+                    this.addStatus('unhappyAdvisor');
+                    this.appendMessage('😠 Your advisor is very unhappy with your progress! (+6 morale decay)');
+                } else if (advScore >= 30 && this.hasStatus('unhappyAdvisor')) {
+                    this.removeStatus('unhappyAdvisor');
+                    this.appendMessage('😊 Your advisor seems satisfied with your recent efforts.');
+                }
+                // V2.6: Advisor mood warnings
+                if (advScore < 40 && advScore >= 20 && this.random() < 0.1) {
+                    this.appendMessage('🧑‍🏫 Your advisor seems impatient lately. Consider showing progress.');
+                }
 
                 // Check morale death
                 if (this.state.morale <= 0) {
