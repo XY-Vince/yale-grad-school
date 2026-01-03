@@ -2,6 +2,40 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.8.0] - 2026-01-03 "Adaptive Resilience Phase 2"
+
+Based on V2.7 73-month stress test (6-year PhD run). Tunes dominant loops while preserving realism.
+
+### V2.7 Features (Now Documented)
+- ⚠️ **Morale Warnings**: CRITICAL at ≤10%, EMERGENCY at ≤5%
+- 📜 **End Screen**: Full history, seed display/copy, publication breakdown, advisor happiness
+
+### Breaking Dominant Loops
+
+#### Conference Early Caps
+- **Year 1-2**: Max 1 conference per year (was always 2)
+- **20% Alienating**: Early conferences may feel isolating (-3 morale)
+
+#### Inspiration Tuning
+- **Capped at 2/year**: No more inspiration farming
+- **Diminishing returns**: 1st = +15 morale, 2nd = +10 morale
+- **20% dead end**: Second inspiration may be flagged as dead end
+
+#### Scoop Cooldown
+- **6-month immunity** after being scooped (prevents back-to-back brutality)
+- Tracks `lastScoopMonth` in state
+
+#### MS-Out Intelligence
+- **If ≥2 papers**: Disable MS-Out offer, give pep talk instead (+15-20 morale)
+- Makes late-game MS-Out less absurd
+
+### Balance Changes
+- Inspiration reset yearly
+- Conference caps tighter for new students
+- Productive students get encouragement, not quit suggestions
+
+---
+
 ## [2.7.0] - 2026-01-03 "Adaptive Resilience"
 
 Based on 256-month stress test observations. Prevents infinite equilibrium and adds friction.

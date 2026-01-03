@@ -594,6 +594,9 @@
                     advisorInterventions: 0, // How many times advisor suggested vacation
                     lastVacationMonth: 0,    // Month of last vacation
                     vacationsThisYear: 0,    // Vacations taken this year
+                    // V2.8: Inspiration and scoop tracking
+                    inspirationsThisYear: 0, // Cap at 2/year
+                    lastScoopMonth: 0,       // 6-month scoop cooldown
                     // V2.2: Event log for history
                     eventLog: []
                 };
@@ -791,6 +794,7 @@
                     this.state.year++;
                     this.state.conferencesThisYear = 0; // V1.8: Reset conference count
                     this.state.vacationsThisYear = 0;  // V2.7: Reset vacation count
+                    this.state.inspirationsThisYear = 0; // V2.8: Reset inspiration count
                     if (this.state.year === 2) {
                         this.removeStatus('firstYear');
                     }
@@ -931,11 +935,18 @@
                     this.triggerQuals();
                 }
 
-                // Random inspiration
-                if (this.random() < 0.03) {
-                    this.state.morale = Math.min(100, this.state.morale + 15);
+                // V2.8: Random inspiration (capped at 2/year, diminishing returns)
+                const inspirations = this.state.inspirationsThisYear || 0;
+                if (this.random() < 0.03 && inspirations < 2) {
+                    this.state.inspirationsThisYear = inspirations + 1;
+                    const inspireMorale = inspirations === 0 ? 15 : 10; // Diminishing
+                    this.state.morale = Math.min(100, this.state.morale + inspireMorale);
                     this.addItem('idea');
-                    this.appendMessage('💡 A sudden flash of inspiration strikes! (+15 morale, +1 idea)');
+                    this.appendMessage(`💡 A sudden flash of inspiration strikes! (+${inspireMorale} morale, +1 idea)`);
+                    // 20% dead end follow-up
+                    if (inspirations > 0 && this.random() < 0.2) {
+                        this.appendMessage('💭 ...but on reflection, this might be a dead end.');
+                    }
                 }
 
                 // V3.0: Imposter Syndrome (~8% chance)
@@ -951,9 +962,12 @@
                     this.appendMessage(imposterMsgs[Math.floor(this.random() * imposterMsgs.length)] + ' (-' + loss + ' morale)');
                 }
 
-                // V3.0: Getting Scooped (~3% if you have ideas)
-                if (this.getItem('idea') > 0 && this.random() < 0.03) {
+                // V2.8: Getting Scooped (~3% if you have ideas, 6-month cooldown)
+                const lastScoop = this.state.lastScoopMonth || 0;
+                const scoopCooldownOk = (this.state.totalMonths - lastScoop) >= 6;
+                if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk) {
                     this.removeItem('idea');
+                    this.state.lastScoopMonth = this.state.totalMonths;
                     const scoopLoss = 5 + Math.floor(this.random() * 5);
                     this.state.morale = Math.max(0, this.state.morale - scoopLoss);
                     this.appendMessage('📢 Another lab just published YOUR idea! (-1 idea, -' + scoopLoss + ' morale)');
@@ -1034,10 +1048,19 @@
                     }
                 }
 
-                // V2.2 Pro: MS-Out trigger (morale < 20, year >= 2, not already offered)
+                // V2.8: MS-Out trigger (morale < 20, year >= 2, not already offered)
+                // But if ≥2 papers published, give pep talk instead (late MS-Out is odd)
+                const totalPubs = (this.getItem('paper') || 0) + (s.confPaperCount || 0);
                 if (s.morale < 20 && s.year >= 2 && !s.msOutOffered) {
                     s.msOutOffered = true;
-                    this.appendMessage('🤔 Your advisor notices your struggle. "Have you considered the Master\'s exit?"');
+                    if (totalPubs >= 2) {
+                        // V2.8: Pep talk instead of MS-Out for productive students
+                        const pepGain = 15 + Math.floor(this.random() * 6);
+                        s.morale = Math.min(100, s.morale + pepGain);
+                        this.appendMessage('🧑‍🏫 Your advisor gives you a pep talk: "You\'ve published well. Keep pushing - you\'re almost there." (+' + pepGain + ' morale)');
+                    } else {
+                        this.appendMessage('🤔 Your advisor notices your struggle. "Have you considered the Master\'s exit?"');
+                    }
                 }
 
                 this.updateUI();
@@ -1161,8 +1184,8 @@
                     actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: 'Get advisor feedback on ideas' });
                 }
 
-                // V2.7: Conference limited - 1 first year, 2 after (was 3)
-                const maxConf = s.year === 1 ? 1 : 2;
+                // V2.8: Conference limited - Year 1-2: max 1, Year 3+: max 2
+                const maxConf = s.year <= 2 ? 1 : 2;
                 const confLeft = maxConf - (s.conferencesThisYear || 0);
                 actions.push({
                     id: confLeft > 0 ? 'conference' : 'conference_disabled',
@@ -1382,6 +1405,14 @@
 
                     case 'conference':
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+
+                        // V2.8: Early conferences (Year 1-2) have 20% "Alienating" chance
+                        if (s.year <= 2 && this.random() < 0.2) {
+                            s.morale = Math.max(0, s.morale - 3);
+                            msg = '🎤 Conference was alienating... You felt out of place. (-3 morale)';
+                            break;
+                        }
+
                         // V2.7: Diminishing morale returns when network > 80
                         let confMorale = 2 + Math.floor(this.random() * 3); // 2-4
                         if ((s.peerNetwork || 0) > 80) confMorale = Math.ceil(confMorale / 2);

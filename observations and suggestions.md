@@ -469,9 +469,9 @@ in the following case, only month 3 activity is shown, month 2 was never shown i
 Month 2: 📖 Decent study session!"
 
 
-V2.7
+V2.8
 
-### Critical Observations on V2.6 Stress Test Run (256-Month PhD)
+### Critical Observations on previous V2.7 Stress Test Run
 
 #### **Key Strengths (Stable & Thematic)**
 - **Engine Robustness**: Handles 365+ events, 255 turns without overflow/soft-locks. Graduation triggers correctly despite extremes.
@@ -491,7 +491,7 @@ V2.7
 | **No Institutional Pressure** | Infinite duration tolerated; no funding cliffs/reviews. | Expert #2 infinite institution. | Fictionally absurd (real caps 7-10yrs). |
 | **Late-Game Friction Mismatch** | 4th paper struggles like 1st (Reviewer #2 streaks, redos). | Expert #1 #2 dominance/no experience buff. | Undermines progression sense. |
 
-### Solid Action Plan for V2.7+ "Adaptive Resilience"
+### Solid Action Plan for V2.8+ "Adaptive Resilience"
 
 Incorporate experts holistically: Expert #1's narrative agency (Field Authority, Peer Pre-print, Financial Pivot, Sunken Cost); Expert #2's systems rigor (fatigue/cooldowns/caps/memory/pressure). Phased, YAML-modular (new `rulesets/adaptive.yaml`). Prioritize high-impact/low-effort; test via 100 sims (target: avg 72-96mo, 30-40% PhD win, 40% MS out, end-morale 50%+).
 
@@ -546,3 +546,72 @@ Goal: Evolving humans/institution; scaled emotion.
 3. **Testing/Validation**:
    - Pytest: 100 sims pre/post changes (track avg months, morale curves, loop escapes).
    - Stress: Force 200+mo seeds—verify no infinite equilibrium.
+
+V2.8
+### Critical Observations on V2.7 Test Run
+
+This V2.7 run (73 months ≈ 6 years) is a breakthrough—feels like a "strong but realistic" PhD: Efficient progress (quals Month 13, papers steady, defense Year 7), visible friction (scoops x2, revisions, equipment, Reviewer #2), buffered by strategy (confs for network/morale/ideas). 104 events balanced: Positives (inspirations, accepts, holidays/TA) offset negatives without dominance. MS out late (Month 66) adds tension. Incorporating both experts: Comment #1 praises pacing/human advisor but flags conf spam/inspiration power; Comment #2 highlights efficiency but notes late MS-out oddity/scoop brutality.
+
+#### **Strengths (Major Wins Over Prior)**
+| Aspect | Observation | Expert Alignment |
+|--------|-------------|------------------|
+| **Realistic Timeline** | 73mo spot-on (real avg 6-7yrs); quals early, first paper ~Month 34, final sprint Years 5-6. | Comment #1 "believable strong trajectory"; Comment #2 "perfect North American timeline." |
+| **Advisor Cadence** | Mixed signals ("Promising" praise, "tear apart" friction); intervention Month 65 saves final push. | Comment #1 "human iteration"; Comment #2 proactive but not overpowered. |
+| **Friction Loops** | Scoops/Reviewer #2/equipment add pain without stalling; revisions turnaround realistic (5mo). | Comment #1 "most realistic loop"; no infinite sustains. |
+| **Conf Utility** | ~12 attends build network/ideas/heard good—strategic buffer vs scoops. | Comment #2 morale buffer; not yet farmed. |
+| **MS Out Placement** | Month 66 (near end, low morale)—emotional, ignorable. | Comment #1 "well-placed"; adds choice weight. |
+
+#### **Remaining Issues (Tuning Needed)**
+| Issue | Observation from Log | Expert Alignment | Impact |
+|-------|----------------------|------------------|--------|
+| **Conference Frequency** | ~12 in 73mo (2-3 some years); early ramp network fast. | Comment #1 main issue (too many, stop special). | Morale/idea inflation; less eventful. |
+| **Inspiration Overpowered** | x4 flashes (+15 morale +idea); easy escape. | Comment #1 overpowered jackpot. | Trivializes lows; rare in reality. |
+| **Advisor Rescue Generous** | Month 65 insist clears exhaustion—no cost/patience loss. | Comment #1 still generous; Comment #2 prevents Over but subtle. | Safety valve too strong. |
+| **Scoop Clustering** | Back-to-back Months 56/60 (-idea/morale mid-pipeline). | Comment #2 brutal back-to-back. | Punitive paralysis feel. |
+| **TA Under-Integrated** | Appears/completes Month 52 (+morale/network)—no research stall. | Comment #2 under-integrated; Comment #1 clean. | Missed tradeoff realism. |
+| **Late MS Out Oddity** | Month 66 (near defense, 2+ papers)—advisor suggests quit. | Comment #2 unintelligent late. | Undermines tension. |
+| **Abrupt Graduation** | Sudden Month 73—no prep/tension. | Comment #1 emotionally abrupt. | Win lacks catharsis. |
+
+### Solid Action Plan for V2.8 "Adaptive Resilience" (Incorporating Experts)
+
+Phased, YAML-modular (`rulesets/adaptive_v32.yaml`). Prioritize high-impact/low-effort; integrate Expert #1 (caps/diminishing, patience, defense prep) + Expert #2 (MS bypass, scoop cooldown, conf alignment, TA visual). Test: 100 sims (avg 60-90mo, 35% PhD, varied morale).
+
+#### **Phase 1: Tune Dominance & Friction (Immediate, 1 Week)**
+Goal: Reduce escapes/jackpots; add cooldowns.
+1. **Conference Soft Caps/Diminishing** (Expert #1 main):
+   - Pre-Year 3: Max 1/yr; rolling 12mo: >2 halved morale/network.
+   - Early confs: 20% "Alienating" (-morale, no gain).
+   - Bonus: "Heard good" → +Strategic Alignment (next pitch success).
+2. **Inspiration Tuning** (Expert #1):
+   - Cap 2/yr; post-first: +10 morale (diminishing); 20% "Dead end" follow-up (-idea).
+   - Gate: Higher prob low morale/exhaustion.
+3. **Scoop Cooldown** (Expert #2):
+   - Post-scoop: 6mo immunity; or "Pivot salvage" (+figures speed).
+4. **Advisor Patience Counter** (Expert #1 generous + Expert #2):
+   - Hidden: Interventions >5: Reduced gain; or "Stops noticing."
+
+#### **Phase 2: Enhance Agency & Progression (1-2 Weeks)**
+Goal: Late-game intelligence; tradeoffs.
+1. **Late MS Out Bypass** (Expert #2 unintelligent):
+   - ≥2 papers: Disable/swap "Pep Talk" (+15-20 morale).
+   - Keep early triggers; add "Sunken Cost" >Year 8 (slow decay, cynicism flavor).
+2. **TA Integration** (Expert #2 + Comment #1):
+   - Active: -20% research speed (figures slower); +morale volatility.
+   - UI: Pipeline "Stalled" visual during duty.
+3. **Field Authority Memory** (Implicit from experts' progression):
+   - +per paper; reduces late harsh %/scoop risk.
+
+#### **Phase 3: Narrative Polish & Depth (2-4 Weeks)**
+Goal: Emotional arc; catharsis.
+1. **Defense Prep Phase** (Expert #1 abrupt):
+   - Pre-defense (2-3 papers): "Prep Thesis" actions (small rev risk, morale spike on success).
+   - Post: Minor revision chance; advisor ambiguity.
+2. **Phrase Variety** (Expert #1 subtle):
+   - 3-4 variants "Reviewer hate"/"Not strong" for repetition relief.
+3. **Network Plateau** (Expert #1 linear):
+   - >80: Gains halved; focus journals/conf quality.
+
+#### **Testing & Validation**
+- Pytest: 100 sims pre/post (track confs/yr, inspiration freq, scoop clusters, MS triggers).
+- Stress: Long seeds—no >120mo without choice; morale curves varied.
+- Metrics: 30-40% PhD win, avg morale 45-60% end.
