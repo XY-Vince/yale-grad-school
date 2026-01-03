@@ -1076,9 +1076,9 @@
                 if (this.getItem('key_discovery') > 0) {
                     const figures = this.getItem('figure') || 0;
                     if (this.hasStatus('brokenEquipment')) {
-                        actions.push({ id: 'work_figures_blocked', name: '📊 Doc Findings', desc: '⚠️ BLOCKED - Equipment!', disabled: true });
+                        actions.push({ id: 'work_figures_blocked', name: '📊 Develop Findings', desc: '⚠️ BLOCKED - Equipment!', disabled: true });
                     } else {
-                        actions.push({ id: 'work_figures', name: '📊 Doc Findings', desc: `Figures: ${figures}/3` });
+                        actions.push({ id: 'work_figures', name: '📊 Develop Findings', desc: `Figures: ${figures}/3` });
                     }
                 }
                 if (this.getItem('rejected_paper') > 0) {
