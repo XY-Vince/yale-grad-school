@@ -385,8 +385,10 @@
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">📰 Papers</div>
+                        <div class="stat-label">📰 Publications</div>
                         <div class="stat-value"><span id="papers">0</span></div>
+                        <div style="color: var(--text-secondary); font-size: 0.75rem;"><span id="pub-breakdown">0J +
+                                0C</span></div>
                     </div>
                     <!-- V2.2 Pro: Peer Network -->
                     <div class="stat-card">
@@ -987,7 +989,7 @@
                                 s.confPaperCount = (s.confPaperCount || 0) + 1; // V2.5: Track count
                                 s.peerNetwork = Math.min(100, s.peerNetwork + 15);
                                 s.morale = Math.min(100, s.morale + 8);
-                                this.appendMessage(`📋 CONFERENCE ACCEPTED! (Total: ${s.confPaperCount}C, +15 network, +8 morale)`);
+                                this.appendMessage('📋 CONFERENCE ACCEPTED! (+15 network, +8 morale)');
                             } else {
                                 this.addItem('rejected_paper'); // Can revise for journal
                                 this.appendMessage('📋 Conference rejected. Consider revising for journal submission.');
@@ -1449,7 +1451,12 @@
                 // Stats
                 document.getElementById('date').textContent = `${this.months[s.month]}, Year ${s.year}`;
                 document.getElementById('total-months').textContent = s.totalMonths;
-                document.getElementById('papers').textContent = this.getItem('paper');
+                // V2.5: Publications with breakdown
+                const journalPapers = this.getItem('paper') || 0;
+                const confPapers = s.confPaperCount || 0;
+                const totalPubs = journalPapers + confPapers;
+                document.getElementById('papers').textContent = totalPubs;
+                document.getElementById('pub-breakdown').textContent = `${journalPapers}J + ${confPapers}C`;
                 // V2.2 Pro: Peer Network
                 document.getElementById('peer-network').textContent = s.peerNetwork || 10;
 
@@ -1512,10 +1519,8 @@
                     return `<span style="${style}">${st.icon} ${st.label}${hasItems ? ' ×' + st.count : ''}</span>`;
                 }).join('');
 
-                // Pending/Rejected/TA/Conference Papers
+                // Pending/Rejected/TA
                 const extras = [];
-                const confPapers = s.confPaperCount || 0;
-                if (confPapers > 0) extras.push('📋 Conf Papers ×' + confPapers);
                 if (this.getItem('rejected_paper') > 0) extras.push('❌ Rejected ×' + this.getItem('rejected_paper'));
                 if (s.pendingPapers && s.pendingPapers.length > 0) extras.push('⏳ Under Review ×' + s.pendingPapers.length);
                 if (s.isTeaching) extras.push('📝 TA Duty (' + s.teachingMonths + ' mo)');
