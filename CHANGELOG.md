@@ -2,6 +2,25 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.12.0] - 2026-01-03 "Recovery Trajectories"
+
+**Theme**: Once the system saves you, what helps you move again?
+
+### ✨ Renewed Perspective Buff
+- After **advisor-suggested vacation**, you get a 3-month buff
+- **+10% success** to Develop Findings and Document Figures
+- Turns forced rest into reset-with-momentum
+
+### 🧘 Imposter Syndrome Soft Cap
+- Tracks imposter events in rolling 6-month window
+- After **2 events in 6 months**, third event becomes:
+  - "You recognize this feeling again. It passes faster."
+  - **Reduced impact** (1-2 morale instead of 3-7)
+  - **+2 Strategic Alignment** (self-awareness)
+- Models psychological adaptation
+
+---
+
 ## [2.11.0] - 2026-01-03 "Recovery & Dignified Exit"
 
 **Theme**: Survival should feel earned, exits should feel intentional, and suffering should feel meaningful—not arbitrary.

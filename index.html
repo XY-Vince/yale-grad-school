@@ -1014,16 +1014,31 @@
                 }
 
                 // V3.0: Imposter Syndrome (~8% chance)
+                // V2.12: Soft cap - reduced impact after 2 events in 6 months
                 if (this.random() < 0.08) {
-                    const imposterMsgs = [
-                        '😰 You wonder if you really belong here...',
-                        '😔 Everyone else seems so much smarter than you...',
-                        '😓 Did they make a mistake admitting you?',
-                        '🥺 Your labmate just published - why can\'t you?'
-                    ];
-                    const loss = 3 + Math.floor(this.random() * 5); // 3-7
-                    this.state.morale = Math.max(0, this.state.morale - loss);
-                    this.appendMessage(imposterMsgs[Math.floor(this.random() * imposterMsgs.length)] + ' (-' + loss + ' morale)');
+                    const recentImposter = this.state.lastImposterMonths || [];
+                    // Clean old entries (> 6 months ago)
+                    const currentRecentImposter = recentImposter.filter(m => this.state.totalMonths - m < 6);
+
+                    if (currentRecentImposter.length >= 2) {
+                        // Soft cap: reduced impact
+                        const reducedLoss = 1 + Math.floor(this.random() * 2); // 1-2 only
+                        this.state.morale = Math.max(0, this.state.morale - reducedLoss);
+                        this.state.strategicAlignment = (this.state.strategicAlignment || 0) + 2; // Self-awareness
+                        this.appendMessage('🧘 You recognize this feeling again. It passes faster this time. (-' + reducedLoss + ' morale, +2 alignment)');
+                    } else {
+                        const imposterMsgs = [
+                            '😰 You wonder if you really belong here...',
+                            '😔 Everyone else seems so much smarter than you...',
+                            '😓 Did they make a mistake admitting you?',
+                            '🥺 Your labmate just published - why can\'t you?'
+                        ];
+                        const loss = 3 + Math.floor(this.random() * 5); // 3-7
+                        this.state.morale = Math.max(0, this.state.morale - loss);
+                        this.appendMessage(imposterMsgs[Math.floor(this.random() * imposterMsgs.length)] + ' (-' + loss + ' morale)');
+                        currentRecentImposter.push(this.state.totalMonths);
+                    }
+                    this.state.lastImposterMonths = currentRecentImposter;
                 }
 
                 // V2.11: Getting Scooped (~3% if you have ideas, 24-month cooldown)
@@ -1429,11 +1444,14 @@
                             '🧑‍🏫 Advisor: "More controls needed. Redo the experiment."',
                             '🧑‍🏫 Advisor: "Reviewers would tear this apart..."'
                         ];
-                        if (this.random() < 0.35) {
+                        // V2.12: Renewed Perspective bonus (+10%)
+                        const perspectiveBonus = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
+                        if (this.random() < (0.35 + perspectiveBonus)) {
                             this.removeItem('initial_findings');
                             this.addItem('key_discovery');
                             s.morale = Math.min(100, s.morale + 5);
                             msg = this.pick(findSuccess);
+                            if (perspectiveBonus > 0) msg += '\n✨ Renewed perspective helped!';
                         } else {
                             msg = this.pick(findFail);
                         }
@@ -1443,7 +1461,9 @@
                         // V2.10: Figure decompression - after 2 consecutive rejections, +30% success
                         const figRejections = s.consecutiveFigRejections || 0;
                         const figBonus = figRejections >= 2 ? 0.3 : 0;
-                        if (this.random() < (0.6 + figBonus)) {
+                        // V2.12: Renewed Perspective bonus (+10%)
+                        const figPerspective = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
+                        if (this.random() < (0.6 + figBonus + figPerspective)) {
                             this.addItem('figure');
                             s.morale = Math.min(100, s.morale + 3);
                             s.consecutiveFigRejections = 0; // Reset on success
@@ -1536,10 +1556,12 @@
                         s.vacationsThisYear = vacationsThisYear + 1;
                         if (this.hasStatus('exhaustion')) this.removeStatus('exhaustion');
                         if (vacationsThisYear === 0 && this.hasStatus('burnout')) this.removeStatus('burnout');
+                        // V2.12: Renewed Perspective buff after advisor-forced vacation
+                        s.renewedPerspectiveUntil = s.totalMonths + 3;
                         if (vacationsThisYear >= 2) {
                             msg = '🏖️ Another break... diminishing returns. (+' + vacGain + ' morale)';
                         } else {
-                            msg = '🏖️ You took time off as your advisor suggested.\nYou feel refreshed! (+' + vacGain + ' morale)';
+                            msg = '🏖️ You took time off as your advisor suggested.\nYou feel refreshed! (+' + vacGain + ' morale)\n\n✨ Renewed Perspective: +10% success for 3 months!';
                         }
                         break;
 
