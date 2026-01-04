@@ -1347,7 +1347,7 @@
                 }
 
                 // V2.2 Pro: Pitch Session (always available after first year)
-                if (!s.statuses.has('firstYear')) {
+                if (s.statuses && s.statuses.has && !s.statuses.has('firstYear')) {
                     actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: 'Get advisor feedback on ideas' });
                 }
 
@@ -1969,12 +1969,18 @@
 
                 // Actions
                 const actionsEl = document.getElementById('actions');
-                actionsEl.innerHTML = this.getActions().map(a => `
-                <button class="action-btn${a.disabled ? ' disabled' : ''}" ${a.disabled ? '' : `onclick="game.doAction('${a.id}')"`}>
-                    <div class="action-name">${a.name}</div>
-                    <div class="action-desc">${a.desc}</div>
-                </button>
-            `).join('');
+                try {
+                    const actions = this.getActions();
+                    actionsEl.innerHTML = actions.map(a => `
+                    <button class="action-btn${a.disabled ? ' disabled' : ''}" ${a.disabled ? '' : `onclick="game.doAction('${a.id}')"`}>
+                        <div class="action-name">${a.name}</div>
+                        <div class="action-desc">${a.desc}</div>
+                    </button>
+                `).join('');
+                } catch (e) {
+                    console.error('Error in getActions:', e);
+                    actionsEl.innerHTML = '<div style="color: red;">Error loading actions. Check console.</div>';
+                }
 
                 // V2.0: Pipeline Visualizer
                 const pipelineEl = document.getElementById('pipeline');
