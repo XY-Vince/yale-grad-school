@@ -2,6 +2,28 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.11.0] - 2026-01-03 "Recovery & Dignified Exit"
+
+**Theme**: Survival should feel earned, exits should feel intentional, and suffering should feel meaningful—not arbitrary.
+
+### Quals Retake: New Lease on Life
+- After passing the **retake exam**, you get the "🌟 New Lease on Life" buff
+- **Morale decay reduced by 50%** for 6 months
+- Models psychological relief after surviving a near-terminal event
+
+### MS-Out Dignity System
+- **Escalating warnings** based on low morale duration:
+  - 3 months: "Are you doing okay?"
+  - 6 months: "We need to discuss the Master's option."
+  - 9 months: "This may be your best remaining option."
+- **Dignified exit**: If morale hits 0 but you have ≥1 paper, you get a Master's degree (not a failure!)
+
+### Cruelty Control
+- **Scoop immunity extended**: 6 months → **24 months**
+- No more back-to-back scoops destroying runs
+
+---
+
 ## [2.10.0] - 2026-01-03 "Resilience Under Pressure"
 
 **Theme**: Players should lose because they made hard tradeoffs — not because the system quietly cornered them.

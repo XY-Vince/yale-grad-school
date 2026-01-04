@@ -830,7 +830,17 @@
                 if (this.state.isTeaching) decay += 3;
                 const alignmentReduce = Math.floor((this.state.strategicAlignment || 0) / 25);
                 decay = Math.max(1, decay - alignmentReduce);
+                // V2.11: New Lease on Life reduces decay by 50%
+                if (this.state.newLeaseUntil && this.state.totalMonths < this.state.newLeaseUntil) {
+                    decay = Math.ceil(decay / 2);
+                }
                 this.state.morale = Math.max(0, this.state.morale - decay);
+                // V2.11: Track low morale months for escalating MS-Out
+                if (this.state.morale < 15) {
+                    this.state.lowMoraleMonths = (this.state.lowMoraleMonths || 0) + 1;
+                } else {
+                    this.state.lowMoraleMonths = 0;
+                }
                 // V2.4: Respect maxMorale cap (reduced by burnout)
                 const maxMorale = this.state.maxMorale || 100;
                 this.state.morale = Math.min(maxMorale, this.state.morale);
@@ -855,9 +865,25 @@
                     this.appendMessage('🚨 EMERGENCY: You can barely function. One more setback and you\'re done.');
                 }
 
-                // Check morale death
+                // V2.11: Escalating MS-Out warnings based on lowMoraleMonths
+                const lowMonths = this.state.lowMoraleMonths || 0;
+                if (lowMonths === 3) {
+                    this.appendMessage('🧑‍🏫 Your advisor gently asks: "Are you doing okay? Maybe we should talk about your options."');
+                } else if (lowMonths === 6) {
+                    this.appendMessage('🧑‍🏫 Your advisor is concerned: "I think we need to seriously discuss the Master\'s option."');
+                } else if (lowMonths === 9) {
+                    this.appendMessage('⚠️ Your advisor insists: "The Master\'s exit may be your best remaining option. Think about it."');
+                }
+
+                // Check morale death - V2.11: Dignified MS-Out if has papers
                 if (this.state.morale <= 0) {
-                    this.endGame(false, 'morale', 'You ran out of morale and dropped out.');
+                    const totalPubs = (this.getItem('paper') || 0) + (this.state.confPaperCount || 0);
+                    if (totalPubs >= 1) {
+                        // Dignified exit instead of failure
+                        this.endGame(true, 'ms_out', 'You couldn\'t continue, but you earned a Master\'s degree with your ' + totalPubs + ' publication(s).');
+                    } else {
+                        this.endGame(false, 'morale', 'You ran out of morale and dropped out.');
+                    }
                     return;
                 }
 
@@ -1000,9 +1026,9 @@
                     this.appendMessage(imposterMsgs[Math.floor(this.random() * imposterMsgs.length)] + ' (-' + loss + ' morale)');
                 }
 
-                // V2.8: Getting Scooped (~3% if you have ideas, 6-month cooldown)
+                // V2.11: Getting Scooped (~3% if you have ideas, 24-month cooldown)
                 const lastScoop = this.state.lastScoopMonth || 0;
-                const scoopCooldownOk = (this.state.totalMonths - lastScoop) >= 6;
+                const scoopCooldownOk = (this.state.totalMonths - lastScoop) >= 24;
                 if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk) {
                     this.removeItem('idea');
                     this.state.lastScoopMonth = this.state.totalMonths;
@@ -1117,10 +1143,16 @@
                     if (hasStudyGroup && this.state.qualifyLevel < 2) {
                         msg += 'Your study group helped you pass!';
                     } else {
-                        msg += effectiveLevel >= 4 ? 'Your thorough preparation paid off!' : 'You passed the qualifying exam!';;
+                        msg += effectiveLevel >= 4 ? 'Your thorough preparation paid off!' : 'You passed the qualifying exam!';
                     }
                     this.state.morale = Math.min(100, this.state.morale + (effectiveLevel >= 4 ? 25 : 15));
                     this.state.qualsPassed = true;
+
+                    // V2.11: "New Lease on Life" buff after successful retake
+                    if (this.state.qualsFailedOnce) {
+                        this.state.newLeaseUntil = this.state.totalMonths + 6;
+                        msg += '\n\n🌟 NEW LEASE ON LIFE! 🌟\nMorale decay reduced for 6 months.';
+                    }
                 } else {
                     // V2.9: Soft fail option (once)
                     if (!this.state.qualsFailedOnce) {
