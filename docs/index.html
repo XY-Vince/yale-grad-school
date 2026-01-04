@@ -624,6 +624,45 @@
                     (m >= this.CONST.FALL.start && m <= this.CONST.FALL.end);
             },
 
+            // ===========================================
+            // DOM CACHE - Cached references for performance
+            // ===========================================
+            dom: null,
+
+            // Initialize DOM cache (call once after game screen visible)
+            initDOM() {
+                this.dom = {
+                    startScreen: document.getElementById('start-screen'),
+                    gameScreen: document.getElementById('game-screen'),
+                    endScreen: document.getElementById('end-screen'),
+                    date: document.getElementById('date'),
+                    totalMonths: document.getElementById('total-months'),
+                    semester: document.getElementById('semester'),
+                    credits: document.getElementById('credits-display'),
+                    papers: document.getElementById('papers'),
+                    pubBreakdown: document.getElementById('pub-breakdown'),
+                    reviewStatus: document.getElementById('review-status'),
+                    peerNetwork: document.getElementById('peer-network'),
+                    alignmentValue: document.getElementById('alignment-value'),
+                    alignmentBar: document.getElementById('alignment-bar'),
+                    qualsCard: document.getElementById('quals-prep-card'),
+                    qualsValue: document.getElementById('quals-prep-value'),
+                    qualsWarning: document.getElementById('quals-warning'),
+                    moraleBar: document.getElementById('morale-bar'),
+                    moraleStatus: document.getElementById('morale-status'),
+                    advisorBar: document.getElementById('advisor-bar'),
+                    advisorStatus: document.getElementById('advisor-status'),
+                    actions: document.getElementById('actions'),
+                    pipeline: document.getElementById('pipeline'),
+                    statuses: document.getElementById('statuses'),
+                    messageLog: document.getElementById('message-log'),
+                    messageLogPrev: document.getElementById('message-log-prev'),
+                    endTitle: document.getElementById('end-title'),
+                    endMessage: document.getElementById('end-message'),
+                    endStats: document.getElementById('end-stats')
+                };
+            },
+
             // V1.7: Seed for reproducible randomness
             seed: null,
             seedState: null,
@@ -704,9 +743,10 @@
                 this.seedState = this.seed;
 
                 this.state = this.initState();
+                this.initDOM(); // Initialize DOM cache
                 this.showMessage('🎓 Welcome to your PhD program!\n\nYou start in September. Your goal: publish 3 papers and defend your thesis.');
-                document.getElementById('start-screen').style.display = 'none';
-                document.getElementById('game-screen').style.display = 'block';
+                this.dom.startScreen.style.display = 'none';
+                this.dom.gameScreen.style.display = 'block';
                 this.updateUI();
             },
 
@@ -1933,18 +1973,17 @@
                 const s = this.state;
 
                 // Stats
-                document.getElementById('date').textContent = `${this.months[s.month]}, Year ${s.year}`;
-                document.getElementById('total-months').textContent = s.totalMonths;
-                // V2.15: Semester display
-                const semester = s.month >= 1 && s.month <= 5 ? 'Spring' : s.month >= 6 && s.month <= 7 ? 'Summer' : 'Fall';
-                document.getElementById('semester').textContent = semester;
-                document.getElementById('credits-display').textContent = s.credits || 0;
+                this.dom.date.textContent = `${this.months[s.month]}, Year ${s.year}`;
+                this.dom.totalMonths.textContent = s.totalMonths;
+                // V2.15: Semester display (use helper)
+                this.dom.semester.textContent = this.getSemester();
+                this.dom.credits.textContent = s.credits || 0;
                 // V2.5: Publications with breakdown
                 const journalPapers = this.getItem('paper') || 0;
                 const confPapers = s.confPaperCount || 0;
                 const totalPubs = journalPapers + confPapers;
-                document.getElementById('papers').textContent = totalPubs;
-                document.getElementById('pub-breakdown').textContent = `(${journalPapers} J + ${confPapers} C)`;
+                this.dom.papers.textContent = totalPubs;
+                this.dom.pubBreakdown.textContent = `(${journalPapers} J + ${confPapers} C)`;
 
                 // V2.14: Show pending review status on separate lines
                 let reviewLines = [];
@@ -1952,73 +1991,68 @@
                 const pendingConf = (s.pendingConference || []).length;
                 if (pendingJournal > 0) reviewLines.push(`📝 ${pendingJournal} Journal in review`);
                 if (pendingConf > 0) reviewLines.push(`📋 ${pendingConf} Conf in review`);
-                document.getElementById('review-status').innerHTML = reviewLines.join('<br>');
+                this.dom.reviewStatus.innerHTML = reviewLines.join('<br>');
 
                 // V2.2 Pro: Peer Network
-                document.getElementById('peer-network').textContent = s.peerNetwork || 10;
+                this.dom.peerNetwork.textContent = s.peerNetwork || 10;
 
                 // V2.16: Strategic Alignment meter
                 const alignment = s.strategicAlignment || 0;
-                document.getElementById('alignment-value').textContent = alignment;
-                document.getElementById('alignment-bar').style.width = `${Math.min(100, alignment)}%`;
+                this.dom.alignmentValue.textContent = alignment;
+                this.dom.alignmentBar.style.width = `${Math.min(100, alignment)}%`;
 
                 // V2.16: Quals Prep visualizer
-                const qualsCard = document.getElementById('quals-prep-card');
                 const qualsPrep = s.qualifyLevel || 0;
                 if (!s.qualsPassed && (s.year >= 1 || s.totalMonths >= 6)) {
-                    qualsCard.style.display = 'block';
-                    document.getElementById('quals-prep-value').textContent = qualsPrep;
+                    this.dom.qualsCard.style.display = 'block';
+                    this.dom.qualsValue.textContent = qualsPrep;
                     // Color-coded warnings
-                    const qualsWarning = document.getElementById('quals-warning');
                     const monthsToQuals = (2 * 12 + 9) - s.totalMonths; // Sept Year 2
                     if (s.year === 2 && s.month >= 6 && monthsToQuals <= 3) {
-                        qualsCard.style.borderColor = '#f87171';
-                        qualsWarning.innerHTML = '🚨 <b>IMMINENT!</b>';
-                        qualsWarning.style.color = '#f87171';
+                        this.dom.qualsCard.style.borderColor = '#f87171';
+                        this.dom.qualsWarning.innerHTML = '🚨 <b>IMMINENT!</b>';
+                        this.dom.qualsWarning.style.color = '#f87171';
                     } else if (s.year === 2) {
-                        qualsCard.style.borderColor = '#fbbf24';
-                        qualsWarning.innerHTML = '⚠️ This year';
-                        qualsWarning.style.color = '#fbbf24';
+                        this.dom.qualsCard.style.borderColor = '#fbbf24';
+                        this.dom.qualsWarning.innerHTML = '⚠️ This year';
+                        this.dom.qualsWarning.style.color = '#fbbf24';
                     } else {
-                        qualsCard.style.borderColor = '';
-                        qualsWarning.innerHTML = '';
+                        this.dom.qualsCard.style.borderColor = '';
+                        this.dom.qualsWarning.innerHTML = '';
                     }
                 } else if (s.qualsPassed) {
-                    qualsCard.style.display = 'none';
+                    this.dom.qualsCard.style.display = 'none';
                 }
 
                 // V2.0.1: Morale as descriptive text
-                const moraleBar = document.getElementById('morale-bar');
-                moraleBar.style.width = `${s.morale}%`;
+                this.dom.moraleBar.style.width = `${s.morale}%`;
                 let moraleText, moraleClass;
-                if (s.morale > 75) { moraleText = '😄 Great'; moraleClass = 'high'; }
-                else if (s.morale > 50) { moraleText = '😊 Good'; moraleClass = 'high'; }
-                else if (s.morale > 30) { moraleText = '😐 Okay'; moraleClass = 'medium'; }
-                else if (s.morale > 15) { moraleText = '😟 Low'; moraleClass = 'low'; }
+                if (s.morale > this.CONST.MORALE_GOOD) { moraleText = '😄 Great'; moraleClass = 'high'; }
+                else if (s.morale > this.CONST.MORALE_OK) { moraleText = '😊 Good'; moraleClass = 'high'; }
+                else if (s.morale > this.CONST.MORALE_LOW) { moraleText = '😐 Okay'; moraleClass = 'medium'; }
+                else if (s.morale > this.CONST.MORALE_CRITICAL) { moraleText = '😟 Low'; moraleClass = 'low'; }
                 else { moraleText = '😰 Critical'; moraleClass = 'low'; }
-                document.getElementById('morale-status').textContent = moraleText;
-                moraleBar.className = 'progress-fill ' + moraleClass;
+                this.dom.moraleStatus.textContent = moraleText;
+                this.dom.moraleBar.className = 'progress-fill ' + moraleClass;
 
                 // Advisor
-                const advisorBar = document.getElementById('advisor-bar');
-                advisorBar.style.width = `${s.advisorScore}%`;
+                this.dom.advisorBar.style.width = `${s.advisorScore}%`;
                 const hasUnhappy = this.hasStatus('unhappyAdvisor');
-                if (hasUnhappy || s.advisorScore < 30) {
-                    document.getElementById('advisor-status').textContent = '😠 Unhappy';
-                    advisorBar.className = 'progress-fill low';
-                } else if (s.advisorScore < 50) {
-                    document.getElementById('advisor-status').textContent = '😐 Neutral';
-                    advisorBar.className = 'progress-fill medium';
+                if (hasUnhappy || s.advisorScore < this.CONST.MORALE_LOW) {
+                    this.dom.advisorStatus.textContent = '😠 Unhappy';
+                    this.dom.advisorBar.className = 'progress-fill low';
+                } else if (s.advisorScore < this.CONST.MORALE_OK) {
+                    this.dom.advisorStatus.textContent = '😐 Neutral';
+                    this.dom.advisorBar.className = 'progress-fill medium';
                 } else {
-                    document.getElementById('advisor-status').textContent = '🙂 Happy';
-                    advisorBar.className = 'progress-fill high';
+                    this.dom.advisorStatus.textContent = '🙂 Happy';
+                    this.dom.advisorBar.className = 'progress-fill high';
                 }
 
                 // Actions
-                const actionsEl = document.getElementById('actions');
                 try {
                     const actions = this.getActions();
-                    actionsEl.innerHTML = actions.map(a => `
+                    this.dom.actions.innerHTML = actions.map(a => `
                     <button class="action-btn${a.disabled ? ' disabled' : ''}" ${a.disabled ? '' : `onclick="game.doAction('${a.id}')"`}>
                         <div class="action-name">${a.name}</div>
                         <div class="action-desc">${a.desc}</div>
@@ -2026,11 +2060,10 @@
                 `).join('');
                 } catch (e) {
                     console.error('Error in getActions:', e);
-                    actionsEl.innerHTML = '<div style="color: red;">Error loading actions. Check console.</div>';
+                    this.dom.actions.innerHTML = '<div style="color: red;">Error loading actions. Check console.</div>';
                 }
 
                 // V2.0: Pipeline Visualizer
-                const pipelineEl = document.getElementById('pipeline');
                 const stages = [
                     { icon: '📚', label: 'Ideas', count: this.getItem('idea') },
                     { icon: '→', label: '' },
@@ -2041,7 +2074,7 @@
                     { icon: '📊', label: 'Figures', count: this.getItem('figure') }
                 ];
 
-                pipelineEl.innerHTML = stages.map(st => {
+                this.dom.pipeline.innerHTML = stages.map(st => {
                     if (st.label === '') return `<span style="color: var(--text-secondary);">${st.icon}</span>`;
                     const hasItems = st.count > 0;
                     const style = hasItems
@@ -2055,11 +2088,10 @@
                 if (this.getItem('rejected_paper') > 0) extras.push('❌ Rejected ×' + this.getItem('rejected_paper'));
                 if (s.isTeaching) extras.push('📝 TA Duty (' + s.teachingMonths + ' mo)');
                 if (extras.length > 0) {
-                    pipelineEl.innerHTML += '<br><span style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">' + extras.join(' | ') + '</span>';
+                    this.dom.pipeline.innerHTML += '<br><span style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">' + extras.join(' | ') + '</span>';
                 }
 
                 // Statuses
-                const statusesEl = document.getElementById('statuses');
                 const statusNames = { exhaustion: 'Exhaustion', unhappyAdvisor: 'Unhappy Advisor', brokenEquipment: 'Broken Equipment', firstYear: 'First Year' };
                 const negatives = ['exhaustion', 'unhappyAdvisor', 'brokenEquipment'];
                 let statusHTML = '';
@@ -2086,9 +2118,9 @@
                 }
 
                 if (statusHTML) {
-                    statusesEl.innerHTML = statusHTML;
+                    this.dom.statuses.innerHTML = statusHTML;
                 } else {
-                    statusesEl.innerHTML = '<span class="empty-text">No effects</span>';
+                    this.dom.statuses.innerHTML = '<span class="empty-text">No effects</span>';
                 }
             }
         };
