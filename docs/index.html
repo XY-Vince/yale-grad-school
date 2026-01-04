@@ -1263,8 +1263,13 @@
                 }
 
                 // V2.3: Qual prep with urgency warnings and Study Group
-                if ((s.year === 1) || (s.year === 2 && s.month < 9)) {
-                    const monthsLeft = s.year === 1 ? (12 + 9 - s.month) : (9 - s.month);
+                // V2.10: Also show during retake period
+                const needsQualPrep = !s.qualsPassed && (
+                    (s.year === 1) ||
+                    (s.year === 2 && s.month < 9) ||
+                    (s.qualsFailedOnce && s.qualsDelayMonth) // Retake period
+                );
+                if (needsQualPrep) {
                     const preps = s.qualifyLevel || 0;
                     const needed = 3 - preps;
 
@@ -1275,10 +1280,21 @@
                     let qualsDesc = 'Study for exam';
                     let qualsName = '📖 Prep for Quals';
 
-                    // V2.3: Urgency warnings
-                    if (s.year === 2 && monthsLeft <= 3 && effectiveNeeded > 0) {
-                        qualsName = '⚠️📖 URGENT: Quals Prep';
-                        qualsDesc = `${monthsLeft}mo left! Need ${effectiveNeeded} more session${effectiveNeeded > 1 ? 's' : ''}`;
+                    // V2.9: Retake urgency
+                    if (s.qualsFailedOnce && s.qualsDelayMonth) {
+                        const monthsToRetake = s.qualsDelayMonth - s.totalMonths;
+                        if (monthsToRetake > 0) {
+                            qualsName = '🆘 RETAKE PREP';
+                            qualsDesc = `${monthsToRetake}mo until retake! Level: ${preps}/3`;
+                        }
+                    }
+                    // V2.3: Urgency warnings for first attempt
+                    else if (s.year === 2 && effectiveNeeded > 0) {
+                        const monthsLeft = 9 - s.month;
+                        if (monthsLeft <= 3 && monthsLeft > 0) {
+                            qualsName = '⚠️📖 URGENT: Quals Prep';
+                            qualsDesc = `${monthsLeft}mo left! Need ${effectiveNeeded} more session${effectiveNeeded > 1 ? 's' : ''}`;
+                        }
                     } else if (preps > 0) {
                         qualsDesc = `Progress: ${preps}/3 sessions`;
                     }
