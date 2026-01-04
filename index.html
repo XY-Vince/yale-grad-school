@@ -1091,15 +1091,18 @@
                     this.state.lastImposterMonths = currentRecentImposter;
                 }
 
-                // V2.11: Getting Scooped (~3% if you have ideas, 24-month cooldown)
+                // V2.11: Scoop event (24-month cooldown, V2.17: blocked if pre-registered)
                 const lastScoop = this.state.lastScoopMonth || 0;
                 const scoopCooldownOk = (this.state.totalMonths - lastScoop) >= 24;
-                if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk) {
+                const isProtected = this.state.ideaPreRegistered;
+                if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk && !isProtected) {
                     this.removeItem('idea');
                     this.state.lastScoopMonth = this.state.totalMonths;
                     const scoopLoss = 5 + Math.floor(this.random() * 5);
                     this.state.morale = Math.max(0, this.state.morale - scoopLoss);
                     this.appendRandomEvent('📢 Another lab just published YOUR idea! (-1 idea, -' + scoopLoss + ' morale)');
+                } else if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk && isProtected) {
+                    this.appendMessage('📄 Another lab tried to scoop you, but your pre-registration protects you!');
                 }
 
                 // V3.0: Seasonal Events
@@ -1427,6 +1430,28 @@
                 const isTrueSummer = s.month >= 6 && s.month <= 7;
                 if (isTrueSummer && s.year >= 2 && !s.internshipThisYear) {
                     actions.push({ id: 'internship', name: '💼 Summer Internship', desc: '3 months: +25 network, +15 morale' });
+                }
+
+                // V2.17: Pre-Register Idea (prevents scoop)
+                if (this.getItem('idea') > 0 && !s.ideaPreRegistered && (s.peerNetwork || 10) >= 5) {
+                    const cost = (s.peerNetwork || 10) >= 60 ? 3 : 5;
+                    actions.push({ id: 'preregister', name: '📄 Pre-Register Idea', desc: `-${cost} network, prevents scoop` });
+                }
+
+                // V2.17: Equipment Maintenance (prevents failure)
+                if (!s.equipmentStableUntil || s.totalMonths >= s.equipmentStableUntil) {
+                    actions.push({ id: 'maintenance', name: '🔧 Equipment Maintenance', desc: 'Skip research, stable 12mo' });
+                }
+
+                // V2.17: High-Throughput Experiment (risky fast figures)
+                if (this.hasItem('key_discovery') && (!s.lastHighThroughput || s.totalMonths - s.lastHighThroughput >= 6)) {
+                    actions.push({ id: 'high_throughput', name: '⚡ High-Throughput Exp', desc: '40%: +2 figures, fail: -morale +exhaustion' });
+                }
+
+                // V2.17: Respond to Reviewers (during journal review)
+                if (s.pendingPapers && s.pendingPapers.length > 0) {
+                    actions.push({ id: 'light_response', name: '📝 Light Response', desc: '-3 morale, +10% accept' });
+                    actions.push({ id: 'major_rebuttal', name: '🧠 Major Rebuttal', desc: '-8 morale, skip revision' });
                 }
 
                 actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Skip to next month' });
@@ -1757,6 +1782,53 @@
                             if (s.month > 12) { s.month = 1; s.year++; s.internshipThisYear = false; }
                         }
                         msg = '💼 You completed a summer internship!\n+25 Peer Network, +15 morale\n🧑‍🏫 Advisor: "I hope you gained some useful experience..." (-5 advisor)';
+                        break;
+
+                    // V2.17: Pre-Register Idea
+                    case 'preregister':
+                        const preregCost = (s.peerNetwork || 10) >= 60 ? 3 : 5;
+                        s.peerNetwork = Math.max(0, (s.peerNetwork || 10) - preregCost);
+                        s.ideaPreRegistered = true;
+                        msg = `📄 Pre-registered your idea!\n-${preregCost} Network\n✅ Protected from being scooped`;
+                        break;
+
+                    // V2.17: Equipment Maintenance
+                    case 'maintenance':
+                        s.equipmentStableUntil = s.totalMonths + 12;
+                        this.removeStatus('brokenEquipment');
+                        msg = '🔧 Equipment Maintenance Complete!\nEquipment stable for 12 months\n(No research this month)';
+                        break;
+
+                    // V2.17: High-Throughput Experiment
+                    case 'high_throughput':
+                        s.lastHighThroughput = s.totalMonths;
+                        s.morale = Math.max(0, s.morale - 10); // 2x normal cost
+                        if (this.random() < 0.4) {
+                            s.figuresReady = (s.figuresReady || 0) + 2;
+                            msg = '⚡ HIGH-THROUGHPUT SUCCESS!\n+2 Figures ready\nYou pushed hard and it paid off!';
+                        } else {
+                            this.addStatus('exhaustion');
+                            s.morale = Math.max(0, s.morale - 10);
+                            msg = '⚡ High-Throughput FAILED!\n+Exhaustion, -20 morale total\nThe experiment didn\'t produce usable data.';
+                        }
+                        break;
+
+                    // V2.17: Light Response to Reviewers
+                    case 'light_response':
+                        s.morale = Math.max(0, s.morale - 3);
+                        if (s.pendingPapers && s.pendingPapers.length > 0) {
+                            s.pendingPapers[0].bonusChance = (s.pendingPapers[0].bonusChance || 0) + 0.10;
+                        }
+                        msg = '📝 Sent light response to reviewers\n-3 morale\n+10% acceptance chance';
+                        break;
+
+                    // V2.17: Major Rebuttal
+                    case 'major_rebuttal':
+                        s.morale = Math.max(0, s.morale - 8);
+                        if (s.pendingPapers && s.pendingPapers.length > 0) {
+                            s.pendingPapers[0].skipRevision = true;
+                        }
+                        msg = '🧠 Major Rebuttal submitted!\n-8 morale\nWill skip "Major Revision" if any';
                         break;
                 }
 

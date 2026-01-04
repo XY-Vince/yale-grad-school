@@ -2,6 +2,34 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.17.0] - 2026-01-04 "Pacing & Agency"
+
+**Theme**: The player is no longer a victim of RNG — they are a risk manager.
+
+### 📄 Pre-Register Idea
+- Cost: **-5 Network** (or -3 if Network ≥60)
+- Effect: **Prevents being scooped**
+- Shows protection message when scoop attempt blocked
+
+### 🔧 Equipment Maintenance
+- Cost: **1 month** (no research)
+- Effect: **Equipment stable for 12 months**
+- Removes broken equipment status
+
+### ⚡ High-Throughput Experiment
+- Requires: Key Discovery
+- Cooldown: 6 months
+- **40% Success**: +2 Figures
+- **60% Failure**: -20 morale, +Exhaustion
+
+### 📝 Review Response Actions
+| Action | Cost | Effect |
+|--------|------|--------|
+| **Light Response** | -3 morale | +10% accept |
+| **Major Rebuttal** | -8 morale | Skip revision |
+
+---
+
 ## [2.16.0] - 2026-01-04 "Transparent Systems"
 
 **Theme**: Make the invisible legible

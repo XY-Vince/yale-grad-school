@@ -611,3 +611,264 @@ By this point, GradQuest already:
 What it lacks is nervous system transparency.
 
 After V2.16, when a player fails, they should be able to say: “I understand exactly why that happened.”
+
+Great — V2.17 is the right moment to change the game’s feel, not just its numbers.
+Below is a clean, consolidated, actionable improvement plan for V2.17, explicitly focused on pacing + agency, while keeping scope disciplined.
+
+I’ll do three things:
+	1.	Sharpen the design intent (what problem each change solves)
+	2.	Lock the mechanics (no vague ideas)
+	3.	Translate into implementable action items (engine + UI)
+
+
+⸻
+
+GradQuest V2.17 — The Pacing & Agency Update
+
+First of all, whenever an event is triggered by player action, it should be visually distinct from other events, and requiring player to press acknowledge button to confirm.
+
+Design Pillar:
+
+The player is no longer a victim of RNG — they are a risk manager.
+
+Primary Goal:
+Reduce median PhD completion time from ~95 months → 65–75 months
+without lowering difficulty or removing failure.
+
+⸻
+
+I. Core Problem Diagnosis (Post-V2.16)
+
+What’s wrong
+	•	Discovery / Findings loop is too linear and repetitive
+	•	Review periods are dead time
+	•	Summer Internship is dominant, not strategic
+	•	Negative events feel inevitable, not avoidable
+
+What must change
+	•	Add acceleration levers
+	•	Add insurance mechanics
+	•	Add meaningful trade-offs
+	•	Preserve tension
+
+⸻
+
+II. Major Feature Set (V2.17)
+
+A. Research Acceleration — Shorten the Core Loop
+
+1. Compress the Discovery Phase (High Priority)
+Change
+	•	Reduce Develop Findings required successes:
+	•	From 4 → 2–3, scaled by Alignment
+
+Rule
+
+Required iterations = 3 − floor(StrategicAlignment / 40)
+(min = 2)
+
+Effect
+	•	Skilled players finish faster
+	•	Low-alignment players still grind
+
+⸻
+
+2. New Action: High-Throughput Experiment
+Purpose: Break mid-game stagnation with risk
+
+Action
+
+🔬 High-Throughput Experiment
+Cost: 2× morale cost
+Chance: 40%
+Outcome:
+  Success → +2 Figures
+  Failure → −Morale, +Exhaustion
+Cooldown: 6 months
+
+Why it works
+	•	Voluntary risk
+	•	Speeds expert play
+	•	Creates memorable moments
+
+UI
+	•	Marked as ⚡ High Risk
+	•	Tooltip shows exact odds
+
+⸻
+
+B. Proactive Defense — Let Players Buy Safety
+
+3. New Action: Pre-Register Idea
+Purpose: Eliminate rage-inducing Scoops
+
+Action
+
+📄 Pre-register Idea
+Cost: −5 Network
+Effect: Prevents "Scooped" for current idea
+Permanent (per idea)
+
+Design Note
+	•	Network finally has defensive value
+	•	Mirrors real academia
+
+⸻
+
+4. New Action: Equipment Maintenance
+Purpose: Remove pure bad-luck losses
+
+Action
+
+🔧 Equipment Maintenance
+Cost: 1 month (no research)
+Effect: Blocks Equipment Failure for 12 months
+
+UI
+	•	Adds “Equipment Stable (12m)” badge
+
+⸻
+
+C. Internship Rebalance — From Mandatory to Meaningful
+
+5. Internship Penalty Scaling (Critical Fix)
+New Rule
+
+Advisor Type → Penalty
+Laissez-faire → −5 happiness
+Hands-on → −12 happiness
+Strict → −20 happiness + Funding Risk (6m)
+
+Funding at Risk
+	•	+2 morale decay
+	•	Advisor interventions less likely
+
+Result
+	•	Internship becomes a strategic gamble
+	•	“Ask Permission” vs “Do It Anyway” remains relevant
+
+⸻
+
+D. Passive Review Agency — No More Waiting in the Dark
+
+6. New Action: Respond to Reviewers (During Review)
+Availability
+	•	Only while paper is under review
+
+Options
+
+📝 Light Response
+Cost: −3 Morale
+Effect: +10% acceptance chance
+
+🧠 Major Rebuttal
+Cost: −8 Morale, −1 Month
+Effect: Skip "Major Revision"
+
+Why
+	•	Turns dead time into decisions
+	•	Introduces resource tension
+
+⸻
+
+E. Network Finally Matters — Instrumental Power
+
+7. Network Threshold Abilities (Lock Them In)
+
+Network	Unlock
+40	Study Group (already exists)
+60	Pre-register discount (−3 cost)
+80	Peer Review Assist (skip one Figure RNG)
+100	Reviewer Influence (−1 review month)
+
+Design Rule
+	•	Network is spent, not just accumulated
+
+⸻
+
+III. Advisor Friction & Alignment Shields
+
+8. Alignment-Based RNG Shield (Small but Important)
+
+Every 10 Alignment:
+  −5% chance of negative research RNG
+
+Visible in UI:
+
+“Advisor alignment is protecting you.”
+
+⸻
+
+IV. Endgame Flow (Tie-in, Minimal Scope)
+
+9. Defense Trigger (Finalize)
+Once:
+
+Journal Papers ≥ 3
+
+Then:
+	•	All actions disabled
+	•	Only track:
+
+🎓 Prepare Defense
+
+Morale decay reduced by 50%
+Internships disabled
+Focus narrows
+
+⸻
+
+V. Updated Gameplay Loop (Mental Model)
+
+Old
+
+Action → RNG → Wait → RNG → Suffer
+
+New
+
+Plan → Invest → Insure → Accelerate → Risk → Recover
+
+
+⸻
+
+VI. Implementation Checklist (Actionable)
+
+Engine
+	•	Reduce discovery iterations
+	•	Add High-Throughput Experiment
+	•	Add event mitigation flags
+	•	Rebalance internship penalties
+	•	Add review-phase actions
+	•	Network threshold hooks
+
+UI / HMI
+	•	Mark “Risk / Defense / Acceleration” actions visually
+	•	Add status badges (Maintenance, Pre-registered)
+	•	Show review interaction buttons conditionally
+
+⸻
+
+VII. V2.17 Success Metrics
+
+Metric	Target
+Median PhD duration	65–75 months
+“Nothing to do” months	0
+Internship usage	<100% of runs
+Rage quits due to Scoops	Near zero
+Network perceived usefulness	High
+
+
+⸻
+
+Final Verdict
+
+V2.17 is the version where GradQuest stops being about endurance
+and becomes about judgment.
+
+After this update:
+	•	Skilled players finish faster
+	•	Careless players burn out faster
+	•	Smart players feel smart
+
+That’s the inflection point between
+a good simulator and a game people replay to master.
