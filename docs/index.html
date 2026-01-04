@@ -758,12 +758,12 @@
             appendMessage(msg) {
                 const el = document.getElementById('message-log');
                 if (this.typeTimer) clearInterval(this.typeTimer);
-                const current = el.textContent;
-                const full = current + '\n' + msg;
-                el.textContent = current + '\n';
+                const current = el.textContent.trim();
+                const separator = current ? '\n' : '';
+                el.textContent = current + separator;
                 let i = 0;
                 this.typeTimer = setInterval(() => {
-                    el.textContent = current + '\n' + msg.slice(0, ++i);
+                    el.textContent = current + separator + msg.slice(0, ++i);
                     if (i >= msg.length) clearInterval(this.typeTimer);
                 }, 15);
                 // V2.2: Log to event history
@@ -772,9 +772,9 @@
                 }
             },
 
-            // V2.14: Append random event with visual distinction
+            // V2.14: Append random event with subtle visual distinction
             appendRandomEvent(msg) {
-                const prefix = '🎲 [RANDOM EVENT]\n';
+                const prefix = '· ';
                 this.appendMessage(prefix + msg);
             },
 
