@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GradQuest Automated Tests</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+        }
+
+        .pass {
+            color: #4ade80;
+        }
+
+        .fail {
+            color: #f87171;
+        }
+
+        .section {
+            margin: 20px 0;
+            padding: 10px;
+            border-left: 3px solid #6366f1;
+        }
+
+        h2 {
+            color: #a78bfa;
+        }
+
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #818cf8;
+        }
+
+        #results {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧪 GradQuest Test Suite</h1>
+    <div>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="runSemesterTests()">Semester Tests</button>
+        <button onclick="runCreditsTests()">Credits Tests</button>
+        <button onclick="runMSOutTests()">MS-Out Tests</button>
+        <button onclick="runMoraleTests()">Morale Tests</button>
+    </div>
+    <div id="results"></div>
+
+    <script>
+        // Test framework
+        let passed = 0, failed = 0;
+        const results = [];
+
+        function log(msg, isPass = null) {
+            const cls = isPass === true ? 'pass' : isPass === false ? 'fail' : '';
+            results.push(`<span class="${cls}">${msg}</span>`);
+        }
+
+        function assertEqual(actual, expected, testName) {
+            if (actual === expected) {
+                log(`✓ ${testName}`, true);
+                passed++;
+            } else {
+                log(`✗ ${testName}: expected ${expected}, got ${actual}`, false);
+                failed++;
+            }
+        }
+
+        function assertTrue(condition, testName) {
+            assertEqual(condition, true, testName);
+        }
+
+        function assertFalse(condition, testName) {
+            assertEqual(condition, false, testName);
+        }
+
+        function showResults() {
+            document.getElementById('results').innerHTML =
+                `<div class="section"><h2>Results: ${passed} passed, ${failed} failed</h2></div>` +
+                results.join('\n');
+        }
+
+        // Mock game state
+        function createMockState() {
+            return {
+                year: 1,
+                month: 9,
+                totalMonths: 1,
+                morale: 70,
+                credits: 0,
+                isTeaching: false,
+                onMedicalLeave: false,
+                msOutOffered: true,
+                qualifyLevel: 0,
+                pendingPapers: [],
+                pendingConference: [],
+                confPaperCount: 0,
+                peerNetwork: 10,
+                strategicAlignment: 0,
+                newLeaseUntil: 0,
+                items: {},
+                statuses: new Set(['firstYear'])
+            };
+        }
+
+        // Helper functions (mirroring game logic)
+        function getSemester(month) {
+            if (month >= 1 && month <= 5) return 'Spring';
+            if (month >= 6 && month <= 7) return 'Summer';
+            return 'Fall';
+        }
+
+        function canEarnCredits(month, isTeaching, onMedicalLeave) {
+            const isSemester = (month >= 1 && month <= 5) || (month >= 8 && month <= 12);
+            return isSemester && !isTeaching && !onMedicalLeave;
+        }
+
+        function canMSOut(credits, totalMonths) {
+            return credits >= 30 && totalMonths >= 18;
+        }
+
+        function calculateDecay(state) {
+            let decay = 4;
+            if (state.statuses.has('exhaustion')) decay += 6;
+            if (state.statuses.has('unhappyAdvisor')) decay += 6;
+            if (state.statuses.has('burnout')) decay += 2;
+            if (state.isTeaching) decay += 3;
+            const alignmentReduce = Math.floor((state.strategicAlignment || 0) / 25);
+            decay = Math.max(1, decay - alignmentReduce);
+            if (state.newLeaseUntil && state.totalMonths < state.newLeaseUntil) {
+                decay = Math.ceil(decay / 2);
+            }
+            if ((state.items.paper || 0) >= 3) {
+                decay = Math.ceil(decay / 2);
+            }
+            return decay;
+        }
+
+        // Test suites
+        function runSemesterTests() {
+            passed = 0; failed = 0; results.length = 0;
+            log('\n=== SEMESTER SYSTEM TESTS ===\n');
+
+            // Test semester boundaries
+            assertEqual(getSemester(1), 'Spring', 'January is Spring');
+            assertEqual(getSemester(5), 'Spring', 'May is Spring');
+            assertEqual(getSemester(6), 'Summer', 'June is Summer');
+            assertEqual(getSemester(7), 'Summer', 'July is Summer');
+            assertEqual(getSemester(8), 'Fall', 'August is Fall');
+            assertEqual(getSemester(12), 'Fall', 'December is Fall');
+
+            showResults();
+        }
+
+        function runCreditsTests() {
+            passed = 0; failed = 0; results.length = 0;
+            log('\n=== CREDITS SYSTEM TESTS ===\n');
+
+            // Test credit earning during Spring
+            assertTrue(canEarnCredits(1, false, false), 'Earn credits in January (Spring)');
+            assertTrue(canEarnCredits(5, false, false), 'Earn credits in May (Spring)');
+
+            // Test credit earning during Fall
+            assertTrue(canEarnCredits(8, false, false), 'Earn credits in August (Fall)');
+            assertTrue(canEarnCredits(12, false, false), 'Earn credits in December (Fall)');
+
+            // Test NO credits during Summer
+            assertFalse(canEarnCredits(6, false, false), 'No credits in June (Summer)');
+            assertFalse(canEarnCredits(7, false, false), 'No credits in July (Summer)');
+
+            // Test credits blocked by TA
+            assertFalse(canEarnCredits(1, true, false), 'No credits when TA');
+
+            // Test credits blocked by medical leave
+            assertFalse(canEarnCredits(1, false, true), 'No credits on medical leave');
+
+            showResults();
+        }
+
+        function runMSOutTests() {
+            passed = 0; failed = 0; results.length = 0;
+            log('\n=== MS-OUT REQUIREMENTS TESTS ===\n');
+
+            // Test minimum requirements
+            assertFalse(canMSOut(0, 0), 'Cannot MS-Out at start');
+            assertFalse(canMSOut(30, 17), 'Cannot MS-Out with 30 credits but only 17 months');
+            assertFalse(canMSOut(29, 18), 'Cannot MS-Out with 18 months but only 29 credits');
+            assertTrue(canMSOut(30, 18), 'Can MS-Out with exactly 30 credits and 18 months');
+            assertTrue(canMSOut(40, 24), 'Can MS-Out with 40 credits and 24 months');
+
+            showResults();
+        }
+
+        function runMoraleTests() {
+            passed = 0; failed = 0; results.length = 0;
+            log('\n=== MORALE DECAY TESTS ===\n');
+
+            // Base decay
+            let state = createMockState();
+            assertEqual(calculateDecay(state), 4, 'Base decay is 4');
+
+            // Exhaustion adds 6
+            state = createMockState();
+            state.statuses.add('exhaustion');
+            assertEqual(calculateDecay(state), 10, 'Exhaustion adds +6 decay');
+
+            // TA duty adds 3
+            state = createMockState();
+            state.isTeaching = true;
+            assertEqual(calculateDecay(state), 7, 'TA duty adds +3 decay');
+
+            // Strategic alignment reduces decay
+            state = createMockState();
+            state.strategicAlignment = 50;
+            assertEqual(calculateDecay(state), 2, 'Alignment 50 reduces decay by 2');
+
+            // New Lease halves decay
+            state = createMockState();
+            state.newLeaseUntil = 10;
+            state.totalMonths = 5;
+            assertEqual(calculateDecay(state), 2, 'New Lease halves decay');
+
+            // Light at the End (3 papers) halves decay
+            state = createMockState();
+            state.items.paper = 3;
+            assertEqual(calculateDecay(state), 2, '3 papers halves decay');
+
+            showResults();
+        }
+
+        function runAllTests() {
+            passed = 0; failed = 0; results.length = 0;
+            runSemesterTests();
+            const s1 = passed, f1 = failed;
+
+            passed = 0; failed = 0; results.length = 0;
+            runCreditsTests();
+            const s2 = passed, f2 = failed;
+
+            passed = 0; failed = 0; results.length = 0;
+            runMSOutTests();
+            const s3 = passed, f3 = failed;
+
+            passed = 0; failed = 0; results.length = 0;
+            runMoraleTests();
+            const s4 = passed, f4 = failed;
+
+            passed = s1 + s2 + s3 + s4;
+            failed = f1 + f2 + f3 + f4;
+            results.length = 0;
+
+            log('\n=== ALL TESTS ===\n');
+            runSemesterTests();
+            runCreditsTests();
+            runMSOutTests();
+            runMoraleTests();
+        }
+    </script>
+</body>
+
+</html>
