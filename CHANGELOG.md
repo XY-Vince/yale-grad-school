@@ -2,7 +2,7 @@
 
 All notable changes to GradQuest are documented here.
 
-## [2.13.0] - 2026-01-04 "Career Trajectories"
+## [2.14.0] - 2026-01-04 "Career Trajectories"
 
 **Theme**: Your departure is as meaningful as your arrival.
 
@@ -21,6 +21,13 @@ Timing-based exit narratives with salary bonuses:
 - Effect: **+25 Network, +15 morale**
 - Tradeoff: **-5 Advisor happiness**
 - Once per year
+
+### 🎲 Visual Event Distinction
+Random events now show **"🎲 [RANDOM EVENT]"** prefix:
+- Inspiration, Imposter Syndrome, Getting Scooped
+- Seasonal events (Holiday, Summer, New Semester)
+
+Player actions remain unmarked, making causality clear.
 
 ---
 

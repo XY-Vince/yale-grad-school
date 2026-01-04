@@ -770,6 +770,12 @@
                 }
             },
 
+            // V2.14: Append random event with visual distinction
+            appendRandomEvent(msg) {
+                const prefix = '🎲 [RANDOM EVENT]\n';
+                this.appendMessage(prefix + msg);
+            },
+
             // V2.5: Show full event history modal
             showHistory() {
                 const log = this.state.eventLog || [];
@@ -1010,10 +1016,10 @@
                     const inspireMorale = inspirations === 0 ? 15 : 10; // Diminishing
                     this.state.morale = Math.min(100, this.state.morale + inspireMorale);
                     this.addItem('idea');
-                    this.appendMessage(`💡 A sudden flash of inspiration strikes! (+${inspireMorale} morale, +1 idea)`);
+                    this.appendRandomEvent(`💡 A sudden flash of inspiration strikes! (+${inspireMorale} morale, +1 idea)`);
                     // 20% dead end follow-up
                     if (inspirations > 0 && this.random() < 0.2) {
-                        this.appendMessage('💭 ...but on reflection, this might be a dead end.');
+                        this.appendRandomEvent('💭 ...but on reflection, this might be a dead end.');
                     }
                 }
 
@@ -1029,7 +1035,7 @@
                         const reducedLoss = 1 + Math.floor(this.random() * 2); // 1-2 only
                         this.state.morale = Math.max(0, this.state.morale - reducedLoss);
                         this.state.strategicAlignment = (this.state.strategicAlignment || 0) + 2; // Self-awareness
-                        this.appendMessage('🧘 You recognize this feeling again. It passes faster this time. (-' + reducedLoss + ' morale, +2 alignment)');
+                        this.appendRandomEvent('🧘 You recognize this feeling again. It passes faster this time. (-' + reducedLoss + ' morale, +2 alignment)');
                     } else {
                         const imposterMsgs = [
                             '😰 You wonder if you really belong here...',
@@ -1039,7 +1045,7 @@
                         ];
                         const loss = 3 + Math.floor(this.random() * 5); // 3-7
                         this.state.morale = Math.max(0, this.state.morale - loss);
-                        this.appendMessage(imposterMsgs[Math.floor(this.random() * imposterMsgs.length)] + ' (-' + loss + ' morale)');
+                        this.appendRandomEvent(imposterMsgs[Math.floor(this.random() * imposterMsgs.length)] + ' (-' + loss + ' morale)');
                         currentRecentImposter.push(this.state.totalMonths);
                     }
                     this.state.lastImposterMonths = currentRecentImposter;
@@ -1053,24 +1059,24 @@
                     this.state.lastScoopMonth = this.state.totalMonths;
                     const scoopLoss = 5 + Math.floor(this.random() * 5);
                     this.state.morale = Math.max(0, this.state.morale - scoopLoss);
-                    this.appendMessage('📢 Another lab just published YOUR idea! (-1 idea, -' + scoopLoss + ' morale)');
+                    this.appendRandomEvent('📢 Another lab just published YOUR idea! (-1 idea, -' + scoopLoss + ' morale)');
                 }
 
                 // V3.0: Seasonal Events
                 const month = this.state.month;
                 if (month === 12) { // December holidays
                     if (this.random() < 0.5) {
-                        this.appendMessage('🎄 Holiday break! Time to rest. (+5 morale)');
+                        this.appendRandomEvent('🎄 Holiday break! Time to rest. (+5 morale)');
                         this.state.morale = Math.min(100, this.state.morale + 5);
                     }
                 } else if (month >= 6 && month <= 8) { // Summer
                     if (this.random() < 0.15) {
-                        this.appendMessage('☀️ Summer focus! Fewer distractions. (+3 morale)');
+                        this.appendRandomEvent('☀️ Summer focus! Fewer distractions. (+3 morale)');
                         this.state.morale = Math.min(100, this.state.morale + 3);
                     }
                 } else if (month === 9) { // September - new semester chaos
                     if (this.random() < 0.3) {
-                        this.appendMessage('📚 New semester chaos! So many meetings... (-3 morale)');
+                        this.appendRandomEvent('📚 New semester chaos! So many meetings... (-3 morale)');
                         this.state.morale = Math.max(0, this.state.morale - 3);
                     }
                 }
