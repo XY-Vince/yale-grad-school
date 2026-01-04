@@ -1770,7 +1770,7 @@
 
                 // V2.14: Show pending review status
                 let reviewStatus = '';
-                const pendingJournal = (s.pendingSubmissions || []).length;
+                const pendingJournal = (s.pendingPapers || []).length;
                 const pendingConf = (s.pendingConference || []).length;
                 if (pendingJournal > 0) reviewStatus += `📝 ${pendingJournal} Journal in review`;
                 if (pendingConf > 0) reviewStatus += (reviewStatus ? ' | ' : '') + `📋 ${pendingConf} Conf in review`;
