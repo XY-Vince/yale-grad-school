@@ -574,8 +574,55 @@
         const game = {
             state: null,
 
+            // ===========================================
+            // CONSTANTS - All thresholds in one place
+            // ===========================================
+            CONST: {
+                // Morale thresholds
+                MORALE_CRITICAL: 15,
+                MORALE_LOW: 30,
+                MORALE_OK: 50,
+                MORALE_GOOD: 75,
+                // Credits & Time
+                MS_OUT_CREDITS: 30,
+                MS_OUT_MONTHS: 18,
+                CREDITS_PER_MONTH: 3,
+                // Network thresholds
+                NETWORK_STUDY_GROUP: 40,
+                NETWORK_PREREG_DISCOUNT: 60,
+                NETWORK_PEER_ASSIST: 80,
+                // Semester months
+                SPRING: { start: 1, end: 5 },
+                SUMMER: { start: 6, end: 7 },
+                FALL: { start: 8, end: 12 },
+                // Decay rates
+                BASE_DECAY: 4,
+                EXHAUSTION_DECAY: 6,
+                UNHAPPY_ADVISOR_DECAY: 6,
+                TA_DECAY: 3,
+                // Cooldowns
+                SCOOP_COOLDOWN: 24,
+                HIGH_THROUGHPUT_COOLDOWN: 6,
+                EQUIPMENT_STABLE_MONTHS: 12
+            },
+
             // Month names
             months: ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+
+            // Helper: Get current semester name
+            getSemester(month) {
+                const m = month || this.state.month;
+                if (m >= this.CONST.SPRING.start && m <= this.CONST.SPRING.end) return 'Spring';
+                if (m >= this.CONST.SUMMER.start && m <= this.CONST.SUMMER.end) return 'Summer';
+                return 'Fall';
+            },
+
+            // Helper: Check if in academic semester (Spring or Fall, not Summer)
+            isAcademicSemester(month) {
+                const m = month || this.state.month;
+                return (m >= this.CONST.SPRING.start && m <= this.CONST.SPRING.end) ||
+                    (m >= this.CONST.FALL.start && m <= this.CONST.FALL.end);
+            },
 
             // V1.7: Seed for reproducible randomness
             seed: null,
