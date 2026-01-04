@@ -947,7 +947,7 @@
                     if (this.state.year === 1 && this.state.month === 9) {
                         this.appendMessage('⚠️ QUALS APPROACHING: Your qualifying exam is in 12 months (September Year 2). Start preparing!');
                     } else if (this.state.year === 2 && this.state.month === 7) {
-                        this.appendMessage('⏳ QUALS IN 2 MONTHS: Prep level = ' + (this.state.qualifyLevel || 0) + '. You need 2 to pass!');
+                        this.appendMessage('⏳ QUALS IN 2 MONTHS: Prep level = ' + (this.state.qualifyLevel || 0) + '. You need 3 to pass!');
                     } else if (this.state.year === 2 && this.state.month === 8) {
                         this.appendMessage('🚨 QUALS NEXT MONTH! Prep level = ' + (this.state.qualifyLevel || 0) + '. CRITICAL - prepare now!');
                     }
@@ -1104,14 +1104,14 @@
                 const hasStudyGroup = (this.state.peerNetwork || 0) >= 50;
                 const effectiveLevel = this.state.qualifyLevel + (hasStudyGroup ? 1 : 0);
 
-                if (effectiveLevel >= 2) {
+                if (effectiveLevel >= 3) {
                     msg += '✅ QUALS PASSED! ✅\n';
                     if (hasStudyGroup && this.state.qualifyLevel < 2) {
                         msg += 'Your study group helped you pass!';
                     } else {
-                        msg += effectiveLevel >= 3 ? 'Your thorough preparation paid off!' : 'You passed the qualifying exam!';
+                        msg += effectiveLevel >= 4 ? 'Your thorough preparation paid off!' : 'You passed the qualifying exam!';;
                     }
-                    this.state.morale = Math.min(100, this.state.morale + (effectiveLevel >= 3 ? 25 : 15));
+                    this.state.morale = Math.min(100, this.state.morale + (effectiveLevel >= 4 ? 25 : 15));
                     this.state.qualsPassed = true;
                 } else {
                     // V2.9: Soft fail option (once)
@@ -1125,7 +1125,7 @@
                         msg += 'You have 3 months to prepare for the retake.\n';
                         msg += '(-25 morale, +Exhaustion)';
                     } else {
-                        msg += '❌ QUALS FAILED AGAIN ❌\nYou needed at least 2 preparation sessions.';
+                        msg += '❌ QUALS FAILED AGAIN ❌\nYou needed prep level 3 to pass.';
                         this.showMessage(msg);
                         this.endGame(false, 'quals_failed', 'You were dismissed after failing quals twice.');
                         return;
@@ -1217,6 +1217,11 @@
                 }
 
                 actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest and recover' });
+
+                // V2.10: Medical Leave (emergency escape, one-time use)
+                if (s.morale < 15 && !s.medicalLeaveUsed) {
+                    actions.push({ id: 'medical_leave', name: '🏥 Medical Leave', desc: 'Emergency: +40 morale, costs 3-6 months' });
+                }
 
                 // V2.5: Advisor-suggested vacation (fast recovery, optional)
                 if (s.vacationOffered && !s.onVacation) {
@@ -1379,17 +1384,29 @@
                         break;
 
                     case 'work_figures':
-                        if (this.random() < 0.6) {
+                        // V2.10: Figure decompression - after 2 consecutive rejections, +30% success
+                        const figRejections = s.consecutiveFigRejections || 0;
+                        const figBonus = figRejections >= 2 ? 0.3 : 0;
+                        if (this.random() < (0.6 + figBonus)) {
                             this.addItem('figure');
                             s.morale = Math.min(100, s.morale + 3);
-                            msg = '📊 Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)';
+                            s.consecutiveFigRejections = 0; // Reset on success
+                            if (figRejections >= 2) {
+                                msg = '📊 You\'re finally seeing what reviewers want! Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)';
+                            } else {
+                                msg = '📊 Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)';
+                            }
                         } else {
+                            s.consecutiveFigRejections = figRejections + 1;
                             const figFail = [
                                 '😔 The visualization isn\'t clear enough...',
                                 '😔 Reviewer 2 would hate this figure.',
                                 '😔 The data doesn\'t look right plotted this way.'
                             ];
                             msg = this.pick(figFail);
+                            if (s.consecutiveFigRejections >= 2) {
+                                msg += '\n💡 You\'re learning what works. Next attempt will be easier.';
+                            }
                         }
                         if (this.random() < 0.05) {
                             this.addStatus('brokenEquipment');
@@ -1426,6 +1443,29 @@
                             this.removeStatus('unhappyAdvisor');
                             msg += '\n🤝 Your advisor has cooled down.';
                         }
+                        break;
+
+                    // V2.10: Medical Leave (emergency escape, one-time use)
+                    case 'medical_leave':
+                        const leaveDuration = 3 + Math.floor(this.random() * 4); // 3-6 months
+                        s.medicalLeaveUsed = true;
+                        s.morale = Math.min(100, s.morale + 40);
+                        if (this.hasStatus('exhaustion')) this.removeStatus('exhaustion');
+                        if (this.hasStatus('burnout')) this.removeStatus('burnout');
+                        // Reset current project (lose progress)
+                        this.state.items['idea'] = 0;
+                        this.state.items['initial_findings'] = 0;
+                        this.state.items['key_discovery'] = 0;
+                        this.state.items['figure'] = 0;
+                        // Advance time
+                        for (let i = 0; i < leaveDuration; i++) {
+                            s.month++;
+                            s.totalMonths++;
+                            if (s.month > 12) { s.month = 1; s.year++; }
+                        }
+                        msg = '🏥 You took medical leave for ' + leaveDuration + ' months.\n';
+                        msg += 'You feel much better. (+40 morale, cleared exhaustion)\n';
+                        msg += '⚠️ Your current project was reset. Time to start fresh.';
                         break;
 
                     // V2.7: Advisor-suggested vacation with diminishing returns

@@ -2,6 +2,31 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.10.0] - 2026-01-03 "Resilience Under Pressure"
+
+**Theme**: Players should lose because they made hard tradeoffs — not because the system quietly cornered them.
+
+### Quals Difficulty Increase
+- **Required prep level**: 2 → **3** (harder!)
+- Each prep session gives 0/1/2 points
+- Countdown warnings now show "need 3 to pass"
+- Study group bonus (+1 if network ≥ 50) still applies
+
+### Medical Leave (Emergency Escape)
+- Appears when **morale < 15**
+- **Effect**: +40 morale, clears exhaustion/burnout
+- **Cost**: 3-6 months (random), resets current project
+- **One-time use** per run
+- Converts inevitable failure into strategic retreat
+
+### Figure Decompression
+- Tracks **consecutive figure rejections**
+- After 2 rejections: **+30% success bonus** on next attempt
+- Message: "You're learning what works. Next attempt will be easier."
+- Simulates learning without removing grind
+
+---
+
 ## [2.9.0] - 2026-01-03 "Fairness & Clarity"
 
 **Theme**: A player should never lose because they misunderstood priority, timing, or invisible mechanics.

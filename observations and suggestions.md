@@ -879,3 +879,242 @@ If implemented cleanly, V2.9 will be the first version that:
 	•	Teaches players why they failed
 	•	Can survive Reddit / Hacker News scrutiny
 	•	Creates trust for future Pro mode
+
+
+
+
+⸻
+
+
+GradQuest V2.10 Improvement Plan
+
+Theme: Resilience Under Pressure
+Design Goal: Players should lose because they made hard tradeoffs — not because the system quietly cornered them.
+
+⸻
+
+0. What V2.10 Is (and Is Not)
+
+V2.10 IS
+	•	A stabilization + agency release
+	•	Focused on morale collapse, advisor limits, and late-stage survival
+	•	About making “almost failed” runs meaningfully recoverable
+
+V2.10 IS NOT
+	•	A balance rewrite
+	•	A Pro / weekly simulator
+	•	A conference rework
+	•	A UI overhaul
+
+⸻
+
+1. Critical Bug & Logic Corrections (Must Ship)
+
+1.1 Quals Logic Unification (Blocking Issue)
+
+Problem
+	•	Logs show Quals passed with Prep = 1
+	•	README + code claim Prep ≥ 2 is required
+
+Actionable Fix
+	1.	Single source of truth:
+	•	QUALS_REQUIRED_PREP = 2
+	2.	Hard assertion in triggerQuals():
+	•	Log explicit failure reason
+	3.	History entry:
+	•	“Quals passed with Prep = X (Required: 2)”
+
+Outcome
+	•	Eliminates silent logic drift
+	•	Makes Quals debuggable, not mystical
+
+⸻
+
+2. Advisor as Finite Resource (Fixing the “Invisible Guardian”)
+
+2.1 Advisor Intervention Fatigue
+
+Problem
+	•	Advisor rescues are unlimited
+	•	Yet still fail to prevent death spirals
+	•	Feels both overpowered and insufficient
+
+Actionable Changes
+	1.	Add hidden counter: advisor_patience (starts at 100)
+	2.	Each forced break costs:
+	•	−20 patience
+	3.	Below 30 patience:
+	•	Interventions weaker (shorter rest, less morale restored)
+	4.	At 0 patience:
+	•	Advisor stops intervening
+	•	New message: “You need to handle this yourself now.”
+
+Why
+	•	Makes advisor support real but finite
+	•	Forces player to build self-resilience
+
+⸻
+
+3. Adaptive Alignment Shield (Core V2.10 Mechanic)
+
+3.1 Alignment → RNG Dampener
+
+Problem
+	•	Trial 2 shows correct play still leads to morale collapse
+	•	RNG friction compounds uncontrollably
+
+Actionable Changes
+	1.	Strategic Alignment (already tracked) now:
+	•	Reduces probability of negative research RNG
+	2.	Concrete rules:
+	•	Alignment ≥ 60:
+	•	“Reviewer #2” disabled during Document Findings
+	•	Alignment ≥ 80:
+	•	“Visualization unclear” cannot occur twice in a row
+
+Design Rationale
+	•	Rewards learning the system
+	•	Does NOT guarantee success
+	•	Breaks death spirals without removing difficulty
+
+⸻
+
+4. Emergency-State Agency (Anti–Dead Man Walking)
+
+4.1 Medical Leave / Therapy Action
+
+Trigger
+	•	Appears only when Morale < 15
+
+Action
+“Medical Leave”
+	•	+40 morale
+	•	−1 exhaustion
+	•	Costs 3–6 months (randomized)
+	•	Resets current project to Idea
+
+Constraints
+	•	Can only be used once per run
+	•	Cannot be used during review or quals window
+
+Why This Matters
+	•	Converts inevitable failure into strategic retreat
+	•	Deeply realistic
+	•	Preserves consequences
+
+This is the single most important V2.10 addition.
+
+⸻
+
+5. Quals: Forcing the Hard Choice
+
+5.1 Auto-Prompted Last-Minute Cram
+
+Problem
+	•	Players miss Cram option even when doomed
+
+Actionable Change
+	•	In August Y2, if Prep < 2:
+	•	Modal prompt:
+“You are unprepared.
+Cram (High Cost) or Face the Committee (High Risk)?”
+
+Effects
+	•	Cram:
+	•	−25 morale
+	•	+exhaustion
+	•	Guaranteed pass
+	•	Face Committee:
+	•	Existing logic
+
+Outcome
+	•	Failure becomes a choice, not an accident
+
+⸻
+
+6. Figure Grind Decompression (Late-Game Focus)
+
+6.1 Reviewer Fatigue Cooldown
+
+Problem
+	•	Repeated figure rejection causes morale freefall
+
+Actionable Change
+	•	After 2 consecutive figure rejections:
+	•	Next figure attempt has +30% success chance
+	•	UI message:
+	•	“You’re finally seeing what reviewers want.”
+
+This simulates learning without removing grind.
+
+⸻
+
+7. Review Tracker (Transparency, Not Acceleration)
+
+7.1 Passive Review Progress Bar
+
+Actionable Changes
+	•	For each submitted paper:
+	•	Show: “Journal Review: 7 / 10 months”
+	•	No mechanical effect
+	•	Purely informational
+
+Why
+	•	Removes “flying blind” stress
+	•	Makes waiting psychologically survivable
+
+⸻
+
+8. Network: From Scalar to Tactical Resource
+
+8.1 Peer Review Action (High Network Only)
+
+Unlock
+	•	Network ≥ 80
+
+Action
+“Peer Review Figures”
+	•	Once per paper
+	•	Skips one figure RNG check
+	•	Costs −10 network
+
+Design Benefits
+	•	Makes high network meaningfully different
+	•	Adds tradeoff (network is no longer free)
+
+⸻
+
+9. What V2.10 Explicitly Will NOT Add
+
+To prevent scope collapse:
+	•	❌ Weekly mechanics
+	•	❌ Conference rebalance
+	•	❌ New stats
+	•	❌ Salary optimization
+	•	❌ Multiple advisor archetypes
+	•	❌ Pro-mode features
+
+Those belong to V3.x.
+
+⸻
+
+10. Success Criteria for V2.10
+
+V2.10 is successful if:
+	•	No player loses Quals due to misunderstanding
+	•	Death spirals require multiple bad decisions
+	•	Advisor support feels finite and human
+	•	Emergency state offers a painful but real escape
+	•	High-alignment, high-skill play demonstrably reduces RNG pain
+
+⸻
+
+Final Assessment
+
+V2.9 made GradQuest fair.
+V2.10 should make it survivable without making it easy.
+
+This is the release where:
+	•	Resilience stops being flavor text
+	•	Agency appears exactly when things are worst
+	•	The game earns the right to be called a simulator
