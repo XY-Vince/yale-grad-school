@@ -1836,10 +1836,9 @@
                     return `<span style="${style}">${st.icon} ${st.label}${hasItems ? ' ×' + st.count : ''}</span>`;
                 }).join('');
 
-                // Pending/Rejected/TA
+                // Pending/Rejected/TA (review status moved to Publications panel in V2.14)
                 const extras = [];
                 if (this.getItem('rejected_paper') > 0) extras.push('❌ Rejected ×' + this.getItem('rejected_paper'));
-                if (s.pendingPapers && s.pendingPapers.length > 0) extras.push('⏳ Under Review ×' + s.pendingPapers.length);
                 if (s.isTeaching) extras.push('📝 TA Duty (' + s.teachingMonths + ' mo)');
                 if (extras.length > 0) {
                     pipelineEl.innerHTML += '<br><span style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">' + extras.join(' | ') + '</span>';
