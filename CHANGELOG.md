@@ -22,6 +22,11 @@ Timing-based exit narratives with salary bonuses:
 - Tradeoff: **-5 Advisor happiness**
 - Once per year
 
+### 📰 Review Status Display
+Publications panel now shows pending reviews:
+- **📝 X Journal in review** | **📋 X Conf in review**
+- Updates in real-time as papers progress
+
 ### 🎲 Visual Event Distinction
 Random events now show **"🎲 [RANDOM EVENT]"** prefix:
 - Inspiration, Imposter Syndrome, Getting Scooped

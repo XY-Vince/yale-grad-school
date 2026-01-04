@@ -389,6 +389,8 @@
                         <div class="stat-value"><span id="papers">0</span></div>
                         <div style="color: var(--text-secondary); font-size: 0.7rem;"><span id="pub-breakdown">0 Journal
                                 + 0 Conference</span></div>
+                        <div style="color: var(--accent-color); font-size: 0.65rem; margin-top: 2px;"><span
+                                id="review-status"></span></div>
                     </div>
                     <!-- V2.2 Pro: Peer Network -->
                     <div class="stat-card">
@@ -1765,6 +1767,15 @@
                 const totalPubs = journalPapers + confPapers;
                 document.getElementById('papers').textContent = totalPubs;
                 document.getElementById('pub-breakdown').textContent = `${journalPapers} Journal + ${confPapers} Conference`;
+
+                // V2.14: Show pending review status
+                let reviewStatus = '';
+                const pendingJournal = (s.pendingSubmissions || []).length;
+                const pendingConf = (s.pendingConference || []).length;
+                if (pendingJournal > 0) reviewStatus += `📝 ${pendingJournal} Journal in review`;
+                if (pendingConf > 0) reviewStatus += (reviewStatus ? ' | ' : '') + `📋 ${pendingConf} Conf in review`;
+                document.getElementById('review-status').textContent = reviewStatus;
+
                 // V2.2 Pro: Peer Network
                 document.getElementById('peer-network').textContent = s.peerNetwork || 10;
 
