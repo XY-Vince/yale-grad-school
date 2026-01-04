@@ -834,6 +834,10 @@
                 if (this.state.newLeaseUntil && this.state.totalMonths < this.state.newLeaseUntil) {
                     decay = Math.ceil(decay / 2);
                 }
+                // V2.12: Light at the End of the Tunnel - 50% decay reduction with 3 journal papers
+                if ((this.getItem('paper') || 0) >= 3) {
+                    decay = Math.ceil(decay / 2);
+                }
                 this.state.morale = Math.max(0, this.state.morale - decay);
                 // V2.11: Track low morale months for escalating MS-Out
                 if (this.state.morale < 15) {
@@ -1790,10 +1794,31 @@
                 const statusesEl = document.getElementById('statuses');
                 const statusNames = { exhaustion: 'Exhaustion', unhappyAdvisor: 'Unhappy Advisor', brokenEquipment: 'Broken Equipment', firstYear: 'First Year' };
                 const negatives = ['exhaustion', 'unhappyAdvisor', 'brokenEquipment'];
+                let statusHTML = '';
+
+                // V2.12: Add special buff badges
+                if (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) {
+                    const monthsLeft = s.renewedPerspectiveUntil - s.totalMonths;
+                    statusHTML += `<span class="status-badge positive">✨ Renewed Focus (${monthsLeft}mo)</span>`;
+                }
+                if (s.newLeaseUntil && s.totalMonths < s.newLeaseUntil) {
+                    const monthsLeft = s.newLeaseUntil - s.totalMonths;
+                    statusHTML += `<span class="status-badge positive">🌟 New Lease (${monthsLeft}mo)</span>`;
+                }
+                // V2.12: Light at the End of the Tunnel (3 journal papers)
+                const journalPapersCount = this.getItem('paper') || 0;
+                if (journalPapersCount >= 3) {
+                    statusHTML += `<span class="status-badge positive">🏁 Almost There!</span>`;
+                }
+
                 if (s.statuses.size > 0) {
-                    statusesEl.innerHTML = Array.from(s.statuses).map(id =>
+                    statusHTML += Array.from(s.statuses).map(id =>
                         `<span class="status-badge${negatives.includes(id) ? ' negative' : ''}">${statusNames[id] || id}</span>`
                     ).join('');
+                }
+
+                if (statusHTML) {
+                    statusesEl.innerHTML = statusHTML;
                 } else {
                     statusesEl.innerHTML = '<span class="empty-text">No effects</span>';
                 }

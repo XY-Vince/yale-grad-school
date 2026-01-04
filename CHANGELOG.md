@@ -2,7 +2,7 @@
 
 All notable changes to GradQuest are documented here.
 
-## [2.12.0] - 2026-01-03 "Recovery Trajectories"
+## [2.12.0] - 2026-01-04 "Recovery Trajectories"
 
 **Theme**: Once the system saves you, what helps you move again?
 
@@ -17,7 +17,15 @@ All notable changes to GradQuest are documented here.
   - "You recognize this feeling again. It passes faster."
   - **Reduced impact** (1-2 morale instead of 3-7)
   - **+2 Strategic Alignment** (self-awareness)
-- Models psychological adaptation
+
+### 👁️ Visible Status Badges
+- **✨ Renewed Focus (Xmo)**: Shows when +10% buff active
+- **🌟 New Lease (Xmo)**: Shows after passing quals retake
+- **🏁 Almost There!**: Shows when 3 journal papers reached
+
+### 🏁 Light at the End of the Tunnel
+- When **3 journal papers** reached: **50% morale decay reduction**
+- Makes the final thesis push more survivable
 
 ---
 
