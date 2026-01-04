@@ -371,3 +371,243 @@ Outcomes must be acknowledged.
 This is the version where GradQuest stops feeling like a clever sim and starts feeling like an institution with rules.
 
 V2.15 is the line between simulation and experience.
+
+
+Below is a V2.16 improvement plan that is tightly scoped, implementation-ready, and aligned with your stated rule:
+one major feature focus per version.
+
+This is not a mechanics expansion release.
+V2.16 is an interface and cognition release.
+
+⸻
+
+GradQuest V2.16 — Solid Improvement Plan
+
+Theme: Make the invisible legible
+Primary Objective: Eliminate the “black box” feeling without dumbing down the simulation
+Constraint: No new core mechanics unless they directly support UI clarity
+
+⸻
+
+I. Core Diagnosis (Hard Truth, Restated)
+
+By V2.15, GradQuest has:
+	•	✅ A strong resilience engine
+	•	✅ Meaningful failure recovery loops
+	•	❌ A UI that hides critical information and forces players to guess
+
+Players are no longer losing because of bad strategy.
+They are losing because they cannot see the state space.
+
+V2.16 fixes that, and nothing else.
+
+⸻
+
+II. Major Feature Focus: Status Dashboard & HUD Overhaul
+
+(Desktop + Mobile-first)
+
+1. Status Dashboard (Persistent, Compact, Always Visible)
+
+Add a collapsible “Status Dashboard” panel at the top (or bottom on mobile).
+
+1.1 Visible Strategic Alignment Meter (High Priority)
+What
+	•	Convert Strategic Alignment from hidden → visible bar (0–100)
+
+UI
+	•	Label: Advisor Alignment
+	•	Tooltip:
+“Higher alignment reduces morale decay and softens negative randomness.”
+
+Mechanical Transparency
+	•	Show thresholds visually:
+	•	30+: fewer morale hits
+	•	60+: RNG variance reduction
+	•	80+: Pep Talks, advisor protection
+
+Why
+	•	Pitch Sessions become legible investments, not folklore
+
+⸻
+
+1.2 Morale Decay Breakdown (On Hover / Tap)
+When hovering Morale:
+
+Base Decay: -4
+Exhaustion: -6
+Imposter Syndrome: -3
+Alignment Buffer: +4
+Net: -9 / month
+
+Mobile
+	•	Tap opens modal
+
+Why
+	•	Players stop blaming “bad RNG”
+	•	They learn how decay actually works
+
+⸻
+
+2. Research Pipeline 2.0 (Stepper, Not Text)
+
+Replace text-heavy pipeline with a visual stepper:
+
+Idea → Findings → Discovery → Figures (1/3) → Submitted → Review (7/10)
+
+2.1 Explicit Figure Progress (Already Requested, Fully Enforced)
+	•	Always display Figures: X / 3
+	•	Add small + icon when Learning Buff active
+
+Tooltip:
+
+“Previous failures are making this easier.”
+
+⸻
+
+2.2 Review Countdown (Journal / Conference)
+For each submitted paper:
+	•	Show:
+	•	Type: Journal / Conference
+	•	Status: Under Review
+	•	Progress bar: 7 / 10 months
+
+Important
+	•	No more “(4 month review)” in logs
+	•	Time pressure is visual, not textual
+
+⸻
+
+3. Quals Prep Visualizer (Critical)
+
+3.1 Prep Meter Appears Automatically
+When Year ≥ 1:
+
+Quals Prep: 1 / 3
+
+3.2 Context-Sensitive Styling
+	•	Year 1: Neutral color, informational
+	•	Year 2 (Spring–Summer): Yellow warning
+	•	Final 3 months: Red + pulsing
+
+Tooltip:
+
+“Failing Quals ends the program. Retake has permanent costs.”
+
+Why
+	•	Eliminates accidental Month-13 failures permanently
+
+⸻
+
+4. Action Availability Transparency
+
+4.1 Dynamic Action Surfacing (No More Hidden Tools)
+Actions must appear grayed-out with explanation, not disappear.
+
+Examples:
+	•	Pitch Session
+	•	Shown when Advisor exists
+	•	Disabled if cooldown active
+	•	Tooltip explains cooldown
+	•	Medical Leave
+	•	Always visible
+	•	Enabled only if Morale < 15
+	•	Tooltip:
+“Available only during critical burnout.”
+
+Why
+	•	Players learn what they could do, not just what they can do now
+
+⸻
+
+5. Event Categorization & Visual Semantics (From V2.14 → Finalized)
+
+Every event must be visually tagged:
+
+Event Type	Icon	Color
+Player Action Result	▶️	Blue
+Random Event	🎲	Gray
+Advisor Intervention	🧑‍🏫	Purple
+System Pressure	⚠️	Red
+Buff / Learning	✨	Green
+
+Implementation
+	•	Tag injected at event creation
+	•	No logic change required
+
+Why
+	•	Players stop conflating RNG with consequence
+	•	Accountability becomes clear
+
+⸻
+
+III. Secondary Improvements (Allowed, Minimal Scope)
+
+6. MS-Out Credit Gate (Finalize Fix)
+
+Rule
+	•	MS-Out disabled until:
+	•	Credits ≥ 30
+	•	Month ≥ 18
+
+UI
+	•	Show MS-Out button grayed out
+	•	Tooltip:
+“Insufficient coursework for degree.”
+
+⸻
+
+7. Scoop Cooldown (Anti-Cruelty Rule)
+	•	After being scooped:
+	•	24-month immunity
+	•	UI indicator:
+“Recently scooped — reduced risk.”
+
+⸻
+
+8. Advisor Tone Refinement (Text-Only)
+
+Based on advisor trait:
+	•	Strict → blunt, formal
+	•	Hands-on → disappointed but supportive
+	•	Laissez-faire → detached, permissive
+
+No new mechanics
+Pure narrative differentiation
+
+⸻
+
+IV. Mobile Optimization Checklist (Non-Optional)
+	•	One-column layout
+	•	Dashboard collapsible
+	•	All meters tap-expand
+	•	No hover-only info
+	•	Buttons ≥ 44px height
+
+⸻
+
+V. Success Metrics for V2.16
+
+Metric	Target
+Accidental Quals Failures	0
+“I didn’t know that existed” feedback	0
+Avg. time to understand Alignment	<5 minutes
+Mobile usability complaints	Minimal
+Rage quits due to opacity	Eliminated
+
+
+⸻
+
+Final Judgment
+
+V2.16 is not about adding content.
+It is about respecting the player’s intelligence.
+
+By this point, GradQuest already:
+	•	Punishes mistakes fairly
+	•	Rewards learning
+	•	Models academic endurance honestly
+
+What it lacks is nervous system transparency.
+
+After V2.16, when a player fails, they should be able to say: “I understand exactly why that happened.”

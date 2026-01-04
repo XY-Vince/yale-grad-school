@@ -395,6 +395,22 @@
                         <div class="stat-label">🤝 Network</div>
                         <div class="stat-value"><span id="peer-network">10</span></div>
                     </div>
+                    <!-- V2.16: Strategic Alignment meter -->
+                    <div class="stat-card">
+                        <div class="stat-label">🎯 Alignment</div>
+                        <div class="stat-value"><span id="alignment-value">0</span></div>
+                        <div style="height: 4px; background: #333; border-radius: 2px; margin-top: 4px;">
+                            <div id="alignment-bar"
+                                style="height: 100%; width: 0%; background: linear-gradient(90deg, #f87171, #fbbf24, #4ade80); border-radius: 2px;">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- V2.16: Quals Prep visualizer -->
+                    <div class="stat-card" id="quals-prep-card" style="display: none;">
+                        <div class="stat-label">📚 Quals Prep</div>
+                        <div class="stat-value"><span id="quals-prep-value">0</span>/3</div>
+                        <div id="quals-warning" style="font-size: 0.65rem;"></div>
+                    </div>
                 </div>
 
                 <!-- V2.4: Dual event display for current and previous month -->
@@ -775,7 +791,19 @@
 
             // V2.14: Append random event with subtle visual distinction
             appendRandomEvent(msg) {
-                const prefix = '· ';
+                const prefix = '🎲 ';
+                this.appendMessage(prefix + msg);
+            },
+
+            // V2.16: Append advisor intervention event
+            appendAdvisorEvent(msg) {
+                const prefix = '🧑‍🏫 ';
+                this.appendMessage(prefix + msg);
+            },
+
+            // V2.16: Append system pressure event
+            appendSystemEvent(msg) {
+                const prefix = '⚠️ ';
                 this.appendMessage(prefix + msg);
             },
 
@@ -1799,6 +1827,36 @@
 
                 // V2.2 Pro: Peer Network
                 document.getElementById('peer-network').textContent = s.peerNetwork || 10;
+
+                // V2.16: Strategic Alignment meter
+                const alignment = s.strategicAlignment || 0;
+                document.getElementById('alignment-value').textContent = alignment;
+                document.getElementById('alignment-bar').style.width = `${Math.min(100, alignment)}%`;
+
+                // V2.16: Quals Prep visualizer
+                const qualsCard = document.getElementById('quals-prep-card');
+                const qualsPrep = s.qualifyLevel || 0;
+                if (!s.qualsPassed && (s.year >= 1 || s.totalMonths >= 6)) {
+                    qualsCard.style.display = 'block';
+                    document.getElementById('quals-prep-value').textContent = qualsPrep;
+                    // Color-coded warnings
+                    const qualsWarning = document.getElementById('quals-warning');
+                    const monthsToQuals = (2 * 12 + 9) - s.totalMonths; // Sept Year 2
+                    if (s.year === 2 && s.month >= 6 && monthsToQuals <= 3) {
+                        qualsCard.style.borderColor = '#f87171';
+                        qualsWarning.innerHTML = '🚨 <b>IMMINENT!</b>';
+                        qualsWarning.style.color = '#f87171';
+                    } else if (s.year === 2) {
+                        qualsCard.style.borderColor = '#fbbf24';
+                        qualsWarning.innerHTML = '⚠️ This year';
+                        qualsWarning.style.color = '#fbbf24';
+                    } else {
+                        qualsCard.style.borderColor = '';
+                        qualsWarning.innerHTML = '';
+                    }
+                } else if (s.qualsPassed) {
+                    qualsCard.style.display = 'none';
+                }
 
                 // V2.0.1: Morale as descriptive text
                 const moraleBar = document.getElementById('morale-bar');

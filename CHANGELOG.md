@@ -2,6 +2,29 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.16.0] - 2026-01-04 "Transparent Systems"
+
+**Theme**: Make the invisible legible
+
+### 🎯 Strategic Alignment Meter
+- **Visible bar** (0-100) with gradient coloring
+- Shows effects at 30/60/80 thresholds
+- Now players understand pitch sessions
+
+### 📚 Quals Prep Visualizer
+- **Visible counter** (X/3) in stats bar
+- **Color-coded warnings**:
+  - Year 1: Neutral (informational)
+  - Year 2: Yellow ⚠️
+  - Final 3 months: Red 🚨 IMMINENT!
+
+### 🏷️ Event Categorization
+- **🎲** Random events (imposter, scoop, seasonal)
+- **🧑‍🏫** Advisor interventions
+- **⚠️** System pressure warnings
+
+---
+
 ## [2.15.0] - 2026-01-04 "Academic Time"
 
 **Theme**: Temporal realism + credential legitimacy
