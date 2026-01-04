@@ -663,6 +663,69 @@
                 };
             },
 
+            // ===========================================
+            // V2.18: IMMUTABLE STATE UPDATES
+            // ===========================================
+            updateState(changes) {
+                this.state = { ...this.state, ...changes };
+                if (Object.keys(changes).length <= 3) {
+                    console.log('[STATE]', changes);
+                }
+            },
+
+            // ===========================================
+            // V2.18: VARIANT MESSAGES (3+ per action)
+            // ===========================================
+            MESSAGES: {
+                read: [
+                    '📚 You read papers and found a promising idea!',
+                    '📚 A paper sparks inspiration!',
+                    '📚 You discover an interesting research direction!'
+                ],
+                read_fail: [
+                    '📚 Nothing clicks today. Keep trying.',
+                    '📚 The papers blur together. No ideas yet.',
+                    '📚 Another day of reading without a breakthrough.'
+                ],
+                experiment: [
+                    '🔬 Your experiment reveals initial findings!',
+                    '🔬 The data looks promising!',
+                    '🔬 You collect some interesting results!'
+                ],
+                experiment_fail: [
+                    '🔬 The experiment fails. You learn what NOT to do.',
+                    '🔬 No usable data today. Science is hard.',
+                    '🔬 Equipment issues. Try again next time.'
+                ],
+                break: [
+                    '☕ You take a break and feel refreshed!',
+                    '☕ A walk clears your mind.',
+                    '☕ Some rest does you good.'
+                ],
+                quals_pass: [
+                    '🎓 You passed your qualifying exam!',
+                    '🎓 Quals conquered! One milestone down.',
+                    '🎓 Your committee was impressed!'
+                ],
+                quals_fail: [
+                    '📝 You failed quals. You can retake next year.',
+                    '📝 The committee has concerns. Try again later.',
+                    '📝 Not ready yet. More preparation needed.'
+                ],
+                conference: [
+                    '🎤 Great networking at the conference!',
+                    '🎤 You met interesting researchers!',
+                    '🎤 The conference expanded your horizons!'
+                ]
+            },
+
+            // Get random message variant
+            getMessage(key) {
+                const variants = this.MESSAGES[key];
+                if (!variants || variants.length === 0) return null;
+                return this.pick(variants);
+            },
+
             // V1.7: Seed for reproducible randomness
             seed: null,
             seedState: null,
@@ -1401,13 +1464,13 @@
                 const actions = [];
 
                 // Always available
-                actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Search for ideas' });
+                actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Search for ideas', telemetry: 'research' });
 
                 if (this.getItem('idea') > 0) {
-                    actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: 'Develop preliminary results' });
+                    actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: 'Develop preliminary results', telemetry: 'research' });
                 }
                 if (this.getItem('initial_findings') > 0) {
-                    actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: 'Work toward Key Discovery' });
+                    actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: 'Work toward Key Discovery', telemetry: 'research' });
                 }
                 if (this.getItem('key_discovery') > 0) {
                     const figures = this.getItem('figure') || 0;
@@ -1443,21 +1506,21 @@
                     actions.push({ id: 'pending', name: '⏳ Pending Papers', desc: s.pendingPapers.length + ' under review', disabled: true });
                 }
 
-                actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest and recover' });
+                actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest and recover', telemetry: 'mental_health' });
 
                 // V2.10: Medical Leave (emergency escape, one-time use)
                 if (s.morale < 15 && !s.medicalLeaveUsed) {
-                    actions.push({ id: 'medical_leave', name: '🏥 Medical Leave', desc: 'Emergency: +40 morale, costs 3-6 months' });
+                    actions.push({ id: 'medical_leave', name: '🏥 Medical Leave', desc: 'Emergency: +40 morale, costs 3-6 months', telemetry: 'mental_health' });
                 }
 
                 // V2.5: Advisor-suggested vacation (fast recovery, optional)
                 if (s.vacationOffered && !s.onVacation) {
-                    actions.push({ id: 'vacation', name: '🏖️ Take Time Off', desc: 'Advisor suggested rest' });
+                    actions.push({ id: 'vacation', name: '🏖️ Take Time Off', desc: 'Advisor suggested rest', telemetry: 'mental_health' });
                 }
 
                 // V2.2 Pro: Pitch Session (always available after first year)
                 if (s.statuses && s.statuses.has && !s.statuses.has('firstYear')) {
-                    actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: 'Get advisor feedback on ideas' });
+                    actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: 'Get advisor feedback on ideas', telemetry: 'admin' });
                 }
 
                 // V2.8: Conference limited - Year 1-2: max 1, Year 3+: max 2
@@ -1717,7 +1780,7 @@
                         const gain = 5 + Math.floor(this.random() * 10);
                         s.morale = Math.min(100, s.morale + gain);
                         s.advisorScore = Math.max(0, s.advisorScore - 3);
-                        msg = '☕ You took some time to recharge. (+' + gain + ' morale)';
+                        msg = this.getMessage('break') + ' (+' + gain + ' morale)';
                         if (this.hasStatus('exhaustion') && this.random() < 0.4) {
                             this.removeStatus('exhaustion');
                             msg += '\n💆 You feel refreshed!';
