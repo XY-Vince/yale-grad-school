@@ -2,6 +2,28 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.13.0] - 2026-01-04 "Career Trajectories"
+
+**Theme**: Your departure is as meaningful as your arrival.
+
+### 🚪 MS-Out Exit Profiles
+Timing-based exit narratives with salary bonuses:
+
+| Years | Profile | Narrative | Salary |
+|-------|---------|-----------|--------|
+| ≤2 | 🚀 **Early Career Pivot** | "Smart move." | - |
+| 3-4 | 🔧 **Deep Technical Specialist** | "Domain expert." | +10% |
+| 5+ | 🎖️ **Veteran Problem-Solver** | "Resilience is key." | +15% |
+
+### 💼 Summer Internship Action
+- Available **May-August** (Year 2+)
+- Cost: **3 months**
+- Effect: **+25 Network, +15 morale**
+- Tradeoff: **-5 Advisor happiness**
+- Once per year
+
+---
+
 ## [2.12.0] - 2026-01-04 "Recovery Trajectories"
 
 **Theme**: Once the system saves you, what helps you move again?

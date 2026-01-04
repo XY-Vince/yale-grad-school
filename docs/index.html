@@ -1370,6 +1370,12 @@
                     actions.push({ id: 'ms_out', name: '🚪 Master\'s Exit', desc: 'Leave with MS degree' });
                 }
 
+                // V2.13: Summer Internship (May-Aug, once per year, after Year 1)
+                const isSummer = s.month >= 5 && s.month <= 8;
+                if (isSummer && s.year >= 2 && !s.internshipThisYear) {
+                    actions.push({ id: 'internship', name: '💼 Summer Internship', desc: '3 months: +25 network, +15 morale' });
+                }
+
                 actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Skip to next month' });
 
                 return actions;
@@ -1661,12 +1667,44 @@
                         msg = '📋 Conference paper submitted! (4 month review)';
                         break;
 
-                    // V2.2 Pro: MS-Out (Master's exit)
+                    // V2.13: MS-Out with timing-based exit profiles
                     case 'ms_out':
-                        const profile = s.peerNetwork > 60 ? 'Industry R&D Lead' :
-                            this.getItem('paper') >= 2 ? 'Data Scientist' : 'The Great Escape';
-                        this.endGame(true, 'ms_out', 'You left with a Master\'s degree as: ' + profile);
+                        let exitProfile, exitTitle, exitNarrative;
+                        const yearsElapsed = s.year;
+                        const totalPubs = (this.getItem('paper') || 0) + (s.confPaperCount || 0);
+
+                        if (yearsElapsed <= 2) {
+                            exitTitle = '🚀 The Early Career Pivot';
+                            exitNarrative = 'You recognized early that academia wasn\'t for you. Smart move.';
+                            exitProfile = s.peerNetwork > 40 ? 'Tech Startup Founder' : 'Industry Associate';
+                        } else if (yearsElapsed <= 4) {
+                            exitTitle = '🔧 Deep Technical Specialist';
+                            exitNarrative = 'Your years of focused research made you a domain expert.';
+                            exitProfile = totalPubs >= 2 ? 'Senior Data Scientist' : 'R&D Engineer';
+                        } else {
+                            exitTitle = '🎖️ Veteran Problem-Solver';
+                            exitNarrative = 'Your persistence and resilience are your greatest assets.';
+                            exitProfile = s.peerNetwork > 70 ? 'Industry R&D Lead' : 'Principal Engineer';
+                        }
+
+                        const salaryBonus = yearsElapsed > 4 ? '+15% salary boost' : yearsElapsed > 2 ? '+10% salary boost' : '';
+                        this.endGame(true, 'ms_out', `${exitTitle}\n\n${exitNarrative}\n\nYou left with a Master's degree as: ${exitProfile}\n${salaryBonus}`);
                         return;
+
+                    // V2.13: Summer Internship (3 months, big network/morale boost)
+                    case 'internship':
+                        s.internshipThisYear = true;
+                        s.peerNetwork = Math.min(100, (s.peerNetwork || 10) + 25);
+                        s.morale = Math.min(100, s.morale + 15);
+                        s.advisorScore = Math.max(0, s.advisorScore - 5);
+                        // Advance 3 months
+                        for (let i = 0; i < 3; i++) {
+                            s.month++;
+                            s.totalMonths++;
+                            if (s.month > 12) { s.month = 1; s.year++; s.internshipThisYear = false; }
+                        }
+                        msg = '💼 You completed a summer internship!\n+25 Peer Network, +15 morale\n🧑‍🏫 Advisor: "I hope you gained some useful experience..." (-5 advisor)';
+                        break;
                 }
 
                 this.showMessage(msg);
