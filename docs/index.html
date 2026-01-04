@@ -1454,7 +1454,7 @@
                 }
 
                 // V2.17: High-Throughput Experiment (risky fast figures)
-                if (this.hasItem('key_discovery') && (!s.lastHighThroughput || s.totalMonths - s.lastHighThroughput >= 6)) {
+                if (this.getItem('key_discovery') > 0 && (!s.lastHighThroughput || s.totalMonths - s.lastHighThroughput >= 6)) {
                     actions.push({ id: 'high_throughput', name: '⚡ High-Throughput Exp', desc: '40%: +2 figures, fail: -morale +exhaustion' });
                 }
 
