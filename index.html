@@ -524,9 +524,17 @@
 
                 <p style="margin-top: 14px;"><strong>⚠️ Key Events:</strong></p>
                 <ul style="margin-left: 20px; font-size: 0.9rem;">
-                    <li>Qual exam: September Year 2 (prepare 2+ times)</li>
+                    <li>Qual exam: September Year 2 (prep level 3+ to pass!)</li>
+                    <li>First failure gives ONE retake chance (3 months)</li>
                     <li>Imposter syndrome, getting scooped, teaching duty</li>
                     <li>Reviewer #2 may request major revisions</li>
+                </ul>
+
+                <p style="margin-top: 14px;"><strong>🏥 Emergency Options:</strong></p>
+                <ul style="margin-left: 20px; font-size: 0.9rem;">
+                    <li><strong>Medical Leave</strong>: +40 morale when critical, costs 3-6 months (one-time)</li>
+                    <li><strong>Vacation</strong>: Advisor may suggest rest when morale low</li>
+                    <li>After 2 failed figures: learning bonus (+30% success)</li>
                 </ul>
             </div>
             <div class="modal-actions">
@@ -787,7 +795,7 @@
             // V2.9: Copy game link with seed
             copyGameLink() {
                 const baseUrl = window.location.origin + window.location.pathname;
-                const gameLink = `${baseUrl}?seed=${this.state.seed}`;
+                const gameLink = `${baseUrl}?seed=${this.seed}`;
                 navigator.clipboard.writeText(gameLink).then(() => {
                     alert('Game link copied!\n\n' + gameLink);
                 }).catch(err => {
@@ -1172,7 +1180,7 @@
                     Advisor Happiness: ${this.state.advisorScore}%
                 </p>
                 <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">
-                    Seed: ${this.state.seed}
+                    Seed: ${this.seed}
                 </p>
                 <button class="modal-btn" onclick="game.showHistory()" style="margin-right: 8px;">📜 View History</button>
                 <button class="modal-btn" onclick="game.copyGameLink()">🔗 Copy Game Link</button>
@@ -1613,7 +1621,7 @@
 
             // V2.0.1: Show seed info
             showSeed() {
-                const seed = this.state.seed || 'random';
+                const seed = this.seed || 'random';
                 const url = window.location.origin + window.location.pathname + '?seed=' + seed;
                 alert('Current Seed: ' + seed + '\n\nShare this URL:\n' + url);
             },
