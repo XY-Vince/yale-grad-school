@@ -131,3 +131,243 @@ The trials reveal two distinct "Meta-Strategies" now viable in the engine:
 
 * **The "Final Stretch" Buff**: In several trials, the player was ground down in the final few months before the defense.
 * **Suggestion**: Once a player reaches **3 Journal Papers**, trigger a **"Light at the End of the Tunnel"** status that reduces Morale decay by 50% during the final "Thesis Work" phase.
+
+
+
+Below is a V2.15 improvement plan that is deliberately mechanical, implementable, and disciplining.
+The guiding principle is:
+
+V2.15 = Temporal realism + player acknowledgment + credential legitimacy
+
+This is the version where GradQuest stops feeling like a continuous stream of months and starts feeling like an academic calendar with consequences.
+
+⸻
+
+GradQuest V2.15 — Solid Improvement Plan
+
+Theme: Academic Time, Player Agency, and Earned Progress
+
+⸻
+
+0. Non-Negotiable Structural Changes (Your Two Directives)
+
+0.1 Semester Alignment (Global Refactor — High Priority)
+
+Canonical Calendar
+	•	Spring Semester: January → May
+	•	Summer: June → July
+	•	Fall Semester: August → December
+
+Actionable Implementation
+	•	Add a currentSemester derived variable:
+	•	Spring, Summer, Fall
+	•	Replace any month-based conditionals with semester-aware checks:
+	•	TA duty → only Spring/Fall
+	•	Coursework credits → only Spring/Fall
+	•	Internships → only Summer
+	•	Quals → Spring of Year 2
+
+UI Upgrade
+	•	Display header:
+Year 2 — Spring Semester
+
+Why this matters
+	•	Removes “floating month soup”
+	•	Makes internships, quals, TA duty feel situated
+	•	Enables future policies (funding cycles, reviews)
+
+⸻
+
+0.2 Mandatory Acknowledgment for Action Results (High Priority)
+
+Problem
+	•	Action → event → immediately next action
+	•	Player mentally skips consequences
+
+New Rule
+
+If an action generates a result, time pauses until the player acknowledges it
+
+Actionable UI Change
+	•	After any ▶️ Action Event:
+	•	Disable all action buttons
+	•	Show “Acknowledge & Continue” button
+	•	Only then advance to next month
+
+Scope
+Triggered by:
+	•	Submitting papers
+	•	Failing/succeeding quals
+	•	Internship outcomes
+	•	Advisor confrontations
+	•	Dead-end research revelations
+
+Why
+	•	Forces reflection
+	•	Makes outcomes felt
+	•	Reinforces causality loop
+
+⸻
+
+1. Fixing the “Too-Easy MS Exit” (Credential Legitimacy)
+
+1.1 Coursework Credit System (Hard Gate)
+
+New Variable
+	•	credits
+
+Earning Credits
+	•	+3 credits per semester month (Spring/Fall)
+	•	Blocked if:
+	•	On TA duty (credits → TA workload)
+	•	On Medical Leave
+
+MS-Out Requirements
+	•	credits ≥ 30
+	•	AND Month ≥ 18
+
+Narrative Framing
+	•	Before eligibility:
+“You haven’t completed enough coursework to be awarded a degree.”
+
+Result
+	•	Trial 1 exploit eliminated
+	•	MS feels earned, not a quit button
+
+⸻
+
+2. Semester-Aware Action Differentiation
+
+2.1 Quals Prep Evolves by Year (Your Explicit Request)
+
+Year 1 Action
+📖 Foundational Study
+	•	Low stress
+	•	+0.5 prep
+	•	No urgency
+	•	Tooltip: “Laying groundwork.”
+
+Year 2 Action
+📚 Focused Quals Prep
+	•	High stress
+	•	+1 prep
+	•	Blocks some research
+	•	Tooltip: “This is no longer optional.”
+
+Visual
+	•	Different icons / colors
+	•	Year 2 version pulses when urgency warning active
+
+⸻
+
+3. Internship System: Power With Friction
+
+3.1 Advisor Style × Internship Conflict Matrix
+
+Before Internship
+Modal choice:
+	•	“Ask advisor for permission”
+	•	“Accept offer quietly”
+
+Outcomes
+
+Advisor Type	Ask	Don’t Ask
+Hands-on	40% No	-20 Happiness
+Strict	50% No	Funding risk
+Laissez-faire	Likely Yes	Minor penalty
+
+Why
+	•	Turns internship into a political decision
+	•	Makes Network gains feel earned, not free
+
+⸻
+
+4. Dead-End Research: Convert Pain into Meta-Progress
+
+4.1 Dead-End Reward Rebalance
+
+When Dead-End Research triggers:
+
+Current
+	•	+10 Morale
+	•	+1 Idea
+	•	Reset progress
+
+V2.15 Add
+	•	+5 Strategic Alignment
+	•	Permanent -5% chance of future Dead-End events
+
+Narrative:
+
+“You now recognize warning signs earlier.”
+
+Why
+	•	Long-term learning
+	•	Reduces despair
+	•	Encourages risk-taking
+
+⸻
+
+5. Player-Controlled Flow & Emotional Weight
+
+5.1 Event Acknowledgment Types
+
+Different acknowledgment buttons based on event type:
+
+Event Type	Button Text
+Success	“Take it in”
+Failure	“Process this”
+Advisor	“Respond”
+System Pressure	“Brace yourself”
+
+Pure UI, huge emotional payoff.
+
+⸻
+
+6. Late-Game Structure: Ending the Drizzle
+
+6.1 Defense Phase Lock-In (From V2.14 → Finalized)
+
+Trigger
+	•	≥3 published papers
+	•	Funding Horizon warning active
+
+Change
+	•	Replace full action list with:
+	•	“Prepare Defense”
+	•	“Revise Thesis”
+	•	“Delay (Risky)”
+
+Time Pressure
+	•	Each delay increases committee scrutiny
+
+Result
+	•	Climactic ending
+	•	No more “it just ended”
+
+⸻
+
+7. Target Outcomes for V2.15 Stress Tests
+
+Metric	Target	Why
+Earliest MS Exit	≥18 months	Credential realism
+Avg. MS Exit	24–30 months	NA norm
+Eternal PhD	Eliminated	Funding horizon + defense
+Action Skipping	0	Mandatory acknowledgment
+Internship Abuse	Reduced	Advisor conflict
+
+
+⸻
+
+Final Diagnosis
+
+V2.14 proved resilience.
+V2.15 must prove legitimacy.
+
+Degrees must be earned.
+Time must be felt.
+Outcomes must be acknowledged.
+
+This is the version where GradQuest stops feeling like a clever sim and starts feeling like an institution with rules.
+
+V2.15 is the line between simulation and experience.

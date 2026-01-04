@@ -2,6 +2,27 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.15.0] - 2026-01-04 "Academic Time"
+
+**Theme**: Temporal realism + credential legitimacy
+
+### 📅 Semester System
+- **Spring** (Jan-May), **Summer** (Jun-Jul), **Fall** (Aug-Dec)
+- UI shows: `Fall · Month 1 · 0 credits`
+
+### 📚 Coursework Credits
+- **+3 credits** per Spring/Fall month (if not TA or on medical leave)
+- Required for Master's Exit
+
+### 🎓 MS-Out Requirements
+- **30 credits + 18 months** minimum
+- Shows blocked state with missing requirements
+
+### 💼 Summer Internship Restricted
+- Now **June-July only** (true Summer)
+
+---
+
 ## [2.14.0] - 2026-01-04 "Career Trajectories"
 
 **Theme**: Your departure is as meaningful as your arrival.

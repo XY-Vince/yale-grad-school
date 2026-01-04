@@ -367,8 +367,8 @@
                     <div class="stat-card">
                         <div class="stat-label">📅 Date</div>
                         <div class="stat-value" id="date">Sep, Year 1</div>
-                        <div style="color: var(--text-secondary); font-size: 0.8rem;">Month <span
-                                id="total-months">1</span></div>
+                        <div style="color: var(--text-secondary); font-size: 0.7rem;"><span id="semester">Fall</span> ·
+                            Month <span id="total-months">1</span> · <span id="credits-display">0</span> credits</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">💪 Morale</div>
@@ -605,6 +605,9 @@
                     // V2.8: Inspiration and scoop tracking
                     inspirationsThisYear: 0, // Cap at 2/year
                     lastScoopMonth: 0,       // 6-month scoop cooldown
+                    // V2.15: Coursework credits and dead-end learning
+                    credits: 0,              // Need 30 for MS-Out
+                    deadEndReduction: 0,     // -5% per dead-end experienced
                     // V2.2: Event log for history
                     eventLog: []
                 };
@@ -815,12 +818,21 @@
                 this.state.month++;
                 this.state.totalMonths++;
 
+                // V2.15: Earn coursework credits during Spring/Fall semesters
+                const currentMonth = this.state.month;
+                const isSemester = (currentMonth >= 1 && currentMonth <= 5) || (currentMonth >= 8 && currentMonth <= 12); // Spring or Fall
+                const canEarnCredits = isSemester && !this.state.isTeaching && !this.state.onMedicalLeave;
+                if (canEarnCredits) {
+                    this.state.credits = (this.state.credits || 0) + 3;
+                }
+
                 if (this.state.month > 12) {
                     this.state.month = 1;
                     this.state.year++;
                     this.state.conferencesThisYear = 0; // V1.8: Reset conference count
                     this.state.vacationsThisYear = 0;  // V2.7: Reset vacation count
                     this.state.inspirationsThisYear = 0; // V2.8: Reset inspiration count
+                    this.state.internshipThisYear = false; // V2.14: Reset internship
                     if (this.state.year === 2) {
                         this.removeStatus('firstYear');
                     }
@@ -1371,14 +1383,21 @@
                     }
                 }
 
-                // V2.2 Pro: MS-Out option (when offered)
-                if (s.msOutOffered && s.morale < 30) {
+                // V2.15: MS-Out option (requires 30 credits + 18 months)
+                const hasEnoughCredits = (s.credits || 0) >= 30;
+                const hasEnoughTime = s.totalMonths >= 18;
+                if (s.msOutOffered && s.morale < 30 && hasEnoughCredits && hasEnoughTime) {
                     actions.push({ id: 'ms_out', name: '🚪 Master\'s Exit', desc: 'Leave with MS degree' });
+                } else if (s.msOutOffered && s.morale < 30) {
+                    const missing = [];
+                    if (!hasEnoughCredits) missing.push((30 - (s.credits || 0)) + ' credits');
+                    if (!hasEnoughTime) missing.push((18 - s.totalMonths) + ' months');
+                    actions.push({ id: 'ms_out_blocked', name: '🚪 Master\'s Exit', desc: 'Need: ' + missing.join(', '), disabled: true });
                 }
 
-                // V2.13: Summer Internship (May-Aug, once per year, after Year 1)
-                const isSummer = s.month >= 5 && s.month <= 8;
-                if (isSummer && s.year >= 2 && !s.internshipThisYear) {
+                // V2.15: Summer Internship (June-July only, once per year, after Year 1)
+                const isTrueSummer = s.month >= 6 && s.month <= 7;
+                if (isTrueSummer && s.year >= 2 && !s.internshipThisYear) {
                     actions.push({ id: 'internship', name: '💼 Summer Internship', desc: '3 months: +25 network, +15 morale' });
                 }
 
@@ -1759,6 +1778,10 @@
                 // Stats
                 document.getElementById('date').textContent = `${this.months[s.month]}, Year ${s.year}`;
                 document.getElementById('total-months').textContent = s.totalMonths;
+                // V2.15: Semester display
+                const semester = s.month >= 1 && s.month <= 5 ? 'Spring' : s.month >= 6 && s.month <= 7 ? 'Summer' : 'Fall';
+                document.getElementById('semester').textContent = semester;
+                document.getElementById('credits-display').textContent = s.credits || 0;
                 // V2.5: Publications with breakdown
                 const journalPapers = this.getItem('paper') || 0;
                 const confPapers = s.confPaperCount || 0;
