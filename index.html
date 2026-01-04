@@ -720,6 +720,9 @@
                     // V2.15: Coursework credits and dead-end learning
                     credits: 0,              // Need 30 for MS-Out
                     deadEndReduction: 0,     // -5% per dead-end experienced
+                    // V2.18: Defense prep gate and advisor patience
+                    defensePrepared: false,  // Must prepare defense before graduating
+                    advisorPatienceExhausted: false, // After 3+ interventions
                     // V2.2: Event log for history
                     eventLog: []
                 };
@@ -968,11 +971,14 @@
                 if (this.hasStatus('exhaustion')) decay += 6;
                 if (this.hasStatus('unhappyAdvisor')) decay += 6;
                 if (this.hasStatus('burnout')) decay += 2; // V2.4: Burnout penalty
-                // V2.4: Strategic alignment reduces decay (1 point per 25 alignment)
+                // V2.4: Strategic alignment reduces decay (1 point per 10 alignment - V2.18 update)
                 // V2.5: TA duty also causes morale decay
                 if (this.state.isTeaching) decay += 3;
-                const alignmentReduce = Math.floor((this.state.strategicAlignment || 0) / 25);
-                decay = Math.max(1, decay - alignmentReduce);
+                const alignmentBonus = Math.floor((this.state.strategicAlignment || 0) / 10);
+                if (alignmentBonus > 0) {
+                    this.appendMessage(`🛡️ Advisor alignment protects you. (-${alignmentBonus} decay)`);
+                }
+                decay = Math.max(1, decay - alignmentBonus);
                 // V2.11: New Lease on Life reduces decay by 50%
                 if (this.state.newLeaseUntil && this.state.totalMonths < this.state.newLeaseUntil) {
                     decay = Math.ceil(decay / 2);
@@ -1034,17 +1040,22 @@
                     return;
                 }
 
-                // V2.7: Advisor suggests vacation at critical morale (with fatigue limit)
+                // V2.7: Advisor suggests vacation at critical morale (V2.18: patience limit 3)
                 const interventions = this.state.advisorInterventions || 0;
-                if (this.state.morale < 25 && !this.state.vacationOffered && !this.state.onVacation && interventions < 10) {
+                const patienceLimit = 3; // V2.18: Aspirational standard
+                if (this.state.morale < 25 && !this.state.vacationOffered && !this.state.onVacation && interventions < patienceLimit) {
                     this.state.vacationOffered = true;
                     this.state.advisorInterventions = interventions + 1;
-                    if (interventions >= 5) {
-                        this.appendMessage('🧑‍🏫 Your advisor sighs: "You really need to manage your energy better. Take some time off."');
+                    if (interventions >= patienceLimit - 1) {
+                        this.appendMessage('🧑‍🏫 Your advisor sighs: "This is the last time I can suggest this. Take some time off."');
                     } else {
                         this.appendMessage('🧑‍🏫 Your advisor notices you\'re struggling:\n"You look exhausted. Why don\'t you take a week off? I insist."');
                     }
-                } else if (interventions >= 10 && this.state.morale < 20 && this.random() < 0.1) {
+                } else if (interventions >= patienceLimit && !this.state.advisorPatienceExhausted) {
+                    // V2.18: Advisor patience exhausted - stop offering rescues
+                    this.state.advisorPatienceExhausted = true;
+                    this.appendMessage('😔 Your advisor sighs: "I\'ve tried to help you, but you need to want it yourself." (No more forced rest offers)');
+                } else if (this.state.advisorPatienceExhausted && this.state.morale < 20 && this.random() < 0.1) {
                     this.appendMessage('🧑‍🏫 Your advisor has stopped checking on you. You\'re on your own now.');
                 }
 
@@ -1413,8 +1424,19 @@
                 const journalPapers = this.getItem('paper') || 0;
                 const confPapers = s.confPaperCount || 0;
                 const journalEquivalent = journalPapers + Math.floor(confPapers / 2);
-                if (journalEquivalent >= 3) {
-                    actions.push({ id: 'thesis', name: '🎓 Work on Thesis', desc: `Defend! (${journalPapers}J + ${confPapers}C)` });
+
+                // V2.18: Defense Prep Gate - lock actions when ready to graduate
+                if (journalEquivalent >= 3 && !s.defensePrepared) {
+                    // Only finale actions available
+                    return [
+                        { id: 'prepare_defense', name: '🎓 Prepare Defense', desc: 'Organize your thesis chapters' },
+                        { id: 'polish_thesis', name: '✨ Polish Thesis', desc: 'Final revisions (+5 morale)' },
+                        { id: 'break', name: '☕ Take a Break', desc: 'Rest before the big day' }
+                    ];
+                }
+
+                if (journalEquivalent >= 3 && s.defensePrepared) {
+                    actions.push({ id: 'thesis', name: '🎓 Defend Thesis!', desc: `Ready! (${journalPapers}J + ${confPapers}C)` });
                 }
                 // V1.8: Show pending papers
                 if (s.pendingPapers && s.pendingPapers.length > 0) {
@@ -1799,6 +1821,18 @@
                         this.addStatus('exhaustion');
                         this.addStatus('burnout'); // V2.4: New status
                         msg = '🆘 EMERGENCY CRAM SESSION!\nYou passed, but the toll on your mind is permanent. (-25 morale, max morale reduced)';
+                        break;
+
+                    // V2.18: Defense Prep Gate actions
+                    case 'prepare_defense':
+                        s.defensePrepared = true;
+                        s.morale = Math.min(100, s.morale + 10);
+                        msg = '📝 You organize your thesis chapters and prepare your defense slides.\n\n+10 morale from the sense of accomplishment.\n\n🎓 You can now defend your thesis!';
+                        break;
+
+                    case 'polish_thesis':
+                        s.morale = Math.min(100, s.morale + 5);
+                        msg = '✨ You polish your thesis, fixing typos and improving figures.\n\n+5 morale from the satisfaction of good work.';
                         break;
 
                     case 'thesis':
