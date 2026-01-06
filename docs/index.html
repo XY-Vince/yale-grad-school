@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.21</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.22</span></h1>
         </header>
 
         <div id="app">
@@ -489,6 +489,34 @@
                         <div class="panel">
                             <h3>⚡ Status Effects</h3>
                             <div class="badge-list" id="statuses"><span class="empty-text">No effects</span></div>
+                        </div>
+
+                        <!-- V2.22: Graduation Progress Card -->
+                        <div class="panel" id="graduation-card" style="margin-top: 10px;">
+                            <h3>🎓 Graduation Progress</h3>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 0.85rem;">Papers</span>
+                                <span id="papers-progress" style="font-size: 0.85rem; font-weight: 600;">0 / 3</span>
+                            </div>
+                            <div
+                                style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 10px;">
+                                <div id="papers-bar"
+                                    style="height: 100%; width: 0%; background: var(--accent-success); border-radius: 6px; transition: width 0.3s ease;">
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 0.85rem;">Thesis</span>
+                                <span id="thesis-progress" style="font-size: 0.85rem; font-weight: 600;">0%</span>
+                            </div>
+                            <div
+                                style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 10px;">
+                                <div id="thesis-bar"
+                                    style="height: 100%; width: 0%; background: var(--accent-primary); border-radius: 6px; transition: width 0.3s ease;">
+                                </div>
+                            </div>
+                            <div id="defense-status" style="font-size: 0.8rem; opacity: 0.7; text-align: center;">
+                                🔒 Defense locked — publish 3 papers
+                            </div>
                         </div>
                         <div style="display: flex; gap: 10px; margin-top: 10px;">
                             <button class="action-btn save-btn" onclick="game.save()" style="flex: 1;">
@@ -936,6 +964,73 @@
                     decay: decay,
                     buffer: alignmentBuffer
                 };
+            },
+
+            // ===========================================
+            // V2.22: GRADUATION PROGRESS SYSTEM
+            // Single source of truth for graduation tracking
+            // ===========================================
+
+            // V2.22: Sync graduation state from derived values
+            syncGraduationState() {
+                const s = this.state;
+                const journalPapers = this.getItem('paper') || 0;
+                const confEquivalent = Math.floor((s.confPaperCount || 0) / 2);
+                const totalEquivalent = journalPapers + confEquivalent;
+
+                s.graduation.papers_published = totalEquivalent;
+                s.graduation.defense_unlocked = totalEquivalent >= s.graduation.papers_required;
+
+                // Thesis progress based on figures and discoveries
+                const figures = this.getItem('figure') || 0;
+                const discoveries = this.getItem('key_discovery') || 0;
+                s.graduation.thesis_progress = Math.min(100, figures * 20 + discoveries * 10);
+            },
+
+            // V2.22: Update Graduation Progress Card UI
+            updateGraduationCard() {
+                const g = this.state.graduation;
+
+                // Text updates
+                const papersEl = document.getElementById('papers-progress');
+                const thesisEl = document.getElementById('thesis-progress');
+                if (papersEl) papersEl.textContent = `${g.papers_published} / ${g.papers_required}`;
+                if (thesisEl) thesisEl.textContent = `${g.thesis_progress}%`;
+
+                // Bars
+                const papersBar = document.getElementById('papers-bar');
+                const thesisBar = document.getElementById('thesis-bar');
+                if (papersBar) papersBar.style.width = `${Math.min(100, (g.papers_published / g.papers_required) * 100)}%`;
+                if (thesisBar) thesisBar.style.width = `${g.thesis_progress}%`;
+
+                // Defense status
+                const defenseEl = document.getElementById('defense-status');
+                if (defenseEl) {
+                    if (g.defense_unlocked) {
+                        defenseEl.textContent = '🟢 Defense track unlocked!';
+                        defenseEl.style.color = 'var(--accent-success)';
+                        defenseEl.style.opacity = '1';
+                    } else {
+                        const remaining = g.papers_required - g.papers_published;
+                        defenseEl.textContent = `🔒 Defense locked — ${remaining} more paper${remaining > 1 ? 's' : ''} needed`;
+                        defenseEl.style.color = '';
+                        defenseEl.style.opacity = '0.7';
+                    }
+                }
+            },
+
+            // V2.22: Get categorical success probability (not exact RNG)
+            getSuccessCategory(probability) {
+                if (probability >= 0.70) return { label: 'Likely', emoji: '🟢', range: '70-85%' };
+                if (probability >= 0.45) return { label: 'Uncertain', emoji: '🟡', range: '45-70%' };
+                return { label: 'Risky', emoji: '🔴', range: '≤45%' };
+            },
+
+            // V2.22: Priority notification levels
+            PRIORITY_LEVELS: {
+                BLOCKING: ['PAPER_ACCEPTED', 'QUALS_RESULT', 'DEFENSE_READY', 'CRITICAL_FAILURE'],
+                HIGH: ['BURNOUT', 'EXHAUSTION', 'SCOOP'],
+                LOW: ['MORALE_CHANGE', 'EQUIPMENT']
             },
 
             // ===========================================
@@ -1395,6 +1490,18 @@
                     lastPeerInterventionMonth: 0,    // 6-month cooldown
                     qualsGraceUsed: false,           // First quals failure is protected
 
+                    // V2.22: Graduation State (first-class system)
+                    graduation: {
+                        papers_required: 3,
+                        papers_published: 0,
+                        thesis_progress: 0,      // 0-100%
+                        defense_unlocked: false,
+                        lastMilestone: null      // For pinning
+                    },
+
+                    // V2.22: Priority Notification Queue
+                    pendingNotifications: [],    // { type, severity, message }
+
                     // V2.2: Event log for history
                     eventLog: [],
                     // V2.19: Telemetry for Balance Calibration
@@ -1490,7 +1597,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.21'
+                    version: '2.22'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -2913,6 +3020,10 @@
                 } else {
                     this.dom.statuses.innerHTML = '<span class="empty-text">No effects</span>';
                 }
+
+                // V2.22: Update Graduation Progress Card
+                this.syncGraduationState();
+                this.updateGraduationCard();
             }
         };
 

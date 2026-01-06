@@ -1440,3 +1440,482 @@ Do not add:
 You’re at the edge of bloat. Hold.
 
 ⸻
+
+
+V2.21 is the right corrective move, and you’ve correctly diagnosed the problem: the system became too honest. Realistic ≠ playable. The solution is not to weaken failure, but to add believable human buffers.
+
+Below is a careful review + tightened improvement plan, with specific corrections, missing pieces, and actionable items that make V2.21 resilient without turning it into “easy mode.”
+
+⸻
+
+I. High-Level Assessment (Hard Truths)
+
+What V2.21 Gets Exactly Right
+	1.	Death Spiral is now systemic, not RNG
+	•	Exhaustion → Burnout → Morale collapse was mathematically inevitable.
+	•	You correctly target intervention, not nerfs.
+	2.	Social Support as automatic, not player-taxed
+	•	Advisor interventions triggering without consuming a month is critical.
+	•	This mirrors real academia: help often comes when things look dire.
+	3.	Stress Meter replaces binary punishment
+	•	This is one of the best design upgrades so far.
+	•	Players can now see danger accumulating and plan around it.
+
+⸻
+
+II. Core Design Risks to Fix in V2.21
+
+⚠️ Risk 1: Alignment Becomes a God Stat
+
+Right now:
+	•	Alignment halves penalties
+	•	Triggers exhaustion clearing
+	•	Buffs morale decay
+	•	Shortens review time
+
+This risks dominant play: “always farm alignment.”
+
+⚠️ Risk 2: Social Support Triggers Too Late
+
+Most Game Overs happen before morale < 20 or stress = 100.
+
+You need early warning soft landings, not just emergency parachutes.
+
+⸻
+
+III. Critical Improvements to Lock V2.21
+
+1. Split Advisor Support into Passive and Active
+
+Right now, alignment does everything. Split it.
+
+Actionable Change
+Introduce two advisor effects:
+
+advisor_support = {
+    "passive_shield": alignment >= 40,   # always-on mitigation
+    "active_intervention": alignment >= 60 and cooldown == 0
+}
+
+Rules
+	•	Passive Shield: −25% morale penalties (not 50%)
+	•	Active Intervention:
+	•	Clears Exhaustion OR Burnout
+	•	Has 12-month cooldown
+	•	Triggers only once per crisis
+
+This prevents alignment from trivializing adversity.
+
+⸻
+
+2. Add Peer Intervention (Non-Advisor Safety Net)
+
+Right now, all rescue flows through the advisor. That’s unrealistic and brittle.
+
+New Mechanic: Peer Check-In
+
+if state.peer_network >= 60 and state.morale < 30:
+    trigger_peer_intervention()
+
+Effect:
+	•	−30 stress
+	•	+10 morale
+	•	Does NOT remove Burnout
+	•	Narrative: labmates notice you disappearing
+
+This:
+	•	Gives Network independent value
+	•	Prevents advisor from being the sole savior
+	•	Feels human, not mechanical
+
+⸻
+
+3. Exhaustion Should Precede Burnout (Explicitly)
+
+Right now, Burnout is still too sudden.
+
+Actionable Status Ladder
+
+State	Trigger	Effect
+Stressed	Stress ≥ 60	Tooltips warn, no penalties
+Exhausted	Stress ≥ 100	−20% success
+Burnout	Exhausted + morale < 15	−40%, blocks High-Throughput
+
+Burnout should feel like mismanagement over time, not one bad roll.
+
+⸻
+
+4. Quals Window Protection (Critical)
+
+Month 12–14 is the kill zone.
+
+Add a Quals Grace Mechanic
+If any of the following are true:
+	•	peer_network ≥ 40
+	•	alignment ≥ 50
+	•	qual_prep ≥ 2
+
+Then:
+	•	First Quals failure cannot cause Game Over
+	•	Always grants a structured recovery path
+
+Narrative framing:
+
+“The committee sees potential but demands improvement.”
+
+This preserves stakes without nuking runs.
+
+⸻
+
+IV. Stress Meter Improvements (Fine-Tuning)
+
+Your stress system is good. Make it legible earlier.
+
+5. Stress Forecast (One-Month Lookahead)
+
+Add:
+
+“If you repeat this action next month, you will become Exhausted.”
+
+This turns stress into planning, not reaction.
+
+⸻
+
+6. Specialization-Specific Stress Modifiers
+
+Stress should feel different by field.
+
+Field	Stress Pattern
+Experimental	Spikes from failures
+Theoretical	Slow accumulation
+Computational	Bursty (server crashes)
+
+Implement via action-level multipliers, not global tweaks.
+
+⸻
+
+V. HMI: Make Support Visible Before It Triggers
+
+7. “Support Available” Indicators
+
+On HUD:
+	•	🧑‍🏫 Advisor Available (if intervention off cooldown)
+	•	🤝 Peers Watching (if network ≥ 60)
+
+Greyed out when unavailable.
+
+This avoids the feeling of random salvation.
+
+⸻
+
+8. Morale Tooltip → Add “Projected Next Month”
+
+Change tooltip to:
+
+Current Morale: 22
+Next Month Projection: 16
+Drivers:
+- Base Decay: -4
+- Exhaustion: -2
++ Alignment: +1
+
+This is the single most important anti-frustration feature.
+
+⸻
+
+VI. Concrete V2.21 Implementation Checklist
+
+Core Systems
+	•	Stress → Exhaustion → Burnout ladder
+	•	Advisor intervention with cooldown
+	•	Peer intervention trigger (network ≥ 60)
+
+Quals Protection
+	•	Grace rule for first failure
+	•	Explicit recovery narrative
+
+UI
+	•	Stress forecast tooltip
+	•	Support availability icons
+	•	Morale projection display
+
+⸻
+
+VII. What NOT to Add in V2.21 (Firm)
+
+Do not add:
+	•	Therapy systems
+	•	Romance / drama
+	•	Additional currencies
+	•	Permanent morale regen
+
+This is support, not a wellness simulator.
+
+⸻
+
+Final Verdict
+
+V2.21 is the patch that decides whether GradQuest is brutal-but-beloved or brutal-and-abandoned.
+
+If V2.20 defined identity,
+V2.21 must define human survivability.
+
+V2.22 is the necessary nervous-system upgrade. You’re no longer fixing balance or mechanics—you’re fixing perception, and that’s the right call. Below is a tightened, production-ready improvement plan with corrections, missing pieces, and a concrete JS implementation for the Graduation Progress Card.
+
+I’ll be blunt where needed, because this version determines whether GradQuest feels fair.
+
+⸻
+
+I. Critical Review of Your V2.22 Direction
+
+What You Diagnosed Correctly
+	1.	Information loss is now the #1 failure mode
+	•	The player didn’t fail because of bad strategy.
+	•	They failed because they didn’t know something important happened.
+	2.	Milestones must interrupt, not notify
+	•	Quals, paper acceptance, defense readiness are state transitions, not log entries.
+	•	Requiring acknowledgment is absolutely correct.
+	3.	Probabilities > Flavor Text
+	•	At this complexity level, players expect estimates, not mystery.
+	•	“Estimated Success” is the right abstraction (not exact odds).
+
+⸻
+
+II. Hard Constraints for V2.22 (Do Not Violate)
+
+Before improvements, two guardrails:
+	1.	Never show exact RNG formulas
+	•	Percentages must be rounded (e.g. 60–70%, not 63.4%).
+	2.	No decision without visibility
+	•	If an action can cause Game Over, its preview must signal risk.
+
+Everything below respects this.
+
+⸻
+
+III. V2.22 Core Improvements (Refined)
+
+1. Priority Notifications: Add Severity Levels
+
+Your current system is good but incomplete. Add severity tiers so UI behavior is consistent.
+
+Actionable Change
+
+PRIORITY_MAP = {
+    "PAPER_ACCEPTED": "BLOCKING",
+    "QUALS_RESULT": "BLOCKING",
+    "DEFENSE_READY": "BLOCKING",
+    "CRITICAL_FAILURE": "BLOCKING",
+    "BURNOUT": "HIGH",
+    "EXHAUSTION": "HIGH",
+    "MORALE_CHANGE": "LOW"
+}
+
+Rules
+	•	BLOCKING → modal + acknowledgment required
+	•	HIGH → toast + highlighted log entry
+	•	LOW → log only
+
+This prevents modal spam while preserving salience.
+
+⸻
+
+2. Probabilities Must Be Directional, Not Precise
+
+Your pseudo-code works mechanically, but the output should be categorical.
+
+Replace numeric output with tiers
+
+Estimated Outcome:
+🟢 Likely (70–85%)
+🟡 Uncertain (45–70%)
+🔴 Risky (≤45%)
+
+This avoids false precision and decision paralysis.
+
+⸻
+
+3. Graduation Progress Is a First-Class System (Not UI Sugar)
+
+The Graduation Progress Card must be state-driven, not derived.
+
+Add to state:
+
+state.graduation = {
+    "papers_required": 3,
+    "papers_published": 2,
+    "thesis_progress": 65,
+    "defense_unlocked": False
+}
+
+And update it only through milestone logic.
+
+⸻
+
+4. Quals & Paper Events Must “Pin” Themselves
+
+Add:
+	•	📌 “Pinned” icon for last milestone
+	•	Persistent banner until next milestone
+
+This ensures players cannot forget where they stand.
+
+⸻
+
+IV. V2.22 Missing Pieces You Should Add
+
+5. Risk Forecast on Actions (One-Step Ahead)
+
+In addition to success chance, add:
+
+“⚠️ On failure: −15 Morale, +30 Stress”
+
+This turns opaque punishment into informed consent.
+
+⸻
+
+6. Timeline Awareness (Months Matter)
+
+Add a subtle indicator:
+
+“📆 Month 13 / Typical PhD: Month 60–72”
+
+This prevents early panic and late surprise.
+
+⸻
+
+V. Concrete V2.22 Actionable Checklist
+
+Systems
+	•	Priority notification severity levels
+	•	Graduation state object (single source of truth)
+	•	Categorical probability previews
+	•	Failure consequence previews
+
+UI
+	•	Persistent Graduation Progress Card
+	•	Milestone pinning
+	•	Blocking modals for Quals / Acceptance / Defense
+
+⸻
+
+VI. JavaScript Implementation
+
+Graduation Progress Card
+
+This is minimal, framework-agnostic, and matches your current architecture.
+
+⸻
+
+1. HTML (add to index.html)
+
+<div id="graduation-card" class="status-card">
+  <h3>🎓 Graduation Progress</h3>
+  <div class="progress-item">
+    <span>Papers</span>
+    <span id="papers-progress">0 / 3</span>
+  </div>
+
+  <div class="progress-bar">
+    <div id="papers-bar" class="bar-fill"></div>
+  </div>
+
+  <div class="progress-item">
+    <span>Thesis</span>
+    <span id="thesis-progress">0%</span>
+  </div>
+
+  <div class="progress-bar">
+    <div id="thesis-bar" class="bar-fill"></div>
+  </div>
+
+  <div id="defense-status" class="muted-text">
+    Defense not yet available
+  </div>
+</div>
+
+
+⸻
+
+2. CSS (Tailwind-compatible logic)
+
+.status-card {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  margin: 4px 0 10px;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent-success);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.muted-text {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+
+⸻
+
+3. JavaScript Logic
+
+function updateGraduationCard(state) {
+  const papers = state.graduation.papers_published;
+  const required = state.graduation.papers_required;
+  const thesis = state.graduation.thesis_progress;
+
+  // Text updates
+  document.getElementById('papers-progress').textContent =
+    `${papers} / ${required}`;
+  document.getElementById('thesis-progress').textContent =
+    `${thesis}%`;
+
+  // Bars
+  document.getElementById('papers-bar').style.width =
+    `${(papers / required) * 100}%`;
+  document.getElementById('thesis-bar').style.width =
+    `${thesis}%`;
+
+  // Defense readiness
+  const defenseStatus = document.getElementById('defense-status');
+  if (papers >= required) {
+    defenseStatus.textContent = "🟢 Defense track unlocked";
+    defenseStatus.style.color = "var(--accent-success)";
+  } else {
+    defenseStatus.textContent = "Defense locked — publish more papers";
+    defenseStatus.style.color = "";
+  }
+}
+
+Call this:
+	•	After paper decisions
+	•	After thesis progress actions
+	•	On game load
+
+⸻
+
+VII. Final Verdict
+
+V2.22 is not a feature release—it’s a trust repair patch.
+
+After this version:
+	•	Players should always know:
+	•	What just happened
+	•	How close they are to finishing
+	•	How risky their next action is
+
+If V2.21 saved players from dying,
+V2.22 teaches them how not to die.
+
+Once this lands cleanly, V2.23 (Active Networking) will finally feel empowering instead of overwhelming.
