@@ -872,3 +872,571 @@ After this update:
 
 That’s the inflection point between
 a good simulator and a game people replay to master.
+
+
+
+
+This schema defines the logic for calculating your post-PhD (or post-MS) career path. In **V2.18/2.19**, the game no longer just "ends"; it evaluates your accumulated **Social Capital** (Network/Alignment) and **Academic Output** to determine your professional legacy.
+
+### I. Career Endings YAML Schema (`career_endings.yaml`)
+
+```yaml
+# rulesets/default/endings.yaml
+
+endings:
+  # --- PhD PATH ENDINGS (Requires 3+ Journal Papers) ---
+  - id: tenure_track_professor
+    name: "Tenure-Track Professor"
+    conditions: 
+      papers: ">= 4"
+      peer_network: ">= 80"
+      strategic_alignment: ">= 70"
+    desc: "The holy grail. You secured a position at an R1 institution. Your advisor's advocacy was the final key."
+
+  - id: industry_rd_director
+    name: "R&D Director"
+    conditions:
+      papers: ">= 3"
+      peer_network: ">= 90"
+      internships_taken: ">= 1"
+    desc: "You traded the ivory tower for a corner office. Your massive network ensured a seamless transition."
+
+  - id: academic_martyr
+    name: "Permanent Post-doc"
+    conditions:
+      papers: ">= 3"
+      morale: "< 20"
+    desc: "You have the degree, but at what cost? You continue the grind, one one-year contract at a time."
+
+  # --- MS-OUT PATH ENDINGS (Requires 30 Credits + 18 Months) ---
+  - id: startup_founder
+    name: "Tech Startup Founder"
+    conditions:
+      exit_type: "MS"
+      peer_network: ">= 70"
+      ideas_generated: ">= 5"
+    desc: "You took your half-finished discovery and turned it into a seed-round deck. Disruption awaits."
+
+  - id: data_scientist
+    name: "Data Scientist"
+    conditions:
+      exit_type: "MS"
+      papers: ">= 1" # Published at least one thing
+    desc: "Your ability to survive Reviewer #2 made you overqualified for industry analytics. +15% salary boost."
+
+  - id: great_escape
+    name: "The Great Escape"
+    conditions:
+      exit_type: "MS"
+      morale: "< 10"
+    desc: "You left academia and never looked back. Your health is recovering, and you've rediscovered hobbies."
+
+```
+
+---
+
+### II. Finale Logic: The Career Resolver (Pseudo-code)
+
+The engine will run this "Resolver" during the `endGame()` sequence to determine which narrative profile to display.
+
+```python
+# logic/career_resolver.py
+
+def resolve_career_ending(state):
+    # 1. Determine base path
+    if state.exit_type == "PhD":
+        available_endings = ruleset.endings.filter(path="PhD")
+    else:
+        available_endings = ruleset.endings.filter(path="MS")
+    
+    # 2. Check conditions (Highest Priority first)
+    # Endings in YAML should be ordered from most prestigious to least
+    for ending in available_endings:
+        if evaluate_conditions(ending.conditions, state):
+            return ending
+            
+    # 3. Default fallback
+    return ruleset.endings.get(id="career_pivot")
+
+def evaluate_conditions(conditions, state):
+    # Example AST evaluation for YAML conditions
+    # if state.papers >= 3 and state.peer_network >= 80...
+    return all(parser.eval(cond, state) for cond in conditions)
+
+```
+
+---
+
+### III. Strategic Refinements (V2.18 Preview)
+
+* **The "MS-Out" Rebalance**: Per your observation that Trial 1 was "too easy," the MS-Out action is now gated by `credits >= 30`.
+* **The "Alignment" Legacy**: Strategic Alignment now influences the "Professor" ending. If alignment is low (<30), the advisor gives a "lukewarm" recommendation letter, increasing the requirements for the Tenure-Track ending.
+* **HMI Upgrade**: The ending screen will now display a **"Stipend vs. Salary"** chart, showing the immediate financial jump of an MS exit vs. the long-term prestige of the PhD.
+
+
+
+⸻
+
+V2.19 IMPROVEMENT PLAN
+
+Theme: UX Clarity + Defense as a Proper Third Act
+Design goal: Fewer buttons, clearer stakes, one unmistakable climax
+
+⸻
+
+A. Action Overcrowding → Intentional Mode Switching (Core Fix)
+
+1. Replace “Tabbed Actions” with Context Modes
+
+Tabs are a good start, but still cognitively noisy. Academia doesn’t feel like tabbing — it feels like being stuck in phases.
+
+Actionable Upgrade
+Introduce explicit game modes instead of free tabbing:
+
+state.mode ∈ {
+  "NORMAL",
+  "QUALS_WINDOW",
+  "PROBATION",
+  "FINALE"
+}
+
+Each mode exposes only 3–4 actions, hard-capped.
+
+Example
+	•	NORMAL: Research / Advisor / Wellness
+	•	QUALS_WINDOW: Prep Quals / Study Group / Advisor Check-in
+	•	PROBATION: Prep / Rest / Emergency Pitch
+	•	FINALE: Thesis-only actions
+
+This does three things:
+	•	Solves overcrowding structurally
+	•	Prevents “wrong action at wrong time”
+	•	Makes the game feel narratively paced
+
+Do this instead of adding more UI filters.
+
+⸻
+
+B. Qualifying Exam: From Event → Arc (Major UX Win)
+
+You fixed invisibility. Now fix emotional flatness.
+
+2. Turn Quals into a 3-Month Countdown Arc
+
+Right now:
+	•	Month 13 → modal → done
+
+That’s still abrupt.
+
+Action items
+Add a Quals Countdown Banner starting Month 10:
+
+🎓 Qualifying Exam in 3 months
+Required Prep: 3 | Current: 1 (+1 Network)
+
+With escalating UI pressure:
+	•	Month 10: neutral
+	•	Month 11: warning yellow
+	•	Month 12: danger red + advisor emails change tone
+
+Mechanical impact
+None.
+Pure UX tension. Massive payoff.
+
+⸻
+
+3. Explicit Retake Contract (After Failure)
+
+Your modal is good, but players still won’t internalize consequences.
+
+Add a forced choice after FAIL:
+	•	“Commit to Retake” (+Prep efficiency, morale drain)
+	•	“Explore Exit Options” (unlocks MS-Out advisory)
+
+This preserves realism:
+	•	Many students fail quals and reassess life
+
+⸻
+
+C. Defense Finale: Make It a Mini-Game, Not a Dice Roll
+
+Right now the Defense is still:
+
+Grind → click → RNG
+
+That’s not worthy of a climax.
+
+4. Defense Readiness = 3 Independent Tracks
+
+Instead of a single “100% Thesis Progress”, split into:
+
+defense_state = {
+  thesis_quality: 0–100,
+  presentation_skill: 0–100,
+  committee_support: 0–100
+}
+
+Each maps cleanly to existing stats:
+	•	Thesis Quality ← Figures, Polish, Papers
+	•	Presentation ← Practice Defense, Teaching, Network
+	•	Committee ← Alignment, Advisor Style, Past Conflicts
+
+Pass rule
+	•	Must pass 2 of 3
+	•	Failures cause targeted revisions, not full reset
+
+This:
+	•	Reduces pure RNG
+	•	Makes different builds viable
+	•	Creates post-defense stories
+
+⸻
+
+5. Visible Committee Personalities (Lightweight)
+
+Do not add full NPCs. Just tags.
+
+Example:
+	•	Prof. Chen — Methodology Hawk
+	•	Prof. Smith — Industry Friendly
+	•	Prof. Alvarez — Silent but Deadly
+
+Each biases one defense track.
+
+Low cost, high narrative return.
+
+⸻
+
+D. UX Polishing That Actually Matters
+
+6. Replace Tooltips with Explain-on-Hover Panels
+
+Tooltips are already saturated.
+
+Upgrade key stats (Morale, Alignment, Network) to:
+	•	Hover → small panel
+	•	Shows:
+	•	What it affects
+	•	What will unlock next
+	•	What’s currently blocked
+
+This aligns perfectly with your Aspirational Standards (self-documenting actions).
+
+⸻
+
+7. One-Click “Why Can’t I Do This?” Feedback
+
+If an action is disabled:
+	•	Clicking it shows a short reason
+	•	Example:
+“Defense unavailable: Committee Support < 60”
+
+This kills guesswork permanently.
+
+⸻
+
+E. Engine / Architecture Cleanups (Quiet but Critical)
+
+8. Formalize Milestones as First-Class Objects
+
+Quals, Defense, MS-Out — these are not “events”, they’re milestones.
+
+Action item:
+
+class Milestone(BaseModel):
+    id: str
+    status: locked | active | completed | failed
+    requirements: dict
+    consequences: dict
+
+This will:
+	•	Simplify UI logic
+	•	Prevent edge-case bugs
+	•	Make V3.0 narrative generation trivial
+
+⸻
+
+9. End-of-Run Timeline (Zero Gameplay Cost, Huge Payoff)
+
+At game end, render a vertical timeline:
+	•	Quals Passed / Failed
+	•	Major Scoops
+	•	Internships
+	•	Defense Outcome
+
+Players love post-mortems.
+
+⸻
+
+F. What NOT to Add in V2.19 (Be Ruthless)
+
+Do not add:
+	•	Money / rent / stipends (V2.20)
+	•	Immigration stress
+	•	Relationship mechanics
+	•	Reviewer personalities
+
+V2.19 must feel cleaner, not richer.
+
+⸻
+
+G. V2.19 Final Checklist
+
+UX
+	•	Mode-based action gating
+	•	Quals countdown banner
+	•	Defense tracks UI
+
+Logic
+	•	Milestone abstraction
+	•	Defense pass 2-of-3 logic
+
+Narrative
+	•	Committee tags
+	•	End-of-run timeline
+
+⸻
+
+Final Assessment
+
+If V2.18 made GradQuest intellectually honest,
+V2.19 is where it becomes emotionally correct.
+
+This is the version where:
+	•	Players stop asking “what just happened?”
+	•	And start saying “yeah… that’s exactly how it felt.”
+
+
+V2.20 is a conceptually strong pivot, and you’re aiming at exactly the right abstraction level: discipline shapes tempo. Below is a critical review + concrete improvement plan, with explicit actionable items, guardrails, and a few hard corrections to prevent future balance and UX regressions.
+
+I’ll structure this as:
+	1.	Hard truths (what works, what risks breaking)
+	2.	Core improvements to lock V2.20 in
+	3.	Actionable implementation checklist
+	4.	What to deliberately defer
+
+⸻
+
+I. High-Level Assessment (Hard Truths)
+
+What You Got Right
+	1.	Specialization as asymmetry, not flavor
+	•	The modifiers meaningfully affect research velocity, not just RNG.
+	•	This is exactly how real PhDs diverge.
+	2.	Active Peer Network
+	•	Spending Network for guaranteed Figures is a huge design win.
+	•	This converts social capital from “stat padding” into decision tension.
+	3.	Event Pool Tied to Field
+	•	Field-specific hazards (server crash vs lab audit) are elegant and legible.
+	•	This avoids generic “bad luck” frustration.
+	4.	Tooltips over Text Dumps
+	•	You’re now meeting your own Aspirational Standards.
+
+⸻
+
+The Two Biggest Risks in V2.20
+
+⚠️ Risk 1: Specialization Lock-In → Early Game Traps
+Right now, specialization is chosen at start and permanent. That’s realistic—but dangerous.
+
+A new player choosing Experimentalist without understanding:
+	•	equipment risk
+	•	maintenance importance
+	•	slower idea generation
+
+…may soft-lock themselves into a morale death spiral.
+
+⚠️ Risk 2: Network Spend Can Collapse the Social Game
+Spending 25 Network → 1 guaranteed Figure is powerful.
+
+If unbounded, optimal play becomes:
+
+hoard network → spam collaborate → ignore research loop
+
+That breaks pacing and fantasy.
+
+⸻
+
+II. Core Improvements to Make V2.20 Robust
+
+1. Add a “Soft Pivot” Mechanism (Critical)
+
+Do not allow full respec.
+Do allow partial drift.
+
+Actionable Change
+Introduce Secondary Skill Adoption at mid-game (Month ≥ 24):
+
+state.secondary_focus ∈ { "Experimental", "Theoretical", "Computational", None }
+
+Effects:
+	•	Gain 50% of secondary modifiers
+	•	Increase event complexity slightly
+	•	Adds realism (people evolve)
+
+Narrative framing:
+
+“Your work has begun to cross disciplinary boundaries.”
+
+This:
+	•	Prevents early mistakes from ruining runs
+	•	Preserves replay value
+	•	Enables hybrid builds without balance explosion
+
+⸻
+
+2. Cap Network Spend with “Social Fatigue”
+
+You must prevent infinite collaboration spam.
+
+Actionable Rule
+Each collaboration action adds a temporary status:
+
+status: "social_debt"
+effect: collaboration_cost +10
+decays: -10 every 6 months
+
+Example:
+	•	First collab: 25 Network
+	•	Second (soon after): 35
+	•	Third: 45 → probably not worth it
+
+This models real favors and preserves strategic weight.
+
+⸻
+
+3. Specialization-Specific “Fast Lanes” (Positive Identity)
+
+Right now, specializations mostly change penalties. Add signature accelerators.
+
+Concrete Additions
+
+Field	Unique Accelerator
+Experimentalist	Protocol Reuse: After first Figure, next Figure needs 1 fewer step
+Theoretician	Conceptual Breakthrough: Once per year, auto-generate an Idea
+Computational	Pipeline Automation: Reduce Develop Findings time by 1 month
+
+These are:
+	•	Predictable
+	•	Non-RNG
+	•	Identity-defining
+
+⸻
+
+4. Make Collaboration Contextual, Not Generic
+
+Right now:
+
+Spend Network → +1 Figure
+
+That’s too flat.
+
+Actionable Upgrade
+Tie collaboration outcome to specialization:
+
+if specialization == "Experimental":
+    figure += 1
+    morale += 3
+elif specialization == "Theoretical":
+    alignment += 2
+    discovery_progress += 30%
+elif specialization == "Computational":
+    figure += 1
+    equipment_failure_chance -= 0.2
+
+This reinforces fantasy and prevents dominant strategies.
+
+⸻
+
+III. Event System: Tighten, Don’t Expand Further
+
+Your event YAML is good. Don’t add more events.
+
+Instead:
+
+5. Add Event Counterplay Indicators
+
+When an event fires, show:
+
+“Preventable via: Maintenance / Network / Alignment”
+
+Even if the player didn’t have the shield.
+
+This converts frustration into learning.
+
+⸻
+
+6. Make Financial Stress a Status, Not a Money System
+
+You did this correctly—keep it shallow.
+
+But: ensure it interacts with specialization.
+
+Example:
+	•	Theoreticians less affected (grants flexible)
+	•	Experimentalists hit harder (consumables)
+
+This gives “money” texture without spreadsheets.
+
+⸻
+
+IV. HMI: Final Cleanups for V2.20
+
+7. Specialization Card on Main HUD
+
+Always visible:
+	•	Field icon
+	•	2 bullet modifiers
+	•	1 warning
+
+No hiding. No menus.
+
+⸻
+
+8. Network Tooltip → “Spendable Uses”
+
+Change from:
+
+“Next threshold: 80”
+
+To:
+
+“Spend:
+• Collaborate on Figures (25)
+• Pre-register (5)
+• Study Group (Passive)”
+
+This is huge for clarity.
+
+⸻
+
+V. Concrete V2.20 Implementation Checklist
+
+Core Mechanics
+	•	Specialization selection at game start
+	•	Secondary focus unlock at Month ≥ 24
+	•	Field-specific accelerators
+	•	Network spend scaling (social debt)
+
+Events
+	•	Field-weighted event probabilities
+	•	Event counterplay hints
+
+UI
+	•	Specialization HUD card
+	•	Network “uses” tooltip
+	•	Advisor tooltip shows field bias
+
+⸻
+
+VI. What NOT to Add in V2.20 (Firm)
+
+Do not add:
+	•	Funding balance sheets
+	•	Teaching load optimization
+	•	Relationship drama
+	•	Multiple advisors
+
+You’re at the edge of bloat. Hold.
+
+⸻

@@ -351,11 +351,51 @@
             <div id="start-screen" class="start-screen panel">
                 <h2 style="margin-bottom: 16px;">Welcome to GradQuest!</h2>
                 <p
-                    style="color: var(--text-secondary); margin-bottom: 30px; max-width: 500px; margin: 0 auto 30px; font-size: 0.95rem;">
+                    style="color: var(--text-secondary); margin-bottom: 20px; max-width: 500px; margin: 0 auto 20px; font-size: 0.95rem;">
                     Survive the PhD journey: publish 3 papers, defend your thesis,<br>
                     and keep your morale above zero!
                 </p>
-                <button class="start-btn" onclick="game.start()">🚀 Start PhD Journey</button>
+
+                <!-- V2.20: Specialization Selection -->
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 1rem; margin-bottom: 12px;">Choose Your Research Field:</h3>
+                    <div id="spec-selection"
+                        style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <div class="spec-card" onclick="game.selectSpecialization('experimentalist')"
+                            id="spec-experimentalist"
+                            style="background: var(--card-bg); padding: 16px; border-radius: 12px; cursor: pointer; border: 2px solid transparent; width: 160px; text-align: left; transition: all 0.2s;">
+                            <div style="font-size: 1.3rem; margin-bottom: 8px;">🔬 Experimentalist</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px;">Lab-based
+                                research</div>
+                            <div style="font-size: 0.7rem; color: var(--accent-green);">✨ Protocol Reuse</div>
+                            <div style="font-size: 0.7rem; color: #fbbf24;">⚠️ Equipment-dependent</div>
+                        </div>
+                        <div class="spec-card" onclick="game.selectSpecialization('theoretician')"
+                            id="spec-theoretician"
+                            style="background: var(--card-bg); padding: 16px; border-radius: 12px; cursor: pointer; border: 2px solid transparent; width: 160px; text-align: left; transition: all 0.2s;">
+                            <div style="font-size: 1.3rem; margin-bottom: 8px;">📐 Theoretician</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px;">
+                                Mathematical research</div>
+                            <div style="font-size: 0.7rem; color: var(--accent-green);">✨ Conceptual Breakthrough</div>
+                            <div style="font-size: 0.7rem; color: #fbbf24;">⚠️ Abstract results</div>
+                        </div>
+                        <div class="spec-card" onclick="game.selectSpecialization('computational')"
+                            id="spec-computational"
+                            style="background: var(--card-bg); padding: 16px; border-radius: 12px; cursor: pointer; border: 2px solid transparent; width: 160px; text-align: left; transition: all 0.2s;">
+                            <div style="font-size: 1.3rem; margin-bottom: 8px;">💻 Computational</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px;">
+                                Data-driven research</div>
+                            <div style="font-size: 0.7rem; color: var(--accent-green);">✨ Pipeline Automation</div>
+                            <div style="font-size: 0.7rem; color: #fbbf24;">⚠️ Server-dependent</div>
+                        </div>
+                    </div>
+                    <div id="spec-selected"
+                        style="font-size: 0.85rem; color: var(--accent-blue); margin-top: 10px; min-height: 20px;">
+                    </div>
+                </div>
+
+                <button class="start-btn" onclick="game.start()" id="start-game-btn" disabled style="opacity: 0.5;">🚀
+                    Start PhD Journey</button>
                 <button class="start-btn secondary" id="load-btn" onclick="game.load()" style="display: none;">💾 Load
                     Game</button>
                 <button class="start-btn secondary" onclick="game.showHelp()">Help</button>
@@ -413,15 +453,19 @@
                     </div>
                 </div>
 
-                <!-- V2.4: Dual event display for current and previous month -->
+                <!-- V2.20: Event display with acknowledgement -->
                 <div class="event-panel" style="display: flex; gap: 12px;">
-                    <div style="flex: 1;">
-                        <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📢 This Month</h3>
+                    <div style="flex: 2;">
+                        <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📢 What Happened</h3>
                         <div class="message-log" id="message-log" style="min-height: 80px;">Your PhD journey begins...
                         </div>
+                        <button id="acknowledge-btn" class="action-btn" onclick="game.acknowledgeEvent()"
+                            style="width: 100%; margin-top: 10px; display: none; background: linear-gradient(135deg, #22c55e, #16a34a);">
+                            <div class="action-name">✓ Continue</div>
+                        </button>
                     </div>
                     <div style="flex: 1; opacity: 0.7;">
-                        <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📜 Last Month</h3>
+                        <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📜 Previously</h3>
                         <div class="message-log" id="message-log-prev" style="min-height: 80px; font-size: 0.85rem;">-
                         </div>
                     </div>
@@ -606,6 +650,260 @@
                 EQUIPMENT_STABLE_MONTHS: 12
             },
 
+            // ===========================================
+            // V2.19: RULESET OVERLAYS (Architectural Boundaries)
+            // Precedence: base < difficulty < regional
+            // ===========================================
+            RULES: {
+                base: {
+                    morale_decay: 4,
+                    conf_cap_per_year: 2,
+                    scoop_prob: 0.05,
+                    quals_pass_threshold: 3,
+                    papers_to_graduate: 3,
+                    inspiration_morale_mult: 1.0
+                },
+                difficulty: {
+                    standard: {},  // Uses base values
+                    easy: {
+                        morale_decay: 3,
+                        scoop_prob: 0.02
+                    },
+                    brutal: {
+                        morale_decay: 5,
+                        conf_cap_per_year: 1,
+                        scoop_prob: 0.10,
+                        inspiration_morale_mult: 0
+                    }
+                },
+                regional: {}  // Future expansion
+            },
+
+            currentDifficulty: 'standard',
+
+            // ===========================================
+            // V2.20: FIELD SPECIALIZATIONS
+            // Each specialization has unique modifiers, accelerators, and events
+            // ===========================================
+            SPECIALIZATIONS: {
+                experimentalist: {
+                    name: '🔬 Experimentalist',
+                    desc: 'Lab-based research with hands-on experiments',
+                    modifiers: {
+                        equipment_fail_chance: 1.5,   // Higher equipment risk
+                        idea_generation: 0.8,        // Slower ideas
+                        figure_quality: 1.2          // Better figures
+                    },
+                    accelerator: {
+                        name: 'Protocol Reuse',
+                        desc: 'After first Figure, next needs 1 fewer step',
+                        effect: 'figure_steps_reduction'
+                    },
+                    events: ['equipment_failure', 'lab_accident', 'reagent_shortage'],
+                    collaboration_bonus: { figures: 1, morale: 3 },
+                    warning: '⚠️ Equipment-dependent'
+                },
+                theoretician: {
+                    name: '📐 Theoretician',
+                    desc: 'Mathematical and conceptual research',
+                    modifiers: {
+                        equipment_fail_chance: 0.2,  // Minimal equipment
+                        idea_generation: 1.3,        // Faster ideas
+                        figure_quality: 0.9          // Harder to visualize
+                    },
+                    accelerator: {
+                        name: 'Conceptual Breakthrough',
+                        desc: 'Once per year, auto-generate an Idea',
+                        effect: 'yearly_idea'
+                    },
+                    events: ['proof_error', 'notation_confusion', 'reviewer_pedantry'],
+                    collaboration_bonus: { alignment: 2, discovery_progress: 30 },
+                    warning: '⚠️ Abstract results'
+                },
+                computational: {
+                    name: '💻 Computational',
+                    desc: 'Data-driven and simulation-based research',
+                    modifiers: {
+                        equipment_fail_chance: 0.8,  // Servers can crash
+                        idea_generation: 1.0,        // Normal
+                        figure_quality: 1.1          // Automated plots
+                    },
+                    accelerator: {
+                        name: 'Pipeline Automation',
+                        desc: 'Reduce Develop Findings time by 1 month',
+                        effect: 'findings_speedup'
+                    },
+                    events: ['server_crash', 'data_corruption', 'dependency_hell'],
+                    collaboration_bonus: { figures: 1, equipment_immunity: 2 },
+                    warning: '⚠️ Server-dependent'
+                }
+            },
+
+            // Get merged rule value with precedence
+            getRule(key) {
+                const base = this.RULES.base[key];
+                const diff = this.RULES.difficulty[this.currentDifficulty]?.[key];
+                const regional = this.RULES.regional?.[key];
+                return regional ?? diff ?? base;
+            },
+
+            // ===========================================
+            // V2.18: CAREER ENDINGS SYSTEM
+            // Determines player's post-degree career path
+            // ===========================================
+            CAREER_ENDINGS: {
+                // PhD Path Endings (ordered by prestige, highest first)
+                phd: [
+                    {
+                        id: 'tenure_track_professor',
+                        name: '🏛️ Tenure-Track Professor',
+                        conditions: { papers: 4, network: 80, alignment: 70 },
+                        desc: 'The holy grail. You secured a position at an R1 institution. Your advisor\'s advocacy was the final key.',
+                        emoji: '🎓👨‍🏫'
+                    },
+                    {
+                        id: 'industry_rd_director',
+                        name: '🏢 R&D Director',
+                        conditions: { papers: 3, network: 90, internship: true },
+                        desc: 'You traded the ivory tower for a corner office. Your massive network ensured a seamless transition.',
+                        emoji: '💼🔬'
+                    },
+                    {
+                        id: 'research_scientist',
+                        name: '🔬 Research Scientist',
+                        conditions: { papers: 3, network: 50 },
+                        desc: 'A stable career at a national lab or research institute. Not flashy, but fulfilling.',
+                        emoji: '🧪📊'
+                    },
+                    {
+                        id: 'academic_martyr',
+                        name: '📚 Permanent Post-doc',
+                        conditions: { papers: 3, morale_low: true },
+                        desc: 'You have the degree, but at what cost? You continue the grind, one-year contract after one-year contract.',
+                        emoji: '😓📄'
+                    }
+                ],
+                // MS-Out Path Endings
+                ms: [
+                    {
+                        id: 'startup_founder',
+                        name: '🚀 Tech Startup Founder',
+                        conditions: { network: 70, ideas: 5 },
+                        desc: 'You took your half-finished discovery and turned it into a seed-round deck. Disruption awaits.',
+                        emoji: '💡🦄'
+                    },
+                    {
+                        id: 'data_scientist',
+                        name: '📊 Data Scientist',
+                        conditions: { papers: 1 },
+                        desc: 'Your ability to survive Reviewer #2 made you overqualified for industry analytics. +15% salary boost.',
+                        emoji: '💻📈'
+                    },
+                    {
+                        id: 'great_escape',
+                        name: '🌅 The Great Escape',
+                        conditions: { morale_low: true },
+                        desc: 'You left academia and never looked back. Your health is recovering, and you\'ve rediscovered hobbies.',
+                        emoji: '🏖️😌'
+                    },
+                    {
+                        id: 'career_pivot',
+                        name: '🔄 Career Pivot',
+                        conditions: {},
+                        desc: 'The skills you gained opened unexpected doors. The PhD wasn\'t the destination, but the journey mattered.',
+                        emoji: '🚪✨'
+                    }
+                ]
+            },
+
+            // Resolve career ending based on game state
+            resolveCareerEnding(exitType) {
+                const s = this.state;
+                const papers = (this.getItem('paper') || 0) + Math.floor((s.confPaperCount || 0) / 2);
+                const network = s.peerNetwork || 0;
+                const alignment = s.strategicAlignment || 0;
+                const morale = s.morale || 0;
+                const ideas = s.telemetry?.inspirationCount || 0;
+                const hasInternship = s.internshipCompleted || false;
+
+                const endings = exitType === 'PhD' ? this.CAREER_ENDINGS.phd : this.CAREER_ENDINGS.ms;
+
+                for (const ending of endings) {
+                    const c = ending.conditions;
+                    let match = true;
+
+                    if (c.papers !== undefined && papers < c.papers) match = false;
+                    if (c.network !== undefined && network < c.network) match = false;
+                    if (c.alignment !== undefined && alignment < c.alignment) match = false;
+                    if (c.ideas !== undefined && ideas < c.ideas) match = false;
+                    if (c.internship && !hasInternship) match = false;
+                    if (c.morale_low && morale >= 20) match = false;
+
+                    if (match) return ending;
+                }
+
+                // Fallback
+                return exitType === 'PhD'
+                    ? { id: 'phd_default', name: '🎓 PhD Graduate', desc: 'You earned your degree. The future is unwritten.', emoji: '🎓' }
+                    : this.CAREER_ENDINGS.ms[this.CAREER_ENDINGS.ms.length - 1];
+            },
+
+            // ===========================================
+            // V2.19: GAME MODE SYSTEM
+            // Automatically switches based on game state
+            // ===========================================
+            updateGameMode() {
+                const s = this.state;
+                const papers = (this.getItem('paper') || 0) + Math.floor((s.confPaperCount || 0) / 2);
+
+                // FINALE: 3+ papers and thesis prep done
+                if (papers >= 3 && s.defensePrepared) {
+                    if (s.gameMode !== 'FINALE') {
+                        s.gameMode = 'FINALE';
+                        this.appendSystemEvent('🎓 DEFENSE MODE: Time to finish your thesis!');
+                    }
+                    return;
+                }
+
+                // QUALS_WINDOW: Year 2, approaching quals (months 6-9)
+                if (!s.qualsPassed && s.year === 2 && s.month >= 6 && s.month <= 9) {
+                    if (s.gameMode !== 'QUALS_WINDOW') {
+                        s.gameMode = 'QUALS_WINDOW';
+                        this.appendSystemEvent('📚 QUALS WINDOW: Focus on exam preparation!');
+                    }
+                    return;
+                }
+
+                // PROBATION: Very low morale or advisor unhappy
+                if (s.morale < 15 || s.advisorScore < 20) {
+                    if (s.gameMode !== 'PROBATION') {
+                        s.gameMode = 'PROBATION';
+                        this.appendSystemEvent('⚠️ CRISIS MODE: Address your situation immediately!');
+                    }
+                    return;
+                }
+
+                // Default to NORMAL
+                if (s.gameMode !== 'NORMAL') {
+                    s.gameMode = 'NORMAL';
+                }
+            },
+
+            // V2.19: Get mode-specific action limit
+            getModeActionCategories() {
+                const mode = this.state.gameMode;
+                switch (mode) {
+                    case 'QUALS_WINDOW':
+                        return ['quals', 'advisor', 'wellness'];
+                    case 'PROBATION':
+                        return ['wellness', 'advisor', 'emergency'];
+                    case 'FINALE':
+                        return ['thesis', 'wellness'];
+                    default:
+                        return null; // All actions available
+                }
+            },
+
             // Month names
             months: ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 
@@ -726,6 +1024,188 @@
                 return this.pick(variants);
             },
 
+            // ===========================================
+            // V2.19: GAMESTATE → UISTATE TRANSFORMER
+            // Separates game logic from UI rendering
+            // ===========================================
+
+            // Helper: Get morale display class
+            getMoraleClass(morale) {
+                if (morale > this.CONST.MORALE_OK) return 'high';
+                if (morale > this.CONST.MORALE_LOW) return 'medium';
+                return 'low';
+            },
+
+            // Helper: Get morale display text
+            getMoraleText(morale) {
+                if (morale > this.CONST.MORALE_GOOD) return '😄 Great';
+                if (morale > this.CONST.MORALE_OK) return '😊 Good';
+                if (morale > this.CONST.MORALE_LOW) return '😐 Okay';
+                if (morale > this.CONST.MORALE_CRITICAL) return '😟 Low';
+                return '😰 Critical';
+            },
+
+            // Helper: Get advisor display class
+            getAdvisorClass(score) {
+                const hasUnhappy = this.hasStatus('unhappyAdvisor');
+                if (hasUnhappy || score < this.CONST.MORALE_LOW) return 'low';
+                if (score < this.CONST.MORALE_OK) return 'medium';
+                return 'high';
+            },
+
+            // Helper: Get advisor display text
+            getAdvisorText(score) {
+                const hasUnhappy = this.hasStatus('unhappyAdvisor');
+                if (hasUnhappy || score < this.CONST.MORALE_LOW) return '😠 Unhappy';
+                if (score < this.CONST.MORALE_OK) return '😐 Neutral';
+                return '🙂 Happy';
+            },
+
+            // Helper: Get quals warning state
+            getQualsWarning(s) {
+                const monthsToQuals = (2 * 12 + 9) - s.totalMonths;
+                if (s.year === 2 && s.month >= 6 && monthsToQuals <= 3) {
+                    return { text: '🚨 <b>IMMINENT!</b>', color: '#f87171', border: '#f87171' };
+                } else if (s.year === 2) {
+                    return { text: '⚠️ This year', color: '#fbbf24', border: '#fbbf24' };
+                }
+                return { text: '', color: '', border: '' };
+            },
+
+            // Transform GameState → UIState (derived display values)
+            toUIState() {
+                const s = this.state;
+                const journalPapers = this.getItem('paper') || 0;
+                const confPapers = s.confPaperCount || 0;
+                const journalEquivalent = journalPapers + Math.floor(confPapers / 2);
+
+                return {
+                    // Date & Time
+                    dateText: `${this.months[s.month]}, Year ${s.year}`,
+                    semester: this.getSemester(),
+                    totalMonths: s.totalMonths,
+                    credits: s.credits || 0,
+
+                    // Publications
+                    totalPubs: journalPapers + confPapers,
+                    journalPapers: journalPapers,
+                    confPapers: confPapers,
+                    pubBreakdown: `(${journalPapers} J + ${confPapers} C)`,
+                    journalEquivalent: journalEquivalent,
+                    papersUntilDefense: Math.max(0, this.getRule('papers_to_graduate') - journalEquivalent),
+
+                    // Pending reviews
+                    pendingJournal: (s.pendingPapers || []).length,
+                    pendingConf: (s.pendingConference || []).length,
+
+                    // Progress bars
+                    morale: s.morale,
+                    moraleClass: this.getMoraleClass(s.morale),
+                    moraleText: this.getMoraleText(s.morale),
+                    advisorScore: s.advisorScore,
+                    advisorClass: this.getAdvisorClass(s.advisorScore),
+                    advisorText: this.getAdvisorText(s.advisorScore),
+
+                    // Quals
+                    qualsVisible: !s.qualsPassed && (s.year >= 1 || s.totalMonths >= 6),
+                    qualsPassed: s.qualsPassed,
+                    qualsLevel: s.qualifyLevel || 0,
+                    qualsWarning: this.getQualsWarning(s),
+
+                    // V2.19: Quals Countdown (Month 10 of Year 1 = 3 months until Sept Year 2)
+                    qualsCountdown: !s.qualsPassed ? this.getQualsCountdown(s) : null,
+
+                    // Alignment & Network
+                    alignment: s.strategicAlignment || 0,
+                    network: s.peerNetwork || 10,
+
+                    // V2.19: Game Mode
+                    gameMode: s.gameMode || 'NORMAL',
+                    gameModeLabel: this.getGameModeLabel(s.gameMode),
+
+                    // V2.19: Defense Tracks (for FINALE mode)
+                    defenseState: s.defenseState,
+                    defenseReady: s.defenseState &&
+                        (s.defenseState.thesis_quality >= 60 ? 1 : 0) +
+                        (s.defenseState.presentation_skill >= 60 ? 1 : 0) +
+                        (s.defenseState.committee_support >= 60 ? 1 : 0) >= 2,
+
+                    // Game state flags
+                    isEnded: s.isEnded,
+                    endState: s.endState
+                };
+            },
+
+            // V2.19: Get Quals countdown for banner
+            getQualsCountdown(s) {
+                const qualsMonth = 2 * 12 + 9; // September Year 2
+                const monthsUntil = qualsMonth - s.totalMonths;
+                if (monthsUntil <= 0) return null;
+                if (monthsUntil > 12) return null; // Don't show until Year 1 Sept
+
+                let color = '#94a3b8'; // neutral gray
+                if (monthsUntil <= 3) color = '#f87171'; // red
+                else if (monthsUntil <= 6) color = '#fbbf24'; // yellow
+
+                return {
+                    months: monthsUntil,
+                    color: color,
+                    text: monthsUntil === 1 ? '1 month until Quals!' : `${monthsUntil} months until Quals`
+                };
+            },
+
+            // V2.19: Get game mode label
+            getGameModeLabel(mode) {
+                switch (mode) {
+                    case 'QUALS_WINDOW': return '📚 Quals Focus';
+                    case 'PROBATION': return '⚠️ Crisis Mode';
+                    case 'FINALE': return '🎓 Defense Time';
+                    default: return null;
+                }
+            },
+
+            // ===========================================
+            // V2.19: TELEMETRY EXPORT (Balance & Calibration)
+            // ===========================================
+            exportTelemetry() {
+                const s = this.state;
+                const t = s.telemetry;
+                const journalPapers = this.getItem('paper') || 0;
+                const confPapers = s.confPaperCount || 0;
+
+                return {
+                    // Primary Metrics (from ASPIRATIONAL_STANDARDS)
+                    completionMonths: s.totalMonths,
+                    inspirationFrequency: t.inspirationCount,
+                    conferenceDensity: s.totalMonths > 0 ? (t.conferenceCount / (s.totalMonths / 12)).toFixed(2) : 0,
+
+                    // Publication Stats
+                    journalPapers: journalPapers,
+                    confPapers: confPapers,
+                    journalEquivalent: journalPapers + Math.floor(confPapers / 2),
+
+                    // Event Tracking
+                    scoopCount: t.scoopCount,
+                    moraleLowMonths: t.moraleLowMonths,
+
+                    // Milestones
+                    qualsPassedMonth: t.qualsPassedMonth,
+                    firstPaperMonth: t.firstPaperMonth,
+
+                    // Failure Diagnostics
+                    msOutState: t.msOutState,
+                    endReason: t.endReason,
+
+                    // Action Distribution
+                    actionCounts: t.actionCounts,
+
+                    // Game Info
+                    seed: this.seed,
+                    difficulty: this.currentDifficulty,
+                    won: s.endState?.won || false
+                };
+            },
+
             // V1.7: Seed for reproducible randomness
             seed: null,
             seedState: null,
@@ -786,8 +1266,53 @@
                     // V2.18: Defense prep gate and advisor patience
                     defensePrepared: false,  // Must prepare defense before graduating
                     advisorPatienceExhausted: false, // After 3+ interventions
+
+                    // V2.20: Field Specialization
+                    specialization: null,    // Set at game start: experimentalist, theoretician, computational
+                    secondaryFocus: null,    // Unlocks at Month >= 24, partial modifiers
+                    socialDebt: 0,           // Increases collaboration cost (+10 per use, decays -10/6mo)
+                    lastCollabMonth: 0,      // For social debt decay
+                    figuresThisRun: 0,       // For Protocol Reuse accelerator
+                    yearlyIdeaUsed: false,   // For Conceptual Breakthrough accelerator
+
+                    // V2.19: Game Mode System (action gating)
+                    gameMode: 'NORMAL', // NORMAL, QUALS_WINDOW, PROBATION, FINALE
+
+                    // V2.19: Defense 3-Track System
+                    defenseState: {
+                        thesis_quality: 0,      // From figures, polish, papers
+                        presentation_skill: 0,  // From practice, teaching, network
+                        committee_support: 0    // From alignment, advisor, past conflicts
+                    },
+
+                    // V2.19: Committee Personalities (lightweight NPCs)
+                    committee: [
+                        { name: 'Prof. Chen', tag: 'Methodology Hawk', bias: 'thesis_quality' },
+                        { name: 'Prof. Smith', tag: 'Industry Friendly', bias: 'presentation_skill' },
+                        { name: 'Prof. Alvarez', tag: 'Silent but Deadly', bias: 'committee_support' }
+                    ],
+
+                    // V2.19: Milestones tracking
+                    milestones: {
+                        quals: { status: 'locked', month: null },
+                        firstPaper: { status: 'locked', month: null },
+                        defense: { status: 'locked', month: null }
+                    },
+
                     // V2.2: Event log for history
-                    eventLog: []
+                    eventLog: [],
+                    // V2.19: Telemetry for Balance Calibration
+                    telemetry: {
+                        inspirationCount: 0,       // Total inspirations (target < 4)
+                        scoopCount: 0,             // Total scoop events
+                        conferenceCount: 0,        // Conferences attended
+                        actionCounts: {},          // Count by action type
+                        moraleLowMonths: 0,        // Months spent below 30%
+                        msOutState: null,          // Snapshot at MS-Out prompt
+                        qualsPassedMonth: null,    // Month quals passed
+                        firstPaperMonth: null,     // Month first paper published
+                        endReason: null            // Win/Loss reason
+                    }
                 };
             },
 
@@ -801,16 +1326,57 @@
                 return Math.random();
             },
 
+            // V2.20: Track selected specialization before game start
+            selectedSpecialization: null,
+
+            // V2.20: Handle specialization selection on start screen
+            selectSpecialization(specId) {
+                this.selectedSpecialization = specId;
+                const spec = this.SPECIALIZATIONS[specId];
+
+                // Update UI - highlight selected card
+                document.querySelectorAll('.spec-card').forEach(card => {
+                    card.style.border = '2px solid transparent';
+                    card.style.opacity = '0.6';
+                });
+                const selectedCard = document.getElementById('spec-' + specId);
+                if (selectedCard) {
+                    selectedCard.style.border = '2px solid var(--accent-blue)';
+                    selectedCard.style.opacity = '1';
+                }
+
+                // Show selection confirmation
+                document.getElementById('spec-selected').textContent = `Selected: ${spec.name}`;
+
+                // Enable start button
+                const startBtn = document.getElementById('start-game-btn');
+                if (startBtn) {
+                    startBtn.disabled = false;
+                    startBtn.style.opacity = '1';
+                }
+            },
+
             // Start new game
             start() {
+                // V2.20: Require specialization selection
+                if (!this.selectedSpecialization) {
+                    alert('Please select a research field first!');
+                    return;
+                }
+
                 // V1.7: Check for seed in URL
                 const urlParams = new URLSearchParams(window.location.search);
                 this.seed = urlParams.get('seed') ? parseInt(urlParams.get('seed')) : Math.floor(Math.random() * 999999);
                 this.seedState = this.seed;
 
                 this.state = this.initState();
+
+                // V2.20: Apply selected specialization
+                this.state.specialization = this.selectedSpecialization;
+                const spec = this.SPECIALIZATIONS[this.selectedSpecialization];
+
                 this.initDOM(); // Initialize DOM cache
-                this.showMessage('🎓 Welcome to your PhD program!\n\nYou start in September. Your goal: publish 3 papers and defend your thesis.');
+                this.showMessage(`🎓 Welcome to your PhD program!\n\n${spec.name}: ${spec.desc}\n\n✨ Bonus: ${spec.accelerator.desc}\n\nYour goal: publish 3 papers and defend your thesis.`);
                 this.dom.startScreen.style.display = 'none';
                 this.dom.gameScreen.style.display = 'block';
                 this.updateUI();
@@ -828,7 +1394,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '1.7'
+                    version: '2.20'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -912,26 +1478,51 @@
 
             // V2.4: Typewriter effect with dual display
             typeTimer: null,
+            previousEvent: '', // V2.20: Track last event (not last month)
+            waitingForAcknowledge: false, // V2.20: Block actions until acknowledged
+
             showMessage(msg) {
                 const el = document.getElementById('message-log');
                 const prevEl = document.getElementById('message-log-prev');
+                const ackBtn = document.getElementById('acknowledge-btn');
                 if (this.typeTimer) clearInterval(this.typeTimer);
 
-                // V2.4: Shift current to previous before displaying new
-                if (prevEl && el.textContent && el.textContent !== 'Your PhD journey begins...') {
-                    prevEl.textContent = el.textContent;
+                // V2.20: Shift current event to "Previously"
+                const currentText = el.textContent.trim();
+                if (prevEl && currentText && currentText !== 'Your PhD journey begins...' && currentText !== '-') {
+                    this.previousEvent = currentText;
+                    prevEl.textContent = this.previousEvent;
                 }
 
+                // Display new message with typewriter effect
                 el.textContent = '';
                 let i = 0;
                 this.typeTimer = setInterval(() => {
                     el.textContent += msg[i++];
-                    if (i >= msg.length) clearInterval(this.typeTimer);
+                    if (i >= msg.length) {
+                        clearInterval(this.typeTimer);
+                        // V2.20: Show acknowledge button after message completes
+                        if (ackBtn) {
+                            ackBtn.style.display = 'block';
+                            this.waitingForAcknowledge = true;
+                        }
+                    }
                 }, 15);
+
                 // V2.2: Log to event history
                 if (this.state && this.state.eventLog) {
                     this.state.eventLog.push({ month: this.state.totalMonths, text: msg });
                 }
+            },
+
+            // V2.20: User acknowledges event to continue
+            acknowledgeEvent() {
+                const ackBtn = document.getElementById('acknowledge-btn');
+                if (ackBtn) {
+                    ackBtn.style.display = 'none';
+                }
+                this.waitingForAcknowledge = false;
+                this.updateUI(); // Refresh actions
             },
 
             // Append message
@@ -940,6 +1531,7 @@
                 if (this.typeTimer) clearInterval(this.typeTimer);
                 const current = el.textContent.trim();
                 const separator = current ? '\n' : '';
+
                 el.textContent = current + separator;
                 let i = 0;
                 this.typeTimer = setInterval(() => {
@@ -1056,6 +1648,10 @@
                     this.state.lowMoraleMonths = (this.state.lowMoraleMonths || 0) + 1;
                 } else {
                     this.state.lowMoraleMonths = 0;
+                }
+                // V2.19: Telemetry - track months spent in low morale
+                if (this.state.morale < 30) {
+                    this.state.telemetry.moraleLowMonths++;
                 }
                 // V2.4: Respect maxMorale cap (reduced by burnout)
                 const maxMorale = this.state.maxMorale || 100;
@@ -1224,6 +1820,7 @@
                 const inspirations = this.state.inspirationsThisYear || 0;
                 if (this.random() < 0.03 && inspirations < 2) {
                     this.state.inspirationsThisYear = inspirations + 1;
+                    this.state.telemetry.inspirationCount++; // V2.19: Track for balance
                     const inspireMorale = inspirations === 0 ? 15 : 10; // Diminishing
                     this.state.morale = Math.min(100, this.state.morale + inspireMorale);
                     this.addItem('idea');
@@ -1269,6 +1866,7 @@
                 if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk && !isProtected) {
                     this.removeItem('idea');
                     this.state.lastScoopMonth = this.state.totalMonths;
+                    this.state.telemetry.scoopCount++; // V2.19: Track for balance
                     const scoopLoss = 5 + Math.floor(this.random() * 5);
                     this.state.morale = Math.max(0, this.state.morale - scoopLoss);
                     this.appendRandomEvent('📢 Another lab just published YOUR idea! (-1 idea, -' + scoopLoss + ' morale)');
@@ -1366,6 +1964,9 @@
                     }
                 }
 
+                // V2.19: Update game mode based on current state
+                this.updateGameMode();
+
                 this.updateUI();
             },
 
@@ -1378,11 +1979,10 @@
                 const effectiveLevel = this.state.qualifyLevel + (hasStudyGroup ? 1 : 0);
 
                 if (effectiveLevel >= 3) {
-                    msg += '✅ QUALS PASSED! ✅\n';
                     if (hasStudyGroup && this.state.qualifyLevel < 2) {
-                        msg += 'Your study group helped you pass!';
+                        msg += '✅ Your study group helped you pass!';
                     } else {
-                        msg += effectiveLevel >= 4 ? 'Your thorough preparation paid off!' : 'You passed the qualifying exam!';
+                        msg += effectiveLevel >= 4 ? '✅ Your thorough preparation paid off!' : '✅ You passed the qualifying exam!';
                     }
                     this.state.morale = Math.min(100, this.state.morale + (effectiveLevel >= 4 ? 25 : 15));
                     this.state.qualsPassed = true;
@@ -1420,15 +2020,28 @@
                 this.state.isEnded = true;
                 this.state.endState = { won, reason, message };
 
+                // V2.18: Resolve career ending
+                const exitType = (reason === 'graduation' || reason === 'defense') ? 'PhD' :
+                    (reason === 'ms_out') ? 'MS' : null;
+                const career = exitType ? this.resolveCareerEnding(exitType) : null;
+
+                // Store in telemetry
+                if (this.state.telemetry) {
+                    this.state.telemetry.endReason = reason;
+                }
+
                 document.getElementById('game-screen').style.display = 'none';
                 document.getElementById('end-screen').style.display = 'block';
                 document.getElementById('end-screen').className = `end-screen panel ${won ? 'won' : 'lost'}`;
 
-                // V2.2 Pro: Different messages for MS-Out vs PhD
+                // V2.18: Different messages with career endings
                 let title, endMessage;
-                if (reason === 'ms_out') {
-                    title = '🎓 Master\'s Degree Earned! 🎓';
-                    endMessage = message;
+                if (reason === 'ms_out' && career) {
+                    title = `🎓 Master's Degree Earned! 🎓`;
+                    endMessage = `${career.emoji} Your Career: ${career.name}\n\n${career.desc}`;
+                } else if (won && career) {
+                    title = '🎓🎉 Congratulations, Doctor! 🎉🎓';
+                    endMessage = `${career.emoji} Your Career: ${career.name}\n\n${career.desc}`;
                 } else if (won) {
                     title = '🎓🎉 Congratulations, Doctor! 🎉🎓';
                     endMessage = 'You have defended your thesis and earned your PhD!';
@@ -1438,7 +2051,7 @@
                 }
 
                 document.getElementById('end-title').textContent = title;
-                document.getElementById('end-message').textContent = endMessage;
+                document.getElementById('end-message').innerHTML = endMessage.replace(/\n/g, '<br>');
                 // V2.7: Include more stats, history, and seed access on end screen
                 const journalPapers = this.getItem('paper') || 0;
                 const confPapers = this.state.confPaperCount || 0;
@@ -1448,6 +2061,7 @@
                     Publications: ${journalPapers + confPapers} (${journalPapers} Journal + ${confPapers} Conference)<br>
                     Final morale: ${this.state.morale}%<br>
                     Peer Network: ${this.state.peerNetwork || 0}<br>
+                    Strategic Alignment: ${this.state.strategicAlignment || 0}<br>
                     Advisor Happiness: ${this.state.advisorScore}%
                 </p>
                 <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">
@@ -1462,6 +2076,12 @@
             getActions() {
                 const s = this.state;
                 const actions = [];
+
+                // V2.20: Block actions when waiting for event acknowledgement
+                if (this.waitingForAcknowledge) {
+                    actions.push({ id: 'waiting', name: '⏳ Read Event', desc: 'Click "Continue" to proceed', disabled: true });
+                    return actions;
+                }
 
                 // Always available
                 actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Search for ideas', telemetry: 'research' });
@@ -2065,86 +2685,52 @@
                 this.advanceMonth();
             },
 
-            // Update UI
+            // Update UI - V2.19: Uses toUIState() transformer
             updateUI() {
-                const s = this.state;
+                const ui = this.toUIState();
+                const s = this.state; // Still needed for items/statuses
 
-                // Stats
-                this.dom.date.textContent = `${this.months[s.month]}, Year ${s.year}`;
-                this.dom.totalMonths.textContent = s.totalMonths;
-                // V2.15: Semester display (use helper)
-                this.dom.semester.textContent = this.getSemester();
-                this.dom.credits.textContent = s.credits || 0;
-                // V2.5: Publications with breakdown
-                const journalPapers = this.getItem('paper') || 0;
-                const confPapers = s.confPaperCount || 0;
-                const totalPubs = journalPapers + confPapers;
-                this.dom.papers.textContent = totalPubs;
-                this.dom.pubBreakdown.textContent = `(${journalPapers} J + ${confPapers} C)`;
+                // Stats (from UIState)
+                this.dom.date.textContent = ui.dateText;
+                this.dom.totalMonths.textContent = ui.totalMonths;
+                this.dom.semester.textContent = ui.semester;
+                this.dom.credits.textContent = ui.credits;
 
-                // V2.14: Show pending review status on separate lines
+                // Publications (from UIState)
+                this.dom.papers.textContent = ui.totalPubs;
+                this.dom.pubBreakdown.textContent = ui.pubBreakdown;
+
+                // Pending reviews (from UIState)
                 let reviewLines = [];
-                const pendingJournal = (s.pendingPapers || []).length;
-                const pendingConf = (s.pendingConference || []).length;
-                if (pendingJournal > 0) reviewLines.push(`📝 ${pendingJournal} Journal in review`);
-                if (pendingConf > 0) reviewLines.push(`📋 ${pendingConf} Conf in review`);
+                if (ui.pendingJournal > 0) reviewLines.push(`📝 ${ui.pendingJournal} Journal in review`);
+                if (ui.pendingConf > 0) reviewLines.push(`📋 ${ui.pendingConf} Conf in review`);
                 this.dom.reviewStatus.innerHTML = reviewLines.join('<br>');
 
-                // V2.2 Pro: Peer Network
-                this.dom.peerNetwork.textContent = s.peerNetwork || 10;
+                // Peer Network & Alignment (from UIState)
+                this.dom.peerNetwork.textContent = ui.network;
+                this.dom.alignmentValue.textContent = ui.alignment;
+                this.dom.alignmentBar.style.width = `${Math.min(100, ui.alignment)}%`;
 
-                // V2.16: Strategic Alignment meter
-                const alignment = s.strategicAlignment || 0;
-                this.dom.alignmentValue.textContent = alignment;
-                this.dom.alignmentBar.style.width = `${Math.min(100, alignment)}%`;
-
-                // V2.16: Quals Prep visualizer
-                const qualsPrep = s.qualifyLevel || 0;
-                if (!s.qualsPassed && (s.year >= 1 || s.totalMonths >= 6)) {
+                // Quals Prep visualizer (from UIState)
+                if (ui.qualsVisible) {
                     this.dom.qualsCard.style.display = 'block';
-                    this.dom.qualsValue.textContent = qualsPrep;
-                    // Color-coded warnings
-                    const monthsToQuals = (2 * 12 + 9) - s.totalMonths; // Sept Year 2
-                    if (s.year === 2 && s.month >= 6 && monthsToQuals <= 3) {
-                        this.dom.qualsCard.style.borderColor = '#f87171';
-                        this.dom.qualsWarning.innerHTML = '🚨 <b>IMMINENT!</b>';
-                        this.dom.qualsWarning.style.color = '#f87171';
-                    } else if (s.year === 2) {
-                        this.dom.qualsCard.style.borderColor = '#fbbf24';
-                        this.dom.qualsWarning.innerHTML = '⚠️ This year';
-                        this.dom.qualsWarning.style.color = '#fbbf24';
-                    } else {
-                        this.dom.qualsCard.style.borderColor = '';
-                        this.dom.qualsWarning.innerHTML = '';
-                    }
-                } else if (s.qualsPassed) {
+                    this.dom.qualsValue.textContent = ui.qualsLevel;
+                    this.dom.qualsCard.style.borderColor = ui.qualsWarning.border;
+                    this.dom.qualsWarning.innerHTML = ui.qualsWarning.text;
+                    this.dom.qualsWarning.style.color = ui.qualsWarning.color;
+                } else if (ui.qualsPassed) {
                     this.dom.qualsCard.style.display = 'none';
                 }
 
-                // V2.0.1: Morale as descriptive text
-                this.dom.moraleBar.style.width = `${s.morale}%`;
-                let moraleText, moraleClass;
-                if (s.morale > this.CONST.MORALE_GOOD) { moraleText = '😄 Great'; moraleClass = 'high'; }
-                else if (s.morale > this.CONST.MORALE_OK) { moraleText = '😊 Good'; moraleClass = 'high'; }
-                else if (s.morale > this.CONST.MORALE_LOW) { moraleText = '😐 Okay'; moraleClass = 'medium'; }
-                else if (s.morale > this.CONST.MORALE_CRITICAL) { moraleText = '😟 Low'; moraleClass = 'low'; }
-                else { moraleText = '😰 Critical'; moraleClass = 'low'; }
-                this.dom.moraleStatus.textContent = moraleText;
-                this.dom.moraleBar.className = 'progress-fill ' + moraleClass;
+                // Morale (from UIState helper methods)
+                this.dom.moraleBar.style.width = `${ui.morale}%`;
+                this.dom.moraleStatus.textContent = ui.moraleText;
+                this.dom.moraleBar.className = 'progress-fill ' + ui.moraleClass;
 
-                // Advisor
-                this.dom.advisorBar.style.width = `${s.advisorScore}%`;
-                const hasUnhappy = this.hasStatus('unhappyAdvisor');
-                if (hasUnhappy || s.advisorScore < this.CONST.MORALE_LOW) {
-                    this.dom.advisorStatus.textContent = '😠 Unhappy';
-                    this.dom.advisorBar.className = 'progress-fill low';
-                } else if (s.advisorScore < this.CONST.MORALE_OK) {
-                    this.dom.advisorStatus.textContent = '😐 Neutral';
-                    this.dom.advisorBar.className = 'progress-fill medium';
-                } else {
-                    this.dom.advisorStatus.textContent = '🙂 Happy';
-                    this.dom.advisorBar.className = 'progress-fill high';
-                }
+                // Advisor (from UIState helper methods)
+                this.dom.advisorBar.style.width = `${ui.advisorScore}%`;
+                this.dom.advisorStatus.textContent = ui.advisorText;
+                this.dom.advisorBar.className = 'progress-fill ' + ui.advisorClass;
 
                 // Actions
                 try {
