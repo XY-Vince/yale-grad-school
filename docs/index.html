@@ -849,6 +849,95 @@
             },
 
             // ===========================================
+            // V2.21: STRESS & INTERVENTION SYSTEM
+            // Stress ladder: 0-59 Normal, 60-99 Stressed, 100+ Exhausted
+            // ===========================================
+
+            // Get current stress level status
+            getStressLevel() {
+                const stress = this.state.stress || 0;
+                if (stress >= 100) return 'exhausted';
+                if (stress >= 60) return 'stressed';
+                return 'normal';
+            },
+
+            // V2.21: Check and apply advisor intervention (passive + active)
+            checkAdvisorIntervention() {
+                const s = this.state;
+                const alignment = s.strategicAlignment || 0;
+                const cooldownPassed = (s.totalMonths - (s.lastAdvisorInterventionMonth || 0)) >= 12;
+
+                // Passive Shield: alignment >= 40 reduces penalties by 25%
+                const hasPassiveShield = alignment >= 40;
+
+                // Active Intervention: alignment >= 60, off cooldown, in crisis
+                if (alignment >= 60 && cooldownPassed && (s.morale < 20 || s.stress >= 100)) {
+                    s.lastAdvisorInterventionMonth = s.totalMonths;
+
+                    // Clear Exhaustion status if present
+                    if (this.hasStatus('exhaustion')) {
+                        this.removeStatus('exhaustion');
+                    }
+                    if (this.hasStatus('burnout')) {
+                        this.removeStatus('burnout');
+                    }
+
+                    // Stress relief
+                    s.stress = Math.max(0, s.stress - 40);
+                    s.morale = Math.min(100, s.morale + 15);
+
+                    this.appendAdvisorEvent('Your advisor noticed you struggling and scheduled a supportive meeting. (+15 morale, stress reduced)');
+                    return true;
+                }
+
+                return hasPassiveShield; // Return passive status for penalty reduction
+            },
+
+            // V2.21: Check and apply peer intervention (network safety net)
+            checkPeerIntervention() {
+                const s = this.state;
+                const network = s.peerNetwork || 0;
+                const cooldownPassed = (s.totalMonths - (s.lastPeerInterventionMonth || 0)) >= 6;
+
+                // Peer intervention: network >= 60, morale < 30, off cooldown
+                if (network >= 60 && s.morale < 30 && cooldownPassed) {
+                    s.lastPeerInterventionMonth = s.totalMonths;
+                    s.stress = Math.max(0, s.stress - 30);
+                    s.morale = Math.min(100, s.morale + 10);
+
+                    this.appendRandomEvent('🤝 Your labmates noticed you disappearing and invited you for coffee. "We\'ve all been there." (+10 morale, −30 stress)');
+                    return true;
+                }
+                return false;
+            },
+
+            // V2.21: Calculate morale projection for next month
+            calculateMoraleProjection() {
+                const s = this.state;
+                let decay = this.getRule('morale_decay');
+
+                // Exhaustion penalty
+                if (this.hasStatus('exhaustion')) decay += 2;
+                if (this.hasStatus('burnout')) decay += 4;
+
+                // Alignment buffer
+                const alignmentBuffer = Math.floor((s.strategicAlignment || 0) / 25);
+
+                // New Lease buff
+                if (s.newLeaseUntil && s.totalMonths < s.newLeaseUntil) {
+                    decay = Math.floor(decay / 2);
+                }
+
+                const projected = s.morale - decay + alignmentBuffer;
+                return {
+                    current: s.morale,
+                    projected: Math.max(0, projected),
+                    decay: decay,
+                    buffer: alignmentBuffer
+                };
+            },
+
+            // ===========================================
             // V2.19: GAME MODE SYSTEM
             // Automatically switches based on game state
             // ===========================================
@@ -1299,6 +1388,12 @@
                         defense: { status: 'locked', month: null }
                     },
 
+                    // V2.21: Stress System (replaces binary exhaustion)
+                    stress: 0,                      // 0-100, 60=Stressed, 100=Exhausted
+                    lastAdvisorInterventionMonth: 0, // 12-month cooldown
+                    lastPeerInterventionMonth: 0,    // 6-month cooldown
+                    qualsGraceUsed: false,           // First quals failure is protected
+
                     // V2.2: Event log for history
                     eventLog: [],
                     // V2.19: Telemetry for Balance Calibration
@@ -1394,7 +1489,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.20'
+                    version: '2.21'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -1963,6 +2058,18 @@
                         this.appendMessage('🤔 Your advisor notices your struggle. "Have you considered the Master\'s exit?"');
                     }
                 }
+
+                // V2.21: Accumulate stress based on actions and status
+                if (this.hasStatus('exhaustion')) {
+                    this.state.stress = Math.min(120, (this.state.stress || 0) + 5);
+                }
+                if (s.morale < 30) {
+                    this.state.stress = Math.min(120, (this.state.stress || 0) + 3);
+                }
+
+                // V2.21: Check for support interventions
+                this.checkPeerIntervention();
+                this.checkAdvisorIntervention();
 
                 // V2.19: Update game mode based on current state
                 this.updateGameMode();
