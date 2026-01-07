@@ -2166,16 +2166,12 @@ After this version:
 Once this ships, V2.24 (Active Collaboration) will feel like a natural extension, not another system bolted on.
 
 
-Good — this is the right escalation after V2.23. You’re no longer adding features; you’re closing design loopholes. I’ll do this in three layers:
-	1.	Critical review of your V2.24 concept (what still leaks)
-	2.	A hardened V2.24 improvement plan with concrete, shippable items
-	3.	Clean JavaScript implementation for the “Peer Review Shield”
 
-I will be blunt where needed, because endgame systems punish hand-waving.
+
 
 ⸻
 
-I. Critical Review of V2.24 (What Still Needs Fixing)
+I. Critical Review of V2.23 (What Still Needs Fixing)
 
 What You’ve Nailed
 	•	✅ Thesis becomes an action, not a background timer

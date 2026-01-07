@@ -3,7 +3,7 @@
 > *Navigate the PhD journey: Publish, survive, and thrive—or strategically exit.*
 
 [![Play Now](https://img.shields.io/badge/▶_Play_Now-GitHub_Pages-blue?style=for-the-badge)](https://xy-vince.github.io/GradQuest/)
-[![Version](https://img.shields.io/badge/Version-2.23-green?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.23.1-green?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
@@ -164,6 +164,7 @@ See [CHANGELOG.md](CHANGELOG.md) for full history.
 
 | Version | Theme |
 |---------|-------|
+| **v2.23.1** | Interactive Dissertation — Peer Review Shield |
 | **v2.23** | Thesis Phases — gated dissertation progress |
 | **v2.22** | Information Clarity — graduation progress card |
 | **v2.21** | Support Systems — stress meter, interventions |

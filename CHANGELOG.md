@@ -2,6 +2,31 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.23.1] - 2026-01-07 "Interactive Dissertation"
+
+**Theme**: Network as strategic currency — players must spend social capital wisely.
+
+### 🤝 Peer Review Shield
+- **Cost**: 20 Network (requires 60+ Network)
+- **Effect**: Next figure validation **automatically succeeds**
+- One-time use per activation
+- "Your colleague's notes helped you nail the visualization"
+
+### 🔬 Preventive Calibration (Experimentalist)
+- **Cost**: 5 Morale
+- **Effect**: Equipment stabilized for **6 months**
+- Prevents random equipment breakdowns
+- Field-specific mitigation action
+
+### 📝 Dissertation Internal State
+Hidden variables affecting endgame:
+- **draft_quality**: Affects review RNG
+- **revision_load**: Slows progress after 75%
+- **committee_friction**: Increases failure chance
+- `getDissertationFlavorText()` for hidden state feedback
+
+---
+
 ## [2.23.0] - 2026-01-07 "Thesis Phases & Dissertation"
 
 **Theme**: The thesis is no longer a passive meter — it's a gated project with pressure, trade-offs, and momentum.
