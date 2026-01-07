@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.25</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.26</span></h1>
         </header>
 
         <div id="app">
@@ -1338,6 +1338,172 @@
             },
 
             // ===========================================
+            // V2.26: ADVISOR PERSONALITY SYSTEM
+            // Advisors as systems with memory and escalation
+            // ===========================================
+
+            // V2.26: Advisor archetypes with field weights
+            ADVISOR_ARCHETYPES: {
+                'The_Tormentor': {
+                    name: 'Dr. Hardwick',
+                    archetype: 'The_Tormentor',
+                    emoji: '👹',
+                    description: 'Demanding, high expectations',
+                    philosophy: '"Results speak. Excuses don\'t."',
+                    weight: { experimentalist: 0.5, theoretician: 0.2, computational: 0.3 },
+                    raisesTension: ['break', 'vacation', 'medical_leave'],
+                    lowersTension: ['research', 'work_figures', 'write_paper'],
+                    modifiers: { moraleCost: 1.2, progressBonus: 1.1 }
+                },
+                'The_Ghost': {
+                    name: 'Dr. Phantom',
+                    archetype: 'The_Ghost',
+                    emoji: '👻',
+                    description: 'Rarely available, hands-off',
+                    philosophy: '"You\'ll figure it out."',
+                    weight: { experimentalist: 0.2, theoretician: 0.3, computational: 0.5 },
+                    raisesTension: ['pitch', 'quals', 'meeting_request'],
+                    lowersTension: ['research', 'read_papers', 'advance'],
+                    modifiers: { advisorMeetingChance: 0.3, autonomyBonus: 1.2 }
+                },
+                'The_Mentor': {
+                    name: 'Dr. Shepherd',
+                    archetype: 'The_Mentor',
+                    emoji: '🧑‍🏫',
+                    description: 'Supportive, cares about wellbeing',
+                    philosophy: '"Slow progress is still progress."',
+                    weight: { experimentalist: 0.3, theoretician: 0.5, computational: 0.2 },
+                    raisesTension: ['exhaustion', 'burnout', 'morale_crisis'],
+                    lowersTension: ['break', 'vacation', 'network'],
+                    modifiers: { moraleRecovery: 1.3, progressPenalty: 0.9 }
+                }
+            },
+
+            // V2.26: Pick advisor based on field with weighted randomness
+            pickAdvisorByField(field) {
+                const archetypes = Object.keys(this.ADVISOR_ARCHETYPES);
+                const pool = [];
+
+                archetypes.forEach(key => {
+                    const advisor = this.ADVISOR_ARCHETYPES[key];
+                    const w = advisor.weight[field] || 0.33;
+                    const entries = Math.round(w * 100);
+
+                    for (let i = 0; i < entries; i++) {
+                        pool.push(key);
+                    }
+                });
+
+                const choice = pool[Math.floor(this.random() * pool.length)];
+                return this.initializeAdvisor(choice);
+            },
+
+            // V2.26: Initialize advisor state
+            initializeAdvisor(archetypeId) {
+                const template = this.ADVISOR_ARCHETYPES[archetypeId];
+                return {
+                    ...template,
+                    tension: 10, // baseline stress
+                    memory: [],
+                    unavailableTurns: 0,
+                    warningGiven: false,
+                    ultimatumGiven: false
+                };
+            },
+
+            // V2.26: Check for advisor escalation based on tension
+            checkAdvisorEscalation() {
+                const s = this.state;
+                if (!s.advisor) return null;
+
+                const tension = s.advisor.tension || 0;
+                const archetype = s.advisor.archetype;
+
+                if (tension >= 80 && !s.advisor.ultimatumGiven) {
+                    s.advisor.ultimatumGiven = true;
+                    s.advisor.memory.push({ type: 'ultimatum', month: s.totalMonths });
+
+                    const messages = {
+                        'The_Tormentor': '⚠️ ADVISOR ULTIMATUM\n"Produce figures next month or I pull funding."',
+                        'The_Ghost': '⚠️ ADVISOR ULTIMATUM\n"I\'m unavailable next semester. You\'re on your own."',
+                        'The_Mentor': '⚠️ ADVISOR ULTIMATUM\n"We need to have a serious talk about sustainability."'
+                    };
+
+                    this.appendSystemEvent(messages[archetype] || messages['The_Mentor']);
+                    return 'ultimatum';
+                } else if (tension >= 50 && !s.advisor.warningGiven) {
+                    s.advisor.warningGiven = true;
+                    s.advisor.memory.push({ type: 'warning', month: s.totalMonths });
+
+                    const messages = {
+                        'The_Tormentor': '⚠️ Advisor warning: "Your output has been... disappointing."',
+                        'The_Ghost': '⚠️ Advisor warning: "I keep missing your emails. Try to be more independent."',
+                        'The_Mentor': '⚠️ Advisor warning: "I\'m worried about your pace. Let\'s talk."'
+                    };
+
+                    this.appendSystemEvent(messages[archetype] || messages['The_Mentor']);
+                    return 'warning';
+                }
+
+                return null;
+            },
+
+            // V2.26: Update advisor tension based on action
+            updateAdvisorTension(actionId) {
+                const s = this.state;
+                if (!s.advisor) return;
+
+                const advisor = s.advisor;
+
+                if (advisor.raisesTension && advisor.raisesTension.includes(actionId)) {
+                    advisor.tension = Math.min(100, (advisor.tension || 0) + 8);
+                } else if (advisor.lowersTension && advisor.lowersTension.includes(actionId)) {
+                    advisor.tension = Math.max(0, (advisor.tension || 0) - 5);
+                }
+
+                // Check for escalation
+                this.checkAdvisorEscalation();
+            },
+
+            // V2.26: Get advisor-specific milestone text
+            getAdvisorMilestoneText(milestone) {
+                const s = this.state;
+                const archetype = s.advisor?.archetype || 'The_Mentor';
+
+                const milestoneTexts = {
+                    'quals_passed': {
+                        'The_Tormentor': '"You passed. Good. That\'s the minimum."',
+                        'The_Ghost': '"Congrats. Send me the paperwork."',
+                        'The_Mentor': '"I\'m proud of you. This was hard."'
+                    },
+                    'paper_accepted': {
+                        'The_Tormentor': '"Finally. Now write two more."',
+                        'The_Ghost': '"Nice. Where are you submitting next?"',
+                        'The_Mentor': '"Wonderful work! Let\'s celebrate this milestone."'
+                    },
+                    'defense_ready': {
+                        'The_Tormentor': '"Schedule it. Don\'t waste time."',
+                        'The_Ghost': '"Let me know when you defend. I\'ll try to be there."',
+                        'The_Mentor': '"You\'ve come so far. I\'m honored to have been part of this journey."'
+                    }
+                };
+
+                return milestoneTexts[milestone]?.[archetype] || '';
+            },
+
+            // V2.26: Get advisor description for player
+            getAdvisorDescription() {
+                const s = this.state;
+                if (!s.advisor) return '';
+
+                const warnings = {
+                    'The_Tormentor': 'Your advisor has a reputation for being demanding.',
+                    'The_Ghost': 'Colleagues warn you they are rarely available.',
+                    'The_Mentor': 'Your advisor is known for being supportive but has high standards.'
+                };
+
+                return warnings[s.advisor.archetype] || '';
+            },
             // V2.19: GAME MODE SYSTEM
             // Automatically switches based on game state
             // ===========================================
@@ -1894,8 +2060,12 @@
                 this.state.specialization = this.selectedSpecialization;
                 const spec = this.SPECIALIZATIONS[this.selectedSpecialization];
 
+                // V2.26: Assign advisor based on field
+                this.state.advisor = this.pickAdvisorByField(this.selectedSpecialization);
+                const advisorDesc = this.getAdvisorDescription();
+
                 this.initDOM(); // Initialize DOM cache
-                this.showMessage(`🎓 Welcome to your PhD program!\n\n${spec.name}: ${spec.desc}\n\n✨ Bonus: ${spec.accelerator.desc}\n\nYour goal: publish 3 papers and defend your thesis.`);
+                this.showMessage(`🎓 Welcome to your PhD program!\n\n${spec.name}: ${spec.desc}\n\n✨ Bonus: ${spec.accelerator.desc}\n\n${this.state.advisor.emoji} Your advisor: ${this.state.advisor.name}\n${advisorDesc}\n\nYour goal: publish 3 papers and defend your thesis.`);
                 this.dom.startScreen.style.display = 'none';
                 this.dom.gameScreen.style.display = 'block';
                 this.updateUI();
@@ -1913,7 +2083,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.25'
+                    version: '2.26'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -2862,6 +3032,9 @@
 
                 let msg = '';
                 const s = this.state;
+
+                // V2.26: Update advisor tension based on action
+                this.updateAdvisorTension(id);
 
                 switch (id) {
                     case 'read':

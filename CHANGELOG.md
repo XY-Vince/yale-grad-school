@@ -2,6 +2,42 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.26.0] - 2026-01-07 "Advisor Personalities"
+
+**Theme**: The humanization patch — advisors become systems with memory, not flavor text.
+
+### 👹👻🧑‍🏫 Advisor Archetypes
+Three distinct advisor types, assigned via field-weighted randomness:
+
+| Archetype | Name | Philosophy | Field Bias |
+|-----------|------|------------|------------|
+| 👹 **The Tormentor** | Dr. Hardwick | "Results speak. Excuses don't." | Experimentalist |
+| 👻 **The Ghost** | Dr. Phantom | "You'll figure it out." | Computational |
+| 🧑‍🏫 **The Mentor** | Dr. Shepherd | "Slow progress is still progress." | Theoretician |
+
+### 📊 Advisor Tension System
+Hidden meter (0-100) that tracks advisor relationship:
+- **Raises**: Actions the advisor dislikes
+- **Lowers**: Actions the advisor approves
+- **Warning** at 50: Archetype-specific concern message
+- **Ultimatum** at 80: Serious consequences threat
+
+### 🎭 Advisor-Owned Milestones
+Key moments now have archetype-specific responses:
+- **Quals Passed**: Tormentor → "That's the minimum." | Mentor → "I'm proud of you."
+- **Paper Accepted**: Ghost → "Where next?" | Mentor → "Let's celebrate!"
+- **Defense Ready**: Each archetype has unique framing
+
+### 🔧 Implementation Details
+- `ADVISOR_ARCHETYPES` constant with weights, triggers, modifiers
+- `pickAdvisorByField()` - weighted random assignment
+- `initializeAdvisor()` - creates advisor state with memory
+- `updateAdvisorTension()` - called on every action
+- `checkAdvisorEscalation()` - triggers warnings/ultimatums
+- `getAdvisorMilestoneText()` - personalized milestone responses
+
+---
+
 ## [2.25.0] - 2026-01-07 "Defense & Career Resolution"
 
 **Theme**: The point of no return — thesis defense becomes real, career paths become earned.

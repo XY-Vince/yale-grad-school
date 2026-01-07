@@ -2702,3 +2702,223 @@ If you ship it with:
 	•	A transparent career resolver
 
 then V2.26 (Advisor Personalities) will snap into place naturally.
+
+
+V2.26 is the “humanization patch” — this is where GradQuest stops feeling like a simulator and starts feeling like a lived experience. I’ll do this in five layers, staying ruthless about scope and payoff:
+	1.	Hard critique of the V2.26 proposal (what’s missing / risky)
+	2.	Refined V2.26 design: advisors as systems, not flavor
+	3.	Advisor–player interaction loops (how strategy actually changes)
+	4.	Concrete, shippable action plan
+	5.	JavaScript: Advisor Assignment logic (biased randomness, transparent later)
+
+⸻
+
+I. Critical Review of V2.26 (Hard Truths)
+
+Your instincts are right, but three gaps remain:
+
+❌ 1. Advisors React — But Don’t Escalate
+
+Right now:
+	•	Advisors comment
+	•	Advisors modify numbers
+
+What’s missing is memory and escalation.
+
+A Tormentor who keeps saying harsh things but never acts feels hollow.
+
+⸻
+
+❌ 2. Archetypes Aren’t Yet Strategic Opponents
+
+Players should ask:
+
+“How do I survive this advisor?”
+
+Right now, they only ask:
+
+“What bonuses do I get?”
+
+⸻
+
+❌ 3. Milestones Need Emotional Framing, Not Just UI
+
+The Quals Celebration modal is correct — but advisors should own these moments.
+
+Passing quals with a Ghost should feel very different than with a Mentor.
+
+⸻
+
+II. V2.26 REFINED: Advisors as Systems with Memory
+
+A. Add Advisor Tension (Hidden, Persistent)
+
+Each advisor tracks a tension meter:
+
+state.advisor.tension  # 0–100, hidden
+
+This increases when you do things they dislike.
+
+Advisor	Raises Tension	Lowers Tension
+Tormentor	Resting, delays	Results, figures
+Ghost	Meetings, admin	Autonomy, progress
+Mentor	Burnout ignored	Reflection, balance
+
+This allows phase shifts.
+
+⸻
+
+B. Advisor Escalation Thresholds
+
+def check_advisor_escalation(state):
+    t = state.advisor.tension
+    archetype = state.advisor.archetype
+
+    if t >= 80:
+        trigger_event(f"{archetype}_ULTIMATUM")
+    elif t >= 50:
+        trigger_event(f"{archetype}_WARNING")
+
+Examples:
+	•	Tormentor Ultimatum: “Produce figures next month or I pull funding.”
+	•	Ghost Ultimatum: “I’m unavailable next semester.”
+	•	Mentor Ultimatum: “We need to talk about sustainability.”
+
+Now advisors are pressure systems, not narrators.
+
+⸻
+
+III. Advisor–Specialization Synergy (Make It Tactical)
+
+A. Field Bias ≠ Field Lock
+
+Instead of just bonuses, introduce misalignment penalties:
+
+Combo	Effect
+Tormentor + Theoretician	+2 committee friction
+Ghost + Experimentalist	Equipment failures more likely
+Mentor + Computational	Reduced industry exposure gain
+
+This makes switching strategies necessary.
+
+⸻
+
+B. Advisor-Owned Milestones
+
+Rewrite milestone triggers to pass through the advisor:
+
+def on_quals_passed(state):
+    archetype = state.advisor.archetype
+
+    if archetype == "The_Tormentor":
+        return "You passed. Good. That’s the minimum."
+    elif archetype == "The_Mentor":
+        state.morale += 10
+        return "I'm proud of you. This was hard."
+    elif archetype == "The_Ghost":
+        return "Congrats. Send me the paperwork."
+
+This alone fixes the anticlimax problem.
+
+⸻
+
+IV. Final V2.26 Actionable Implementation Plan
+
+Core Systems
+	•	Add advisor.tension (hidden, persistent)
+	•	Add escalation thresholds (warning / ultimatum)
+	•	Bind disliked actions per archetype
+
+Narrative Integration
+	•	Route Quals / Defense / Paper Acceptance through advisor dialogue
+	•	Add archetype-specific celebration text
+	•	Add “advisor unavailable” consequences
+
+UI / HMI
+	•	Advisor card shows:
+	•	Name
+	•	Archetype
+	•	One-line philosophy
+	•	Reviewer Progress Bar tied to advisor modifiers
+	•	Morale breakdown appended to every change
+
+Bug & Polish
+	•	Force re-render after High-Throughput success
+	•	Blocking Quals modal (advisor-delivered)
+	•	Ensure advisor text is never generic fallback
+
+⸻
+
+V. JavaScript: Advisor Assignment Logic
+
+Biased randomness, field-aware, future-proof
+
+1. Advisor Pool
+
+const ADVISORS = [
+  { id: "The_Tormentor", weight: { Experimentalist: 0.5, Theoretician: 0.2, Computational: 0.3 } },
+  { id: "The_Ghost",     weight: { Experimentalist: 0.2, Theoretician: 0.3, Computational: 0.5 } },
+  { id: "The_Mentor",    weight: { Experimentalist: 0.3, Theoretician: 0.5, Computational: 0.2 } }
+];
+
+
+⸻
+
+2. Weighted Random Picker
+
+function pickAdvisorByField(field) {
+  const pool = [];
+
+  ADVISORS.forEach(advisor => {
+    const w = advisor.weight[field] || 0.33;
+    const entries = Math.round(w * 100);
+
+    for (let i = 0; i < entries; i++) {
+      pool.push(advisor.id);
+    }
+  });
+
+  const choice = pool[Math.floor(Math.random() * pool.length)];
+  return initializeAdvisor(choice);
+}
+
+
+⸻
+
+3. Initialization
+
+function initializeAdvisor(archetypeId) {
+  return {
+    archetype: archetypeId,
+    tension: 10, // baseline stress
+    memory: [],
+    unavailableTurns: 0
+  };
+}
+
+
+⸻
+
+4. Player-Facing Reveal (Important)
+
+Do not show weights.
+Instead, show:
+
+“Your advisor has a reputation for being demanding.”
+“Colleagues warn you they are rarely available.”
+
+This preserves mystery while keeping fairness.
+
+⸻
+
+Final Assessment
+
+V2.26 is the emotional keystone of GradQuest.
+
+If you ship it with:
+	•	Advisors who remember
+	•	Advisors who escalate
+	•	Advisors who own milestones
+	•	Advisors who punish mismatched playstyles
+
+Then V2.27 (The Living Lab) becomes inevitable — because now the player is no longer alone.

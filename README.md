@@ -3,7 +3,7 @@
 > *Navigate the PhD journey: Publish, survive, and thrive—or strategically exit.*
 
 [![Play Now](https://img.shields.io/badge/▶_Play_Now-GitHub_Pages-blue?style=for-the-badge)](https://xy-vince.github.io/GradQuest/)
-[![Version](https://img.shields.io/badge/Version-2.25-green?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.26-green?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
@@ -164,15 +164,13 @@ See [CHANGELOG.md](CHANGELOG.md) for full history.
 
 | Version | Theme |
 |---------|-------|
+| **v2.26** | Advisor Personalities — advisors with memory |
 | **v2.25** | Defense & Career — thesis defense, career paths |
 | **v2.24** | Interactive Dissertation — field mastery actions |
 | **v2.23** | Thesis Phases — gated dissertation progress |
-| **v2.22** | Information Clarity — graduation progress card |
-| **v2.21** | Support Systems — stress meter, interventions |
-| **v2.20** | Field Specialization — identity through choice |
+| v2.20-22 | Field Specialization, Support, Information |
 | v2.18-19 | Career Endings, UX Clarity |
-| v2.14-17 | Pacing, Career Trajectories, Academic Time |
-| v2.10-13 | Resilience updates — medical leave, dignity |
+| v2.10-17 | Pacing, Resilience, Career Trajectories |
 
 ---
 
