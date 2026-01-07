@@ -2,6 +2,56 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.25.0] - 2026-01-07 "Defense & Career Resolution"
+
+**Theme**: The point of no return — thesis defense becomes real, career paths become earned.
+
+### 🎓 Defense Readiness System
+Derived stat from thesis%, papers, alignment, network:
+- `getDefenseReadiness()` calculates readiness score
+- Qualitative text display: "Your committee seems cautiously optimistic"
+- Score determines defense outcome variance
+
+### 🛡️ Thesis Defense (One-Shot Event)
+Four possible outcomes:
+
+| Outcome | Score | Effect |
+|---------|-------|--------|
+| **PASS_WITH_DISTINCTION** | 85+ | PhD with honors, +20 academia score |
+| **PASS** | 70-84 | PhD earned, normal career resolution |
+| **CONDITIONAL_PASS** | 60-69 | +2 months revisions, -15 morale |
+| **FAIL** | <60 | +6 months wait, -30 morale, +10 friction |
+
+### 📝 Write Dissertation Action (With Risk)
+- **Cost**: 15 morale per session
+- **Gain**: 6-10% base + papers×4 + alignment bonus - friction penalty
+- **Risk**: 20% chance of revision request → +3 committee friction
+- **Block**: Stalls if morale < 20 (increases friction)
+- **Requires**: 1+ published papers, quals passed
+
+### 💼 Career Resolution System
+Multi-factor scoring: academia vs industry
+- **Academia signals**: papers, alignment, network
+- **Industry signals**: network, internships, industry exposure
+- **Specialization bias**: Computational → industry, Theoretician → academia
+- **Defense modifier**: Distinction → +20 academia, Conditional → -10 academia
+
+### 🗺️ Career Paths
+
+| Path | Type | Trigger |
+|------|------|---------|
+| 🏛️ **Tenure-Track Professor** | Academia | academia-industry ≥ 25 |
+| 🔬 **Postdoctoral Researcher** | Academia | academia-industry ≥ 10 |
+| 💼 **Industry Executive** | Industry | industry-academia ≥ 25 |
+| 🧪 **Industry Scientist** | Industry | industry-academia ≥ 10 |
+| 🚀 **Startup Founder** | Hybrid | Balanced scores |
+
+### 📊 Player-Facing Explanation
+- `getCareerExplanation()` generates "Why this path:" text
+- Lists contributing factors: publications, alignment, network, defense outcome
+
+---
+
 ## [2.24.0] - 2026-01-07 "Interactive Dissertation & Field Mastery"
 
 **Theme**: Network as strategic currency, field-specific crisis mitigation — closing endgame design loopholes.

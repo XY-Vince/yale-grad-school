@@ -2430,3 +2430,275 @@ Note: One-time use
 Final Judgment
 
 V2.24 is the version where players either graduate… or burn out.
+
+
+Good — V2.25 is the point of no return for GradQuest. From here on, every system must collapse cleanly into an ending. I’ll do this in four layers:
+	1.	Hard critique of your V2.25 proposal (what still isn’t tight)
+	2.	A strengthened V2.25 design: thesis → defense → exit
+	3.	Concrete, actionable implementation checklist
+	4.	JavaScript: Career Resolver (deterministic, legible, non-cheesy)
+
+I’ll stay disciplined and ship-focused.
+
+⸻
+
+I. Critical Review of V2.25 (Hard Truths)
+
+You’re directionally right, but three problems remain.
+
+⸻
+
+❌ 1. Thesis Is “Active” but Still One-Dimensional
+
+Your Write Dissertation action:
+	•	Always succeeds
+	•	Has no failure state
+	•	No reason not to spam it
+
+This makes the endgame mechanical, not dramatic.
+
+👉 A PhD defense without risk is not believable.
+
+⸻
+
+❌ 2. Specialization Actions Lack Opportunity Cost
+	•	Theoretician Insight converts ideas → findings for free
+	•	Pipeline Optimization stacks permanently with no tradeoff
+
+👉 These will become dominant strategies.
+
+⸻
+
+❌ 3. Career Exit Is Binary, Not Earned
+
+VC vs Tenure Track needs to feel:
+	•	Predictable in hindsight
+	•	Uncertain while playing
+
+Right now it risks feeling like a coin flip.
+
+⸻
+
+II. V2.25 REFORGED: Thesis → Defense → Strategic Exit
+
+A. The Missing Piece: Defense Readiness
+
+Add a derived, hidden stat:
+
+state.defense_readiness = (
+    state.thesis_percent * 0.4 +
+    state.published_journals * 15 +
+    state.strategic_alignment * 0.3 +
+    state.network * 0.2
+)
+
+This solves everything:
+	•	Writing ≠ readiness
+	•	Papers, alignment, and network all matter
+	•	Players can graduate and still fail
+
+Expose this only via text:
+
+“Your committee seems cautiously optimistic.”
+
+⸻
+
+B. Revised Write Dissertation (With Risk)
+
+def action_write_dissertation(state):
+    if state.published_journals < 1:
+        return "Your advisor blocks progress: publish first."
+
+    if state.morale < 20:
+        state.dissertation["committee_friction"] += 5
+        return "Exhaustion shows in your writing. Progress stalls."
+
+    base = random_range(6, 10)
+    foundation = state.published_journals * 4
+    alignment = state.strategic_alignment // 20 * 2
+    friction = state.dissertation["committee_friction"]
+
+    gain = max(3, base + foundation + alignment - friction)
+
+    state.thesis_percent += gain
+    state.morale -= 15
+
+    if random() < 0.2:
+        state.dissertation["committee_friction"] += 3
+        return "Your advisor requests structural revisions."
+
+    return check_dissertation_milestones(state)
+
+📌 Result
+Writing can:
+	•	Stall
+	•	Backfire
+	•	Force the player to rest or network
+
+⸻
+
+C. Specialization Actions → Bounded Power
+
+Theoretician: Insight with Debt
+
+def action_theoretician_insight(state):
+    if state.strategic_alignment < 10 or state.ideas < 1:
+        return "You lack the standing or material for abstraction."
+
+    state.strategic_alignment -= 10
+    state.ideas -= 1
+    state.findings += 1
+    state.dissertation["committee_friction"] += 2
+
+    return "Elegant theory — but reviewers will demand justification."
+
+Computational: Optimization with Fragility
+
+def action_optimize_pipeline(state):
+    state.morale -= 10
+    state.research_speed_modifier += 0.1
+    state.add_status("Automated Pipeline", duration=12)
+
+    if random() < 0.25:
+        state.add_status("Pipeline Technical Debt", duration=3)
+
+    return "Your workflow accelerates — but maintenance risk increases."
+
+Now specialization is power with consequences, not perks.
+
+⸻
+
+D. The Defense Event (One Shot)
+
+def attempt_defense(state):
+    score = state.defense_readiness + random_range(-10, 10)
+
+    if score >= 85:
+        return "PASS_WITH_DISTINCTION"
+    elif score >= 70:
+        return "PASS"
+    elif score >= 60:
+        return "CONDITIONAL_PASS"
+    else:
+        return "FAIL"
+
+Failure doesn’t end the run — it forces revisions and morale loss.
+
+⸻
+
+III. Actionable Implementation Plan (V2.25 Final)
+
+Core Systems
+	•	Add defense_readiness (derived, not stored)
+	•	Implement attempt_defense
+	•	Add failure → revision loop
+
+Thesis Loop
+	•	Add committee friction
+	•	Add morale-based stalls
+	•	Add random revision requests
+
+Specializations
+	•	Add downside to all field actions
+	•	Surface consequences via text, not meters
+
+UI / HMI
+	•	Defense Readiness shown as qualitative text
+	•	Add “You may defend” banner when unlocked
+	•	Lock Career Resolver until defense outcome
+
+⸻
+
+IV. JavaScript: Career Resolver
+
+This must be:
+	•	Deterministic
+	•	Explainable
+	•	Multi-factor
+
+⸻
+
+1. Inputs
+
+const finalState = {
+  papers: 3,
+  alignment: 72,
+  network: 65,
+  specialization: "Computational",
+  defenseOutcome: "PASS",
+  industryExposure: 40 // internships, conferences, etc.
+};
+
+
+⸻
+
+2. Scoring Model
+
+function resolveCareer(state) {
+  let academiaScore = 0;
+  let industryScore = 0;
+
+  // Core academic signals
+  academiaScore += state.papers * 20;
+  academiaScore += state.alignment * 0.5;
+  academiaScore += state.network * 0.3;
+
+  // Industry signals
+  industryScore += state.network * 0.6;
+  industryScore += state.industryExposure * 0.8;
+
+  // Specialization bias
+  if (state.specialization === "Computational") industryScore += 15;
+  if (state.specialization === "Theoretician") academiaScore += 15;
+
+  // Defense modifier
+  if (state.defenseOutcome === "PASS_WITH_DISTINCTION") {
+    academiaScore += 20;
+  } else if (state.defenseOutcome === "CONDITIONAL_PASS") {
+    academiaScore -= 10;
+  }
+
+  return decideCareer(academiaScore, industryScore);
+}
+
+
+⸻
+
+3. Outcome Resolver
+
+function decideCareer(a, i) {
+  const diff = a - i;
+
+  if (diff >= 25) return "Tenure-Track Professor";
+  if (diff >= 10) return "Postdoctoral Researcher";
+  if (diff <= -25) return "Venture Capitalist";
+  if (diff <= -10) return "Industry Scientist";
+
+  return "Hybrid Path (Adjunct / Startup Founder)";
+}
+
+
+⸻
+
+4. Player-Facing Explanation (Critical)
+
+After resolution, show:
+
+Why this happened:
+Strong publication record and advisor alignment outweighed limited industry exposure.
+
+This preserves fairness perception.
+
+⸻
+
+Final Verdict
+
+V2.25 is the version where GradQuest becomes “about something.”
+
+If you ship it with:
+	•	Risky writing
+	•	A real defense
+	•	Specializations with tradeoffs
+	•	A transparent career resolver
+
+then V2.26 (Advisor Personalities) will snap into place naturally.

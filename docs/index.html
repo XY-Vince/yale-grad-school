@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.24</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.25</span></h1>
         </header>
 
         <div id="app">
@@ -1203,6 +1203,141 @@
             },
 
             // ===========================================
+            // V2.25: DEFENSE & CAREER RESOLUTION SYSTEM
+            // The endgame: defense → career path
+            // ===========================================
+
+            // V2.25: Get defense readiness (derived, not stored)
+            getDefenseReadiness() {
+                const s = this.state;
+                const g = s.graduation || {};
+                const papers = this.getItem('paper') || 0;
+
+                return Math.round(
+                    (g.thesis_progress || 0) * 0.4 +
+                    papers * 15 +
+                    (s.strategicAlignment || 0) * 0.3 +
+                    (s.peerNetwork || 0) * 0.2
+                );
+            },
+
+            // V2.25: Get qualitative defense readiness text
+            getDefenseReadinessText() {
+                const readiness = this.getDefenseReadiness();
+                if (readiness >= 85) return '🟢 Your committee seems very confident in your work.';
+                if (readiness >= 70) return '🟡 Your committee seems cautiously optimistic.';
+                if (readiness >= 55) return '🟠 Your committee has concerns but sees potential.';
+                return '🔴 Your committee is skeptical. More preparation needed.';
+            },
+
+            // V2.25: Attempt thesis defense (one-shot event)
+            attemptDefense() {
+                const s = this.state;
+                const readiness = this.getDefenseReadiness();
+                const variability = Math.floor(this.random() * 21) - 10; // -10 to +10
+                const score = readiness + variability;
+
+                let outcome, message;
+
+                if (score >= 85) {
+                    outcome = 'PASS_WITH_DISTINCTION';
+                    message = '🎓🏆 DEFENSE PASSED WITH DISTINCTION!\nYour committee is impressed. "Exceptional work."\nYou have earned your PhD with honors!';
+                    s.defenseOutcome = 'PASS_WITH_DISTINCTION';
+                } else if (score >= 70) {
+                    outcome = 'PASS';
+                    message = '🎓 DEFENSE PASSED!\nYour committee nods approvingly. "Solid contribution."\nYou have earned your PhD!';
+                    s.defenseOutcome = 'PASS';
+                } else if (score >= 60) {
+                    outcome = 'CONDITIONAL_PASS';
+                    message = '🎓⚠️ CONDITIONAL PASS\nYour committee requires minor revisions.\n+2 months to finalize. -15 morale.';
+                    s.defenseOutcome = 'CONDITIONAL_PASS';
+                    s.morale = Math.max(0, s.morale - 15);
+                    s.conditionalDefenseMonth = s.totalMonths + 2;
+                } else {
+                    outcome = 'FAIL';
+                    message = '❌ DEFENSE FAILED\nYour committee requests major revisions.\n"Return in 6 months." -30 morale.';
+                    s.defenseOutcome = 'FAIL';
+                    s.morale = Math.max(0, s.morale - 30);
+                    s.defenseRetakeMonth = s.totalMonths + 6;
+                    s.dissertation.committee_friction += 10;
+                }
+
+                this.appendSystemEvent(message);
+                return { outcome, score, readiness };
+            },
+
+            // V2.25: Resolve career path based on final stats
+            resolveCareer() {
+                const s = this.state;
+                const papers = this.getItem('paper') || 0;
+
+                let academiaScore = 0;
+                let industryScore = 0;
+
+                // Core academic signals
+                academiaScore += papers * 20;
+                academiaScore += (s.strategicAlignment || 0) * 0.5;
+                academiaScore += (s.peerNetwork || 0) * 0.3;
+
+                // Industry signals
+                industryScore += (s.peerNetwork || 0) * 0.6;
+                industryScore += (s.industryExposure || 0) * 0.8;
+                if (s.internshipThisYear || s.internshipCount > 0) industryScore += 20;
+
+                // Specialization bias
+                if (s.specialization === 'computational') industryScore += 15;
+                if (s.specialization === 'theoretician') academiaScore += 15;
+                if (s.specialization === 'experimentalist') academiaScore += 5;
+
+                // Defense modifier
+                if (s.defenseOutcome === 'PASS_WITH_DISTINCTION') {
+                    academiaScore += 20;
+                } else if (s.defenseOutcome === 'CONDITIONAL_PASS') {
+                    academiaScore -= 10;
+                } else if (s.defenseOutcome === 'FAIL') {
+                    academiaScore -= 25;
+                }
+
+                return this.decideCareer(academiaScore, industryScore);
+            },
+
+            // V2.25: Outcome resolver based on scores
+            decideCareer(academiaScore, industryScore) {
+                const diff = academiaScore - industryScore;
+
+                if (diff >= 25) return { path: 'Tenure-Track Professor', emoji: '🏛️', type: 'academia' };
+                if (diff >= 10) return { path: 'Postdoctoral Researcher', emoji: '🔬', type: 'academia' };
+                if (diff <= -25) return { path: 'Industry Executive', emoji: '💼', type: 'industry' };
+                if (diff <= -10) return { path: 'Industry Scientist', emoji: '🧪', type: 'industry' };
+
+                return { path: 'Hybrid Path (Startup Founder)', emoji: '🚀', type: 'hybrid' };
+            },
+
+            // V2.25: Get explanation for career outcome
+            getCareerExplanation() {
+                const s = this.state;
+                const papers = this.getItem('paper') || 0;
+                const reasons = [];
+
+                if (papers >= 4) reasons.push('strong publication record');
+                else if (papers >= 3) reasons.push('solid publication record');
+                else reasons.push('limited publications');
+
+                if ((s.strategicAlignment || 0) >= 60) reasons.push('excellent advisor alignment');
+                else if ((s.strategicAlignment || 0) >= 40) reasons.push('good advisor alignment');
+
+                if ((s.peerNetwork || 0) >= 70) reasons.push('extensive professional network');
+                else if ((s.peerNetwork || 0) >= 50) reasons.push('moderate professional network');
+
+                if (s.internshipCount > 0 || s.industryExposure > 20) reasons.push('industry exposure');
+
+                if (s.defenseOutcome === 'PASS_WITH_DISTINCTION') reasons.push('exceptional defense');
+                else if (s.defenseOutcome === 'CONDITIONAL_PASS') reasons.push('conditional defense');
+
+                return 'Why this path: ' + reasons.join(', ') + '.';
+            },
+
+            // ===========================================
             // V2.19: GAME MODE SYSTEM
             // Automatically switches based on game state
             // ===========================================
@@ -1778,7 +1913,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.24'
+                    version: '2.25'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -2692,6 +2827,30 @@
                     actions.push({ id: 'major_rebuttal', name: '🧠 Major Rebuttal', desc: '-8 morale, skip revision' });
                 }
 
+                // V2.25: Write Dissertation (requires 1+ papers, thesis < 100%)
+                const g = s.graduation || {};
+                const papers = this.getItem('paper') || 0;
+                if (papers >= 1 && (g.thesis_progress || 0) < 100 && s.qualsPassed) {
+                    const flavorText = this.getDissertationFlavorText();
+                    actions.push({
+                        id: 'write_dissertation',
+                        name: '📝 Write Dissertation',
+                        desc: `-15 Morale: Progress thesis. ${flavorText}`,
+                        telemetry: 'dissertation'
+                    });
+                }
+
+                // V2.25: Defend Thesis (requires 100% thesis, 3+ papers, quals passed)
+                if ((g.thesis_progress || 0) >= 100 && papers >= 3 && s.qualsPassed && !s.defenseOutcome) {
+                    const readinessText = this.getDefenseReadinessText();
+                    actions.push({
+                        id: 'defend_thesis',
+                        name: '🎓 Defend Thesis',
+                        desc: `${readinessText}`,
+                        telemetry: 'defense'
+                    });
+                }
+
                 actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Skip to next month' });
 
                 return actions;
@@ -3091,6 +3250,61 @@
                             msg = '💻 Compute Time Allocated!\n-5 Morale\nServer stability guaranteed for 6 months.\nYour jobs will run without interruption.';
                         } else {
                             msg = 'Compute resources are already allocated.';
+                        }
+                        break;
+
+                    // V2.25: Write Dissertation (with risk)
+                    case 'write_dissertation':
+                        const dPapers = this.getItem('paper') || 0;
+                        if (dPapers < 1) {
+                            msg = '⚠️ Your advisor blocks progress.\n"You need at least one published paper before focusing on the dissertation."';
+                            break;
+                        }
+
+                        if (s.morale < 20) {
+                            s.dissertation.committee_friction += 5;
+                            msg = '😔 Exhaustion shows in your writing.\nProgress stalls. Committee friction increased.\n💡 Try resting or building morale first.';
+                            break;
+                        }
+
+                        // Calculate progress
+                        const dBase = 6 + Math.floor(this.random() * 5); // 6-10
+                        const dFoundation = dPapers * 4;
+                        const dAlignment = Math.floor((s.strategicAlignment || 0) / 20) * 2;
+                        const dFriction = s.dissertation.committee_friction || 0;
+
+                        const dGain = Math.max(3, dBase + dFoundation + dAlignment - dFriction);
+
+                        s.graduation.thesis_progress = Math.min(100, (s.graduation.thesis_progress || 0) + dGain);
+                        s.morale = Math.max(0, s.morale - 15);
+                        s.dissertation.draft_quality += dGain * 0.2;
+
+                        // Risk: 20% chance of revision request
+                        if (this.random() < 0.2) {
+                            s.dissertation.committee_friction += 3;
+                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.graduation.thesis_progress}%)\n-15 Morale\n\n⚠️ Your advisor requests structural revisions.\nCommittee friction increased.`;
+                        } else {
+                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.graduation.thesis_progress}%)\n-15 Morale\n\n"Good progress. Keep writing."`;
+                        }
+
+                        // Check for phase transition
+                        this.checkThesisPhaseTransition();
+                        break;
+
+                    // V2.25: Defend Thesis
+                    case 'defend_thesis':
+                        const defenseResult = this.attemptDefense();
+
+                        if (defenseResult.outcome === 'PASS_WITH_DISTINCTION' || defenseResult.outcome === 'PASS') {
+                            // PhD Complete!
+                            const career = this.resolveCareer();
+                            const explanation = this.getCareerExplanation();
+                            this.endGame('phd_complete', `${career.emoji} ${career.path}`);
+                            msg = `🎓 CONGRATULATIONS!\nYou have earned your PhD!\n\nCareer Path: ${career.emoji} ${career.path}\n${explanation}`;
+                        } else if (defenseResult.outcome === 'CONDITIONAL_PASS') {
+                            msg = `🎓⚠️ CONDITIONAL PASS\nScore: ${defenseResult.score} (Readiness: ${defenseResult.readiness})\n\nMinor revisions required.\nYou have 2 months to finalize.\n-15 Morale`;
+                        } else {
+                            msg = `❌ DEFENSE FAILED\nScore: ${defenseResult.score} (Readiness: ${defenseResult.readiness})\n\nMajor revisions required.\nYou must wait 6 months to try again.\n-30 Morale`;
                         }
                         break;
 
