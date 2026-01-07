@@ -2,6 +2,195 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.23.0] - 2026-01-07 "Thesis Phases & Dissertation"
+
+**Theme**: The thesis is no longer a passive meter — it's a gated project with pressure, trade-offs, and momentum.
+
+### 📑 Thesis Phase System
+Four distinct phases that gate progression:
+
+| Phase | Threshold | Effect |
+|-------|-----------|--------|
+| 📝 **PLANNING** | 0% | Default state, outline not approved |
+| 📑 **OUTLINE_APPROVED** | 25% | +10 Alignment, faster thesis gains |
+| 🧐 **DRAFT_REVIEW** | 75% | Committee reviewing, advisor_review status |
+| 🎓 **DEFENSE_READY** | 100% + 3 papers | Can schedule thesis defense |
+
+### 📄 Paper-Backed Thesis Caps
+- Each journal paper = 25% thesis cap
+- 0 papers → thesis capped at 0%
+- 2 papers → thesis capped at 50%
+- 4+ papers → full 100% unlocked
+
+### 🤝 Network Synergy
+- **Network ≥ 80**: Bypasses advisor review delay automatically
+- Message: "Your strong peer network helped expedite the committee review!"
+
+### 🎓 Graduation Panel Updates
+- Shows current phase with emoji
+- Shows "Next: [gate condition]" for clarity
+- Phase transitions trigger milestone toasts
+
+---
+
+## [2.22.0] - 2026-01-06 "Information Clarity"
+
+**Theme**: Trust repair — players should always know what just happened and how close they are to finishing.
+
+### 🎓 Graduation Progress Card
+New persistent UI panel showing:
+- **Papers**: X / 3 with progress bar
+- **Thesis**: X% with progress bar  
+- **Defense Status**: Shows remaining requirements
+
+### 📊 Categorical Probability Previews
+Actions now show estimated outcomes:
+- 🟢 **Likely** (70-85%)
+- 🟡 **Uncertain** (45-70%)
+- 🔴 **Risky** (≤45%)
+
+### 📣 Priority Notification Levels
+Events classified by severity:
+- **BLOCKING**: Paper accepted, quals result, defense ready → Modal required
+- **HIGH**: Burnout, exhaustion, scoop → Highlighted toast
+- **LOW**: Morale changes → Log only
+
+### State System
+- `graduation` state object as single source of truth
+- `syncGraduationState()` for derived value calculation
+- `updateGraduationCard()` for UI sync
+
+---
+
+## [2.21.0] - 2026-01-06 "Support Systems"
+
+**Theme**: Human survivability — interventions prevent death spirals without trivializing adversity.
+
+### 📊 Stress Meter (0-100)
+Replaces binary exhaustion:
+
+| Level | Threshold | Effect |
+|-------|-----------|--------|
+| Normal | < 60 | No penalty |
+| Stressed | 60-99 | Tooltip warnings |
+| Exhausted | 100+ | −20% success, stacks |
+
+### 🧑‍🏫 Advisor Intervention (Split)
+- **Passive Shield** (Alignment ≥ 40): −25% morale penalties always active
+- **Active Intervention** (Alignment ≥ 60, 12-month cooldown):
+  - Clears exhaustion/burnout statuses
+  - +15 morale, −40 stress
+  - Triggers when morale < 20 or stress ≥ 100
+
+### 🤝 Peer Intervention (Network Safety Net)
+- **Trigger**: Network ≥ 60, morale < 30
+- **Cooldown**: 6 months
+- **Effect**: +10 morale, −30 stress
+- Message: "Your labmates noticed you disappearing..."
+
+### 📈 Morale Projection
+- `calculateMoraleProjection()` forecasts next month's morale
+- Shows current, projected, decay, and alignment buffer
+
+### 🎓 Quals Grace
+- `qualsGraceUsed` flag for first failure protection
+
+---
+
+## [2.20.0] - 2026-01-05 "Field Specialization"
+
+**Theme**: Identity through choice — your research field shapes gameplay, not just flavor.
+
+### 🔬 Three Specializations
+Choose at game start:
+
+| Field | Accelerator | Warning | Key Modifier |
+|-------|-------------|---------|--------------|
+| 🔬 **Experimentalist** | Protocol Reuse | Equipment-dependent | +equipment risk, better figures |
+| 📐 **Theoretician** | Conceptual Breakthrough | Abstract results | Faster ideas, harder figures |
+| 💻 **Computational** | Pipeline Automation | Server-dependent | Automated plot generation |
+
+### 🎮 Start Screen Selection
+- Three clickable specialization cards
+- Must select before starting
+- Welcome message includes field description and accelerator bonus
+
+### State Fields Added
+- `specialization`: Selected field type
+- `secondaryFocus`: Unlocks at Month ≥ 24
+- `socialDebt`: Increases collaboration cost
+- `figuresThisRun`, `yearlyIdeaUsed`: For accelerator tracking
+
+---
+
+## [2.19.0] - 2026-01-05 "UX Clarity & Defense Finale"
+
+**Theme**: Structural clarity — game modes make action availability predictable.
+
+### 🎮 Game Mode System
+Automatic mode switching:
+
+| Mode | Trigger | Action Restrictions |
+|------|---------|---------------------|
+| **NORMAL** | Default | All actions available |
+| **QUALS_WINDOW** | Year 2, months 6-9 | Focus on exam prep |
+| **PROBATION** | Low morale | Limited risky actions |
+| **FINALE** | 3+ papers, thesis prep done | Defense-focused actions |
+
+### 🛡️ Defense 3-Track System
+Three tracks for thesis defense:
+- **Thesis Quality**: From figures, polish, papers
+- **Presentation Skill**: From practice, teaching, network
+- **Committee Support**: From alignment, advisor relationship
+
+### 👥 Committee Personalities
+Lightweight NPCs with biases:
+- Prof. Chen ("Methodology Hawk") → thesis_quality
+- Prof. Smith ("Industry Friendly") → presentation_skill
+- Prof. Alvarez ("Silent but Deadly") → committee_support
+
+### 📅 Quals Countdown Banner
+- Color-coded urgency (green → yellow → red)
+- Shows months remaining until exam
+
+### 📍 Milestones Tracking
+Tracks quals, first paper, and defense status with completion months.
+
+---
+
+## [2.18.0] - 2026-01-05 "Career Endings"
+
+**Theme**: Personalized endings — your final stats determine your career path.
+
+### 🎓 Career Endings System
+8 distinct career paths based on game outcome:
+
+**PhD Paths (4):**
+| Career | Condition | Description |
+|--------|-----------|-------------|
+| 🏛️ **Tenure Track Professor** | High alignment + papers | Academic career |
+| 🔬 **Research Scientist** | High papers, moderate alignment | Industry R&D |
+| 📊 **Data Science Lead** | High network | Tech leadership |
+| 🎓 **PhD Graduate** | Default | Standard completion |
+
+**MS-Out Paths (4):**
+| Career | Condition | Description |
+|--------|-----------|-------------|
+| 🚀 **R&D Technical Lead** | High alignment | Tech leadership |
+| 📈 **Senior Data Scientist** | High network | Data career |
+| 💻 **Software Engineer (ML)** | Moderate balance | ML engineering |
+| 🌅 **The Great Escape** | Low morale exit | Career pivot |
+
+### 🔧 Defense Prep Gate
+- `defensePrepared` flag required before graduation
+- Prevents rushing to defense unprepared
+
+### 😤 Advisor Patience
+- `advisorPatienceExhausted` after 3+ interventions
+- Affects ending options
+
+---
+
 ## [2.17.0] - 2026-01-04 "Pacing & Agency"
 
 **Theme**: The player is no longer a victim of RNG — they are a risk manager.

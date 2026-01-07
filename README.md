@@ -3,7 +3,7 @@
 > *Navigate the PhD journey: Publish, survive, and thrive—or strategically exit.*
 
 [![Play Now](https://img.shields.io/badge/▶_Play_Now-GitHub_Pages-blue?style=for-the-badge)](https://xy-vince.github.io/GradQuest/)
-[![Version](https://img.shields.io/badge/Version-2.17-green?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.23-green?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
@@ -35,6 +35,33 @@ GradQuest is a **strategic PhD life simulator** that models the North American g
 
 ---
 
+## 🔬 Field Specialization (V2.20+)
+
+Choose your research identity at game start:
+
+| Field | Accelerator | Key Traits |
+|-------|-------------|------------|
+| 🔬 **Experimentalist** | Protocol Reuse | Lab-based, equipment-dependent |
+| 📐 **Theoretician** | Conceptual Breakthrough | Math-focused, abstract results |
+| 💻 **Computational** | Pipeline Automation | Data-driven, server-dependent |
+
+---
+
+## 📑 Thesis Phases (V2.23)
+
+Your thesis is a **gated project**, not a passive meter:
+
+| Phase | Threshold | What Happens |
+|-------|-----------|--------------|
+| 📝 **Planning** | 0% | Outline not yet approved |
+| 📑 **Outline Approved** | 25% | +10 Alignment boost |
+| 🧐 **Draft Review** | 75% | Committee reviewing |
+| 🎓 **Defense Ready** | 100% + 3 papers | Can schedule defense! |
+
+**Paper-Backed Caps**: Each journal paper = 25% thesis cap (no papers = no thesis progress)
+
+---
+
 ## 📊 Core Systems
 
 ### Research Pipeline
@@ -47,6 +74,7 @@ GradQuest is a **strategic PhD life simulator** that models the North American g
 | Stat | Description |
 |------|-------------|
 | **😊 Morale** | Falls to 0 = Game Over |
+| **📊 Stress** | 60+ = Stressed, 100+ = Exhausted (V2.21) |
 | **🧑‍🏫 Advisor** | Affects outcomes, triggers interventions |
 | **📰 Papers** | 3 journal papers for PhD |
 | **🤝 Network** | Unlocks abilities at 40/60/80 thresholds |
@@ -57,6 +85,28 @@ GradQuest is a **strategic PhD life simulator** that models the North American g
 - **Spring** (Jan-May): +3 credits/month
 - **Summer** (Jun-Jul): Internships only
 - **Fall** (Aug-Dec): +3 credits/month
+
+---
+
+## 🛡️ Support Systems (V2.21+)
+
+### Advisor Intervention
+- **Passive Shield** (Alignment ≥40): −25% morale penalties
+- **Active Help** (Alignment ≥60): Emergency support when in crisis
+
+### Peer Intervention
+- **Trigger**: Network ≥60, morale <30
+- **Effect**: +10 morale, −30 stress
+- "Your labmates noticed you disappearing..."
+
+---
+
+## 🎓 Career Endings (V2.18+)
+
+Your final stats determine your career path:
+
+**PhD Paths**: Tenure Track Professor, Research Scientist, Data Science Lead
+**MS-Out Paths**: R&D Lead, Senior Data Scientist, Software Engineer, Career Pivot
 
 ---
 
@@ -71,18 +121,6 @@ Your advisor has **hidden traits** affecting outcomes:
 | **Strictness** | Harsh vs encouraging tone |
 
 Use **💬 Pitch Session** to learn preferences and build alignment.
-
----
-
-## 🛡️ Strategic Actions (V2.17)
-
-| Action | Cost | Effect |
-|--------|------|--------|
-| **📄 Pre-Register Idea** | -5 Network | Prevents being scooped |
-| **🔧 Equipment Maintenance** | 1 month | 12 months stability |
-| **⚡ High-Throughput Exp** | -10 morale | 40%: +2 figures |
-| **📝 Light Response** | -3 morale | +10% paper acceptance |
-| **🧠 Major Rebuttal** | -8 morale | Skip revision requirement |
 
 ---
 
@@ -126,11 +164,15 @@ See [CHANGELOG.md](CHANGELOG.md) for full history.
 
 | Version | Theme |
 |---------|-------|
-| **v2.17** | Pacing & Agency — strategic actions, risk management |
-| **v2.16** | Transparent Systems — visible alignment, quals prep |
-| **v2.15** | Academic Time — semesters, credits, earned MS-Out |
-| **v2.14** | Career Trajectories — exit profiles, review status |
-| v2.10-13 | Resilience updates — medical leave, dignity systems |
+| **v2.23** | Thesis Phases — gated dissertation progress |
+| **v2.22** | Information Clarity — graduation progress card |
+| **v2.21** | Support Systems — stress meter, interventions |
+| **v2.20** | Field Specialization — identity through choice |
+| **v2.19** | UX Clarity — game modes, defense tracks |
+| **v2.18** | Career Endings — personalized outcomes |
+| v2.17 | Pacing & Agency — strategic actions |
+| v2.14-16 | Career Trajectories, Academic Time |
+| v2.10-13 | Resilience updates — medical leave, dignity |
 
 ---
 
