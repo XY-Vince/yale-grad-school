@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.22</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.23</span></h1>
         </header>
 
         <div id="app">
@@ -967,11 +967,58 @@
             },
 
             // ===========================================
-            // V2.22: GRADUATION PROGRESS SYSTEM
-            // Single source of truth for graduation tracking
+            // V2.23: THESIS PHASES & GRADUATION SYSTEM
+            // Thesis as a gated project, not passive meter
             // ===========================================
 
-            // V2.22: Sync graduation state from derived values
+            // V2.23: Thesis phase definitions
+            THESIS_PHASES: {
+                PLANNING: { threshold: 0, label: 'Planning', emoji: '📝', next: 'Reach 25% → Outline Approved' },
+                OUTLINE_APPROVED: { threshold: 25, label: 'Outline Approved', emoji: '📑', next: 'Reach 75% → Draft Review' },
+                DRAFT_REVIEW: { threshold: 75, label: 'Draft Under Review', emoji: '🧐', next: 'Reach 100% + 3 papers → Defense Ready' },
+                DEFENSE_READY: { threshold: 100, label: 'Defense Ready', emoji: '🎓', next: 'Schedule your defense!' }
+            },
+
+            // V2.23: Resolve current thesis phase
+            resolveThesisPhase() {
+                const g = this.state.graduation;
+                const t = g.thesis_progress;
+
+                if (t >= 100 && g.papers_published >= g.papers_required) return 'DEFENSE_READY';
+                if (t >= 75) return 'DRAFT_REVIEW';
+                if (t >= 25) return 'OUTLINE_APPROVED';
+                return 'PLANNING';
+            },
+
+            // V2.23: Check for thesis phase transitions (milestones)
+            checkThesisPhaseTransition() {
+                const s = this.state;
+                const g = s.graduation;
+                const newPhase = this.resolveThesisPhase();
+                const oldPhase = g.thesis_phase || 'PLANNING';
+
+                if (newPhase !== oldPhase) {
+                    g.thesis_phase = newPhase;
+                    const phaseInfo = this.THESIS_PHASES[newPhase];
+
+                    // Milestone notifications
+                    if (newPhase === 'OUTLINE_APPROVED') {
+                        s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 10);
+                        this.appendSystemEvent(`${phaseInfo.emoji} Outline Approved! (+10 Alignment, Advisor fully engaged)`);
+                    } else if (newPhase === 'DRAFT_REVIEW') {
+                        this.addStatus('advisor_review');
+                        this.appendSystemEvent(`${phaseInfo.emoji} Full Draft Submitted! Committee reviewing your dissertation.`);
+                    } else if (newPhase === 'DEFENSE_READY') {
+                        this.appendSystemEvent(`${phaseInfo.emoji} Defense Ready! You may now schedule your thesis defense!`);
+                    }
+
+                    g.lastMilestone = { phase: newPhase, month: s.totalMonths };
+                    return true;
+                }
+                return false;
+            },
+
+            // V2.23: Sync graduation state from derived values
             syncGraduationState() {
                 const s = this.state;
                 const journalPapers = this.getItem('paper') || 0;
@@ -981,15 +1028,30 @@
                 s.graduation.papers_published = totalEquivalent;
                 s.graduation.defense_unlocked = totalEquivalent >= s.graduation.papers_required;
 
-                // Thesis progress based on figures and discoveries
+                // V2.23: Paper-backed thesis cap (papers limit thesis velocity)
+                const paperCap = Math.min(journalPapers * 25, 100);
+
+                // Thesis progress based on figures and discoveries (capped by papers)
                 const figures = this.getItem('figure') || 0;
                 const discoveries = this.getItem('key_discovery') || 0;
-                s.graduation.thesis_progress = Math.min(100, figures * 20 + discoveries * 10);
+                const rawProgress = figures * 20 + discoveries * 10;
+                s.graduation.thesis_progress = Math.min(paperCap, rawProgress);
+
+                // V2.23: Resolve phase
+                s.graduation.thesis_phase = this.resolveThesisPhase();
+
+                // V2.23: Network bonus - high network can bypass advisor review delay
+                if ((s.peerNetwork || 0) >= 80 && this.hasStatus('advisor_review')) {
+                    this.removeStatus('advisor_review');
+                    this.appendSystemEvent('🤝 Your strong peer network helped expedite the committee review!');
+                }
             },
 
-            // V2.22: Update Graduation Progress Card UI
+            // V2.23: Update Graduation Progress Card UI with phase display
             updateGraduationCard() {
                 const g = this.state.graduation;
+                const phase = g.thesis_phase || 'PLANNING';
+                const phaseInfo = this.THESIS_PHASES[phase];
 
                 // Text updates
                 const papersEl = document.getElementById('papers-progress');
@@ -1003,18 +1065,17 @@
                 if (papersBar) papersBar.style.width = `${Math.min(100, (g.papers_published / g.papers_required) * 100)}%`;
                 if (thesisBar) thesisBar.style.width = `${g.thesis_progress}%`;
 
-                // Defense status
+                // V2.23: Defense status with phase info
                 const defenseEl = document.getElementById('defense-status');
                 if (defenseEl) {
-                    if (g.defense_unlocked) {
-                        defenseEl.textContent = '🟢 Defense track unlocked!';
+                    if (phase === 'DEFENSE_READY') {
+                        defenseEl.innerHTML = `${phaseInfo.emoji} <strong>${phaseInfo.label}</strong><br><span style="font-size: 0.75rem; opacity: 0.8;">${phaseInfo.next}</span>`;
                         defenseEl.style.color = 'var(--accent-success)';
                         defenseEl.style.opacity = '1';
                     } else {
-                        const remaining = g.papers_required - g.papers_published;
-                        defenseEl.textContent = `🔒 Defense locked — ${remaining} more paper${remaining > 1 ? 's' : ''} needed`;
+                        defenseEl.innerHTML = `${phaseInfo.emoji} ${phaseInfo.label}<br><span style="font-size: 0.75rem; opacity: 0.6;">Next: ${phaseInfo.next}</span>`;
                         defenseEl.style.color = '';
-                        defenseEl.style.opacity = '0.7';
+                        defenseEl.style.opacity = '0.85';
                     }
                 }
             },
@@ -1495,6 +1556,7 @@
                         papers_required: 3,
                         papers_published: 0,
                         thesis_progress: 0,      // 0-100%
+                        thesis_phase: 'PLANNING', // V2.23: PLANNING, OUTLINE_APPROVED, DRAFT_REVIEW, DEFENSE_READY
                         defense_unlocked: false,
                         lastMilestone: null      // For pinning
                     },
@@ -1597,7 +1659,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.22'
+                    version: '2.23'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
