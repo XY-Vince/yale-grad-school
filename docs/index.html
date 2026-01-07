@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.26</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.27</span></h1>
         </header>
 
         <div id="app">
@@ -1504,6 +1504,179 @@
 
                 return warnings[s.advisor.archetype] || '';
             },
+
+            // ===========================================
+            // V2.27: THE LIVING LAB SYSTEM
+            // Labmates with progress, stress, loyalty, and events
+            // ===========================================
+
+            // V2.27: Labmate archetypes
+            LABMATE_ARCHETYPES: {
+                'The_Senior': {
+                    names: ['Dr. Chen', 'Marcus', 'Priya', 'Elena'],
+                    archetype: 'The_Senior',
+                    emoji: '🎓',
+                    description: 'Experienced, about to graduate',
+                    modifiers: { networkBonus: 1.2, mentorChance: 0.3 }
+                },
+                'The_Rival': {
+                    names: ['Jordan', 'Alex', 'Taylor', 'Morgan'],
+                    archetype: 'The_Rival',
+                    emoji: '⚔️',
+                    description: 'Competitive, similar research area',
+                    modifiers: { pressureMultiplier: 1.3, sabotageRisk: 0.1 }
+                }
+            },
+
+            // V2.27: Initialize labmates at game start
+            initializeLabmates() {
+                const labmates = [];
+
+                // Add one Senior (leaves in 12-18 months)
+                const seniorTemplate = this.LABMATE_ARCHETYPES['The_Senior'];
+                const seniorName = seniorTemplate.names[Math.floor(this.random() * seniorTemplate.names.length)];
+                labmates.push({
+                    name: seniorName,
+                    archetype: 'The_Senior',
+                    emoji: seniorTemplate.emoji,
+                    progress: 60 + Math.floor(this.random() * 30),
+                    stress: 20 + Math.floor(this.random() * 20),
+                    loyalty: 10 + Math.floor(this.random() * 20),
+                    monthsRemaining: 12 + Math.floor(this.random() * 7),
+                    active: true,
+                    collaborations: 0
+                });
+
+                // Add one Rival
+                const rivalTemplate = this.LABMATE_ARCHETYPES['The_Rival'];
+                const rivalName = rivalTemplate.names[Math.floor(this.random() * rivalTemplate.names.length)];
+                labmates.push({
+                    name: rivalName,
+                    archetype: 'The_Rival',
+                    emoji: rivalTemplate.emoji,
+                    progress: 10 + Math.floor(this.random() * 30),
+                    stress: 30 + Math.floor(this.random() * 30),
+                    loyalty: -10 + Math.floor(this.random() * 20),
+                    monthsRemaining: null,
+                    active: true,
+                    collaborations: 0
+                });
+
+                return labmates;
+            },
+
+            // V2.27: Process labmates each month
+            processLabmates() {
+                const s = this.state;
+                if (!s.labmates) return;
+
+                s.labmates.forEach(npc => {
+                    if (!npc.active) return;
+
+                    // Progress
+                    npc.progress += 5 + Math.floor(this.random() * 11); // 5-15
+                    npc.stress += Math.floor(this.random() * 16) - 5; // -5 to +10
+                    npc.stress = Math.max(0, Math.min(100, npc.stress));
+
+                    // Archetype-specific checks
+                    if (npc.archetype === 'The_Rival') {
+                        this.checkRivalSabotage(npc);
+                    }
+
+                    if (npc.archetype === 'The_Senior') {
+                        this.checkSeniorDeparture(npc);
+                    }
+
+                    // Publishing event
+                    if (npc.progress >= 100) {
+                        npc.progress = 0;
+                        this.triggerLabmatePublication(npc);
+                    }
+                });
+            },
+
+            // V2.27: Check for rival sabotage
+            checkRivalSabotage(npc) {
+                if (npc.stress < 70) return;
+
+                const sabotageChance = 0.1 + (npc.stress - 70) * 0.01;
+
+                if (this.random() < sabotageChance) {
+                    this.addStatus('scooped');
+                    this.state.morale = Math.max(0, this.state.morale - 10);
+                    npc.loyalty -= 10;
+
+                    this.appendSystemEvent(`⚔️ ${npc.name} rushed a similar result to arXiv!\nYour idea feels less novel. -10 morale.`);
+                }
+            },
+
+            // V2.27: Check for senior departure
+            checkSeniorDeparture(npc) {
+                npc.monthsRemaining -= 1;
+
+                if (npc.monthsRemaining === 3) {
+                    this.appendSystemEvent(`📅 ${npc.name} is preparing to graduate.\nThe lab feels quieter.`);
+                }
+
+                if (npc.monthsRemaining <= 0) {
+                    npc.active = false;
+                    this.state.peerNetwork = Math.max(0, (this.state.peerNetwork || 0) - 15);
+                    this.state.morale = Math.max(0, this.state.morale - 10);
+
+                    // Check collaboration dependency
+                    if (npc.collaborations > 2) {
+                        this.state.graduation.thesis_progress = Math.max(0, (this.state.graduation?.thesis_progress || 0) - 10);
+                        this.appendSystemEvent(`🎓 ${npc.name} defended and left the lab.\nYou lost a key source of support.\n-15 network, -10 morale, -10% thesis progress`);
+                    } else {
+                        this.appendSystemEvent(`🎓 ${npc.name} defended and left the lab.\nYou lost a key source of support.\n-15 network, -10 morale`);
+                    }
+                }
+            },
+
+            // V2.27: Labmate publication event
+            triggerLabmatePublication(npc) {
+                if (npc.archetype === 'The_Rival') {
+                    this.state.morale = Math.max(0, this.state.morale - 5);
+                    this.state.stress = Math.min(100, (this.state.stress || 0) + 10);
+                    this.appendSystemEvent(`📄 ${npc.name} published before you!\nThe pressure is on. -5 morale, +10 stress`);
+                } else {
+                    this.state.morale = Math.min(100, this.state.morale + 5);
+                    this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5);
+                    this.appendSystemEvent(`📄 ${npc.name} published!\nThe lab's reputation helps everyone. +5 morale, +5 network`);
+                }
+            },
+
+            // V2.27: Get labmate status text
+            getLabmateStatus(npc) {
+                if (!npc.active) return '🎓 Graduated';
+                if (npc.stress >= 70) return '😠 Stressed';
+                if (npc.stress >= 40) return '😐 Busy';
+                return '🙂 Working';
+            },
+
+            // V2.27: Collaborate with labmate action
+            collaborateWithLabmate(npc) {
+                if (!npc.active) return false;
+
+                npc.collaborations += 1;
+                npc.loyalty += 10;
+
+                // Gain partial paper credit
+                this.state.morale = Math.min(100, this.state.morale + 5);
+                this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 3);
+
+                if (npc.archetype === 'The_Senior') {
+                    // Senior provides mentorship
+                    this.state.strategicAlignment = Math.min(100, (this.state.strategicAlignment || 0) + 3);
+                    return `🤝 Collaboration with ${npc.name}!\n+5 morale, +3 network, +3 alignment\n"${npc.name} shares valuable experience."`;
+                } else {
+                    // Rival collaboration is tense but productive
+                    npc.stress += 5;
+                    return `🤝 Collaboration with ${npc.name}!\n+5 morale, +3 network\n"Tense but productive. You're watching each other closely."`;
+                }
+            },
+
+            // ===========================================
             // V2.19: GAME MODE SYSTEM
             // Automatically switches based on game state
             // ===========================================
@@ -2064,8 +2237,13 @@
                 this.state.advisor = this.pickAdvisorByField(this.selectedSpecialization);
                 const advisorDesc = this.getAdvisorDescription();
 
+                // V2.27: Initialize labmates
+                this.state.labmates = this.initializeLabmates();
+                const senior = this.state.labmates.find(l => l.archetype === 'The_Senior');
+                const rival = this.state.labmates.find(l => l.archetype === 'The_Rival');
+
                 this.initDOM(); // Initialize DOM cache
-                this.showMessage(`🎓 Welcome to your PhD program!\n\n${spec.name}: ${spec.desc}\n\n✨ Bonus: ${spec.accelerator.desc}\n\n${this.state.advisor.emoji} Your advisor: ${this.state.advisor.name}\n${advisorDesc}\n\nYour goal: publish 3 papers and defend your thesis.`);
+                this.showMessage(`🎓 Welcome to your PhD program!\n\n${spec.name}: ${spec.desc}\n\n✨ Bonus: ${spec.accelerator.desc}\n\n${this.state.advisor.emoji} Your advisor: ${this.state.advisor.name}\n${advisorDesc}\n\n🧪 Your labmates:\n${senior?.emoji} ${senior?.name} (Senior, about to graduate)\n${rival?.emoji} ${rival?.name} (Rival, similar research area)\n\nYour goal: publish 3 papers and defend your thesis.`);
                 this.dom.startScreen.style.display = 'none';
                 this.dom.gameScreen.style.display = 'block';
                 this.updateUI();
@@ -2083,7 +2261,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.26'
+                    version: '2.27'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -2297,6 +2475,9 @@
                 if (canEarnCredits) {
                     this.state.credits = (this.state.credits || 0) + 3;
                 }
+
+                // V2.27: Process labmates each month
+                this.processLabmates();
 
                 if (this.state.month > 12) {
                     this.state.month = 1;

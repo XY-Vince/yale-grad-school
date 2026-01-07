@@ -2922,3 +2922,239 @@ If you ship it with:
 	•	Advisors who punish mismatched playstyles
 
 Then V2.27 (The Living Lab) becomes inevitable — because now the player is no longer alone.
+
+
+You’re pushing in exactly the right direction. V2.27 is the moment GradQuest becomes a place, not a spreadsheet. Below is a hard-nosed refinement plus a concrete implementation plan, then clean JavaScript logic you can drop into the engine.
+
+I’ll structure this as:
+	1.	Critical review of your V2.27 proposal (what to tighten)
+	2.	Refined design: what makes a “Living Lab” actually feel alive
+	3.	Actionable implementation plan (what ships in V2.27, what doesn’t)
+	4.	JavaScript: Labmate interaction & departure/sabotage logic
+
+⸻
+
+I. Critical Review of V2.27 (Hard Truth)
+
+Your instincts are right, but three issues must be fixed to avoid bloat or shallowness.
+
+❌ 1. NPCs Must Have Agency, Not Just Progress Bars
+
+Right now labmates:
+	•	Progress
+	•	Trigger flavor events
+	•	Affect morale
+
+But they don’t force player decisions yet.
+
+Rule:
+If an NPC doesn’t occasionally harm or rescue the player without consent, they’ll fade into background noise.
+
+⸻
+
+❌ 2. Collaboration Needs Tradeoffs That Hurt
+
+“0.5 paper credit” is good — but not painful enough.
+
+Real collaborations:
+	•	Dilute credit
+	•	Create dependency
+	•	Cause delays
+
+We’ll add coordination friction.
+
+⸻
+
+❌ 3. Funding Clock Is Excellent — But Needs NPC Interaction
+
+Funding should intersect with labmates:
+	•	Seniors help with grants
+	•	Rivals compete for the same funding
+	•	Ghost advisors amplify risk
+
+⸻
+
+II. Refined V2.27 Design: The Living Lab as a System
+
+A. Labmates Have Stress, Loyalty, and Trajectory
+
+Each NPC tracks:
+
+npc = {
+  name,
+  archetype,        // Senior, Rival, Peer (future)
+  progress,         // 0–100
+  stress,           // 0–100
+  loyalty,          // -50 to +50 (toward player)
+  monthsRemaining,  // only for Senior
+  active: true
+}
+
+These are hidden but influence events.
+
+⸻
+
+B. NPCs Trigger Forced Events (Not Optional)
+
+Examples:
+	•	Rival stress > 70 → sabotage chance
+	•	Senior monthsRemaining < 3 → departure warning
+	•	NPC publishes → morale swing + alignment shift
+
+⸻
+
+C. Collaboration Creates Dependency
+
+If you collaborate too often with the same NPC:
+	•	Losing them hurts more
+	•	Thesis progress may stall temporarily
+	•	Network gain is capped
+
+This mirrors real labs painfully well.
+
+⸻
+
+III. Actionable Implementation Plan for V2.27
+
+Core Systems (Must-Have)
+	•	Persistent labmates[] state
+	•	NPC stress & loyalty meters
+	•	Forced interaction events (sabotage / rescue / departure)
+	•	Funding clock tied to NPC outcomes
+
+UI / HMI
+	•	Lab Bench card with:
+	•	Name
+	•	Status (“Running experiments”, “Job hunting”)
+	•	Mood icon (🙂 😐 😠)
+	•	Departure warning modal (blocking)
+	•	Timeline view showing:
+	•	NPC joins
+	•	NPC publishes
+	•	NPC leaves
+
+Actions
+	•	Ask for Help (Senior)
+	•	Collaborate (any NPC)
+	•	Mediate Conflict (high alignment only)
+	•	Grant Writing (boosted by Seniors)
+
+Explicitly Not in V2.27
+	•	Romance
+	•	Inter-lab politics
+	•	Multi-lab competition
+(Those are V2.28+ territory.)
+
+⸻
+
+IV. JavaScript: Labmate Interaction Event Logic
+
+Below is drop-in engine-level logic, designed to run once per month.
+
+⸻
+
+1. Monthly Labmate Tick
+
+function processLabmates(state) {
+  state.labmates.forEach(npc => {
+    if (!npc.active) return;
+
+    // Progress
+    npc.progress += rand(5, 15);
+    npc.stress += rand(-5, 10);
+    npc.stress = clamp(npc.stress, 0, 100);
+
+    // Archetype-specific checks
+    if (npc.archetype === "The_Rival") {
+      checkRivalSabotage(state, npc);
+    }
+
+    if (npc.archetype === "The_Senior") {
+      checkSeniorDeparture(state, npc);
+    }
+
+    // Publishing event
+    if (npc.progress >= 100) {
+      npc.progress = 0;
+      triggerLabmatePublication(state, npc);
+    }
+  });
+}
+
+
+⸻
+
+2. Rival Sabotage Logic
+
+function checkRivalSabotage(state, npc) {
+  if (npc.stress < 70) return;
+
+  const sabotageChance = 0.1 + (npc.stress - 70) * 0.01;
+
+  if (Math.random() < sabotageChance) {
+    state.addStatus("Scooped", 1);
+    state.morale -= 10;
+    npc.loyalty -= 10;
+
+    log(`⚠️ ${npc.name} rushed a similar result to arXiv. Your idea feels less novel.`);
+  }
+}
+
+
+⸻
+
+3. Senior Departure Logic
+
+function checkSeniorDeparture(state, npc) {
+  npc.monthsRemaining -= 1;
+
+  if (npc.monthsRemaining === 3) {
+    log(`📅 ${npc.name} is preparing to graduate. The lab feels quieter.`);
+  }
+
+  if (npc.monthsRemaining <= 0) {
+    npc.active = false;
+    state.network -= 15;
+    state.morale -= 10;
+
+    log(`🎓 ${npc.name} defended and left the lab. You lost a key source of support.`);
+  }
+}
+
+
+⸻
+
+4. Labmate Publication Impact
+
+function triggerLabmatePublication(state, npc) {
+  if (npc.archetype === "The_Rival") {
+    state.morale -= 5;
+    state.stressMeter += 10;
+    log(`📄 ${npc.name} published before you. The pressure is on.`);
+  } else {
+    state.morale += 5;
+    state.peerNetwork += 5;
+    log(`📄 ${npc.name} published! The lab’s reputation helps everyone.`);
+  }
+}
+
+
+⸻
+
+5. Collaboration Dependency Penalty (Optional but Powerful)
+
+function applyCollaborationDependency(state, npc) {
+  npc.loyalty += 10;
+
+  if (npc.loyalty > 40 && !npc.active) {
+    state.thesisProgress -= 10;
+    log(`🧩 Losing ${npc.name} disrupted your workflow. Writing feels harder.`);
+  }
+}
+
+
+⸻
+
+Final Assessment
+
+V2.27 is the inflection point where GradQuest stops being “you vs RNG” and becomes “you vs a system of people.”

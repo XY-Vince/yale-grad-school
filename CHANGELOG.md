@@ -2,6 +2,42 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.27.0] - 2026-01-07 "The Living Lab"
+
+**Theme**: GradQuest becomes a place, not a spreadsheet — labmates with agency, not flavor.
+
+### 🧪 Labmate System
+Two NPCs with their own progress, stress, loyalty, and events:
+
+| Archetype | Role | Behavior |
+|-----------|------|----------|
+| 🎓 **The Senior** | Mentor figure | Leaves in 12-18 months, provides network |
+| ⚔️ **The Rival** | Competitor | Publishes competitively, may sabotage |
+
+### 📊 NPC Stats
+Each labmate tracks hidden state:
+- **progress** (0-100): Toward their next publication
+- **stress** (0-100): Affects behavior
+- **loyalty** (-50 to +50): Toward player
+- **monthsRemaining**: Senior departure countdown
+
+### ⚡ Forced Events
+NPCs create unavoidable drama:
+- **Rival Stress > 70**: Sabotage chance (scoop your idea, -10 morale)
+- **Senior monthsRemaining = 3**: Departure warning
+- **Senior leaves**: -15 network, -10 morale, thesis penalty if collaborated
+
+### 📄 Publication Impact
+- **Rival publishes**: -5 morale, +10 stress ("The pressure is on")
+- **Senior publishes**: +5 morale, +5 network (lab reputation boost)
+
+### 🤝 Collaboration System
+- `collaborateWithLabmate()` action increases loyalty
+- Senior collaborations give +3 alignment
+- Dependency penalty if collaborator leaves
+
+---
+
 ## [2.26.0] - 2026-01-07 "Advisor Personalities"
 
 **Theme**: The humanization patch — advisors become systems with memory, not flavor text.
@@ -750,3 +786,4 @@ Based on 256-month stress test observations. Prevents infinite equilibrium and a
 - Core engine port from TypeScript PhD Simulator
 - Full research pipeline
 - CLI and web interfaces
+
