@@ -1919,3 +1919,518 @@ If V2.21 saved players from dying,
 V2.22 teaches them how not to die.
 
 Once this lands cleanly, V2.23 (Active Networking) will finally feel empowering instead of overwhelming.
+
+
+
+V2.23 is the moment where GradQuest stops being “papers-first” and becomes a degree-completion simulator. Your direction is correct, but to make this version land, we need to (1) formalize thesis phases as gates, not flavor, and (2) fully integrate them into the Graduation Progress Panel so players feel the endgame tightening.
+
+Below is a solid, production-grade improvement plan, followed by concrete JavaScript logic for thesis phases and live UI updates.
+
+⸻
+
+V2.23 — The Synergy & Dissertation Update
+
+Design Goal: Turn the thesis from a passive meter into a managed project with pressure, trade-offs, and momentum
+
+⸻
+
+I. Critical Review of Your V2.23 Direction
+
+What’s Strong
+	•	✅ Thesis phases instead of raw %
+	•	✅ Alignment influencing advisor review cycles
+	•	✅ Field-contextual actions (this fixes immersion leaks)
+	•	✅ Network becoming an active amplifier rather than a threshold
+
+What Needs Tightening
+	1.	Phases must gate progression, not just announce milestones
+	2.	Thesis writing must compete with research, not replace it
+	3.	Graduation Panel must reflect phase state, not just numbers
+
+We’ll fix all three.
+
+⸻
+
+II. V2.23 Core System: Thesis as a Gated Project
+
+Thesis Phases (Canonical)
+
+Phase	Trigger	Mechanical Effect
+Planning	Default	Write Thesis limited to 25%
+Outline Approved	≥25%	Unlock faster thesis gains
+Draft Under Review	≥75%	RNG review delay introduced
+Defense Ready	100% + 3 papers	Unlock “Defend Thesis”
+
+This prevents brute-force rushing and adds advisor dependency where it belongs.
+
+⸻
+
+III. Refined Thesis Progression Logic (Server-Side)
+
+Key Design Rules
+	•	Papers cap thesis efficiency (not just boost it)
+	•	Alignment reduces advisor friction
+	•	Morale affects sustainability, not hard locks
+
+Pseudo-code (Refined)
+
+# logic/thesis_engine.py
+
+THESIS_PHASES = [
+    ("PLANNING", 0),
+    ("OUTLINE_APPROVED", 25),
+    ("DRAFT_REVIEW", 75),
+    ("DEFENSE_READY", 100)
+]
+
+def action_write_thesis(state):
+    if state.is_exhausted:
+        return "You're too exhausted to make meaningful progress."
+
+    # Hard cap: papers limit thesis velocity
+    paper_cap = min(state.published_journals * 25, 100)
+    if state.thesis_percent >= paper_cap:
+        return "You need more published work to support further writing."
+
+    base = 5
+    paper_bonus = state.published_journals * 5
+    alignment_bonus = state.strategic_alignment // 20
+    morale_penalty = -3 if state.morale < 30 else 0
+
+    gain = max(3, base + paper_bonus + alignment_bonus + morale_penalty)
+    state.thesis_percent = clamp(state.thesis_percent + gain, 0, 100)
+
+    return check_thesis_phase_transition(state)
+
+
+⸻
+
+IV. Thesis Phase Transitions (Milestone Engine)
+
+def check_thesis_phase_transition(state):
+    if state.thesis_percent >= 25 and not state.has_phase("OUTLINE_APPROVED"):
+        state.add_phase("OUTLINE_APPROVED")
+        return milestone("📑 Outline Approved", 
+                         "+10 Alignment, Advisor fully engaged")
+    
+    if state.thesis_percent >= 75 and not state.has_phase("DRAFT_REVIEW"):
+        state.add_phase("DRAFT_REVIEW")
+        state.add_status("advisor_review_delay")
+        return milestone("🧐 Full Draft Submitted",
+                         "Committee reviewing your dissertation")
+
+    if state.thesis_percent >= 100 and state.published_journals >= 3:
+        state.add_phase("DEFENSE_READY")
+        return milestone("🎓 Defense Ready",
+                         "You may now schedule your defense")
+
+    return "You made steady progress on your dissertation."
+
+
+⸻
+
+V. Social Synergy (Locked In, Not Optional)
+
+Network Effects (Explicit & Visible)
+
+Network	Effect
+≥40	+5 Morale when writing thesis
+≥80	Skip 1 advisor review delay
+
+if state.peer_network >= 40:
+    state.morale += 5
+
+if state.peer_network >= 80 and state.has_status("advisor_review_delay"):
+    state.remove_status("advisor_review_delay")
+
+This turns the Network stat into thesis insurance.
+
+⸻
+
+VI. HMI Integration (Non-Negotiable)
+
+Graduation Progress Panel Must Show:
+	•	Thesis %
+	•	Current Phase
+	•	Next Gate Condition
+
+Example:
+
+Thesis: 68%
+Phase: Draft in Progress
+Next: Reach 75% → Committee Review
+
+⸻
+
+VII. JavaScript Implementation
+
+Thesis Progress Phases + Graduation Panel Sync
+
+This plugs directly into your existing updateGraduationCard() logic.
+
+⸻
+
+1. State Shape (Client-Side)
+
+state.graduation = {
+  papersRequired: 3,
+  papersPublished: 2,
+  thesisPercent: 62,
+  thesisPhase: "PLANNING"
+};
+
+
+⸻
+
+2. Phase Resolver (JS)
+
+function resolveThesisPhase(state) {
+  const t = state.graduation.thesisPercent;
+
+  if (t >= 100 && state.graduation.papersPublished >= 3) {
+    return "DEFENSE_READY";
+  }
+  if (t >= 75) return "DRAFT_REVIEW";
+  if (t >= 25) return "OUTLINE_APPROVED";
+  return "PLANNING";
+}
+
+
+⸻
+
+3. Graduation Progress Panel Update (Extended)
+
+function updateGraduationCard(state) {
+  const g = state.graduation;
+
+  // Numbers
+  document.getElementById("papers-progress").textContent =
+    `${g.papersPublished} / ${g.papersRequired}`;
+  document.getElementById("thesis-progress").textContent =
+    `${g.thesisPercent}%`;
+
+  // Bars
+  document.getElementById("papers-bar").style.width =
+    `${(g.papersPublished / g.papersRequired) * 100}%`;
+  document.getElementById("thesis-bar").style.width =
+    `${g.thesisPercent}%`;
+
+  // Phase logic
+  g.thesisPhase = resolveThesisPhase(state);
+  const status = document.getElementById("defense-status");
+
+  switch (g.thesisPhase) {
+    case "PLANNING":
+      status.textContent = "📝 Planning phase — outline not yet approved";
+      break;
+    case "OUTLINE_APPROVED":
+      status.textContent = "📑 Outline approved — drafting in progress";
+      break;
+    case "DRAFT_REVIEW":
+      status.textContent = "🧐 Draft under committee review";
+      break;
+    case "DEFENSE_READY":
+      status.textContent = "🎓 Defense ready — schedule your defense";
+      status.style.color = "var(--accent-success)";
+      break;
+  }
+}
+
+
+⸻
+
+VIII. V2.23 Actionable Checklist (Final)
+
+Systems
+	•	Replace passive thesis % with gated phases
+	•	Enforce paper-backed thesis caps
+	•	Add advisor review delay status
+	•	Allow Network ≥80 to bypass one delay
+
+UI
+	•	Show thesis phase + next gate in Graduation Panel
+	•	Toasts for Outline / Draft / Defense milestones
+	•	Tooltip: “Thesis speed capped by published work”
+
+⸻
+
+Final Assessment
+
+V2.23 is where GradQuest earns its credibility.
+
+After this version:
+	•	Papers feel like inputs to a larger goal
+	•	The thesis feels heavy, slow, and real
+	•	Social investment finally pays off when it matters most
+
+Once this ships, V2.24 (Active Collaboration) will feel like a natural extension, not another system bolted on.
+
+
+Good — this is the right escalation after V2.23. You’re no longer adding features; you’re closing design loopholes. I’ll do this in three layers:
+	1.	Critical review of your V2.24 concept (what still leaks)
+	2.	A hardened V2.24 improvement plan with concrete, shippable items
+	3.	Clean JavaScript implementation for the “Peer Review Shield”
+
+I will be blunt where needed, because endgame systems punish hand-waving.
+
+⸻
+
+I. Critical Review of V2.24 (What Still Needs Fixing)
+
+What You’ve Nailed
+	•	✅ Thesis becomes an action, not a background timer
+	•	✅ Specialization disadvantages finally surface as negative events
+	•	✅ Network becomes a currency, not a passive stat
+	•	✅ Dissertation is framed as the final boss
+
+Where It Still Falls Short
+
+There are three remaining design risks:
+
+⸻
+
+❌ 1. Thesis Writing Is Still Linear
+
+Even as an action, it’s still:
+
+“Click → % goes up → milestone fires”
+
+There is no decision tension yet.
+
+🔧 Fix: Introduce micro-states inside dissertation writing:
+	•	Draft Quality
+	•	Revision Load
+	•	Committee Friction
+
+These do not need new UI bars — just modifiers and tooltips.
+
+⸻
+
+❌ 2. Field Crises Are Random, Not Strategic
+
+Right now:
+	•	Crises happen to the player
+	•	Player reacts afterward
+
+This feels like punishment, not mastery.
+
+🔧 Fix: Allow pre-emptive mitigation actions per field.
+
+⸻
+
+❌ 3. Network Spending Has No Trade-off
+
+“Ask Peer for Feedback” is pure upside.
+
+🔧 Fix: Network must compete with:
+	•	Conference invites
+	•	Collaboration boosts
+	•	Recommendation strength (V2.25 setup)
+
+⸻
+
+II. V2.24 HARDENED DESIGN: Interactive Dissertation Loop
+
+A. Dissertation Internal State (Invisible but Real)
+
+Add three hidden variables:
+
+state.dissertation = {
+    "draft_quality": 0.0,   # affects review RNG
+    "revision_load": 0.0,   # slows progress after 75%
+    "committee_friction": 0.0  # increases failure chance
+}
+
+These are not meters shown to the player, but surfaced via text:
+
+“Your committee seems uneasy with the framing.”
+
+This is crucial for realism.
+
+⸻
+
+B. Revised Write Dissertation Logic (Actionable)
+
+def action_write_dissertation(state):
+    if state.morale < 20:
+        return "You're mentally exhausted. Writing stalls."
+
+    base = random_range(4, 8)
+    foundation = state.published_journals * 4
+    alignment = 1 + state.strategic_alignment / 120
+
+    friction_penalty = state.dissertation["committee_friction"]
+    revision_penalty = state.dissertation["revision_load"]
+
+    gain = max(
+        2,
+        (base + foundation) * alignment
+        - friction_penalty
+        - revision_penalty
+    )
+
+    state.thesis_percent += gain
+    state.morale -= 15
+
+    # Quality & friction dynamics
+    state.dissertation["draft_quality"] += gain * 0.2
+    if state.thesis_percent > 75:
+        state.dissertation["revision_load"] += 1.5
+
+    return check_dissertation_milestones(state)
+
+📌 Result:
+Late-game writing gets slower unless the player invested earlier in:
+	•	Papers
+	•	Alignment
+	•	Network
+
+⸻
+
+C. Specialization Crises → Strategic Loops
+
+Current problem
+
+Crises are random setbacks.
+
+V2.24 fix: Preparedness Actions
+
+Field	Crisis	Mitigation Action
+Computational	Server downtime	“Pre-allocate Compute Time”
+Experimentalist	Equipment failure	“Run Preventive Calibration”
+Theoretician	Abstract skepticism	“Add Supporting Lemmas”
+
+Example:
+
+def action_preventive_calibration(state):
+    state.morale -= 5
+    state.add_status("Equipment Stabilized", duration=6)
+
+Now specialization is:
+
+Risk you chose, tools you understand
+
+⸻
+
+D. Network as a Scarce, Strategic Currency
+
+Network Sinks (Now & Future-Proof)
+
+Action	Cost	Timing
+Peer Review Shield	20	Writing phase
+Conference Invite	30	Mid-game
+Industry Referral	40	V2.25
+Letter of Rec Boost	25	Defense-ready
+
+This prevents degenerate hoarding.
+
+⸻
+
+III. Actionable V2.24 Implementation Plan (Revised & Tight)
+
+Core Systems
+	•	Add internal dissertation state (quality, friction, revision load)
+	•	Make thesis writing sensitive to late-game penalties
+	•	Gate progress at ≥75% via revision friction
+
+Specializations
+	•	Convert crises into forecastable risks
+	•	Add one mitigation action per field
+	•	Show risk warning in specialization tooltip
+
+Network Economy
+	•	Introduce Network spending conflicts
+	•	Lock Peer Review Shield behind ≥60 Network
+	•	Reduce Network regeneration rate post-75% thesis
+
+UI / HMI
+	•	Show “Expected Outcome” text (not raw math)
+	•	Add crisis probability to maintenance tooltips
+	•	Add dissertation flavor text reflecting hidden state
+
+⸻
+
+IV. JavaScript: Peer Review Shield
+
+This is clean, minimal, and HMI-aware.
+
+⸻
+
+1. State Shape (Client)
+
+state.network = {
+  current: 72,
+  max: 80
+};
+
+state.flags = {
+  peerReviewShieldActive: false
+};
+
+
+⸻
+
+2. Action Availability Logic
+
+function canUsePeerReviewShield(state) {
+  return (
+    state.network.current >= 60 &&
+    !state.flags.peerReviewShieldActive
+  );
+}
+
+
+⸻
+
+3. Activate Shield Action
+
+function activatePeerReviewShield(state) {
+  if (!canUsePeerReviewShield(state)) {
+    return {
+      success: false,
+      message: "Not enough peer support to request feedback."
+    };
+  }
+
+  state.network.current -= 20;
+  state.flags.peerReviewShieldActive = true;
+
+  return {
+    success: true,
+    message: "🤝 Peer feedback secured. Reviewer #2 neutralized."
+  };
+}
+
+
+⸻
+
+4. Integration with Figure Validation
+
+function validateFigure(state) {
+  if (state.flags.peerReviewShieldActive) {
+    state.flags.peerReviewShieldActive = false;
+    return {
+      success: true,
+      message: "Figure validated smoothly thanks to peer feedback."
+    };
+  }
+
+  // normal RNG path
+  return rollFigureValidation(state);
+}
+
+
+⸻
+
+5. Tooltip Text (Critical for Transparency)
+
+Ask Peer for Feedback
+Cost: 20 Network
+Effect: Your next Figure validation automatically succeeds
+Note: One-time use
+
+⸻
+
+Final Judgment
+
+V2.24 is the version where players either graduate… or burn out.

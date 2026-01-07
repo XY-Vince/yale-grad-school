@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.23</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.24</span></h1>
         </header>
 
         <div id="app">
@@ -1095,6 +1095,71 @@
             },
 
             // ===========================================
+            // V2.24: PEER REVIEW SHIELD & MITIGATION ACTIONS
+            // Network as strategic currency
+            // ===========================================
+
+            // V2.24: Check if Peer Review Shield is available
+            canUsePeerReviewShield() {
+                const s = this.state;
+                return (s.peerNetwork || 0) >= 60 && !s.peerReviewShieldActive;
+            },
+
+            // V2.24: Activate Peer Review Shield (costs 20 Network)
+            activatePeerReviewShield() {
+                const s = this.state;
+                if (!this.canUsePeerReviewShield()) {
+                    this.appendEvent('Not enough peer support to request feedback.');
+                    return false;
+                }
+
+                s.peerNetwork -= 20;
+                s.peerReviewShieldActive = true;
+                this.appendSystemEvent('🤝 Peer feedback secured! Your next figure validation will automatically succeed.');
+                return true;
+            },
+
+            // V2.24: Check if Preventive Calibration is available (Experimentalist)
+            canUsePreventiveCalibration() {
+                const s = this.state;
+                return s.specialization === 'experimentalist' &&
+                    s.totalMonths >= (s.equipmentStabilizedUntil || 0);
+            },
+
+            // V2.24: Activate Preventive Calibration (costs morale, prevents equipment failure)
+            activatePreventiveCalibration() {
+                const s = this.state;
+                if (!this.canUsePreventiveCalibration()) {
+                    this.appendEvent('Equipment is already stabilized.');
+                    return false;
+                }
+
+                s.morale = Math.max(0, s.morale - 5);
+                s.equipmentStabilizedUntil = s.totalMonths + 6;
+                this.removeStatus('brokenEquipment');
+                this.appendSystemEvent('🔧 Preventive calibration complete. Equipment stabilized for 6 months.');
+                return true;
+            },
+
+            // V2.24: Get dissertation flavor text based on hidden state
+            getDissertationFlavorText() {
+                const d = this.state.dissertation;
+                if (!d) return '';
+
+                const texts = [];
+                if (d.committee_friction > 5) {
+                    texts.push('Your committee seems uneasy with the framing.');
+                }
+                if (d.revision_load > 3) {
+                    texts.push('Revision requests are piling up.');
+                }
+                if (d.draft_quality > 10) {
+                    texts.push('Your writing is gaining polish.');
+                }
+                return texts.join(' ');
+            },
+
+            // ===========================================
             // V2.19: GAME MODE SYSTEM
             // Automatically switches based on game state
             // ===========================================
@@ -1561,6 +1626,17 @@
                         lastMilestone: null      // For pinning
                     },
 
+                    // V2.24: Dissertation Internal State (hidden but real)
+                    dissertation: {
+                        draft_quality: 0,        // Affects review RNG
+                        revision_load: 0,        // Slows progress after 75%
+                        committee_friction: 0    // Increases failure chance
+                    },
+
+                    // V2.24: Peer Review Shield (costs 20 Network)
+                    peerReviewShieldActive: false,
+                    equipmentStabilizedUntil: 0, // V2.24: Preventive calibration
+
                     // V2.22: Priority Notification Queue
                     pendingNotifications: [],    // { type, severity, message }
 
@@ -1659,7 +1735,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.23'
+                    version: '2.24'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -2522,6 +2598,26 @@
                     actions.push({ id: 'maintenance', name: '🔧 Equipment Maintenance', desc: 'Skip research, stable 12mo' });
                 }
 
+                // V2.24: Peer Review Shield (costs 20 Network, guarantees figure success)
+                if (this.canUsePeerReviewShield()) {
+                    actions.push({
+                        id: 'peer_shield',
+                        name: '🤝 Ask Peer for Feedback',
+                        desc: '-20 Network: Next figure auto-succeeds',
+                        telemetry: 'network_spend'
+                    });
+                }
+
+                // V2.24: Preventive Calibration (Experimentalist only)
+                if (this.canUsePreventiveCalibration()) {
+                    actions.push({
+                        id: 'calibration',
+                        name: '🔬 Preventive Calibration',
+                        desc: '-5 Morale: Equipment stable 6mo',
+                        telemetry: 'field_action'
+                    });
+                }
+
                 // V2.17: High-Throughput Experiment (risky fast figures)
                 if (this.getItem('key_discovery') > 0 && (!s.lastHighThroughput || s.totalMonths - s.lastHighThroughput >= 6)) {
                     actions.push({ id: 'high_throughput', name: '⚡ High-Throughput Exp', desc: '40%: +2 figures, fail: -morale +exhaustion' });
@@ -2625,6 +2721,15 @@
                         break;
 
                     case 'work_figures':
+                        // V2.24: Peer Review Shield - automatic success
+                        if (s.peerReviewShieldActive) {
+                            s.peerReviewShieldActive = false;
+                            this.addItem('figure');
+                            s.morale = Math.min(100, s.morale + 5);
+                            msg = '🤝 PEER-ASSISTED SUCCESS!\n📊 Figure created thanks to peer feedback! (' + this.getItem('figure') + '/3 needed)\n"Your colleague\'s notes helped you nail the visualization."';
+                            break;
+                        }
+
                         // V2.10: Figure decompression - after 2 consecutive rejections, +30% success
                         const figRejections = s.consecutiveFigRejections || 0;
                         const figBonus = figRejections >= 2 ? 0.3 : 0;
@@ -2888,6 +2993,24 @@
                         s.equipmentStableUntil = s.totalMonths + 12;
                         this.removeStatus('brokenEquipment');
                         msg = '🔧 Equipment Maintenance Complete!\nEquipment stable for 12 months\n(No research this month)';
+                        break;
+
+                    // V2.24: Peer Review Shield
+                    case 'peer_shield':
+                        if (this.activatePeerReviewShield()) {
+                            msg = '🤝 Peer Feedback Secured!\n-20 Network\nYour next figure validation will automatically succeed.\n"Thanks for the early look—I caught a few issues."';
+                        } else {
+                            msg = 'Not enough peer connections for feedback.';
+                        }
+                        break;
+
+                    // V2.24: Preventive Calibration (Experimentalist)
+                    case 'calibration':
+                        if (this.activatePreventiveCalibration()) {
+                            msg = '🔬 Preventive Calibration Complete!\n-5 Morale\nEquipment stabilized for 6 months.\nYour instruments are in perfect working order.';
+                        } else {
+                            msg = 'Equipment is already stabilized.';
+                        }
                         break;
 
                     // V2.17: High-Throughput Experiment
