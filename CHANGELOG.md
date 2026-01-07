@@ -2,9 +2,9 @@
 
 All notable changes to GradQuest are documented here.
 
-## [2.23.1] - 2026-01-07 "Interactive Dissertation"
+## [2.24.0] - 2026-01-07 "Interactive Dissertation & Field Mastery"
 
-**Theme**: Network as strategic currency — players must spend social capital wisely.
+**Theme**: Network as strategic currency, field-specific crisis mitigation — closing endgame design loopholes.
 
 ### 🤝 Peer Review Shield
 - **Cost**: 20 Network (requires 60+ Network)
@@ -12,11 +12,14 @@ All notable changes to GradQuest are documented here.
 - One-time use per activation
 - "Your colleague's notes helped you nail the visualization"
 
-### 🔬 Preventive Calibration (Experimentalist)
-- **Cost**: 5 Morale
-- **Effect**: Equipment stabilized for **6 months**
-- Prevents random equipment breakdowns
-- Field-specific mitigation action
+### 🔬 Field-Specific Mitigation Actions
+Each specialization now has a preventive action (costs 5 morale, 6-month protection):
+
+| Field | Action | Effect |
+|-------|--------|--------|
+| 🔬 **Experimentalist** | Preventive Calibration | Equipment stabilized |
+| 📐 **Theoretician** | Add Supporting Lemmas | Committee skepticism reduced |
+| 💻 **Computational** | Pre-allocate Compute | Server stability guaranteed |
 
 ### 📝 Dissertation Internal State
 Hidden variables affecting endgame:

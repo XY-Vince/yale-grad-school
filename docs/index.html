@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.23.1</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.24</span></h1>
         </header>
 
         <div id="app">
@@ -1141,6 +1141,49 @@
                 return true;
             },
 
+            // V2.24: Check if Add Supporting Lemmas is available (Theoretician)
+            canUseAddLemmas() {
+                const s = this.state;
+                return s.specialization === 'theoretician' &&
+                    s.totalMonths >= (s.lemmasAddedUntil || 0);
+            },
+
+            // V2.24: Add Supporting Lemmas (Theoretician - prevents abstract skepticism)
+            activateAddLemmas() {
+                const s = this.state;
+                if (!this.canUseAddLemmas()) {
+                    this.appendEvent('Your proofs are already well-supported.');
+                    return false;
+                }
+
+                s.morale = Math.max(0, s.morale - 5);
+                s.lemmasAddedUntil = s.totalMonths + 6;
+                s.dissertation.committee_friction = Math.max(0, (s.dissertation?.committee_friction || 0) - 2);
+                this.appendSystemEvent('📐 Supporting lemmas added. Committee skepticism reduced for 6 months.');
+                return true;
+            },
+
+            // V2.24: Check if Pre-allocate Compute is available (Computational)
+            canUsePreallocateCompute() {
+                const s = this.state;
+                return s.specialization === 'computational' &&
+                    s.totalMonths >= (s.computeAllocatedUntil || 0);
+            },
+
+            // V2.24: Pre-allocate Compute Time (Computational - prevents server downtime)
+            activatePreallocateCompute() {
+                const s = this.state;
+                if (!this.canUsePreallocateCompute()) {
+                    this.appendEvent('Compute resources are already allocated.');
+                    return false;
+                }
+
+                s.morale = Math.max(0, s.morale - 5);
+                s.computeAllocatedUntil = s.totalMonths + 6;
+                this.appendSystemEvent('💻 Compute time pre-allocated. Server stability guaranteed for 6 months.');
+                return true;
+            },
+
             // V2.24: Get dissertation flavor text based on hidden state
             getDissertationFlavorText() {
                 const d = this.state.dissertation;
@@ -1735,7 +1778,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.23.1'
+                    version: '2.24'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -2618,6 +2661,26 @@
                     });
                 }
 
+                // V2.24: Add Supporting Lemmas (Theoretician only)
+                if (this.canUseAddLemmas()) {
+                    actions.push({
+                        id: 'add_lemmas',
+                        name: '📐 Add Supporting Lemmas',
+                        desc: '-5 Morale: Reduce committee skepticism',
+                        telemetry: 'field_action'
+                    });
+                }
+
+                // V2.24: Pre-allocate Compute (Computational only)
+                if (this.canUsePreallocateCompute()) {
+                    actions.push({
+                        id: 'preallocate_compute',
+                        name: '💻 Pre-allocate Compute',
+                        desc: '-5 Morale: Server stable 6mo',
+                        telemetry: 'field_action'
+                    });
+                }
+
                 // V2.17: High-Throughput Experiment (risky fast figures)
                 if (this.getItem('key_discovery') > 0 && (!s.lastHighThroughput || s.totalMonths - s.lastHighThroughput >= 6)) {
                     actions.push({ id: 'high_throughput', name: '⚡ High-Throughput Exp', desc: '40%: +2 figures, fail: -morale +exhaustion' });
@@ -3010,6 +3073,24 @@
                             msg = '🔬 Preventive Calibration Complete!\n-5 Morale\nEquipment stabilized for 6 months.\nYour instruments are in perfect working order.';
                         } else {
                             msg = 'Equipment is already stabilized.';
+                        }
+                        break;
+
+                    // V2.24: Add Supporting Lemmas (Theoretician)
+                    case 'add_lemmas':
+                        if (this.activateAddLemmas()) {
+                            msg = '📐 Supporting Lemmas Added!\n-5 Morale\nCommittee skepticism reduced for 6 months.\nYour proofs are now bulletproof.';
+                        } else {
+                            msg = 'Your proofs are already well-supported.';
+                        }
+                        break;
+
+                    // V2.24: Pre-allocate Compute (Computational)
+                    case 'preallocate_compute':
+                        if (this.activatePreallocateCompute()) {
+                            msg = '💻 Compute Time Allocated!\n-5 Morale\nServer stability guaranteed for 6 months.\nYour jobs will run without interruption.';
+                        } else {
+                            msg = 'Compute resources are already allocated.';
                         }
                         break;
 
