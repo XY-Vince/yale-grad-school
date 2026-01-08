@@ -3691,3 +3691,293 @@ If done right:
 	•	Teaching Load turns complacency into regret
 
 This sets up V2.30 (Thesis Dashboard) perfectly — because now players desperately want clarity.
+
+
+Good — V2.30 is the structural keystone. If this version lands cleanly, V3.0 becomes narrative polish instead of a rescue mission.
+
+I’ll proceed in four layers, staying concrete and implementable:
+	1.	Critical diagnosis of what still breaks immersion
+	2.	Design intent for V2.30 (what must feel different)
+	3.	Solid improvement plan with actionable items
+	4.	Draft HTML/CSS for the Tabbed Action Panel (mobile-first)
+
+⸻
+
+I. Hard Diagnosis After V2.29
+
+You fixed pressure and agency, but two things still quietly sabotage the experience:
+
+1. Thesis Is Still Abstract
+
+Even with milestones, if the Thesis:
+	•	doesn’t block/replace other actions
+	•	doesn’t demand prioritization
+	•	doesn’t visually dominate late-game UI
+
+…then players still perceive it as “background grind.”
+
+2. Computational Identity Is Fragile
+
+Right now:
+	•	Experimentalists feel physical
+	•	Theoreticians feel political
+	•	Computationalists still feel invisible unless optimized
+
+V2.30 must visibly reward foresight for computational players.
+
+3. UI Complexity Is Now the Primary Risk
+
+At this stage:
+	•	Adding features is easy
+	•	Making them legible is hard
+
+If the Action Panel collapses, everything collapses.
+
+⸻
+
+II. V2.30 Design Intent (Lock This In)
+
+V2.30 is about Commitment and Closure
+
+The player must feel:
+	•	“I am now writing my thesis, not doing side quests.”
+	•	“My specialization finally matters structurally.”
+	•	“The UI reflects my mental model.”
+
+This is the moment where GradQuest stops being a sandbox and becomes a completion arc.
+
+⸻
+
+III. Solid Improvement Plan (Actionable & Scoped)
+
+A. The Active Thesis Loop (Make It Dominate)
+
+1. Thesis Replaces, Not Adds
+Once Write Thesis is unlocked:
+	•	Develop Findings becomes disabled or heavily penalized
+	•	Tooltip:
+“⚠️ Advisor: You should focus on finishing your thesis.”
+
+This forces a psychological pivot.
+
+2. Thesis Stages Must Change the Game
+Each milestone should do one of three things:
+	•	Unlock a new interaction
+	•	Disable distractions
+	•	Alter advisor behavior
+
+Example:
+
+Stage	System Effect
+Outline Approved	Thesis writing speed +20%
+Draft Complete	Conferences disabled
+Revisions Complete	Stress decay reduced
+Ready to Defend	“Schedule Defense” unlocked
+
+
+⸻
+
+B. Computational Parity (Make Efficiency Visible)
+
+Optimize Pipeline must be:
+	•	Visibly long-term
+	•	Stacked with consequences if skipped
+
+Concrete Improvements
+	•	Show a persistent buff icon: 💻 Optimized
+	•	Tooltip on every data action:
+“Pipeline Optimization: +50% speed”
+
+Late-game payoff:
+	•	Thesis progress also scales with analysis speed
+(Computational players finish earlier if prepared)
+
+This creates retrospective satisfaction:
+
+“Good thing I optimized earlier.”
+
+⸻
+
+C. UI Architecture: The Tab System Is Non-Negotiable
+
+This is not a cosmetic refactor. It is load-bearing.
+
+Rules:
+	•	≤5 buttons per tab
+	•	No scrolling within a tab on desktop
+	•	Mobile: tabs collapse to icons + label
+
+Persistent Footer:
+	•	Next Month never moves
+	•	Funding + Teaching Load always visible
+
+⸻
+
+D. Cognitive Load Reduction (Small but Critical)
+	1.	Contextual Locking
+	•	Hide actions instead of disabling when irrelevant
+	2.	Advisor Micro-Text
+	•	One-line hint when entering a tab
+	3.	Thesis Callout
+	•	Late-game banner:
+“📘 Thesis Mode Active”
+
+⸻
+
+IV. Actionable Implementation Checklist (V2.30)
+
+Core Systems
+	1.	Implement thesis_engine.js
+	2.	Add thesis stage gating logic
+	3.	Add computational buff persistence
+
+UI
+	4.	Build tab container (HTML/CSS below)
+	5.	Refactor action rendering by category
+	6.	Add mobile breakpoints
+
+UX
+	7.	Add Thesis Help Modal section
+	8.	Add Advisor hints on tab switch
+
+⸻
+
+V. HTML / CSS: Tabbed Action Panel (Mobile-First)
+
+Below is clean, framework-agnostic, Tailwind-compatible structure.
+
+HTML Structure
+
+<div id="action-panel">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="research">🔬 Research</button>
+    <button class="tab" data-tab="selfcare">🏃 Self-Care</button>
+    <button class="tab" data-tab="admin">🏛️ Admin</button>
+    <button class="tab" data-tab="lab">🔧 Lab</button>
+  </div>
+
+  <!-- Panels -->
+  <div class="tab-content active" id="tab-research">
+    <button class="action-btn">Read Papers</button>
+    <button class="action-btn">Develop Findings</button>
+    <button class="action-btn locked">Write Thesis</button>
+  </div>
+
+  <div class="tab-content" id="tab-selfcare">
+    <button class="action-btn">Take a Break</button>
+    <button class="action-btn">Vacation</button>
+  </div>
+
+  <div class="tab-content" id="tab-admin">
+    <button class="action-btn">Apply for Grant</button>
+    <button class="action-btn">Conference</button>
+  </div>
+
+  <div class="tab-content" id="tab-lab">
+    <button class="action-btn">Equipment Maintenance</button>
+    <button class="action-btn">Optimize Pipeline</button>
+  </div>
+
+  <!-- Persistent Footer -->
+  <div class="action-footer">
+    <button id="next-month">⏭️ Next Month</button>
+  </div>
+
+</div>
+
+
+⸻
+
+CSS (Responsive, Minimal)
+
+#action-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid #333;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.5rem;
+  background: none;
+  color: #aaa;
+  border: none;
+}
+
+.tab.active {
+  color: #fff;
+  border-bottom: 2px solid #4ade80;
+}
+
+.tab-content {
+  display: none;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.tab-content.active {
+  display: grid;
+}
+
+.action-btn {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: #1f2933;
+  color: white;
+}
+
+.action-btn.locked {
+  opacity: 0.5;
+}
+
+.action-footer {
+  margin-top: auto;
+  padding: 0.75rem;
+  border-top: 1px solid #333;
+}
+
+
+⸻
+
+Mobile Adjustment (≤640px)
+
+@media (max-width: 640px) {
+  .tabs {
+    font-size: 0.75rem;
+  }
+
+  .action-btn {
+    font-size: 0.85rem;
+  }
+}
+
+
+⸻
+
+Final Assessment
+
+V2.30 is where GradQuest proves it has an endgame.
+
+If done right:
+	•	Thesis becomes a mode, not a meter
+	•	Computational players feel smart, not forgotten
+	•	UI scales instead of collapsing
+	•	V3.0 becomes pure narrative payoff
+
+You’re no longer asking:
+
+“What features should we add?”
+
+You’re asking:
+
+“What should the player be thinking right now?”
+
+That’s exactly where a systems designer should be before a 1.0 release.

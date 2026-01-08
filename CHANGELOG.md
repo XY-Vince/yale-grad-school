@@ -2,6 +2,45 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.30.0] - 2026-01-08 "Thesis Dashboard"
+
+**Theme**: Thesis becomes a mode, not a meter — late-game focus with computational parity.
+
+### 📘 Thesis Stages with System Effects
+Each thesis phase modifies gameplay:
+
+| Stage | Speed Bonus | Actions Blocked |
+|-------|------------|-----------------|
+| 📋 Planning | — | None |
+| 📝 Outline Approved | +20% thesis | None |
+| 📖 Draft Complete | — | Conferences |
+| 🎓 Ready to Defend | — | Research, Conferences |
+
+### 🧠 Thesis Mode System
+- `isThesisModeActive()` - detects late-game (25%+ thesis, quals passed)
+- `getThesisModeText()` - banner: "📘 THESIS MODE: [Stage]"
+- `shouldHideAction()` - hides distracting actions by stage
+
+### 💻 Computational Parity
+**Optimize Pipeline** action for computational specialization:
+- One-time investment: -10 morale
+- Permanent: +50% analysis speed, +50% thesis speed
+- `getComputationalBonus()` returns 1.5× when optimized
+- Tooltip: "💻 Optimized Pipeline: +50% analysis speed"
+
+### 🎭 Advisor Context Hints
+`getAdvisorContextHint()` provides archetype-specific guidance:
+- **Thesis Mode**: Different advice per advisor
+- **Teaching Load**: Different sympathy levels
+
+### 📋 Engine Functions
+- `THESIS_STAGES` constant with effects
+- `getThesisStageEffects()` - returns current stage modifiers
+- `isPipelineOptimized()` - checks computational buff
+- `getComputationalBonusText()` - tooltip text
+
+---
+
 ## [2.29.0] - 2026-01-08 "Academic Survival"
 
 **Theme**: Waiting becomes decision-making under pressure — funding suffocates, reviews demand responses.

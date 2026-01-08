@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.29</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.30</span></h1>
         </header>
 
         <div id="app">
@@ -2091,6 +2091,124 @@
             },
 
             // ===========================================
+            // V2.30: THESIS DASHBOARD SYSTEM
+            // Thesis becomes a mode, not a meter
+            // ===========================================
+
+            // V2.30: Thesis stages with system effects
+            THESIS_STAGES: {
+                'PLANNING': {
+                    name: 'Planning',
+                    icon: '📋',
+                    description: 'Gathering ideas and direction',
+                    effects: { thesisSpeedBonus: 0, actionsBlocked: [] }
+                },
+                'OUTLINE_APPROVED': {
+                    name: 'Outline Approved',
+                    icon: '📝',
+                    description: 'Structure locked, writing begins',
+                    effects: { thesisSpeedBonus: 0.2, actionsBlocked: [] }
+                },
+                'DRAFT_REVIEW': {
+                    name: 'Draft Complete',
+                    icon: '📖',
+                    description: 'Committee reviewing, focus on revisions',
+                    effects: { thesisSpeedBonus: 0, actionsBlocked: ['conference'] }
+                },
+                'DEFENSE_READY': {
+                    name: 'Ready to Defend',
+                    icon: '🎓',
+                    description: 'Thesis complete, schedule defense',
+                    effects: { thesisSpeedBonus: 0, actionsBlocked: ['develop_findings', 'research', 'conference'], stressDecay: 0.5 }
+                }
+            },
+
+            // V2.30: Check if thesis mode is active (late-game focus)
+            isThesisModeActive() {
+                const s = this.state;
+                const g = s.graduation || {};
+                return (g.thesis_progress || 0) >= 25 && s.qualsPassed;
+            },
+
+            // V2.30: Get current thesis stage effects
+            getThesisStageEffects() {
+                const s = this.state;
+                const g = s.graduation || {};
+                const phase = g.thesis_phase || 'PLANNING';
+                return this.THESIS_STAGES[phase]?.effects || {};
+            },
+
+            // V2.30: Get thesis mode banner text
+            getThesisModeText() {
+                if (!this.isThesisModeActive()) return '';
+                const s = this.state;
+                const g = s.graduation || {};
+                const phase = g.thesis_phase || 'PLANNING';
+                const stage = this.THESIS_STAGES[phase];
+                return `📘 THESIS MODE: ${stage?.icon} ${stage?.name}`;
+            },
+
+            // V2.30: Get computational parity bonus
+            getComputationalBonus() {
+                const s = this.state;
+                if (s.specialization !== 'computational') return 1.0;
+
+                // Check if pipeline was optimized
+                if (s.pipelineOptimized) {
+                    return 1.5; // 50% bonus to thesis and analysis
+                }
+                return 1.0;
+            },
+
+            // V2.30: Check if pipeline is optimized (computational specialization)
+            isPipelineOptimized() {
+                return this.state.pipelineOptimized === true;
+            },
+
+            // V2.30: Get computational bonus text for tooltips
+            getComputationalBonusText() {
+                if (!this.isPipelineOptimized()) return '';
+                return '\n💻 Optimized Pipeline: +50% analysis speed';
+            },
+
+            // V2.30: Check if action should be hidden (cognitive load reduction)
+            shouldHideAction(actionId) {
+                const effects = this.getThesisStageEffects();
+                const blocked = effects.actionsBlocked || [];
+
+                // Hide if blocked by thesis stage
+                if (blocked.includes(actionId)) return true;
+
+                return false;
+            },
+
+            // V2.30: Get advisor hint for current context
+            getAdvisorContextHint() {
+                const s = this.state;
+                const archetype = s.advisor?.archetype || 'The_Mentor';
+
+                if (this.isThesisModeActive()) {
+                    const hints = {
+                        'The_Tormentor': '"Focus. Finish. Nothing else matters now."',
+                        'The_Ghost': '"Good luck with the writing."',
+                        'The_Mentor': '"You\'ve got this. One chapter at a time."'
+                    };
+                    return hints[archetype] || '';
+                }
+
+                if (this.hasStatus('teaching_load')) {
+                    const hints = {
+                        'The_Tormentor': '"Teaching is not an excuse."',
+                        'The_Ghost': '"You\'ll have to manage your time."',
+                        'The_Mentor': '"Balance is hard. I understand."'
+                    };
+                    return hints[archetype] || '';
+                }
+
+                return '';
+            },
+
+            // ===========================================
             // V2.19: GAME MODE SYSTEM
             // Automatically switches based on game state
             // ===========================================
@@ -2681,7 +2799,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.29'
+                    version: '2.30'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -3599,6 +3717,16 @@
                     actions.push({ id: 'high_throughput', name: '⚡ High-Throughput Exp', desc: '40%: +2 figures, fail: -morale +exhaustion' });
                 }
 
+                // V2.30: Optimize Pipeline (Computational - permanent buff)
+                if (s.specialization === 'computational' && !s.pipelineOptimized) {
+                    actions.push({
+                        id: 'optimize_pipeline',
+                        name: '💻 Optimize Pipeline',
+                        desc: '-10 Morale: Permanent +50% analysis/thesis speed',
+                        telemetry: 'optimization'
+                    });
+                }
+
                 // V2.17: Respond to Reviewers (during journal review)
                 if (s.pendingPapers && s.pendingPapers.length > 0) {
                     actions.push({ id: 'light_response', name: '📝 Light Response', desc: '-3 morale, +10% accept' });
@@ -4061,6 +4189,18 @@
                             msg = '💻 Compute Time Allocated!\n-5 Morale\nServer stability guaranteed for 6 months.\nYour jobs will run without interruption.';
                         } else {
                             msg = 'Compute resources are already allocated.';
+                        }
+                        break;
+
+                    // V2.30: Optimize Pipeline (Computational - permanent buff)
+                    case 'optimize_pipeline':
+                        if (!s.pipelineOptimized) {
+                            s.pipelineOptimized = true;
+                            s.morale = Math.max(0, s.morale - 10);
+                            this.addStatus('pipeline_optimized');
+                            msg = '💻 PIPELINE OPTIMIZED!\n-10 Morale (one-time investment)\n\n✨ Permanent Benefits:\n• +50% analysis speed\n• +50% thesis writing speed\n• Late-game payoff guaranteed\n\n"Good thing you did this early."';
+                        } else {
+                            msg = 'Pipeline is already optimized.';
                         }
                         break;
 
