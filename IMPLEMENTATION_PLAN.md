@@ -4204,3 +4204,100 @@ By turning rivals into readable adversaries and funding penalties into recoverab
 At this point:
 	•	V2.32 can be light (grant polish)
 	•	V3.0 can focus purely on endings, summaries, and tone
+
+
+	Based on the **V2.31 QA Testing Report** and the **Trial 3 Log (V2.30)**, the game is mechanically sound but suffers from "Information Hiding" (Rival Progress, Thesis Mechanics) and a potential "Soft Lock Slog" (The 56-month Teaching Trap).
+
+For **V2.32**, our major feature focus is **"The Sustainability & Clarity Update."** We will implement the economic safety nets required to fix the mid-game slog and expose the hidden numbers driving Rivals and Thesis progress.
+
+---
+
+### I. V2.32 Core Feature: The Funding Safety Net
+
+Trial 3 confirmed that once Funding hits 0, the player enters a "Teaching Load" death spiral (0.5x speed) that can last indefinitely. V2.32 introduces an active recovery mechanism.
+
+#### 1. Emergency Grant Logic (Pseudo-code)
+
+This action appears *only* when Funding is  3 months, giving players a desperate way to buy back their freedom.
+
+```python
+# logic/grant_engine.py
+
+def action_emergency_grant(state):
+    """High-stakes effort to restore funding and remove Teaching Load."""
+    # Cost: High Morale (Stressful deadline), 2 Months
+    state.morale -= 15
+    state.time_elapsed += 2
+    
+    # Success based on Papers and Advisor Alignment
+    base_chance = 0.4
+    paper_bonus = state.published_papers * 0.15
+    alignment_bonus = (state.strategic_alignment / 100) * 0.2
+    
+    if random() < (base_chance + paper_bonus + alignment_bonus):
+        state.funding += 12
+        state.remove_status("Teaching Load")
+        return "🎉 Grant Approved! You bought yourself another year of research freedom."
+    else:
+        state.morale -= 10
+        return "❌ Rejected. The committee wasn't convinced. You're stuck teaching."
+
+```
+
+---
+
+### II. Core Feature: The Explicit Endgame (Thesis)
+
+The V2.31 QA report noted that "Thesis Mechanics" are visible but their progression is unclear. We will make the endgame mechanics explicit.
+
+#### 1. Thesis Roadmap UI
+
+The "Graduation Progress" card will update to show the *requirements* for the next stage, not just the percentage.
+
+* **0-24%**: "Phase 1: Literature Review. Action: Read Papers / Write Thesis."
+* **25-74%**: "Phase 2: Data Synthesis. Action: Write Thesis (Requires 1 Paper)."
+* **75-99%**: "Phase 3: Defense Prep. Action: Polish Draft (Requires 2 Papers)."
+* **100%**: "Phase 4: Ready to Defend."
+
+#### 2. "Write Thesis" Action Update
+
+The button for "Write Thesis" will now dynamically display its efficiency in the tooltip:
+
+* *Tooltip*: "Progress: +5% (Base) + 2% (Alignment Bonus) = +7% / month."
+
+---
+
+### III. HMI Refinement: Rival & Advisor Visibility
+
+To address the "Rival Progress Hidden" issue, we will move critical hidden stats to the dashboard.
+
+* **Rival Tracker**: A small progress bar under the "Lab Bench" card named "Taylor's Progress."
+* *Visual*: Fills from 0% to 100%. Red pulse animation at >80%.
+* *Interaction*: Hovering reveals "Scoop Risk: High."
+
+
+* **Advisor Tooltip**: Hovering over the Advisor Emoji now explains *why* they are Happy/Neutral.
+* *Tooltip*: "Mood: Neutral. (Last interaction: 3 months ago. Alignment: 15)."
+
+
+
+---
+
+### IV. Strategic Roadmap Update
+
+| Version | **Major Feature Focus** | Impact on Player Agency |
+| --- | --- | --- |
+| **V2.31** | **Rival Logic** | ⚖️ **Fairness** (State-based threats). |
+| **V2.32** | **Grant Recovery** | 💰 **Sustainability** (Escape the Teaching Trap). |
+| **V3.0** | **Gold Release** | 🎓 **Final Polish** (Soundscapes, Achievements, Narrative Endings). |
+
+---
+
+### V. Actionable Implementation Plan for V2.32
+
+1. **Emergency Grant**: Implement `action_emergency_grant` logic and UI trigger (visible only when Funding  3).
+2. **Rival UI**: Add `<div id="rival-progress">` to the Lab Bench card in `index.html`.
+3. **Thesis Tooltips**: Update `ui_controller.js` to calculate and display the exact thesis progress math on hover.
+4. **Save Toast**: Add the "Game Saved!" toast notification requested in the V2.31 QA report.
+
+also draft the **final "Gold Release" (V3.0) checklist**, consolidating all the "Low Priority / Polish" items (Soundscapes, Statistics Page, Achievements) mentioned in the QA reports

@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.31</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.32</span></h1>
         </header>
 
         <div id="app">
@@ -1047,17 +1047,24 @@
                 }
             },
 
-            // V2.23: Update Graduation Progress Card UI with phase display
+            // V2.23/V2.32: Update Graduation Progress Card UI with phase display and roadmap
             updateGraduationCard() {
                 const g = this.state.graduation;
                 const phase = g.thesis_phase || 'PLANNING';
                 const phaseInfo = this.THESIS_PHASES[phase];
 
+                // V2.32: Get thesis roadmap for enhanced display
+                const roadmap = this.getThesisRoadmap();
+
                 // Text updates
                 const papersEl = document.getElementById('papers-progress');
                 const thesisEl = document.getElementById('thesis-progress');
                 if (papersEl) papersEl.textContent = `${g.papers_published} / ${g.papers_required}`;
-                if (thesisEl) thesisEl.textContent = `${g.thesis_progress}%`;
+                if (thesisEl) {
+                    // V2.32: Show efficiency in tooltip
+                    thesisEl.textContent = `${g.thesis_progress}%`;
+                    thesisEl.title = `Efficiency: ${roadmap.efficiency}%/action\n${roadmap.efficiencyBreakdown}`;
+                }
 
                 // Bars
                 const papersBar = document.getElementById('papers-bar');
@@ -1065,18 +1072,20 @@
                 if (papersBar) papersBar.style.width = `${Math.min(100, (g.papers_published / g.papers_required) * 100)}%`;
                 if (thesisBar) thesisBar.style.width = `${g.thesis_progress}%`;
 
-                // V2.23: Defense status with phase info
+                // V2.32: Enhanced defense status with roadmap info
                 const defenseEl = document.getElementById('defense-status');
                 if (defenseEl) {
+                    const rp = roadmap.phase;
                     if (phase === 'DEFENSE_READY') {
-                        defenseEl.innerHTML = `${phaseInfo.emoji} <strong>${phaseInfo.label}</strong><br><span style="font-size: 0.75rem; opacity: 0.8;">${phaseInfo.next}</span>`;
+                        defenseEl.innerHTML = `${rp.icon} <strong>${rp.name}</strong><br><span style="font-size: 0.75rem; opacity: 0.8;">${roadmap.nextAction}</span>`;
                         defenseEl.style.color = 'var(--accent-success)';
                         defenseEl.style.opacity = '1';
                     } else {
-                        defenseEl.innerHTML = `${phaseInfo.emoji} ${phaseInfo.label}<br><span style="font-size: 0.75rem; opacity: 0.6;">Next: ${phaseInfo.next}</span>`;
+                        defenseEl.innerHTML = `${rp.icon} Phase ${rp.num}: ${rp.name}<br><span style="font-size: 0.75rem; opacity: 0.6;">${roadmap.requirements}</span><br><span style="font-size: 0.7rem; opacity: 0.5;">Next: ${roadmap.nextAction}</span>`;
                         defenseEl.style.color = '';
                         defenseEl.style.opacity = '0.85';
                     }
+                    defenseEl.title = `Efficiency: +${roadmap.efficiency}%/action`;
                 }
             },
 
@@ -1691,6 +1700,159 @@
                 if (npc.stress >= 70) return '😠 Stressed';
                 if (npc.stress >= 40) return '😐 Busy';
                 return '🙂 Working';
+            },
+
+            // ===========================================
+            // V2.32: SUSTAINABILITY & CLARITY UPDATE
+            // Visible metrics, thesis roadmap, advisor tooltip
+            // ===========================================
+
+            // V2.32: Get rival progress info for UI display
+            getRivalProgressInfo() {
+                const s = this.state;
+                const rival = (s.labmates || []).find(l => l.archetype === 'The_Rival' && l.active);
+
+                if (!rival) {
+                    return { visible: false };
+                }
+
+                const progress = rival.progress || 0;
+                const stress = rival.stress || 0;
+                const resentment = rival.resentment || 0;
+
+                // Calculate scoop risk
+                let scoopRisk = 'Low';
+                if (progress >= 90 && stress >= 70) {
+                    scoopRisk = 'IMMINENT';
+                } else if (progress >= 80) {
+                    scoopRisk = 'High';
+                } else if (progress >= 50) {
+                    scoopRisk = 'Medium';
+                }
+
+                return {
+                    visible: true,
+                    name: rival.name,
+                    progress: Math.min(100, progress),
+                    stress: stress,
+                    scoopRisk: scoopRisk,
+                    resentment: resentment,
+                    isWarning: rival.warnedAt80 || false,
+                    monthsSinceScoop: s.totalMonths - (rival.lastScoopMonth || 0)
+                };
+            },
+
+            // V2.32: Get thesis roadmap with phase requirements
+            getThesisRoadmap() {
+                const s = this.state;
+                const g = s.graduation || {};
+                const progress = g.thesis_progress || 0;
+                const papers = this.getItem('paper') || 0;
+                const confPapers = Math.floor((s.confPaperCount || 0) / 2);
+                const totalPapers = papers + confPapers;
+
+                // Calculate thesis efficiency
+                const baseProgress = 12;
+                const paperBonus = Math.min(totalPapers * 4, 12);
+                const alignmentBonus = Math.floor((s.strategicAlignment || 0) / 25);
+                const computationalBonus = s.pipelineOptimized ? 50 : 0;
+                const efficiencyPercent = baseProgress + paperBonus + alignmentBonus + Math.floor(computationalBonus * 0.12);
+
+                let phase, requirements, nextAction;
+
+                if (progress >= 100) {
+                    phase = { num: 4, name: 'Ready to Defend', icon: '🎓' };
+                    requirements = 'All requirements met!';
+                    nextAction = 'Schedule your defense.';
+                } else if (progress >= 75) {
+                    phase = { num: 3, name: 'Defense Prep', icon: '📖' };
+                    requirements = `Requires 2+ papers (you have ${totalPapers})`;
+                    nextAction = 'Polish draft, prepare defense.';
+                } else if (progress >= 25) {
+                    phase = { num: 2, name: 'Data Synthesis', icon: '📝' };
+                    requirements = `Requires 1+ paper (you have ${totalPapers})`;
+                    nextAction = 'Write Thesis action.';
+                } else {
+                    phase = { num: 1, name: 'Literature Review', icon: '📋' };
+                    requirements = 'Build foundation';
+                    nextAction = 'Read Papers / Write Thesis.';
+                }
+
+                return {
+                    progress: progress,
+                    phase: phase,
+                    requirements: requirements,
+                    nextAction: nextAction,
+                    efficiency: efficiencyPercent,
+                    efficiencyBreakdown: `+${baseProgress}% base, +${paperBonus}% papers, +${alignmentBonus}% alignment${computationalBonus > 0 ? ', +pipeline' : ''}`
+                };
+            },
+
+            // V2.32: Get advisor mood tooltip with explanation
+            getAdvisorMoodTooltip() {
+                const s = this.state;
+                const adv = s.advisor || {};
+                const tension = adv.tension || 0;
+                const lastMeeting = s.lastAdvisorMeeting || 0;
+                const monthsSinceMeeting = s.totalMonths - lastMeeting;
+                const alignment = s.strategicAlignment || 0;
+
+                let mood, emoji, explanation;
+
+                if (tension >= 80) {
+                    mood = 'Furious';
+                    emoji = '😡';
+                    explanation = 'Ultimatum issued! Immediate attention required.';
+                } else if (tension >= 50) {
+                    mood = 'Frustrated';
+                    emoji = '😤';
+                    explanation = 'Warning signs. Consider meeting soon.';
+                } else if (tension >= 25) {
+                    mood = 'Concerned';
+                    emoji = '😐';
+                    explanation = 'Needs more communication.';
+                } else if (alignment >= 50) {
+                    mood = 'Pleased';
+                    emoji = '😊';
+                    explanation = 'Good alignment with expectations.';
+                } else {
+                    mood = 'Neutral';
+                    emoji = '🙂';
+                    explanation = 'Standard working relationship.';
+                }
+
+                return {
+                    mood: mood,
+                    emoji: emoji,
+                    explanation: explanation,
+                    tension: tension,
+                    alignment: alignment,
+                    monthsSinceMeeting: monthsSinceMeeting,
+                    advisorName: adv.name || 'Advisor',
+                    displayText: `${emoji} ${mood}: ${explanation}\n(Tension: ${tension}, Alignment: ${alignment}, Last meeting: ${monthsSinceMeeting}mo ago)`
+                };
+            },
+
+            // V2.32: Show save toast notification
+            showSaveToast() {
+                const toast = document.createElement('div');
+                toast.className = 'save-toast';
+                toast.innerHTML = '💾 Game Saved!';
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease, fadeOut 0.3s ease 2s forwards;
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2500);
             },
 
             // V2.27: Collaborate with labmate action
@@ -2960,10 +3122,10 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.31'
+                    version: '2.32'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
-                alert('💾 Game saved!');
+                this.showSaveToast(); // V2.32: Toast instead of alert
             },
 
             // Load game

@@ -2,6 +2,47 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.32.0] - 2026-01-08 "Sustainability & Clarity"
+
+**Theme**: Hidden numbers become visible metrics — rivals are legible, thesis efficiency is explicit.
+
+### ⚔️ Rival Progress Visibility
+`getRivalProgressInfo()` exposes:
+
+| Field | Value |
+|-------|-------|
+| progress | 0-100% |
+| scoopRisk | Low/Medium/High/IMMINENT |
+| isWarning | true when 80%+ warning shown |
+| resentment | Coordination tension level |
+
+### 📋 Thesis Roadmap
+`getThesisRoadmap()` provides:
+- **Phase 1 (0-24%)**: Literature Review — Build foundation
+- **Phase 2 (25-74%)**: Data Synthesis — Requires 1+ paper
+- **Phase 3 (75-99%)**: Defense Prep — Requires 2+ papers
+- **Phase 4 (100%)**: Ready to Defend
+
+**Efficiency Display**: Hover thesis progress to see:
+- Base progress per action
+- Paper bonus
+- Alignment bonus
+- Pipeline bonus (computational)
+
+### 😊 Advisor Mood Tooltip
+`getAdvisorMoodTooltip()` explains:
+- Current mood (Furious → Pleased)
+- Tension level
+- Alignment level
+- Months since last meeting
+
+### 💾 Save Toast Notification
+- Replaced intrusive `alert()` with smooth toast
+- Appears bottom-right for 2.5 seconds
+- Animated slide-in/fade-out
+
+---
+
 ## [2.31.0] - 2026-01-08 "Pressure With Telegraphs"
 
 **Theme**: Every punishment is now visible, delayable, or tradeable — pressure becomes strategy.
