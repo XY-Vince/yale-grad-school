@@ -2,6 +2,48 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.29.0] - 2026-01-08 "Academic Survival"
+
+**Theme**: Waiting becomes decision-making under pressure — funding suffocates, reviews demand responses.
+
+### 📊 Centralized Modifier System
+All status effects now use a central resolver:
+
+| Modifier | Teaching Load | Fresh Perspective | Exhaustion |
+|----------|---------------|-------------------|------------|
+| Research Speed | ×0.5 | ×1.2 | ×0.8 |
+| Thesis Speed | ×0.6 | — | ×0.8 |
+| Stress Gain | +20% | -20% | +50% |
+
+### 🔧 STATUS_EFFECTS Constant
+- `getEffectiveResearchSpeed()` - central research modifier
+- `getEffectiveThesisSpeed()` - central thesis modifier
+- `getEffectiveStressGain()` - central stress modifier
+- `getTeachingLoadPenaltyText()` - tooltip pollution
+
+### 💰 Enhanced Funding Warnings
+- **12 months**: Early warning, suggest networking
+- **6 months**: Critical warning with urgency
+- **0 months**: Teaching Load applied with full breakdown
+
+### 📬 Interactive Peer Review
+When reviewers respond, players must choose:
+- **📝 Polite Revision**: +1 month, +25% acceptance, +3 alignment
+- **⚔️ Aggressive Rebuttal**: -10 morale, +15% acceptance (advisor-sensitive!)
+- **⏳ Delay Response**: +1 month delay, -10% acceptance (stacking)
+
+### 🎭 Advisor-Sensitive Responses
+- **Tormentor**: Approves aggressive rebuttals (+2 alignment)
+- **Mentor**: Disapproves aggressive rebuttals (-5 alignment, +10 tension)
+- **Ghost**: Neutral
+
+### 📅 Integration
+- `triggerReviewFeedback()` in advanceMonth()
+- Review actions appear when feedback available
+- Teaching Load penalty shown in tooltips
+
+---
+
 ## [2.28.0] - 2026-01-08 "Conferences 2.0"
 
 **Theme**: GradQuest stops being claustrophobic — conferences become strategic resets, funding becomes oxygen.

@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.28</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.29</span></h1>
         </header>
 
         <div id="app">
@@ -1885,14 +1885,17 @@
                     }
                 }
 
-                // Warnings and consequences
+                // V2.29: Enhanced funding warnings at 12/6/0
+                if (s.fundingMonths === 12) {
+                    this.appendSystemEvent(`⚠️ Funding warning: 12 months remaining.\nConsider conference networking or grant applications.`);
+                }
                 if (s.fundingMonths === 6) {
-                    this.appendSystemEvent(`⚠️ Funding running low (6 months remaining).`);
+                    this.appendSystemEvent(`🚨 FUNDING CRITICALLY LOW (6 months remaining)\nTeaching Load imminent without action.`);
                 }
 
                 if (s.fundingMonths <= 0 && !this.hasStatus('teaching_load')) {
                     this.addStatus('teaching_load');
-                    this.appendSystemEvent(`📚 Funding exhausted!\nTeaching duties slow your research by 50%.`);
+                    this.appendSystemEvent(`📚 FUNDING EXHAUSTED!\nTeaching Load applied:\n• Research speed: ×0.5\n• Thesis progress: ×0.6\n• Stress gain: +20%\n"You teach to survive now."`);
                 }
 
                 // Fresh Perspective expires
@@ -1900,6 +1903,191 @@
                     this.removeStatus('fresh_perspective');
                     s.freshPerspectiveUntil = null;
                 }
+            },
+
+            // ===========================================
+            // V2.29: ACADEMIC SURVIVAL SYSTEM
+            // Centralized modifiers, interactive peer review
+            // ===========================================
+
+            // V2.29: Status effects with centralized modifiers
+            STATUS_EFFECTS: {
+                'teaching_load': {
+                    id: 'teaching_load',
+                    name: 'Teaching Load',
+                    icon: '📚',
+                    description: 'Heavy teaching duties slow all research progress.',
+                    modifiers: {
+                        researchSpeed: 0.5,
+                        thesisSpeed: 0.6,
+                        stressGain: 1.2
+                    }
+                },
+                'fresh_perspective': {
+                    id: 'fresh_perspective',
+                    name: 'Fresh Perspective',
+                    icon: '✨',
+                    description: 'Conference insights boost creativity.',
+                    modifiers: {
+                        researchSpeed: 1.2,
+                        stressGain: 0.8,
+                        ideaBonus: 1.2
+                    }
+                },
+                'exhaustion': {
+                    id: 'exhaustion',
+                    name: 'Exhausted',
+                    icon: '😫',
+                    description: 'Burnout slows everything.',
+                    modifiers: {
+                        researchSpeed: 0.8,
+                        thesisSpeed: 0.8,
+                        stressGain: 1.5
+                    }
+                }
+            },
+
+            // V2.29: Central modifier resolver - research speed
+            getEffectiveResearchSpeed() {
+                let speed = 1.0;
+
+                if (this.hasStatus('teaching_load')) {
+                    speed *= this.STATUS_EFFECTS['teaching_load'].modifiers.researchSpeed;
+                }
+                if (this.hasStatus('exhaustion')) {
+                    speed *= this.STATUS_EFFECTS['exhaustion'].modifiers.researchSpeed;
+                }
+                if (this.hasStatus('fresh_perspective')) {
+                    speed *= this.STATUS_EFFECTS['fresh_perspective'].modifiers.researchSpeed;
+                }
+
+                return speed;
+            },
+
+            // V2.29: Central modifier resolver - thesis speed
+            getEffectiveThesisSpeed() {
+                let speed = 1.0;
+
+                if (this.hasStatus('teaching_load')) {
+                    speed *= this.STATUS_EFFECTS['teaching_load'].modifiers.thesisSpeed;
+                }
+                if (this.hasStatus('exhaustion')) {
+                    speed *= this.STATUS_EFFECTS['exhaustion'].modifiers.thesisSpeed;
+                }
+
+                return speed;
+            },
+
+            // V2.29: Central modifier resolver - stress gain
+            getEffectiveStressGain() {
+                let multiplier = 1.0;
+
+                if (this.hasStatus('teaching_load')) {
+                    multiplier *= this.STATUS_EFFECTS['teaching_load'].modifiers.stressGain;
+                }
+                if (this.hasStatus('exhaustion')) {
+                    multiplier *= this.STATUS_EFFECTS['exhaustion'].modifiers.stressGain;
+                }
+                if (this.hasStatus('fresh_perspective')) {
+                    multiplier *= this.STATUS_EFFECTS['fresh_perspective'].modifiers.stressGain;
+                }
+
+                return multiplier;
+            },
+
+            // V2.29: Get teaching load penalty text for tooltips
+            getTeachingLoadPenaltyText() {
+                if (!this.hasStatus('teaching_load')) return '';
+                return '\n📚 Teaching Load: −50% research speed';
+            },
+
+            // V2.29: Interactive Peer Review - get choices for pending paper
+            getPendingReviewChoices(paperIndex) {
+                const s = this.state;
+                if (!s.pendingPapers || !s.pendingPapers[paperIndex]) return [];
+
+                const paper = s.pendingPapers[paperIndex];
+                if (!paper.feedbackAvailable) return [];
+
+                return [
+                    {
+                        id: 'review_polite',
+                        name: '📝 Polite Revision',
+                        desc: '+1 month, +25% acceptance, +3 alignment'
+                    },
+                    {
+                        id: 'review_aggressive',
+                        name: '⚔️ Aggressive Rebuttal',
+                        desc: '-10 morale, +15% acceptance, risk advisor disapproval'
+                    },
+                    {
+                        id: 'review_delay',
+                        name: '⏳ Delay Response',
+                        desc: '+1 month delay, -10% acceptance (stacking)'
+                    }
+                ];
+            },
+
+            // V2.29: Resolve peer review response
+            resolveReviewResponse(paperIndex, responseType) {
+                const s = this.state;
+                if (!s.pendingPapers || !s.pendingPapers[paperIndex]) return null;
+
+                const paper = s.pendingPapers[paperIndex];
+                let msg = '';
+
+                switch (responseType) {
+                    case 'review_polite':
+                        paper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 1;
+                        paper.bonusChance = (paper.bonusChance || 0) + 0.25;
+                        s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 3);
+                        paper.feedbackAvailable = false;
+                        msg = `📝 Polite Revision submitted.\n+1 month review time\n+25% acceptance chance\n+3 advisor alignment\n"Diplomacy has its merits."`;
+                        break;
+
+                    case 'review_aggressive':
+                        s.morale = Math.max(0, s.morale - 10);
+                        paper.bonusChance = (paper.bonusChance || 0) + 0.15;
+                        paper.feedbackAvailable = false;
+
+                        // Advisor-sensitive risk
+                        const advisorType = s.advisor?.archetype;
+                        if (advisorType === 'The_Tormentor') {
+                            s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 2);
+                            msg = `⚔️ Aggressive Rebuttal submitted.\n-10 morale, +15% acceptance\n${s.advisor?.emoji} "${s.advisor?.name} approves: 'Show them who's right.'"`;
+                        } else if (advisorType === 'The_Mentor') {
+                            s.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 5);
+                            s.advisor.tension = Math.min(100, (s.advisor.tension || 0) + 10);
+                            msg = `⚔️ Aggressive Rebuttal submitted.\n-10 morale, +15% acceptance, -5 alignment\n${s.advisor?.emoji} "${s.advisor?.name} sighs: 'That wasn't necessary.'"`;
+                        } else {
+                            msg = `⚔️ Aggressive Rebuttal submitted.\n-10 morale, +15% acceptance\n"Bold move. We'll see if it pays off."`;
+                        }
+                        break;
+
+                    case 'review_delay':
+                        paper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 1;
+                        paper.bonusChance = (paper.bonusChance || 0) - 0.10;
+                        paper.delayPenalties = (paper.delayPenalties || 0) + 1;
+                        paper.feedbackAvailable = false;
+                        msg = `⏳ Response delayed.\n+1 month wait\n-10% acceptance chance\n"The reviewers are getting impatient..."`;
+                        break;
+                }
+
+                return msg;
+            },
+
+            // V2.29: Trigger feedback for pending papers
+            triggerReviewFeedback() {
+                const s = this.state;
+                if (!s.pendingPapers) return;
+
+                s.pendingPapers.forEach((paper, index) => {
+                    // 30% chance to receive feedback each month if not already available
+                    if (!paper.feedbackAvailable && this.random() < 0.3) {
+                        paper.feedbackAvailable = true;
+                        this.appendSystemEvent(`📬 Reviewer feedback received for your paper!\nChoose how to respond.`);
+                    }
+                });
             },
 
             // ===========================================
@@ -2493,7 +2681,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.28'
+                    version: '2.29'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -2714,6 +2902,9 @@
                 // V2.28: Funding and conference system
                 this.monthlyFundingTick();
                 this.spawnConferenceInvite();
+
+                // V2.29: Check for reviewer feedback
+                this.triggerReviewFeedback();
 
                 if (this.state.month > 12) {
                     this.state.month = 1;
@@ -3451,6 +3642,23 @@
                     });
                 }
 
+                // V2.29: Interactive peer review responses
+                if (s.pendingPapers) {
+                    s.pendingPapers.forEach((paper, index) => {
+                        if (paper.feedbackAvailable) {
+                            const reviewChoices = this.getPendingReviewChoices(index);
+                            reviewChoices.forEach(choice => {
+                                actions.push({
+                                    id: `${choice.id}_${index}`,
+                                    name: choice.name,
+                                    desc: `📬 Paper Review: ${choice.desc}${this.getTeachingLoadPenaltyText()}`,
+                                    telemetry: 'peer_review'
+                                });
+                            });
+                        }
+                    });
+                }
+
                 actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Skip to next month' });
 
                 return actions;
@@ -3918,6 +4126,16 @@
                     case 'conf_skip':
                         msg = this.resolveConferenceChoice(id);
                         break;
+
+                    // V2.29: Interactive peer review responses
+                    default:
+                        if (id.startsWith('review_polite_') || id.startsWith('review_aggressive_') || id.startsWith('review_delay_')) {
+                            const parts = id.split('_');
+                            const paperIndex = parseInt(parts[parts.length - 1]);
+                            const responseType = parts.slice(0, -1).join('_');
+                            msg = this.resolveReviewResponse(paperIndex, responseType);
+                            if (msg) break;
+                        }
 
                     // V2.17: High-Throughput Experiment
                     case 'high_throughput':

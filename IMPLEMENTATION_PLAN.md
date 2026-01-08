@@ -3437,3 +3437,257 @@ If you ship it correctly:
 What this unlocks next
 
 V2.29 (Grant Writing) will suddenly matter — because players have felt what running out of funding does.
+
+You’re at the systems-design endgame now. V2.29 is where GradQuest stops being “a clever simulator” and becomes a pressure-based management game. I’ll be direct and surgical.
+
+Below is a clean continuation to V2.29, with:
+	1.	Hard-truth diagnosis of the current failure mode
+	2.	Design intent for V2.29 (what must change emotionally)
+	3.	Solid, scoped improvement plan with actionable items
+	4.	Concrete JavaScript for the Teaching Load status effect
+
+⸻
+
+I. The Real Problem V2.29 Must Solve (Hard Truth)
+
+The issue is not that reviews take 8–12 months.
+
+The issue is that nothing meaningful happens during those months.
+
+Right now:
+	•	Waiting is passive
+	•	Funding decay is abstract
+	•	Thesis progress is gated but unexplained
+	•	“Next Month” is still the dominant action
+
+V2.29 must do one thing extremely well:
+
+Turn waiting into decision-making under pressure.
+
+Funding + Reviews + Teaching Load must form a closed loop:
+	•	Reviews consume time
+	•	Time consumes funding
+	•	No funding forces teaching
+	•	Teaching slows research
+	•	Slower research delays reviews
+
+That’s a real academic trap — and it’s playable.
+
+⸻
+
+II. V2.29 Design Principles (Lock These In)
+
+1. Funding Is Not Just a Timer
+
+Funding is a state switch:
+	•	Funded → Researcher
+	•	Unfunded → Instructor who researches at night
+
+No ambiguity. No soft penalties.
+
+⸻
+
+2. Reviews Must Offer Tradeoffs
+
+Every review response must force:
+	•	Speed vs. morale
+	•	Politeness vs. assertiveness
+	•	Burn time vs. burn reputation
+
+If all responses are “+20% accept,” you’ve failed.
+
+⸻
+
+3. Teaching Load Must Be Felt Everywhere
+
+If funding hits zero and players barely notice, the system is broken.
+
+Teaching Load should:
+	•	Visibly slow bars
+	•	Pollute tooltips
+	•	Change advisor dialogue tone
+	•	Alter conference outcomes later
+
+⸻
+
+III. V2.29 Solid Improvement Plan (Actionable & Contained)
+
+A. Funding Engine (Finalize It)
+
+What to ship
+	•	Funding months tick every turn
+	•	Visual warnings at 12 / 6 / 0 months
+	•	Teaching Load auto-applies at 0
+
+Critical rule
+
+Funding loss should never be instant death — it should be long-term suffocation.
+
+⸻
+
+B. Interactive Peer Review (Make Waiting Playable)
+
+Review States (Must Implement)
+
+State	Player Agency
+Under Review	None (baseline)
+Feedback Available	Player choice required
+Revision Submitted	Acceptance chance updated
+Final Decision	Outcome
+
+Reviewer Response Actions
+	•	Polite Revision
+	•	Costs: 1 month
+	•	Effect: +25% acceptance
+	•	Bonus: Advisor alignment +3
+	•	Aggressive Rebuttal
+	•	Costs: -10 morale
+	•	Effect: +15% acceptance
+	•	Risk: Advisor disapproval (archetype-sensitive)
+	•	Ignore / Delay
+	•	Costs: +1 month auto-pass
+	•	Effect: -10% acceptance (stacking)
+
+⸻
+
+C. Teaching Load (The Mid-Game Punisher)
+
+Teaching Load must:
+	•	Apply immediately
+	•	Persist until funding restored
+	•	Be visible everywhere
+
+Effects:
+	•	Research progress ×0.5
+	•	Thesis writing ×0.6
+	•	Stress gain +20%
+	•	Advisor tone changes (“You’re stretched thin.”)
+
+⸻
+
+D. HMI: Make the Pressure Obvious
+
+Mandatory UI changes
+	•	Funding bar with red flashing at ≤6 months
+	•	Teaching Load icon (📚) next to date
+	•	Tooltip pollution: every research action shows penalty
+	•	Publication card shows who is waiting on whom
+
+⸻
+
+IV. V2.29 Actionable Checklist (What You Actually Code)
+	1.	Funding Clock
+	•	Decrement monthly
+	•	Trigger Teaching Load at 0
+	2.	Teaching Load Status
+	•	Centralized modifier (not hardcoded per action)
+	3.	Review Interaction UI
+	•	Modal with 2–3 response choices
+	•	Acceptance chance visibly changes
+	4.	Tabbed Action Panel
+	•	Ship now or everything else collapses
+
+⸻
+
+V. JavaScript: Teaching Load Status Effect (Core Logic)
+
+This must be centralized — do not sprinkle * 0.5 everywhere.
+
+1. Status Definition
+
+// logic/status_effects.js
+
+const STATUS_EFFECTS = {
+  TEACHING_LOAD: {
+    id: "Teaching Load",
+    icon: "📚",
+    description: "Heavy teaching duties slow all research progress.",
+    modifiers: {
+      researchSpeed: 0.5,
+      thesisSpeed: 0.6,
+      stressGain: 1.2
+    }
+  }
+};
+
+
+⸻
+
+2. Apply When Funding Hits Zero
+
+// logic/funding_engine.js
+
+function checkFunding(state) {
+  state.fundingMonths -= 1;
+
+  if (state.fundingMonths === 6) {
+    ui.notify("⚠️ Funding critically low (6 months remaining)");
+  }
+
+  if (state.fundingMonths <= 0 && !state.hasStatus("Teaching Load")) {
+    state.addStatus("Teaching Load");
+    log("📚 Funding exhausted. You are now teaching to survive.");
+    ui.refreshStatusBar();
+  }
+}
+
+
+⸻
+
+3. Central Modifier Resolver (Critical)
+
+// logic/modifier_engine.js
+
+function getEffectiveResearchSpeed(state) {
+  let speed = state.baseResearchSpeed || 1.0;
+
+  if (state.hasStatus("Teaching Load")) {
+    speed *= STATUS_EFFECTS.TEACHING_LOAD.modifiers.researchSpeed;
+  }
+
+  if (state.hasStatus("Exhausted")) {
+    speed *= 0.8;
+  }
+
+  return speed;
+}
+
+
+⸻
+
+4. Use It Everywhere (Example: Findings)
+
+function actionDevelopFindings(state) {
+  const speed = getEffectiveResearchSpeed(state);
+  const progress = Math.floor(20 * speed);
+
+  state.findingsProgress += progress;
+  state.stressMeter += 15 * (state.hasStatus("Teaching Load") ? 1.2 : 1.0);
+
+  log(`🧪 Findings progressed by ${progress}%.`);
+}
+
+
+⸻
+
+5. UI Tooltip Pollution (Important)
+
+Every research action tooltip should append:
+
+📚 Teaching Load: −50% research speed
+
+This is not optional. Pain must be visible.
+
+⸻
+
+Final Assessment
+
+V2.29 is the “academic survival” patch.
+
+If done right:
+	•	Waiting becomes stressful but meaningful
+	•	Funding becomes strategic, not cosmetic
+	•	Reviews feel adversarial and human
+	•	Teaching Load turns complacency into regret
+
+This sets up V2.30 (Thesis Dashboard) perfectly — because now players desperately want clarity.
