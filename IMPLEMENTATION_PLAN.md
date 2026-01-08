@@ -3158,3 +3158,282 @@ function applyCollaborationDependency(state, npc) {
 Final Assessment
 
 V2.27 is the inflection point where GradQuest stops being “you vs RNG” and becomes “you vs a system of people.”
+
+Excellent timing. V2.28 is the release where GradQuest finally gets a “world outside the lab,” and you’re right to frame Conferences 2.0 as an escape hatch, not a vanity button.
+
+Below I’ll do four things, in order:
+	1.	Critical synthesis of the V2.27 failure mode (why stagnation happens)
+	2.	Refined V2.28 design principles (what Conferences 2.0 must do)
+	3.	Solid, scoped improvement plan with actionable items
+	4.	Concrete JavaScript logic for the Funding Manager + Travel integration
+
+I’ll be blunt where needed.
+
+⸻
+
+I. Why V2.27 Produced “Insular Stagnation” (Root Cause)
+
+The doom loop exists because:
+	•	🔁 All recovery tools are local (lab, advisor, wellness)
+	•	🧠 Stress accumulates faster than it decays
+	•	🎲 RNG failures compound in the same environment
+	•	🚫 Conference = stat injection, not state change
+
+In other words:
+Players never leave the system that is hurting them.
+
+Conferences must:
+	•	Temporarily suspend lab rules
+	•	Reset psychological state
+	•	Introduce external validation or rejection
+	•	Cost something non-trivial (funding, time, exposure)
+
+If Conferences don’t feel dangerous and liberating, they won’t fix stagnation.
+
+⸻
+
+II. V2.28 Design Principles (Non-Negotiable)
+
+1. Conferences Are a Different Mode
+
+When traveling:
+	•	Lab crises pause
+	•	Advisor archetype influence weakens
+	•	NPC sabotage is disabled
+	•	Morale rules change
+
+This is crucial. Conferences must break causality.
+
+⸻
+
+2. Every Conference Is a Choice, Not an Upgrade
+
+Players must choose:
+	•	Visibility vs safety
+	•	Networking vs exhaustion recovery
+	•	Credit vs reputation
+
+If there’s a “best option,” the system fails.
+
+⸻
+
+3. Funding Is the Gate, Not RNG
+
+Travel should fail because:
+	•	You didn’t plan funding
+	•	You over-collaborated
+	•	You spent months firefighting lab issues
+
+Not because of dice rolls.
+
+⸻
+
+III. V2.28 Solid Improvement Plan (Actionable & Shippable)
+
+A. Conference System (Must Ship)
+
+Core mechanics
+	•	Seasonal invitations (Spring / Summer only)
+	•	Tiered conferences (Local / National / International)
+	•	Choice-driven outcomes
+	•	Travel suspends lab-based penalties
+
+Actions
+	•	Poster Presentation (safe, small gains)
+	•	Talk (high variance, reputation risk)
+	•	Networking Mixer (“party mode”)
+	•	Skip Conference (sometimes optimal!)
+
+⸻
+
+B. Mental Health Reset (Must Ship)
+
+Fresh Perspective buff
+	•	Duration: 3 months
+	•	Effects:
+	•	Freeze Exhaustion accumulation
+	•	+20% Idea generation
+	•	Morale decay capped at -1/month
+
+Only from International conferences.
+
+⸻
+
+C. Funding Integration (Must Ship)
+
+Funding Months
+	•	Hard currency
+	•	Used for:
+	•	International travel
+	•	Grant bridging
+	•	Emergency advisor favors (future)
+
+Running out does not end the game — it changes it.
+
+⸻
+
+D. UI / HMI (Must Ship)
+	•	Travel tab appears only with active invite
+	•	Funding displayed next to date
+	•	Conference invitation expires
+	•	Post-conference buffs visible as icons
+
+⸻
+
+E. Explicitly NOT in V2.28
+	•	Visa issues
+	•	Family emergencies
+	•	Inter-department politics
+(Those belong in V2.30+)
+
+⸻
+
+IV. JavaScript: Funding Manager & Travel Integration
+
+Below is a clean, engine-ready implementation tying funding to conferences.
+
+⸻
+
+1. Funding Manager Core
+
+// logic/funding_manager.js
+
+const FundingManager = {
+  canAfford(cost, state) {
+    return state.fundingMonths >= cost;
+  },
+
+  spend(cost, state) {
+    state.fundingMonths -= cost;
+    state.fundingMonths = Math.max(0, state.fundingMonths);
+    ui.updateFunding();
+  },
+
+  add(months, state) {
+    state.fundingMonths += months;
+    ui.updateFunding();
+  }
+};
+
+
+⸻
+
+2. Conference Invitation Spawner
+
+// logic/conference_engine.js
+
+function spawnConferenceInvites(state) {
+  const season = getSeason(state.month);
+
+  const available = ruleset.conferences.filter(c => c.season === season);
+
+  if (available.length === 0) return;
+
+  const invite = weightedRandom(available);
+  state.activeConference = {
+    ...invite,
+    expiresIn: 1
+  };
+
+  ui.notify(`📩 Invitation: ${invite.name} (${season})`);
+}
+
+
+⸻
+
+3. Travel & Attendance Logic
+
+function attendConference(state) {
+  const conf = state.activeConference;
+  if (!conf) return;
+
+  const fundingCost = conf.cost.funding;
+
+  if (!FundingManager.canAfford(fundingCost, state)) {
+    ui.alert("❌ Insufficient funding for travel.");
+    return;
+  }
+
+  FundingManager.spend(fundingCost, state);
+
+  // Suspend lab penalties
+  state.flags.atConference = true;
+
+  const choice = ui.choose(conf.options);
+  resolveConferenceChoice(choice, state);
+
+  state.activeConference = null;
+  state.flags.atConference = false;
+}
+
+
+⸻
+
+4. Resolving Conference Choices
+
+function resolveConferenceChoice(choice, state) {
+  if (choice.action === "Networking Mixer") {
+    state.peerNetwork += 30;
+    state.stressMeter = Math.max(0, state.stressMeter - 40);
+    state.addStatus("Fresh Perspective", 3);
+
+    log("🍷 Late nights, new faces. You return energized.");
+  }
+
+  if (choice.action === "Give Talk") {
+    const success = Math.random() <
+      (0.6 + state.strategicAlignment * 0.005);
+
+    if (success) {
+      state.peerNetwork += 20;
+      state.reputation += 10;
+      state.morale += 15;
+      log("🎤 Your talk sparked real interest.");
+    } else {
+      state.morale -= 10;
+      log("🎤 Tough questions. You’ll refine the story.");
+    }
+  }
+
+  if (choice.action === "Poster Presentation") {
+    state.peerNetwork += 5;
+    state.morale += 5;
+    log("🖼️ Solid conversations. Low risk, steady gain.");
+  }
+}
+
+
+⸻
+
+5. Funding Tick (Per Month)
+
+function monthlyFundingTick(state) {
+  state.fundingMonths -= 1;
+
+  if (state.fundingMonths === 6) {
+    ui.notify("⚠️ Funding running low (6 months remaining).");
+  }
+
+  if (state.fundingMonths <= 0) {
+    state.addStatus("Teaching Load");
+    state.researchSpeedModifier *= 0.5;
+    log("📚 Funding exhausted. Teaching duties slow your research.");
+  }
+}
+
+
+⸻
+
+Final Judgment
+
+V2.28 is the release where GradQuest stops being claustrophobic.
+
+If you ship it correctly:
+	•	Conferences become strategic resets
+	•	Funding becomes psychological oxygen
+	•	Mid-game stagnation turns into planning tension
+	•	Players learn when to leave, not just grind harder
+
+What this unlocks next
+
+V2.29 (Grant Writing) will suddenly matter — because players have felt what running out of funding does.

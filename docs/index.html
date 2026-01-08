@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.27</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.28</span></h1>
         </header>
 
         <div id="app">
@@ -1677,6 +1677,232 @@
             },
 
             // ===========================================
+            // V2.28: CONFERENCE SYSTEM 2.0
+            // Conferences as strategic resets, funding as oxygen
+            // ===========================================
+
+            // V2.28: Conference tiers with costs and benefits
+            CONFERENCE_TIERS: {
+                'local': {
+                    name: 'Local Workshop',
+                    emoji: '📍',
+                    fundingCost: 0,
+                    season: ['spring', 'fall'],
+                    networkGain: 5,
+                    freshPerspective: false,
+                    description: 'Low stakes, low reward'
+                },
+                'national': {
+                    name: 'National Conference',
+                    emoji: '🏛️',
+                    fundingCost: 2,
+                    season: ['spring', 'summer'],
+                    networkGain: 15,
+                    freshPerspective: false,
+                    description: 'Solid visibility, moderate cost'
+                },
+                'international': {
+                    name: 'International Conference',
+                    emoji: '🌍',
+                    fundingCost: 4,
+                    season: ['summer'],
+                    networkGain: 30,
+                    freshPerspective: true,
+                    description: 'High stakes, high reward, Fresh Perspective buff'
+                }
+            },
+
+            // V2.28: Check if can afford conference
+            canAffordConference(tier) {
+                const conf = this.CONFERENCE_TIERS[tier];
+                return (this.state.fundingMonths || 0) >= conf.fundingCost;
+            },
+
+            // V2.28: Spend funding
+            spendFunding(cost) {
+                this.state.fundingMonths = Math.max(0, (this.state.fundingMonths || 0) - cost);
+            },
+
+            // V2.28: Get current season
+            getSeason() {
+                const month = this.state.month;
+                if (month >= 3 && month <= 5) return 'spring';
+                if (month >= 6 && month <= 8) return 'summer';
+                if (month >= 9 && month <= 11) return 'fall';
+                return 'winter';
+            },
+
+            // V2.28: Spawn conference invitation (run monthly)
+            spawnConferenceInvite() {
+                const s = this.state;
+                const season = this.getSeason();
+
+                // Clear expired invites
+                if (s.activeConference && s.activeConference.expiresIn <= 0) {
+                    s.activeConference = null;
+                }
+
+                // Don't spawn if already have invite
+                if (s.activeConference) return;
+
+                // Find conferences available this season
+                const available = Object.entries(this.CONFERENCE_TIERS)
+                    .filter(([_, conf]) => conf.season.includes(season));
+
+                if (available.length === 0) return;
+
+                // Random chance to get invite (higher in summer)
+                const inviteChance = season === 'summer' ? 0.4 : 0.2;
+                if (this.random() > inviteChance) return;
+
+                // Pick a random tier weighted toward lower tiers
+                const weights = { local: 0.5, national: 0.35, international: 0.15 };
+                const roll = this.random();
+                let tier = 'local';
+                if (roll > 0.5) tier = 'national';
+                if (roll > 0.85 && season === 'summer') tier = 'international';
+
+                const conf = this.CONFERENCE_TIERS[tier];
+
+                s.activeConference = {
+                    tier: tier,
+                    ...conf,
+                    expiresIn: 2 // expires in 2 months
+                };
+
+                this.appendSystemEvent(`📩 Conference Invitation!\n${conf.emoji} ${conf.name}\nCost: ${conf.fundingCost} funding months\nExpires in 2 months`);
+            },
+
+            // V2.28: Get conference action choices
+            getConferenceChoices() {
+                const s = this.state;
+                if (!s.activeConference) return [];
+
+                const conf = s.activeConference;
+                const choices = [];
+
+                if (this.canAffordConference(conf.tier)) {
+                    choices.push({
+                        id: 'conf_poster',
+                        name: '🖼️ Poster Presentation',
+                        desc: `Safe: +${Math.floor(conf.networkGain * 0.3)} network, +5 morale`
+                    });
+                    choices.push({
+                        id: 'conf_talk',
+                        name: '🎤 Give Talk',
+                        desc: `Risky: 60% +${conf.networkGain} network, +15 morale; 40% -10 morale`
+                    });
+                    choices.push({
+                        id: 'conf_network',
+                        name: '🍷 Networking Mixer',
+                        desc: `+${conf.networkGain} network, +15 morale, -40 stress${conf.freshPerspective ? ', +Fresh Perspective' : ''}`
+                    });
+                }
+
+                choices.push({
+                    id: 'conf_skip',
+                    name: '❌ Skip Conference',
+                    desc: 'Save funding, lose opportunity'
+                });
+
+                return choices;
+            },
+
+            // V2.28: Resolve conference choice
+            resolveConferenceChoice(choiceId) {
+                const s = this.state;
+                const conf = s.activeConference;
+                if (!conf) return null;
+
+                let msg = '';
+
+                // Suspend lab penalties during conference
+                s.atConference = true;
+
+                switch (choiceId) {
+                    case 'conf_poster':
+                        this.spendFunding(conf.fundingCost);
+                        s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + Math.floor(conf.networkGain * 0.3));
+                        s.morale = Math.min(100, s.morale + 5);
+                        msg = `🖼️ Poster Presentation at ${conf.name}!\n+${Math.floor(conf.networkGain * 0.3)} network, +5 morale\n"Solid conversations. Low risk, steady gain."`;
+                        break;
+
+                    case 'conf_talk':
+                        this.spendFunding(conf.fundingCost);
+                        const talkSuccess = this.random() < (0.6 + (s.strategicAlignment || 0) * 0.003);
+                        if (talkSuccess) {
+                            s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain);
+                            s.morale = Math.min(100, s.morale + 15);
+                            msg = `🎤 Your talk at ${conf.name} was a hit!\n+${conf.networkGain} network, +15 morale\n"Your talk sparked real interest."`;
+                        } else {
+                            s.morale = Math.max(0, s.morale - 10);
+                            msg = `🎤 Tough questions at ${conf.name}.\n-10 morale\n"You'll refine the story."`;
+                        }
+                        break;
+
+                    case 'conf_network':
+                        this.spendFunding(conf.fundingCost);
+                        s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain);
+                        s.morale = Math.min(100, s.morale + 15);
+                        s.stress = Math.max(0, (s.stress || 0) - 40);
+
+                        if (conf.freshPerspective) {
+                            this.addStatus('fresh_perspective');
+                            s.freshPerspectiveUntil = s.totalMonths + 3;
+                            msg = `🍷 Networking at ${conf.name}!\n+${conf.networkGain} network, +15 morale, -40 stress\n✨ Fresh Perspective gained (3 months)\n"Late nights, new faces. You return energized."`;
+                        } else {
+                            msg = `🍷 Networking at ${conf.name}!\n+${conf.networkGain} network, +15 morale, -40 stress\n"Great conversations and new connections."`;
+                        }
+                        break;
+
+                    case 'conf_skip':
+                        msg = `❌ Skipped ${conf.name}.\nSaved ${conf.fundingCost} funding months.\n"Sometimes staying put is the right call."`;
+                        break;
+                }
+
+                s.activeConference = null;
+                s.atConference = false;
+
+                return msg;
+            },
+
+            // V2.28: Monthly funding tick
+            monthlyFundingTick() {
+                const s = this.state;
+
+                // Decrease funding each month
+                s.fundingMonths = Math.max(0, (s.fundingMonths || 0) - 0.5);
+
+                // Tick down conference expiration
+                if (s.activeConference) {
+                    s.activeConference.expiresIn -= 1;
+                    if (s.activeConference.expiresIn === 1) {
+                        this.appendSystemEvent(`⏰ Conference invite expires next month!`);
+                    }
+                    if (s.activeConference.expiresIn <= 0) {
+                        this.appendSystemEvent(`❌ Conference invitation expired.`);
+                        s.activeConference = null;
+                    }
+                }
+
+                // Warnings and consequences
+                if (s.fundingMonths === 6) {
+                    this.appendSystemEvent(`⚠️ Funding running low (6 months remaining).`);
+                }
+
+                if (s.fundingMonths <= 0 && !this.hasStatus('teaching_load')) {
+                    this.addStatus('teaching_load');
+                    this.appendSystemEvent(`📚 Funding exhausted!\nTeaching duties slow your research by 50%.`);
+                }
+
+                // Fresh Perspective expires
+                if (s.freshPerspectiveUntil && s.totalMonths >= s.freshPerspectiveUntil) {
+                    this.removeStatus('fresh_perspective');
+                    s.freshPerspectiveUntil = null;
+                }
+            },
+
+            // ===========================================
             // V2.19: GAME MODE SYSTEM
             // Automatically switches based on game state
             // ===========================================
@@ -2154,6 +2380,12 @@
                     peerReviewShieldActive: false,
                     equipmentStabilizedUntil: 0, // V2.24: Preventive calibration
 
+                    // V2.28: Funding and Conference System
+                    fundingMonths: 36,           // 3 years of funding (burns 0.5/month)
+                    activeConference: null,      // Current conference invitation
+                    atConference: false,         // Suspends lab penalties
+                    freshPerspectiveUntil: 0,    // When Fresh Perspective expires
+
                     // V2.22: Priority Notification Queue
                     pendingNotifications: [],    // { type, severity, message }
 
@@ -2261,7 +2493,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.27'
+                    version: '2.28'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -2478,6 +2710,10 @@
 
                 // V2.27: Process labmates each month
                 this.processLabmates();
+
+                // V2.28: Funding and conference system
+                this.monthlyFundingTick();
+                this.spawnConferenceInvite();
 
                 if (this.state.month > 12) {
                     this.state.month = 1;
@@ -3202,6 +3438,19 @@
                     });
                 }
 
+                // V2.28: Conference invitations
+                if (s.activeConference) {
+                    const confChoices = this.getConferenceChoices();
+                    confChoices.forEach(choice => {
+                        actions.push({
+                            id: choice.id,
+                            name: choice.name,
+                            desc: `📍 ${s.activeConference.name}: ${choice.desc}`,
+                            telemetry: 'conference'
+                        });
+                    });
+                }
+
                 actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Skip to next month' });
 
                 return actions;
@@ -3660,6 +3909,14 @@
                         } else {
                             msg = `❌ DEFENSE FAILED\nScore: ${defenseResult.score} (Readiness: ${defenseResult.readiness})\n\nMajor revisions required.\nYou must wait 6 months to try again.\n-30 Morale`;
                         }
+                        break;
+
+                    // V2.28: Conference actions
+                    case 'conf_poster':
+                    case 'conf_talk':
+                    case 'conf_network':
+                    case 'conf_skip':
+                        msg = this.resolveConferenceChoice(id);
                         break;
 
                     // V2.17: High-Throughput Experiment

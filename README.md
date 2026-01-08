@@ -3,7 +3,7 @@
 > *Navigate the PhD journey: Publish, survive, and thrive—or strategically exit.*
 
 [![Play Now](https://img.shields.io/badge/▶_Play_Now-GitHub_Pages-blue?style=for-the-badge)](https://xy-vince.github.io/GradQuest/)
-[![Version](https://img.shields.io/badge/Version-2.27-green?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.28-green?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
@@ -164,11 +164,11 @@ See [CHANGELOG.md](CHANGELOG.md) for full history.
 
 | Version | Theme |
 |---------|-------|
+| **v2.28** | Conferences 2.0 — strategic resets, funding |
 | **v2.27** | The Living Lab — labmates with agency |
 | **v2.26** | Advisor Personalities — advisors with memory |
 | **v2.25** | Defense & Career — thesis defense, career paths |
-| **v2.24** | Interactive Dissertation — field mastery |
-| v2.20-23 | Thesis Phases, Field Specialization, Support |
+| v2.20-24 | Dissertation, Field Specialization, Support |
 | v2.10-19 | Career Endings, UX, Resilience |
 
 ---

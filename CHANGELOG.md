@@ -2,6 +2,44 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.28.0] - 2026-01-08 "Conferences 2.0"
+
+**Theme**: GradQuest stops being claustrophobic — conferences become strategic resets, funding becomes oxygen.
+
+### 🎪 Tiered Conference System
+Seasonal invitations with different costs and rewards:
+
+| Tier | Cost | Network | Special |
+|------|------|---------|---------|
+| 📍 **Local Workshop** | 0 | +5 | Spring/Fall |
+| 🏛️ **National Conference** | 2 | +15 | Spring/Summer |
+| 🌍 **International Conference** | 4 | +30 | Summer only, +Fresh Perspective |
+
+### 🎯 Conference Choices
+Each conference offers 4 options:
+- **🖼️ Poster Presentation**: Safe, +30% network, +5 morale
+- **🎤 Give Talk**: Risky (60% success), full network gain or -10 morale
+- **🍷 Networking Mixer**: Full network, +15 morale, -40 stress
+- **❌ Skip Conference**: Save funding, lose opportunity
+
+### 💰 Funding System
+- Start with **36 funding months** (3 years)
+- Burns **0.5 months** each month
+- **Warning at 6 months** remaining
+- **Funding exhausted = Teaching Load** (50% research slowdown)
+
+### ✨ Fresh Perspective Buff
+From international conferences only:
+- **Duration**: 3 months
+- **Effects**: Stress recovery, morale stability, idea generation boost
+
+### 📅 Integration
+- `spawnConferenceInvite()` in advanceMonth() (seasonal)
+- `monthlyFundingTick()` handles funding decay and conference expiration
+- Conference actions appear in action list when invited
+
+---
+
 ## [2.27.0] - 2026-01-07 "The Living Lab"
 
 **Theme**: GradQuest becomes a place, not a spreadsheet — labmates with agency, not flavor.
