@@ -3570,15 +3570,16 @@
                     actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: 'Get advisor feedback on ideas', telemetry: 'admin' });
                 }
 
-                // V2.8: Conference limited - Year 1-2: max 1, Year 3+: max 2
-                const maxConf = s.year <= 2 ? 1 : 2;
-                const confLeft = maxConf - (s.conferencesThisYear || 0);
-                actions.push({
-                    id: confLeft > 0 ? 'conference' : 'conference_disabled',
-                    name: '🎤 Conference',
-                    desc: `(${confLeft}/${maxConf} remaining for this yr)`,
-                    disabled: confLeft <= 0
-                });
+                // V2.28: Conferences now invitation-based (see spawnConferenceInvite)
+                // Add "Seek Conference" action to increase invite chance
+                if (!s.activeConference && (s.conferencesThisYear || 0) < 2) {
+                    actions.push({
+                        id: 'seek_conference',
+                        name: '🎤 Seek Conference',
+                        desc: 'Network to find opportunities (seasonal)',
+                        telemetry: 'conference'
+                    });
+                }
 
                 // V2.2 Pro: Conference paper submission (if has figures but want quick publish)
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
@@ -3995,31 +3996,38 @@
                         }
                         break;
 
+                    case 'seek_conference':
                     case 'conference':
-                        s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+                        // V2.28: Seek conference actively looks for invitations
+                        const season = this.getSeason();
 
-                        // V2.8: Early conferences (Year 1-2) have 20% "Alienating" chance
-                        if (s.year <= 2 && this.random() < 0.2) {
-                            s.morale = Math.max(0, s.morale - 3);
-                            msg = '🎤 Conference was alienating... You felt out of place. (-3 morale)';
+                        if (s.activeConference) {
+                            msg = '📩 You already have a conference invitation!\nCheck your available actions.';
                             break;
                         }
 
-                        // V2.7: Diminishing morale returns when network > 80
-                        let confMorale = 2 + Math.floor(this.random() * 3); // 2-4
-                        if ((s.peerNetwork || 0) > 80) confMorale = Math.ceil(confMorale / 2);
-                        s.morale = Math.min(100, s.morale + confMorale);
-                        // V2.7: Network gain diminishes at high levels
-                        const netGain = (s.peerNetwork || 0) > 80 ? 2 : 5;
-                        s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + netGain);
-                        msg = '🎤 You attended a conference! (+' + confMorale + ' morale, +' + netGain + ' network)';
-                        if (this.random() < 0.35) {
-                            this.addItem('idea');
-                            msg += '\n💡 The talks inspired a new idea!';
-                        }
-                        if (this.random() < 0.1) {
-                            s.advisorScore = Math.min(100, s.advisorScore + 10);
-                            msg += '\n🤝 Your advisor heard good things!';
+                        s.morale = Math.max(0, s.morale - 3);
+
+                        // Season affects success chance
+                        let seekChance = 0.3;
+                        if (season === 'summer') seekChance = 0.5;
+                        if (season === 'winter') seekChance = 0.1;
+
+                        // Network boosts chance
+                        seekChance += (s.peerNetwork || 0) * 0.003;
+
+                        if (this.random() < seekChance) {
+                            this.spawnConferenceInvite();
+                            // Force spawn even if random fails
+                            if (!s.activeConference) {
+                                const tier = this.random() > 0.6 ? 'national' : 'local';
+                                const conf = this.CONFERENCE_TIERS[tier];
+                                s.activeConference = { tier, ...conf, expiresIn: 2 };
+                            }
+                            msg = `🎤 Networking paid off!\n-3 morale\n📩 ${s.activeConference.emoji} ${s.activeConference.name} invitation received!`;
+                        } else {
+                            s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + 2);
+                            msg = `🎤 You reached out to contacts.\n-3 morale, +2 network\nNo invitations yet, but connections strengthened.\n💡 Try again in ${season === 'winter' ? 'spring/summer' : 'a few months'}!`;
                         }
                         break;
 
