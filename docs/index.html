@@ -1785,17 +1785,17 @@
                     choices.push({
                         id: 'conf_poster',
                         name: '🖼️ Poster Presentation',
-                        desc: `Safe: +${Math.floor(conf.networkGain * 0.3)} network, +5 morale`
+                        desc: `Safe: +${Math.floor(conf.networkGain * 0.3)} network, +5 morale, 15% 💡`
                     });
                     choices.push({
                         id: 'conf_talk',
                         name: '🎤 Give Talk',
-                        desc: `Risky: 60% +${conf.networkGain} network, +15 morale; 40% -10 morale`
+                        desc: `Risky: 60% success (+${conf.networkGain} net, 40% 💡) or -10 morale (20% 💡)`
                     });
                     choices.push({
                         id: 'conf_network',
                         name: '🍷 Networking Mixer',
-                        desc: `+${conf.networkGain} network, +15 morale, -40 stress${conf.freshPerspective ? ', +Fresh Perspective' : ''}`
+                        desc: `+${conf.networkGain} net, +15 morale, -40 stress, 30% 💡${conf.freshPerspective ? ', +✨' : ''}`
                     });
                 }
 
@@ -1824,19 +1824,36 @@
                         this.spendFunding(conf.fundingCost);
                         s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + Math.floor(conf.networkGain * 0.3));
                         s.morale = Math.min(100, s.morale + 5);
+                        s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
                         msg = `🖼️ Poster Presentation at ${conf.name}!\n+${Math.floor(conf.networkGain * 0.3)} network, +5 morale\n"Solid conversations. Low risk, steady gain."`;
+                        // 15% chance for idea (casual conversations)
+                        if (this.random() < 0.15) {
+                            this.addItem('idea');
+                            msg += '\n💡 A poster discussion sparked a new idea!';
+                        }
                         break;
 
                     case 'conf_talk':
                         this.spendFunding(conf.fundingCost);
+                        s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
                         const talkSuccess = this.random() < (0.6 + (s.strategicAlignment || 0) * 0.003);
                         if (talkSuccess) {
                             s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain);
                             s.morale = Math.min(100, s.morale + 15);
                             msg = `🎤 Your talk at ${conf.name} was a hit!\n+${conf.networkGain} network, +15 morale\n"Your talk sparked real interest."`;
+                            // 40% chance for idea on successful talk (deep engagement)
+                            if (this.random() < 0.4) {
+                                this.addItem('idea');
+                                msg += '\n💡 The Q&A inspired a breakthrough idea!';
+                            }
                         } else {
                             s.morale = Math.max(0, s.morale - 10);
                             msg = `🎤 Tough questions at ${conf.name}.\n-10 morale\n"You'll refine the story."`;
+                            // 20% chance even on fail (learning from criticism)
+                            if (this.random() < 0.2) {
+                                this.addItem('idea');
+                                msg += '\n💡 But the criticism gave you a new angle...';
+                            }
                         }
                         break;
 
@@ -1845,6 +1862,14 @@
                         s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain);
                         s.morale = Math.min(100, s.morale + 15);
                         s.stress = Math.max(0, (s.stress || 0) - 40);
+                        s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+
+                        // 30% chance for idea (conversations spark ideas)
+                        let ideaGained = false;
+                        if (this.random() < 0.3) {
+                            this.addItem('idea');
+                            ideaGained = true;
+                        }
 
                         if (conf.freshPerspective) {
                             this.addStatus('fresh_perspective');
@@ -1852,6 +1877,9 @@
                             msg = `🍷 Networking at ${conf.name}!\n+${conf.networkGain} network, +15 morale, -40 stress\n✨ Fresh Perspective gained (3 months)\n"Late nights, new faces. You return energized."`;
                         } else {
                             msg = `🍷 Networking at ${conf.name}!\n+${conf.networkGain} network, +15 morale, -40 stress\n"Great conversations and new connections."`;
+                        }
+                        if (ideaGained) {
+                            msg += '\n💡 A late-night conversation sparked an idea!';
                         }
                         break;
 
