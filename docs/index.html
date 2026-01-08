@@ -3727,11 +3727,8 @@
                     });
                 }
 
-                // V2.17: Respond to Reviewers (during journal review)
-                if (s.pendingPapers && s.pendingPapers.length > 0) {
-                    actions.push({ id: 'light_response', name: '📝 Light Response', desc: '-3 morale, +10% accept' });
-                    actions.push({ id: 'major_rebuttal', name: '🧠 Major Rebuttal', desc: '-8 morale, skip revision' });
-                }
+                // V2.17 review actions removed - superseded by V2.29 interactive peer review
+                // V2.29 actions only appear when feedbackAvailable is true (see below)
 
                 // V2.25: Write Dissertation (requires 1+ papers, thesis < 100%)
                 const g = s.graduation || {};
@@ -4291,23 +4288,7 @@
                         }
                         break;
 
-                    // V2.17: Light Response to Reviewers
-                    case 'light_response':
-                        s.morale = Math.max(0, s.morale - 3);
-                        if (s.pendingPapers && s.pendingPapers.length > 0) {
-                            s.pendingPapers[0].bonusChance = (s.pendingPapers[0].bonusChance || 0) + 0.10;
-                        }
-                        msg = '📝 Sent light response to reviewers\n-3 morale\n+10% acceptance chance';
-                        break;
-
-                    // V2.17: Major Rebuttal
-                    case 'major_rebuttal':
-                        s.morale = Math.max(0, s.morale - 8);
-                        if (s.pendingPapers && s.pendingPapers.length > 0) {
-                            s.pendingPapers[0].skipRevision = true;
-                        }
-                        msg = '🧠 Major Rebuttal submitted!\n-8 morale\nWill skip "Major Revision" if any';
-                        break;
+                    // V2.17 review handlers removed - superseded by V2.29 interactive peer review
                 }
 
                 this.showMessage(msg);
