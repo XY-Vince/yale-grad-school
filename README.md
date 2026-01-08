@@ -3,7 +3,7 @@
 > *Navigate the PhD journey: Publish, survive, and thrive—or strategically exit.*
 
 [![Play Now](https://img.shields.io/badge/▶_Play_Now-GitHub_Pages-blue?style=for-the-badge)](https://xy-vince.github.io/GradQuest/)
-[![Version](https://img.shields.io/badge/Version-2.32-green?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.33-green?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
@@ -164,11 +164,11 @@ See [CHANGELOG.md](CHANGELOG.md) for full history.
 
 | Version | Theme |
 |---------|-------|
+| **v2.33** | Momentum Without Power Creep — curriculum, workshops |
 | **v2.32** | Sustainability & Clarity — visible metrics, roadmap |
 | **v2.31** | Pressure With Telegraphs — scoop limits, counterplay |
-| **v2.30** | Thesis Dashboard — thesis stages, computational parity |
-| **v2.29** | Academic Survival — modifiers, peer review |
-| v2.20-28 | Conferences, Labmates, Advisors, Defense |
+| v2.28-30 | Thesis, Survival, Conferences |
+| v2.20-27 | Labmates, Advisors, Defense |
 | v2.10-19 | Career Endings, UX, Resilience |
 
 ---

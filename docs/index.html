@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.32</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.33</span></h1>
         </header>
 
         <div id="app">
@@ -1855,6 +1855,231 @@
                 setTimeout(() => toast.remove(), 2500);
             },
 
+            // ===========================================
+            // V2.33: MOMENTUM WITHOUT POWER CREEP
+            // Curriculum system, Workshop papers, Skills
+            // ===========================================
+
+            // V2.33: Skills catalog (static data)
+            SKILLS_CATALOG: {
+                'adv_stats': {
+                    name: 'Advanced Statistics',
+                    category: 'analysis',
+                    tier: 'foundation',
+                    creditCost: 5,
+                    effects: { analysisSpeed: 0.10 },
+                    stacking: 'additive',
+                    description: 'Improves data analysis efficiency.'
+                },
+                'grant_writing': {
+                    name: 'Grant Writing 101',
+                    category: 'funding',
+                    tier: 'advanced',
+                    creditCost: 10,
+                    effects: { grantSuccess: 0.15 },
+                    stacking: 'additive',
+                    description: 'Increases success rate of grant applications.'
+                },
+                'lab_management': {
+                    name: 'Lab Safety & Ethics',
+                    category: 'lab',
+                    tier: 'foundation',
+                    creditCost: 5,
+                    effects: { equipmentFailure: -0.20 },
+                    stacking: 'additive',
+                    description: 'Reduces risk of lab incidents.'
+                },
+                'scientific_writing': {
+                    name: 'Scientific Writing',
+                    category: 'publishing',
+                    tier: 'foundation',
+                    creditCost: 5,
+                    effects: { paperAcceptance: 0.05 },
+                    stacking: 'additive',
+                    description: 'Improves paper quality and acceptance rate.'
+                },
+                'peer_review': {
+                    name: 'Peer Review Workshop',
+                    category: 'publishing',
+                    tier: 'advanced',
+                    creditCost: 10,
+                    effects: { reviewerResponse: 0.10, paperAcceptance: 0.05 },
+                    stacking: 'additive',
+                    description: 'Improves reviewer interactions.'
+                },
+                'thesis_bootcamp': {
+                    name: 'Thesis Writing Bootcamp',
+                    category: 'thesis',
+                    tier: 'capstone',
+                    creditCost: 15,
+                    effects: { thesisSpeed: 0.15 },
+                    stacking: 'additive',
+                    description: 'Accelerates thesis writing significantly.'
+                }
+            },
+
+            // V2.33: Curriculum tiers with availability
+            CURRICULUM_TIERS: {
+                'foundation': { minYear: 1, label: 'Foundation', icon: '📚' },
+                'advanced': { minYear: 2, label: 'Advanced', icon: '📖' },
+                'capstone': { minYear: 3, label: 'Capstone', icon: '🎓' }
+            },
+
+            // V2.33: Get available courses
+            getAvailableCourses() {
+                const s = this.state;
+                const year = s.year || 1;
+                const acquiredSkills = s.acquiredSkills || {};
+
+                return Object.entries(this.SKILLS_CATALOG)
+                    .filter(([id, skill]) => {
+                        const tier = this.CURRICULUM_TIERS[skill.tier];
+                        return year >= tier.minYear && !acquiredSkills[id];
+                    })
+                    .map(([id, skill]) => ({
+                        id,
+                        ...skill,
+                        tierInfo: this.CURRICULUM_TIERS[skill.tier]
+                    }));
+            },
+
+            // V2.33: Take an elective course
+            takeElectiveCourse(courseId) {
+                const s = this.state;
+                const skill = this.SKILLS_CATALOG[courseId];
+
+                if (!skill) return '❌ Course not found.';
+
+                const credits = s.credits || 0;
+                if (credits < skill.creditCost) {
+                    return `❌ Not enough credits.\nNeed ${skill.creditCost}, have ${credits}.`;
+                }
+
+                // Check tier availability
+                const tier = this.CURRICULUM_TIERS[skill.tier];
+                if ((s.year || 1) < tier.minYear) {
+                    return `❌ Course not available until Year ${tier.minYear}.`;
+                }
+
+                // Deduct credits and acquire skill
+                s.credits = credits - skill.creditCost;
+                s.acquiredSkills = s.acquiredSkills || {};
+                s.acquiredSkills[courseId] = {
+                    acquiredMonth: s.totalMonths,
+                    active: true
+                };
+                s.morale = Math.max(0, s.morale - 5);
+
+                // Recalculate modifiers
+                this.resolveSkillModifiers();
+
+                return `📚 COURSE COMPLETED: ${skill.name}!\n-${skill.creditCost} credits, -5 morale\n\n✨ Skill Acquired:\n${skill.description}\n\n"${tier.icon} ${tier.label} knowledge gained."`;
+            },
+
+            // V2.33: Resolve skill modifiers (additive stacking)
+            resolveSkillModifiers() {
+                const s = this.state;
+                const skills = s.acquiredSkills || {};
+
+                // Reset modifiers
+                s.skillModifiers = {
+                    analysisSpeed: 0,
+                    grantSuccess: 0,
+                    equipmentFailure: 0,
+                    paperAcceptance: 0,
+                    reviewerResponse: 0,
+                    thesisSpeed: 0
+                };
+
+                // Add up all skill effects (additive stacking)
+                Object.entries(skills).forEach(([id, data]) => {
+                    if (!data.active) return;
+                    const skill = this.SKILLS_CATALOG[id];
+                    if (!skill) return;
+
+                    Object.entries(skill.effects).forEach(([effect, value]) => {
+                        s.skillModifiers[effect] = (s.skillModifiers[effect] || 0) + value;
+                    });
+                });
+            },
+
+            // V2.33: Get skill modifier for a specific effect
+            getSkillModifier(effect) {
+                const s = this.state;
+                return (s.skillModifiers && s.skillModifiers[effect]) || 0;
+            },
+
+            // V2.33: Submit workshop paper (early dopamine)
+            submitWorkshopPaper() {
+                const s = this.state;
+                const workshopsThisYear = s.workshopsThisYear || 0;
+
+                // Soft cap: max 2 per year
+                if (workshopsThisYear >= 2) {
+                    s.morale = Math.max(0, s.morale - 3);
+                    s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + 2);
+                    return `📋 Workshop Paper Submitted (Diminished Returns)\n-3 morale, +2 network\n\n⚠️ You've already submitted ${workshopsThisYear} this year.\nConsider focusing on journal submissions.`;
+                }
+
+                // Normal workshop submission
+                s.workshopsThisYear = workshopsThisYear + 1;
+                s.workshopPapersTotal = (s.workshopPapersTotal || 0) + 1;
+                s.morale = Math.min(100, s.morale + 8);
+                s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + 5);
+
+                // Bonus: boost next journal acceptance
+                s.workshopJournalBoost = (s.workshopJournalBoost || 0) + 0.05;
+
+                return `📋 WORKSHOP PAPER ACCEPTED!\n+8 morale, +5 network\n\n✨ Bonus: +5% acceptance on next journal submission!\n(${2 - s.workshopsThisYear} workshops remaining this year)\n\n"Quick wins build momentum."`;
+            },
+
+            // V2.33: Get "Why Not?" explanation for action blocking
+            getWhyNot(actionId) {
+                const s = this.state;
+                const reasons = [];
+
+                switch (actionId) {
+                    case 'pitch':
+                        if ((s.strategicAlignment || 0) >= 80) {
+                            reasons.push('✅ Alignment already high');
+                        }
+                        if (!this.getItem('idea')) {
+                            reasons.push('❌ Missing: Ideas (use Read Papers)');
+                        }
+                        if (!this.getItem('key_discovery')) {
+                            reasons.push('❌ Missing: Findings (use Develop Findings)');
+                        }
+                        break;
+
+                    case 'develop_findings':
+                        if (!this.getItem('idea')) {
+                            reasons.push('❌ Missing: Ideas (use Read Papers first)');
+                        }
+                        break;
+
+                    case 'write_paper':
+                        if (!this.getItem('figure')) {
+                            reasons.push('❌ Missing: Figures (use Develop Findings)');
+                        }
+                        if ((this.getItem('figure') || 0) < 5) {
+                            reasons.push(`⚠️ Low figures: ${this.getItem('figure') || 0}/5 recommended`);
+                        }
+                        break;
+
+                    case 'write_dissertation':
+                        const papers = this.getItem('paper') || 0;
+                        if (papers < 1) {
+                            reasons.push('❌ Missing: 1+ published paper');
+                        }
+                        if (!s.qualsPassed) {
+                            reasons.push('❌ Missing: Quals passed');
+                        }
+                        break;
+                }
+
+                return reasons.length > 0 ? reasons.join('\n') : '✅ All requirements met';
+            },
+
             // V2.27: Collaborate with labmate action
             collaborateWithLabmate(npc) {
                 if (!npc.active) return false;
@@ -3122,7 +3347,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.32'
+                    version: '2.33'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -4080,6 +4305,34 @@
                     });
                 }
 
+                // V2.33: Workshop Paper (early dopamine, max 2/year)
+                if (this.getItem('figure') >= 2) {
+                    const workshopsRemaining = 2 - (s.workshopsThisYear || 0);
+                    const desc = workshopsRemaining > 0
+                        ? `+8 morale, +5 network, +5% journal boost (${workshopsRemaining} left)`
+                        : `Diminished returns (-3 morale, +2 network)`;
+                    actions.push({
+                        id: 'workshop_paper',
+                        name: '📋 Workshop Paper',
+                        desc: desc,
+                        telemetry: 'publishing'
+                    });
+                }
+
+                // V2.33: Elective Courses (spend credits for skills)
+                const availableCourses = this.getAvailableCourses();
+                if (availableCourses.length > 0 && (s.credits || 0) >= 5) {
+                    // Show 1-2 available courses
+                    availableCourses.slice(0, 2).forEach(course => {
+                        actions.push({
+                            id: `course_${course.id}`,
+                            name: `${course.tierInfo.icon} ${course.name}`,
+                            desc: `-${course.creditCost} credits: ${course.description}`,
+                            telemetry: 'curriculum'
+                        });
+                    });
+                }
+
                 // V2.17 review actions removed - superseded by V2.29 interactive peer review
                 // V2.29 actions only appear when feedbackAvailable is true (see below)
 
@@ -4576,6 +4829,11 @@
                         msg = this.applyForEmergencyGrant();
                         break;
 
+                    // V2.33: Workshop Paper
+                    case 'workshop_paper':
+                        msg = this.submitWorkshopPaper();
+                        break;
+
                     // V2.25: Write Dissertation (with risk)
                     case 'write_dissertation':
                         const dPapers = this.getItem('paper') || 0;
@@ -4639,8 +4897,9 @@
                         msg = this.resolveConferenceChoice(id);
                         break;
 
-                    // V2.29: Interactive peer review responses
+                    // V2.29/V2.33: Dynamic action handling (reviews, courses)
                     default:
+                        // V2.29: Review responses
                         if (id.startsWith('review_polite_') || id.startsWith('review_aggressive_') || id.startsWith('review_delay_')) {
                             const parts = id.split('_');
                             const paperIndex = parseInt(parts[parts.length - 1]);
@@ -4648,6 +4907,13 @@
                             msg = this.resolveReviewResponse(paperIndex, responseType);
                             if (msg) break;
                         }
+                        // V2.33: Elective courses
+                        if (id.startsWith('course_')) {
+                            const courseId = id.replace('course_', '');
+                            msg = this.takeElectiveCourse(courseId);
+                            if (msg) break;
+                        }
+                        break;
 
                     // V2.17: High-Throughput Experiment
                     case 'high_throughput':

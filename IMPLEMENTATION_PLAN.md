@@ -4301,3 +4301,238 @@ To address the "Rival Progress Hidden" issue, we will move critical hidden stats
 4. **Save Toast**: Add the "Game Saved!" toast notification requested in the V2.31 QA report.
 
 also draft the **final "Gold Release" (V3.0) checklist**, consolidating all the "Low Priority / Polish" items (Soundscapes, Statistics Page, Achievements) mentioned in the QA reports
+
+
+Good — this is the right problem set to be solving now. You’re no longer fighting broken systems; you’re fighting player momentum. V2.33 should feel like the moment the game “clicks” early, not just late.
+
+I’ll structure this in five parts, keeping it tight and actionable:
+	1.	Reframe the goal of V2.33
+	2.	Concrete improvement plan (what changes, why it works)
+	3.	Early-game momentum tuning (numbers + guardrails)
+	4.	Mechanic transparency fixes (system-level, not just text)
+	5.	JSON schema for Skills / Buffs (production-ready)
+
+⸻
+
+I. V2.33 Design Goal (Lock This In)
+
+V2.33 = Momentum Without Power Creep
+
+You are not making the early game easier.
+You are making it faster to understand and faster to feel progress.
+
+Every new system must:
+	•	Pay off within 3–6 months of in-game time
+	•	Teach the player why something works
+	•	Remain relevant through mid-game (no throwaway buffs)
+
+⸻
+
+II. Solid Improvement Plan (Actionable)
+
+A. Activate Credits as Strategic Currency (Curriculum System)
+
+This is the single most important fix in V2.33.
+
+Design Rules
+	•	Credits are spent, not hoarded
+	•	Spending credits creates permanent identity
+	•	Early mistakes are survivable (no hard locks)
+
+Implementation Refinement
+Add course tiers instead of flat electives:
+
+Tier	Credit Cost	Availability	Power
+Foundation	5	Year 1	Quality-of-life
+Advanced	10	Year 2+	Strategic
+Capstone	15	Year 3+	Build-defining
+
+Example:
+	•	Year 1 players buy clarity
+	•	Year 3 players buy leverage
+
+This prevents early snowballing while still rewarding engagement.
+
+⸻
+
+B. Workshop Papers = Early Dopamine, Not Fake Progress
+
+Your design is correct. One adjustment makes it sing:
+
+Add a Soft Cap
+	•	Max 2 workshop papers per year
+	•	After that: diminishing returns (-50% morale/network)
+
+This ensures workshops:
+	•	Feel good early
+	•	Don’t replace journals
+	•	Teach “publication cadence”
+
+Extra Payoff (Optional but Strong)
+	•	1 Workshop Paper → +5% acceptance chance on next Journal
+
+This creates a bridge, not a detour.
+
+⸻
+
+C. Mechanic Opacity: Fix the Root Cause, Not Just the Symptom
+
+Text feedback is necessary but insufficient.
+
+Add “Why Not?” Tooltips
+When hovering over:
+	•	Pitch Session
+	•	Alignment stat
+	•	Auto-Idea bonus
+
+Show:
+	•	✅ What increased it last time
+	•	❌ What blocked it this time
+
+Example:
+
+Alignment unchanged
+Missing: Findings (requires Develop Findings)
+
+This turns confusion into learning in one click.
+
+⸻
+
+D. Early-Game Quick Wins (Explicit Targets)
+
+Guarantee the following if the player is not reckless:
+
+Milestone	Target Month
+First Workshop	≤ Month 6
+First Alignment Gain	≤ Month 9
+First Advisor Praise	≤ Month 12
+
+If a playthrough misses these → tuning regression.
+
+⸻
+
+III. Numbers & Guardrails (So It Doesn’t Break Later)
+
+Elective Costs
+	•	Time: always 1 month
+	•	Morale: -5 (never more)
+	•	Buff strength: 5–15%, never stacking multiplicatively
+
+Skill Stacking Rule
+	•	Same-type bonuses stack additively
+	•	Different categories multiply once
+
+This avoids runaway builds.
+
+⸻
+
+IV. Transparency Improvements (Systemic)
+
+1. Academic Calendar Awareness
+
+Add a visible label:
+
+“Academic Year: Year 2 (Sept–Aug)”
+
+This makes:
+	•	Theoretician bonus timing intuitive
+	•	Curriculum availability obvious
+	•	Workshops feel seasonal (realistic)
+
+2. Disabled Actions (Excellent Call — Extend It)
+
+When disabled, show:
+	•	Requirement
+	•	How to meet it
+
+Disabled buttons are teaching tools, not dead UI.
+
+⸻
+
+V. JSON Schema: Skills / Buffs System (Production-Ready)
+
+This is designed to be:
+	•	Serializable
+	•	Inspectable
+	•	Easy to balance later
+
+1. Skill Definitions (Static Data)
+
+{
+  "skills_catalog": {
+    "adv_stats": {
+      "name": "Advanced Statistics",
+      "category": "analysis",
+      "effects": {
+        "analysis_speed_modifier": 0.10
+      },
+      "stacking": "additive",
+      "description": "Improves data analysis efficiency."
+    },
+    "grant_writing": {
+      "name": "Grant Writing 101",
+      "category": "funding",
+      "effects": {
+        "grant_success_bonus": 0.15
+      },
+      "stacking": "additive",
+      "description": "Increases success rate of grant applications."
+    },
+    "lab_management": {
+      "name": "Lab Safety & Ethics",
+      "category": "lab",
+      "effects": {
+        "equipment_failure_reduction": 0.20
+      },
+      "stacking": "additive",
+      "description": "Reduces risk of lab incidents."
+    }
+  }
+}
+
+
+⸻
+
+2. Player State (Dynamic)
+
+{
+  "player_skills": {
+    "adv_stats": {
+      "acquired_month": 8,
+      "active": true
+    },
+    "grant_writing": {
+      "acquired_month": 22,
+      "active": true
+    }
+  },
+  "modifiers": {
+    "analysis_speed_modifier": 1.10,
+    "grant_success_bonus": 1.15,
+    "equipment_failure_reduction": 0.80
+  }
+}
+
+
+⸻
+
+3. Modifier Resolution Logic (Conceptual)
+	•	Base value = 1.0
+	•	Add additive bonuses
+	•	Apply category multipliers once
+
+This makes tuning sane in V2.34+.
+
+⸻
+
+Final Assessment
+
+V2.33 is the “stickiness” update.
+
+If V2.30–31 made the game fair,
+V2.33 makes it inviting.
+
+After this:
+	•	New players won’t bounce in Year 1
+	•	Experienced players will plan builds
+	•	Systems will explain themselves

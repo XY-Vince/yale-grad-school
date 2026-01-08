@@ -2,6 +2,42 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.33.0] - 2026-01-08 "Momentum Without Power Creep"
+
+**Theme**: Early game feels sticky without becoming trivial — skills pay off within months, not years.
+
+### 📚 Curriculum System
+Tiered courses that spend credits for permanent skills:
+
+| Tier | Year | Cost | Examples |
+|------|------|------|----------|
+| Foundation | 1+ | 5 cr | Statistics, Lab Safety, Writing |
+| Advanced | 2+ | 10 cr | Grant Writing, Peer Review |
+| Capstone | 3+ | 15 cr | Thesis Bootcamp |
+
+### 📋 Workshop Papers
+Early dopamine with soft cap:
+- **Max 2/year** (diminished returns after)
+- **+8 morale, +5 network** on success
+- **+5% journal boost** per workshop (stacks!)
+- Teaches publication cadence
+
+### ✨ Skills System
+`SKILLS_CATALOG` with additive stacking:
+- `analysisSpeed` — faster data work
+- `paperAcceptance` — better publication odds
+- `grantSuccess` — funding applications
+- `thesisSpeed` — late-game acceleration
+- `equipmentFailure` — reduced lab incidents
+
+### 💡 "Why Not?" Tooltips
+`getWhyNot(actionId)` explains action blockers:
+- ❌ Missing: Ideas (use Read Papers)
+- ❌ Missing: Figures (use Develop Findings)
+- ✅ All requirements met
+
+---
+
 ## [2.32.0] - 2026-01-08 "Sustainability & Clarity"
 
 **Theme**: Hidden numbers become visible metrics — rivals are legible, thesis efficiency is explicit.
