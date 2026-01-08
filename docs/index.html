@@ -344,7 +344,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.30</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.31</span></h1>
         </header>
 
         <div id="app">
@@ -1595,18 +1595,57 @@
                 });
             },
 
-            // V2.27: Check for rival sabotage
+            // V2.27/V2.31: Check for rival sabotage (with scoop limits)
             checkRivalSabotage(npc) {
-                if (npc.stress < 70) return;
+                const s = this.state;
+                const g = s.graduation || {};
+
+                // V2.31: Rival progress decays during thesis defense phase
+                if ((g.thesis_progress || 0) >= 75) {
+                    npc.progress = Math.max(0, npc.progress - 5);
+                    return; // No sabotage during final push
+                }
+
+                // V2.31: Max 1 scoop per 12 months
+                const monthsSinceScoop = s.totalMonths - (npc.lastScoopMonth || 0);
+                if (monthsSinceScoop < 12) return;
+
+                // V2.31: Show warning at 80% progress (telegraphing)
+                if (npc.progress >= 80 && !npc.warnedAt80) {
+                    npc.warnedAt80 = true;
+                    this.appendSystemEvent(`🚨 ${npc.name} is rushing a preprint!\n⚠️ Consider pre-registering your ideas.\n${s.advisor?.emoji || '📢'} "${s.advisor?.name || 'Advisor'} says: You may want to lock this idea down."`);
+                }
+
+                // Reset warning flag when progress resets
+                if (npc.progress < 70) {
+                    npc.warnedAt80 = false;
+                }
+
+                // Original sabotage logic (only if progress high AND stress high)
+                if (npc.stress < 70 || npc.progress < 90) return;
 
                 const sabotageChance = 0.1 + (npc.stress - 70) * 0.01;
 
                 if (this.random() < sabotageChance) {
+                    // V2.31: Check if pre-registration blocks this scoop
+                    if (this.checkPreregistration()) {
+                        npc.progress = 40; // Partial reset
+                        return; // Scoop was blocked!
+                    }
+
+                    // V2.31: Record scoop timestamp
+                    npc.lastScoopMonth = s.totalMonths;
+                    npc.warnedAt80 = false;
+                    npc.progress = 20; // Reset but not to 0
+
                     this.addStatus('scooped');
-                    this.state.morale = Math.max(0, this.state.morale - 10);
+                    s.morale = Math.max(0, s.morale - 10);
                     npc.loyalty -= 10;
 
-                    this.appendSystemEvent(`⚔️ ${npc.name} rushed a similar result to arXiv!\nYour idea feels less novel. -10 morale.`);
+                    // V2.31: Increase rival attitude (future tension)
+                    npc.resentment = (npc.resentment || 0) + 10;
+
+                    this.appendSystemEvent(`⚔️ ${npc.name} beat you to arXiv!\nYour idea feels less novel. -10 morale.\n💡 Next time, pre-register early.`);
                 }
             },
 
@@ -1673,6 +1712,100 @@
                     // Rival collaboration is tense but productive
                     npc.stress += 5;
                     return `🤝 Collaboration with ${npc.name}!\n+5 morale, +3 network\n"Tense but productive. You're watching each other closely."`;
+                }
+            },
+
+            // ===========================================
+            // V2.31: PRESSURE WITH TELEGRAPHS
+            // Rival counterplay, Emergency Grant, thesis pacing
+            // ===========================================
+
+            // V2.31: Pre-register idea to block next scoop
+            preRegisterIdea() {
+                const s = this.state;
+
+                if (s.ideaPreregistered) {
+                    return 'You already have a pre-registered idea.';
+                }
+
+                s.ideaPreregistered = true;
+                s.preregisteredMonth = s.totalMonths;
+                s.morale = Math.max(0, s.morale - 5);
+
+                return `📋 IDEA PRE-REGISTERED!\n-5 morale (documentation effort)\n\n✨ Benefits:\n• Next scoop attempt automatically blocked\n• +10% to paper acceptance\n• Expires in 12 months if unused\n\n"Timestamp established. Let them try to scoop you now."`;
+            },
+
+            // V2.31: Check if pre-registration blocks scoop
+            checkPreregistration() {
+                const s = this.state;
+                if (!s.ideaPreregistered) return false;
+
+                // Pre-registration expires after 12 months
+                if (s.totalMonths - (s.preregisteredMonth || 0) > 12) {
+                    s.ideaPreregistered = false;
+                    return false;
+                }
+
+                // Use up the pre-registration
+                s.ideaPreregistered = false;
+                this.appendSystemEvent(`📋 Your pre-registration protected you!\nRival's scoop attempt was blocked.\n"Your timestamped work speaks for itself."`);
+                return true;
+            },
+
+            // V2.31: Coordinate with rival (slows them but increases resentment)
+            coordinateWithRival() {
+                const s = this.state;
+
+                if ((s.peerNetwork || 0) < 20) {
+                    return '❌ Need 20 network to coordinate with rival.';
+                }
+
+                // Find the rival
+                const rival = (s.labmates || []).find(l => l.archetype === 'The_Rival' && l.active);
+                if (!rival) {
+                    return 'No active rival in the lab.';
+                }
+
+                s.peerNetwork = Math.max(0, (s.peerNetwork || 0) - 20);
+                rival.progress = Math.max(0, rival.progress - 30);
+                rival.resentment = (rival.resentment || 0) + 15;
+                rival.stress = Math.min(100, rival.stress + 10);
+
+                // High resentment makes future collaboration impossible
+                if (rival.resentment >= 50) {
+                    return `🤝 COORDINATION (but at a cost)!\n-20 network, -30% rival progress\n\n⚠️ ${rival.name}'s resentment is now high.\nFuture coordination may be impossible.\n"We agreed to share... for now."`;
+                }
+
+                return `🤝 COORDINATED with ${rival.name}!\n-20 network, -30% rival progress\n\n${rival.name} agreed to slow down.\nBut are they really cooperating?\n\n(Rival resentment +15)`;
+            },
+
+            // V2.31: Emergency Grant to escape Teaching Load (one-time)
+            applyForEmergencyGrant() {
+                const s = this.state;
+
+                if (s.emergencyGrantUsed) {
+                    return '❌ Emergency grant already used this PhD.';
+                }
+
+                s.emergencyGrantUsed = true;
+                s.morale = Math.max(0, s.morale - 10);
+
+                // 50% success chance, modified by alignment
+                const successChance = 0.5 + (s.strategicAlignment || 0) * 0.003;
+
+                if (this.random() < successChance) {
+                    // Success: restore funding
+                    s.fundingMonths = (s.fundingMonths || 0) + 12;
+                    this.removeStatus('teaching_load');
+
+                    return `🏆 EMERGENCY GRANT APPROVED!\n-10 morale (stressful application)\n+12 funding months\n\n📚 Teaching Load removed!\nYou can focus on research again.\n\n"The committee saw potential in your work."`;
+                } else {
+                    // Fail: but get consolation
+                    s.fundingMonths = (s.fundingMonths || 0) + 3;
+                    this.addStatus('grant_draft_reusable');
+                    s.grantDraftExpires = s.totalMonths + 6;
+
+                    return `❌ Emergency grant DENIED.\n-10 morale, +3 funding months (bridge)\n\n💡 Silver lining:\nGrant draft is reusable for 6 months.\n(Future grants +20% success)\n\n"The reviewers saw flaws, but you learned from them."`;
                 }
             },
 
@@ -2827,7 +2960,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.30'
+                    version: '2.31'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 alert('💾 Game saved!');
@@ -3756,6 +3889,35 @@
                     });
                 }
 
+                // V2.31: Rival counterplay actions
+                const rival = (s.labmates || []).find(l => l.archetype === 'The_Rival' && l.active);
+                if (rival && rival.progress >= 50 && !s.ideaPreregistered) {
+                    actions.push({
+                        id: 'preregister_idea',
+                        name: '📋 Pre-register Idea',
+                        desc: `-5 morale: Block next scoop (rival at ${rival.progress}%)`,
+                        telemetry: 'counterplay'
+                    });
+                }
+                if (rival && (s.peerNetwork || 0) >= 20 && (rival.resentment || 0) < 50) {
+                    actions.push({
+                        id: 'coordinate_rival',
+                        name: '🤝 Coordinate Rival',
+                        desc: '-20 network: Slow rival -30% (builds resentment)',
+                        telemetry: 'counterplay'
+                    });
+                }
+
+                // V2.31: Emergency Grant (when teaching load is active)
+                if (this.hasStatus('teaching_load') && !s.emergencyGrantUsed) {
+                    actions.push({
+                        id: 'emergency_grant',
+                        name: '🆘 Emergency Grant',
+                        desc: '-10 morale, 50%: +12 funding, remove teaching load',
+                        telemetry: 'funding'
+                    });
+                }
+
                 // V2.17 review actions removed - superseded by V2.29 interactive peer review
                 // V2.29 actions only appear when feedbackAvailable is true (see below)
 
@@ -4235,6 +4397,21 @@
                         } else {
                             msg = 'Pipeline is already optimized.';
                         }
+                        break;
+
+                    // V2.31: Pre-register idea to block scoop
+                    case 'preregister_idea':
+                        msg = this.preRegisterIdea();
+                        break;
+
+                    // V2.31: Coordinate with rival
+                    case 'coordinate_rival':
+                        msg = this.coordinateWithRival();
+                        break;
+
+                    // V2.31: Emergency Grant
+                    case 'emergency_grant':
+                        msg = this.applyForEmergencyGrant();
                         break;
 
                     // V2.25: Write Dissertation (with risk)

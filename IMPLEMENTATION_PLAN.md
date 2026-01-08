@@ -3972,12 +3972,235 @@ If done right:
 	•	UI scales instead of collapsing
 	•	V3.0 becomes pure narrative payoff
 
-You’re no longer asking:
 
-“What features should we add?”
+V2.31 is the first true balancing release. You’re no longer adding systems — you’re making sure the systems respect player time, attention, and morale. That’s exactly the right inflection point.
 
-You’re asking:
+I’ll proceed in five layers, tightening what you already outlined and filling the remaining gaps:
+	1.	Clear diagnosis of the Scoop Spam failure mode
+	2.	Design intent for V2.31 (what “fair pressure” means)
+	3.	Solid improvement plan with concrete, testable actions
+	4.	Specific tuning guidance (numbers + guardrails)
+	5.	YAML schema for Rival Archetypes (drop-in ready)
 
-“What should the player be thinking right now?”
+⸻
 
-That’s exactly where a systems designer should be before a 1.0 release.
+I. Diagnosis: Why “Scoop Spam” Feels Bad
+
+The problem is not that the Rival is strong.
+The problem is that the Rival is:
+	•	Unforecastable → no warning window
+	•	Uninterruptible → no counterplay
+	•	Non-rivalrous → they don’t feel like an actor, just a debuff generator
+
+15+ scoops in a run is not difficulty — it’s noise. Players can’t form a plan, only endure.
+
+Your instinct to convert the Rival into a state-based entity is exactly right.
+
+⸻
+
+II. V2.31 Design Intent (Lock This In)
+
+V2.31 = Pressure With Telegraphs
+
+Every punishment must satisfy at least one of these:
+	•	Is visible before it hits
+	•	Can be delayed or deflected
+	•	Can be traded off against something else
+
+If a punishment has none, it becomes grind.
+
+⸻
+
+III. Solid Improvement Plan (Actionable & Testable)
+
+A. Rival as a State-Based Actor (Not an Event Slot Machine)
+
+You already defined the core loop correctly. Here’s how to harden it.
+
+1. Rival Progress Rules (Hard Constraints)
+Implement three hard caps:
+	1.	Max 1 scoop per 12 months
+	2.	Progress freezes while you are defending or revising thesis
+	3.	Progress decay when ignored
+
+if state.phase in ["Author", "Defense"]:
+    rival.progress = max(rival.progress - 5, 0)
+
+This ensures:
+	•	Endgame is about you, not distractions
+	•	Rival pressure peaks mid-game, then tapers
+
+2. Telegraphing (Critical UX)
+At 80%:
+	•	UI banner (not log-only)
+	•	Advisor comment:
+“You may want to lock this idea down.”
+
+This trains players to pre-register strategically, not randomly.
+
+⸻
+
+B. Rival Counterplay Must Have Tradeoffs
+
+Your “Coordinate with Labmate” action is correct, but add friction.
+
+Revised Actions
+
+Action	Cost	Effect	Tradeoff
+Coordinate	Network 20	-30% Rival	Raises Rival resentment
+Pre-Register	Time 1	Block scoop	Slower publication
+Ignore	None	—	Risk scoop
+
+Add a hidden Rival Attitude variable:
+	•	Too much coordination → future collaboration impossible
+	•	Too much aggression → Rival accelerates later
+
+This creates long arcs, not button spam.
+
+⸻
+
+C. Escaping the Teaching Trap (Make It Painful, Not Terminal)
+
+Your Emergency Grant is good. Two refinements:
+	1.	One-time use
+	2.	Failure has consolation
+
+if fail:
+    state.morale -= 10
+    state.add_buff("Grant Draft Reusable", duration=6)
+
+This prevents:
+	•	Infinite bailout loops
+	•	Rage-quits after bad RNG
+
+⸻
+
+D. Endgame UI Phase Shift (Excellent Call — Finish It)
+
+The Dissertation tab should not be cosmetic.
+
+Concrete changes:
+	•	Hide “Develop Findings”
+	•	Lock Conferences unless defending
+	•	Add visible checklist:
+	•	Draft ✔
+	•	Revisions ✔
+	•	Defense Scheduled ☐
+
+This reframes the game from growth to closure.
+
+⸻
+
+E. Thesis Pacing Fix (Critical)
+
+Trial 3’s 14% → 100% jump is a math bug and a design smell.
+
+Target Design
+	•	Thesis completion: 4–6 actions
+	•	No single action >30%
+
+Revised Formula
+
+base = 12
+paper_bonus = min(state.publications * 4, 12)
+alignment_bonus = state.strategic_alignment // 25
+
+progress = min(base + paper_bonus + alignment_bonus, 28)
+
+Hard cap per action = 28%
+This guarantees pacing without feeling artificial.
+
+⸻
+
+IV. V2.31 Test Checklist (Use This)
+
+Before shipping, verify:
+	•	☐ Rival cannot scoop more than once/year
+	•	☐ Player receives ≥2 warnings before first scoop
+	•	☐ Emergency Grant removes Teaching Load
+	•	☐ Thesis requires ≥4 actions to finish
+	•	☐ Rival UI bar updates monthly
+
+If any fail → do not release.
+
+⸻
+
+V. YAML Schema: Rival Archetypes (Drop-in Ready)
+
+This is structured, extensible, and matches your declarative design goals.
+
+# rulesets/v2_31/rivals.yaml
+
+rival_archetypes:
+  - id: "the_gunner"
+    name_pool: ["Taylor", "Jordan"]
+    specialization_bias: "same_as_player"
+    base_progress: 12
+    traits:
+      - aggressive
+      - publication_focused
+    scoop_behavior:
+      warning_threshold: 70
+      scoop_cooldown_months: 12
+    counters:
+      pre_registration: strong
+      coordination: weak
+    flavor:
+      warning: "🚨 {name} is rushing a preprint!"
+      scoop: "📢 {name} beat you to arXiv."
+
+  - id: "the_ghost"
+    name_pool: ["Alex", "Sam"]
+    specialization_bias: "different_field"
+    base_progress: 8
+    traits:
+      - quiet
+      - unpredictable
+    scoop_behavior:
+      warning_threshold: 85
+      scoop_cooldown_months: 18
+    counters:
+      pre_registration: medium
+      coordination: ineffective
+    flavor:
+      warning: "👻 You hear rumors of parallel work…"
+      scoop: "📰 A surprise paper appears."
+
+  - id: "the_collaborator"
+    name_pool: ["Riley", "Morgan"]
+    specialization_bias: "adjacent"
+    base_progress: 6
+    traits:
+      - social
+      - risk_averse
+    scoop_behavior:
+      warning_threshold: 90
+      scoop_cooldown_months: 24
+    counters:
+      coordination: strong
+      pre_registration: unnecessary
+    flavor:
+      warning: "🤝 {name} suggests aligning topics."
+      scoop: "📄 {name} published first — but cites you."
+
+This schema enables:
+	•	Field-dependent tension
+	•	Distinct player strategies
+	•	Narrative flavor without extra code
+
+⸻
+
+Final Assessment
+
+V2.31 is about respect.
+
+Respect for:
+	•	Player foresight
+	•	Player time
+	•	Player emotional bandwidth
+
+By turning rivals into readable adversaries and funding penalties into recoverable crises, you convert frustration into strategy.
+
+At this point:
+	•	V2.32 can be light (grant polish)
+	•	V3.0 can focus purely on endings, summaries, and tone

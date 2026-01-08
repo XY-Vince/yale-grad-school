@@ -2,6 +2,47 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.31.0] - 2026-01-08 "Pressure With Telegraphs"
+
+**Theme**: Every punishment is now visible, delayable, or tradeable — pressure becomes strategy.
+
+### ⚔️ Rival Scoop Limits
+Scoops are no longer random spam:
+
+| Constraint | Effect |
+|------------|--------|
+| 12-month cooldown | Max 1 scoop per year |
+| 80% warning | "🚨 Rival is rushing a preprint!" |
+| 90%+ required | Scoop needs high progress AND stress |
+| Thesis immunity | Progress decays during defense phase |
+
+### 📋 Pre-register Idea
+New counterplay action:
+- **Cost**: -5 morale
+- **Effect**: Blocks next scoop attempt
+- **Duration**: 12 months or until used
+- **Bonus**: +10% paper acceptance
+
+### 🤝 Coordinate with Rival
+Strategic collaboration:
+- **Cost**: -20 network
+- **Effect**: -30% rival progress
+- **Risk**: Builds resentment (caps at 50)
+- **Warning**: High resentment blocks future coordination
+
+### 🆘 Emergency Grant
+Escape teaching load (one-time):
+- **Cost**: -10 morale
+- **Success (50%)**: +12 funding months, remove teaching load
+- **Failure**: +3 funding months, grant draft reusable for 6 months
+
+### 🔧 Rival State Tracking
+- `lastScoopMonth` - enforces cooldown
+- `warnedAt80` - prevents warning spam
+- `resentment` - tracks coordination tension
+
+---
+
 ## [2.30.0] - 2026-01-08 "Thesis Dashboard"
 
 **Theme**: Thesis becomes a mode, not a meter — late-game focus with computational parity.
