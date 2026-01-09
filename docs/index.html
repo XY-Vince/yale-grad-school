@@ -353,9 +353,16 @@
             transform: scale(0.97);
         }
 
-        /* Bottom action bar hidden on desktop */
-        .bottom-action-bar {
+        /* Bottom action bar and tab nav hidden on desktop */
+        .bottom-action-bar,
+        .tab-nav {
             display: none;
+        }
+
+        /* Advance tab special styling */
+        .tab-btn.advance-tab {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
         }
 
         /* Mobile-specific styles (768px and below) */
@@ -466,6 +473,67 @@
                 border: none;
             }
 
+            /* V2.35: Tab Navigation System */
+            .tab-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg-secondary);
+                border-top: 2px solid var(--accent-primary);
+                z-index: 60;
+                display: flex;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+
+            .tab-btn {
+                flex: 1;
+                padding: 10px 8px;
+                background: transparent;
+                border: none;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                transition: all 0.2s;
+            }
+
+            .tab-btn .tab-icon {
+                font-size: 1.3rem;
+            }
+
+            .tab-btn.active {
+                color: var(--accent-primary);
+                background: rgba(99, 102, 241, 0.1);
+            }
+
+            .tab-btn:active {
+                transform: scale(0.95);
+            }
+
+            /* Tab content panels */
+            .tab-content {
+                display: none;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+
+            /* Hide desktop layout on mobile */
+            .main-content {
+                display: block;
+            }
+
+            .main-content>div:last-child {
+                /* Hide sidebar panels on mobile - they're in tabs now */
+                display: none;
+            }
+
             /* Modal adjustments for mobile */
             .modal {
                 width: 95%;
@@ -519,7 +587,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.34</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.35</span></h1>
         </header>
 
         <div id="app">
@@ -720,17 +788,25 @@
                 </div>
             </div>
 
-            <!-- V2.34: Mobile Bottom Action Bar (hidden on desktop via CSS) -->
-            <div class="bottom-action-bar" id="mobile-action-bar">
-                <button class="action-btn" onclick="game.save()">
-                    <div class="action-name">💾</div>
-                    <div class="action-desc">Save</div>
+            <!-- V2.35: Mobile Tab Navigation (hidden on desktop via CSS) -->
+            <nav class="tab-nav" id="mobile-tab-nav">
+                <button class="tab-btn active" onclick="game.switchTab('actions')" data-tab="actions">
+                    <span class="tab-icon">🎯</span>
+                    <span>Actions</span>
                 </button>
-                <button class="action-btn advance-btn" onclick="game.doAction('advance')">
-                    <div class="action-name">⏩ Next</div>
-                    <div class="action-desc">Advance Month</div>
+                <button class="tab-btn" onclick="game.switchTab('progress')" data-tab="progress">
+                    <span class="tab-icon">📊</span>
+                    <span>Progress</span>
                 </button>
-            </div>
+                <button class="tab-btn" onclick="game.switchTab('lab')" data-tab="lab">
+                    <span class="tab-icon">🔬</span>
+                    <span>Lab</span>
+                </button>
+                <button class="tab-btn advance-tab" onclick="game.doAction('advance')">
+                    <span class="tab-icon">⏩</span>
+                    <span>Next</span>
+                </button>
+            </nav>
 
             <!-- End Screen -->
             <div id="end-screen" class="end-screen panel" style="display: none;">
@@ -2040,6 +2116,34 @@
                 `;
                 document.body.appendChild(toast);
                 setTimeout(() => toast.remove(), 2500);
+            },
+
+            // V2.35: Switch mobile tab
+            switchTab(tabId) {
+                // Update tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.tab === tabId) {
+                        btn.classList.add('active');
+                    }
+                });
+
+                // Show/hide content based on tab
+                const mainContent = document.querySelector('.main-content');
+                const actionsPanel = mainContent?.querySelector('.panel:first-child');
+                const sidebarPanels = mainContent?.querySelector('& > div:last-child');
+
+                // For now, scroll to relevant section
+                if (tabId === 'actions' && actionsPanel) {
+                    actionsPanel.scrollIntoView({ behavior: 'smooth' });
+                } else if (tabId === 'progress') {
+                    document.getElementById('graduation-card')?.scrollIntoView({ behavior: 'smooth' });
+                } else if (tabId === 'lab') {
+                    document.getElementById('statuses')?.closest('.panel')?.scrollIntoView({ behavior: 'smooth' });
+                }
+
+                // Scroll to top of container
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             },
 
             // ===========================================
@@ -3534,7 +3638,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.34'
+                    version: '2.35'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert

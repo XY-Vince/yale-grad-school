@@ -2,6 +2,23 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.35.0] - 2026-01-08 "Tab Navigation"
+
+**Theme**: Mobile app-shell pattern with bottom tab navigation.
+
+### 📱 Tab Navigation Bar
+- **4 tabs**: 🎯 Actions | 📊 Progress | 🔬 Lab | ⏩ Next
+- Fixed to bottom on mobile (≤768px)
+- Smooth scroll to relevant section on tap
+- Hidden on desktop (full layout visible)
+
+### 🎨 Tab Styling
+- Active tab highlighted with accent color
+- "Next" tab has gradient background (primary action)
+- Touch feedback with scale animation
+
+---
+
 ## [2.34.0] - 2026-01-08 "Mobile UX Optimization"
 
 **Theme**: Thumb-zone ergonomics and breathing room for mobile players.
