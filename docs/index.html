@@ -4419,9 +4419,9 @@
                 const s = this.state;
                 const actions = [];
 
-                // V2.20: Block actions when waiting for event acknowledgement
+                // V2.37: Block actions when waiting for event - show re-open modal action
                 if (this.waitingForAcknowledge) {
-                    actions.push({ id: 'waiting', name: '⏳ Read Event', desc: 'Click "Continue" to proceed', disabled: true });
+                    actions.push({ id: 'reshow_modal', name: '📢 View Event', desc: 'Tap to see event details' });
                     return actions;
                 }
 
@@ -4773,6 +4773,12 @@
                 this.updateAdvisorTension(id);
 
                 switch (id) {
+                    // V2.37: Re-show event modal if hidden
+                    case 'reshow_modal':
+                        const lastEvent = document.getElementById('message-log')?.textContent || 'Event occurred';
+                        this.showEventModal(lastEvent);
+                        return; // Don't continue - just show modal
+
                     case 'read':
                         // V2.6: Reading papers now gives small bonuses
                         const readSuccess = [
