@@ -359,6 +359,11 @@
             display: none;
         }
 
+        /* Desktop: show all tab content (no tab switching needed) */
+        .tab-content {
+            display: block;
+        }
+
         /* Advance tab special styling */
         .tab-btn.advance-tab {
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
@@ -515,7 +520,7 @@
                 transform: scale(0.95);
             }
 
-            /* Tab content panels */
+            /* Tab content panels - only one visible at a time on mobile */
             .tab-content {
                 display: none;
             }
@@ -524,14 +529,9 @@
                 display: block;
             }
 
-            /* Hide desktop layout on mobile */
+            /* Main content on mobile is handled by tabs */
             .main-content {
                 display: block;
-            }
-
-            .main-content>div:last-child {
-                /* Hide sidebar panels on mobile - they're in tabs now */
-                display: none;
             }
 
             /* Modal adjustments for mobile */
@@ -587,7 +587,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.35</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.36</span></h1>
         </header>
 
         <div id="app">
@@ -647,156 +647,167 @@
 
             <!-- Game Screen -->
             <div id="game-screen" style="display: none;">
-                <div class="stats-bar">
-                    <div class="stat-card">
-                        <div class="stat-label">📅 Date</div>
-                        <div class="stat-value" id="date">Sep, Year 1</div>
-                        <div style="color: var(--text-secondary); font-size: 0.7rem;"><span id="semester">Fall</span> ·
-                            Month <span id="total-months">1</span> · <span id="credits-display">0</span> credits</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">💪 Morale</div>
-                        <div class="stat-value" style="font-size: 1.2rem;" id="morale-status">😊 Good</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill high" id="morale-bar" style="width: 50%"></div>
+                <!-- V2.36: Tab Content - Status (default on mobile) -->
+                <div class="tab-content active" data-tab="status">
+                    <div class="stats-bar">
+                        <div class="stat-card">
+                            <div class="stat-label">📅 Date</div>
+                            <div class="stat-value" id="date">Sep, Year 1</div>
+                            <div style="color: var(--text-secondary); font-size: 0.7rem;"><span
+                                    id="semester">Fall</span> ·
+                                Month <span id="total-months">1</span> · <span id="credits-display">0</span> credits
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">💪 Morale</div>
+                            <div class="stat-value" style="font-size: 1.2rem;" id="morale-status">😊 Good</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill high" id="morale-bar" style="width: 50%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">👨‍🏫 Advisor</div>
+                            <div class="stat-value" style="font-size: 1.2rem;" id="advisor-status">🙂 Happy</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill high" id="advisor-bar" style="width: 50%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">📰 Publications</div>
+                            <div class="stat-value"><span id="papers">0</span> <span id="pub-breakdown"
+                                    style="font-size: 0.55rem; color: var(--text-secondary);">(0 J + 0 C)</span></div>
+                            <div id="review-status" style="font-size: 0.7rem; margin-top: 2px;"></div>
+                        </div>
+                        <!-- V2.2 Pro: Peer Network -->
+                        <div class="stat-card">
+                            <div class="stat-label">🤝 Network</div>
+                            <div class="stat-value"><span id="peer-network">10</span></div>
+                        </div>
+                        <!-- V2.16: Strategic Alignment meter -->
+                        <div class="stat-card">
+                            <div class="stat-label">🎯 Alignment</div>
+                            <div class="stat-value"><span id="alignment-value">0</span></div>
+                            <div style="height: 4px; background: #333; border-radius: 2px; margin-top: 4px;">
+                                <div id="alignment-bar"
+                                    style="height: 100%; width: 0%; background: linear-gradient(90deg, #f87171, #fbbf24, #4ade80); border-radius: 2px;">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- V2.16: Quals Prep visualizer -->
+                        <div class="stat-card" id="quals-prep-card" style="display: none;">
+                            <div class="stat-label">📚 Quals Prep</div>
+                            <div class="stat-value"><span id="quals-prep-value">0</span>/3</div>
+                            <div id="quals-warning" style="font-size: 0.65rem;"></div>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">👨‍🏫 Advisor</div>
-                        <div class="stat-value" style="font-size: 1.2rem;" id="advisor-status">🙂 Happy</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill high" id="advisor-bar" style="width: 50%"></div>
+
+                    <!-- V2.20: Event display with acknowledgement -->
+                    <div class="event-panel" style="display: flex; gap: 12px;">
+                        <div style="flex: 2;">
+                            <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📢 What Happened</h3>
+                            <div class="message-log" id="message-log" style="min-height: 80px;">Your PhD journey
+                                begins...
+                            </div>
+                            <button id="acknowledge-btn" class="action-btn" onclick="game.acknowledgeEvent()"
+                                style="width: 100%; margin-top: 10px; display: none; background: linear-gradient(135deg, #22c55e, #16a34a);">
+                                <div class="action-name">✓ Continue</div>
+                            </button>
                         </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">📰 Publications</div>
-                        <div class="stat-value"><span id="papers">0</span> <span id="pub-breakdown"
-                                style="font-size: 0.55rem; color: var(--text-secondary);">(0 J + 0 C)</span></div>
-                        <div id="review-status" style="font-size: 0.7rem; margin-top: 2px;"></div>
-                    </div>
-                    <!-- V2.2 Pro: Peer Network -->
-                    <div class="stat-card">
-                        <div class="stat-label">🤝 Network</div>
-                        <div class="stat-value"><span id="peer-network">10</span></div>
-                    </div>
-                    <!-- V2.16: Strategic Alignment meter -->
-                    <div class="stat-card">
-                        <div class="stat-label">🎯 Alignment</div>
-                        <div class="stat-value"><span id="alignment-value">0</span></div>
-                        <div style="height: 4px; background: #333; border-radius: 2px; margin-top: 4px;">
-                            <div id="alignment-bar"
-                                style="height: 100%; width: 0%; background: linear-gradient(90deg, #f87171, #fbbf24, #4ade80); border-radius: 2px;">
+                        <div style="flex: 1; opacity: 0.7;">
+                            <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📜 Previously</h3>
+                            <div class="message-log" id="message-log-prev"
+                                style="min-height: 80px; font-size: 0.85rem;">-
                             </div>
                         </div>
                     </div>
-                    <!-- V2.16: Quals Prep visualizer -->
-                    <div class="stat-card" id="quals-prep-card" style="display: none;">
-                        <div class="stat-label">📚 Quals Prep</div>
-                        <div class="stat-value"><span id="quals-prep-value">0</span>/3</div>
-                        <div id="quals-warning" style="font-size: 0.65rem;"></div>
+                </div>
+                <!-- End Tab: Status -->
+
+                <!-- V2.36: Tab Content - Actions -->
+                <div class="tab-content" data-tab="actions">
+                    <div class="main-content">
+                        <div class="panel">
+                            <h3>📋 Actions</h3>
+                            <div class="actions-grid" id="actions"></div>
+                        </div>
                     </div>
                 </div>
+                <!-- End Tab: Actions -->
 
-                <!-- V2.20: Event display with acknowledgement -->
-                <div class="event-panel" style="display: flex; gap: 12px;">
-                    <div style="flex: 2;">
-                        <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📢 What Happened</h3>
-                        <div class="message-log" id="message-log" style="min-height: 80px;">Your PhD journey begins...
+                <!-- V2.36: Tab Content - Lab -->
+                <div class="tab-content" data-tab="lab">
+                    <div class="panel">
+                        <h3>🔬 Research Pipeline</h3>
+                        <div id="pipeline"
+                            style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.85rem;">
+                            <!-- Pipeline steps rendered by JS -->
                         </div>
-                        <button id="acknowledge-btn" class="action-btn" onclick="game.acknowledgeEvent()"
-                            style="width: 100%; margin-top: 10px; display: none; background: linear-gradient(135deg, #22c55e, #16a34a);">
-                            <div class="action-name">✓ Continue</div>
+                    </div>
+                    <div class="panel">
+                        <h3>⚡ Status Effects</h3>
+                        <div class="badge-list" id="statuses"><span class="empty-text">No effects</span></div>
+                    </div>
+
+                    <!-- V2.22: Graduation Progress Card -->
+                    <div class="panel" id="graduation-card" style="margin-top: 10px;">
+                        <h3>🎓 Graduation Progress</h3>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="font-size: 0.85rem;">Papers</span>
+                            <span id="papers-progress" style="font-size: 0.85rem; font-weight: 600;">0 / 3</span>
+                        </div>
+                        <div
+                            style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 10px;">
+                            <div id="papers-bar"
+                                style="height: 100%; width: 0%; background: var(--accent-success); border-radius: 6px; transition: width 0.3s ease;">
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="font-size: 0.85rem;">Thesis</span>
+                            <span id="thesis-progress" style="font-size: 0.85rem; font-weight: 600;">0%</span>
+                        </div>
+                        <div
+                            style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 10px;">
+                            <div id="thesis-bar"
+                                style="height: 100%; width: 0%; background: var(--accent-primary); border-radius: 6px; transition: width 0.3s ease;">
+                            </div>
+                        </div>
+                        <div id="defense-status" style="font-size: 0.8rem; opacity: 0.7; text-align: center;">
+                            🔒 Defense locked — publish 3 papers
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="action-btn save-btn" onclick="game.save()" style="flex: 1;">
+                            <div class="action-name">💾 Save</div>
+                        </button>
+                        <button class="action-btn save-btn" onclick="game.loadFromSave()" style="flex: 1;">
+                            <div class="action-name">📂 Load</div>
                         </button>
                     </div>
-                    <div style="flex: 1; opacity: 0.7;">
-                        <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📜 Previously</h3>
-                        <div class="message-log" id="message-log-prev" style="min-height: 80px; font-size: 0.85rem;">-
-                        </div>
+                    <!-- V2.0.1: Footer buttons -->
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="action-btn save-btn" onclick="game.showHelp()" style="flex: 1; padding: 6px;">
+                            <div class="action-name" style="font-size: 0.85rem;">❓ Help</div>
+                        </button>
+                        <button class="action-btn save-btn" onclick="game.showSeed()" style="flex: 1; padding: 6px;">
+                            <div class="action-name" style="font-size: 0.85rem;">🎲 Seed</div>
+                        </button>
+                        <button class="action-btn save-btn" onclick="game.showHistory()" style="flex: 1; padding: 6px;">
+                            <div class="action-name" style="font-size: 0.85rem;">📜 History</div>
+                        </button>
                     </div>
                 </div>
-
-                <div class="main-content">
-                    <div class="panel">
-                        <h3>📋 Actions</h3>
-                        <div class="actions-grid" id="actions"></div>
-                    </div>
-
-                    <div>
-                        <div class="panel">
-                            <h3>🔬 Research Pipeline</h3>
-                            <div id="pipeline"
-                                style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.85rem;">
-                                <!-- Pipeline steps rendered by JS -->
-                            </div>
-                        </div>
-                        <div class="panel">
-                            <h3>⚡ Status Effects</h3>
-                            <div class="badge-list" id="statuses"><span class="empty-text">No effects</span></div>
-                        </div>
-
-                        <!-- V2.22: Graduation Progress Card -->
-                        <div class="panel" id="graduation-card" style="margin-top: 10px;">
-                            <h3>🎓 Graduation Progress</h3>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <span style="font-size: 0.85rem;">Papers</span>
-                                <span id="papers-progress" style="font-size: 0.85rem; font-weight: 600;">0 / 3</span>
-                            </div>
-                            <div
-                                style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 10px;">
-                                <div id="papers-bar"
-                                    style="height: 100%; width: 0%; background: var(--accent-success); border-radius: 6px; transition: width 0.3s ease;">
-                                </div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <span style="font-size: 0.85rem;">Thesis</span>
-                                <span id="thesis-progress" style="font-size: 0.85rem; font-weight: 600;">0%</span>
-                            </div>
-                            <div
-                                style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 10px;">
-                                <div id="thesis-bar"
-                                    style="height: 100%; width: 0%; background: var(--accent-primary); border-radius: 6px; transition: width 0.3s ease;">
-                                </div>
-                            </div>
-                            <div id="defense-status" style="font-size: 0.8rem; opacity: 0.7; text-align: center;">
-                                🔒 Defense locked — publish 3 papers
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 10px; margin-top: 10px;">
-                            <button class="action-btn save-btn" onclick="game.save()" style="flex: 1;">
-                                <div class="action-name">💾 Save</div>
-                            </button>
-                            <button class="action-btn save-btn" onclick="game.loadFromSave()" style="flex: 1;">
-                                <div class="action-name">📂 Load</div>
-                            </button>
-                        </div>
-                        <!-- V2.0.1: Footer buttons -->
-                        <div style="display: flex; gap: 8px; margin-top: 12px;">
-                            <button class="action-btn save-btn" onclick="game.showHelp()"
-                                style="flex: 1; padding: 6px;">
-                                <div class="action-name" style="font-size: 0.85rem;">❓ Help</div>
-                            </button>
-                            <button class="action-btn save-btn" onclick="game.showSeed()"
-                                style="flex: 1; padding: 6px;">
-                                <div class="action-name" style="font-size: 0.85rem;">🎲 Seed</div>
-                            </button>
-                            <button class="action-btn save-btn" onclick="game.showHistory()"
-                                style="flex: 1; padding: 6px;">
-                                <div class="action-name" style="font-size: 0.85rem;">📜 History</div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <!-- End Tab: Lab -->
             </div>
 
             <!-- V2.35: Mobile Tab Navigation (hidden on desktop via CSS) -->
             <nav class="tab-nav" id="mobile-tab-nav">
-                <button class="tab-btn active" onclick="game.switchTab('actions')" data-tab="actions">
+                <button class="tab-btn active" onclick="game.switchTab('status')" data-tab="status">
+                    <span class="tab-icon">📊</span>
+                    <span>Status</span>
+                </button>
+                <button class="tab-btn" onclick="game.switchTab('actions')" data-tab="actions">
                     <span class="tab-icon">🎯</span>
                     <span>Actions</span>
-                </button>
-                <button class="tab-btn" onclick="game.switchTab('progress')" data-tab="progress">
-                    <span class="tab-icon">📊</span>
-                    <span>Progress</span>
                 </button>
                 <button class="tab-btn" onclick="game.switchTab('lab')" data-tab="lab">
                     <span class="tab-icon">🔬</span>
@@ -2118,7 +2129,7 @@
                 setTimeout(() => toast.remove(), 2500);
             },
 
-            // V2.35: Switch mobile tab
+            // V2.36: Switch mobile tab (show/hide content panels)
             switchTab(tabId) {
                 // Update tab buttons
                 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -2128,21 +2139,15 @@
                     }
                 });
 
-                // Show/hide content based on tab
-                const mainContent = document.querySelector('.main-content');
-                const actionsPanel = mainContent?.querySelector('.panel:first-child');
-                const sidebarPanels = mainContent?.querySelector('& > div:last-child');
+                // Show/hide content panels
+                document.querySelectorAll('.tab-content').forEach(panel => {
+                    panel.classList.remove('active');
+                    if (panel.dataset.tab === tabId) {
+                        panel.classList.add('active');
+                    }
+                });
 
-                // For now, scroll to relevant section
-                if (tabId === 'actions' && actionsPanel) {
-                    actionsPanel.scrollIntoView({ behavior: 'smooth' });
-                } else if (tabId === 'progress') {
-                    document.getElementById('graduation-card')?.scrollIntoView({ behavior: 'smooth' });
-                } else if (tabId === 'lab') {
-                    document.getElementById('statuses')?.closest('.panel')?.scrollIntoView({ behavior: 'smooth' });
-                }
-
-                // Scroll to top of container
+                // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             },
 
@@ -3638,7 +3643,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.35'
+                    version: '2.36'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert

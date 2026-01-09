@@ -2,6 +2,31 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.36.0] - 2026-01-09 "Tab Content Panels"
+
+**Theme**: Proper show/hide tab panels so users don't miss info.
+
+### 📊 Status Tab
+- Stats bar (date, morale, advisor, publications, network, alignment)
+- Event messages ("What Happened" + "Previously")
+- Default tab on mobile
+
+### 🎯 Actions Tab
+- Action buttons grid only
+- Focused gameplay view
+
+### 🔬 Lab Tab  
+- Research Pipeline (Ideas → Findings → Discovery → Figures)
+- Status Effects
+- Graduation Progress (papers, thesis, defense status)
+- Save/Load/Help buttons
+
+### ⚙️ Tab Switching
+- switchTab() now shows/hides content panels
+- Desktop: all content visible (no tabs needed)
+
+---
+
 ## [2.35.0] - 2026-01-08 "Tab Navigation"
 
 **Theme**: Mobile app-shell pattern with bottom tab navigation.
