@@ -4536,3 +4536,287 @@ After this:
 	•	New players won’t bounce in Year 1
 	•	Experienced players will plan builds
 	•	Systems will explain themselves
+
+	Below is a V2.39 continuation review + concrete improvement plan, followed by a clean, production-ready HTML/CSS draft for the Tabbed Action Interface and Sticky Graduation Footer, designed to work on mobile first and degrade gracefully to desktop.
+
+⸻
+
+V2.39 — Review, Risks, and Improvement Plan
+
+High-level verdict
+
+V2.39 is the right response to the Mobile UX findings. You are solving the correct problems:
+	•	Button density ✔
+	•	Vertical scroll fatigue ✔
+	•	Social layer underutilization ✔
+
+However, the current plan still risks cognitive overload by relocation (buttons moved, but not simplified) and social actions becoming “RNG fluff” unless tightly constrained.
+
+Below are targeted observations → fixes.
+
+⸻
+
+I. Tabbed Action Interface — Observations & Improvements
+
+✅ What’s Strong
+	1.	Semantic Tabs
+	•	Research / Social / Admin is cognitively correct.
+	•	Matches player mental models (“work / people / bureaucracy”).
+	2.	Mobile-first
+	•	Large tap targets.
+	•	Eliminates 4×4 grid failure mode on phones.
+	3.	Career GPS Footer
+	•	This is excellent.
+	•	It anchors motivation and solves the “what am I doing again?” problem.
+
+⸻
+
+⚠️ Risks Identified
+
+1. Tab Overpopulation Risk (Future Versions)
+If each tab ends up with 7–8 actions again, you’re back to square one.
+
+Fix (Hard Rule)
+Add a tab capacity constraint:
+
+No tab may show more than 5 actions at once.
+
+If more are available:
+	•	collapse into a ⋯ More drawer
+	•	or rotate contextually (phase-based)
+
+⸻
+
+2. Action Discoverability Regression
+New players may not realize actions moved tabs.
+
+Fix
+	•	First-time tab switch tooltip:
+“More actions live under Research / Lab / Admin.”
+	•	Soft pulse animation on inactive tabs when actions are available.
+
+⸻
+
+3. Footer Information Density
+Papers: 1/3 | Thesis: 45% is good, but incomplete by Year 3+.
+
+Fix
+Make footer phase-aware:
+	•	Early: Papers / Credits
+	•	Mid: Funding / Rival
+	•	Late: Thesis / Defense
+
+⸻
+
+II. Active Labmate Interactions — Observations & Improvements
+
+✅ What’s Working
+	1.	Labmate-specific actions
+	•	Consulting the Senior
+	•	Challenging the Rival
+
+These finally make NPCs mechanical, not just narrative.
+	2.	Risk-gated Social Play
+	•	Morale-gated rival interaction is correct.
+	•	Prevents spam exploitation.
+
+⸻
+
+⚠️ Risks Identified
+
+1. RNG Without Cooldowns
+If consult_senior can be spammed monthly, it becomes optimal noise.
+
+Fix
+Add cooldowns tied to NPC stress:
+
+npc.cooldowns["consult"] = 3  # months
+
+UI shows:
+
+“Elena is busy (2 mo remaining)”
+
+⸻
+
+2. Social Actions Competing With Core Loop
+If social actions cost months without compensating progress, min-max players will ignore them.
+
+Fix
+Every social action must do at least one:
+	•	reduce risk
+	•	accelerate a future action
+	•	unlock a temporary bypass
+
+Never just morale/network.
+
+⸻
+
+III. V2.39 Actionable Improvement Plan (Refined)
+
+1. Tab System Hardening
+	•	Enforce ≤5 visible actions per tab
+	•	Add contextual “More…” drawer
+	•	Animate inactive tabs when new actions unlock
+
+2. Sticky Footer Evolution
+	•	Make footer phase-aware
+	•	Tap expands full Graduation Panel
+	•	Long-press toggles compact/detailed mode (mobile power users)
+
+3. Social Mechanics Balancing
+	•	Add cooldowns to all labmate actions
+	•	Surface NPC availability clearly
+	•	Ensure every social action affects future odds, not just stats
+
+4. Mobile Ergonomics
+	•	Minimum button height: 48px
+	•	touch-action: manipulation
+	•	Haptic feedback retained but throttled (no buzz spam)
+
+⸻
+
+Draft: HTML & CSS
+
+Tabbed Action Panel + Sticky Graduation Footer
+
+(Mobile-first, desktop-safe)
+
+⸻
+
+HTML Structure
+
+<!-- ACTION PANEL -->
+<div id="action-panel" class="action-tabs">
+
+  <div class="tab-headers">
+    <button class="tab-btn active" data-tab="research">🔬 Research</button>
+    <button class="tab-btn" data-tab="social">👥 Lab & Network</button>
+    <button class="tab-btn" data-tab="admin">🏛️ Admin & Self</button>
+  </div>
+
+  <div class="tab-content active" id="tab-research">
+    <!-- research actions injected here -->
+  </div>
+
+  <div class="tab-content" id="tab-social">
+    <!-- labmate + network actions -->
+  </div>
+
+  <div class="tab-content" id="tab-admin">
+    <!-- admin, grants, breaks -->
+  </div>
+</div>
+
+
+<!-- STICKY GRADUATION FOOTER -->
+<div id="graduation-footer">
+  <div class="footer-summary">
+    <span>📄 Papers: 1 / 3</span>
+    <span>✍️ Thesis: 45%</span>
+  </div>
+</div>
+
+
+⸻
+
+CSS (Mobile-first)
+
+/* ACTION TABS */
+
+.action-tabs {
+  background: #111;
+  border-radius: 12px;
+  padding-bottom: 0.5rem;
+}
+
+.tab-headers {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid #222;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.75rem 0;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  color: #fff;
+  border-bottom: 2px solid #4ade80;
+}
+
+.tab-content {
+  display: none;
+  padding: 0.75rem;
+  gap: 0.5rem;
+}
+
+.tab-content.active {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+
+/* ACTION BUTTONS */
+
+.tab-content button {
+  min-height: 48px;
+  border-radius: 10px;
+  background: #1f2933;
+  color: #fff;
+  border: none;
+  font-size: 0.95rem;
+  touch-action: manipulation;
+}
+
+
+/* STICKY FOOTER */
+
+#graduation-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #0b1220;
+  border-top: 1px solid #1e293b;
+  padding: 0.5rem 1rem;
+  z-index: 100;
+}
+
+.footer-summary {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+}
+
+
+/* DESKTOP ENHANCEMENTS */
+
+@media (min-width: 768px) {
+  .tab-content.active {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #graduation-footer {
+    max-width: 720px;
+    margin: 0 auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+
+⸻
+
+Final Assessment
+
+V2.39 is the correct prelude to the Final Defense and V3.0:
+	•	UI complexity is finally under control
+	•	Social systems now justify their existence
+	•	Mobile-first constraints are shaping better design, not worse

@@ -643,7 +643,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.38</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.39</span></h1>
         </header>
 
         <div id="app">
@@ -912,64 +912,71 @@
     <!-- Help Modal -->
     <div class="modal-overlay" id="help-modal">
         <div class="modal" style="max-width: 600px; text-align: left; max-height: 85vh; overflow-y: auto;">
-            <h2 style="text-align: center;">📖 How to Play</h2>
+            <h2 style="text-align: center;">📖 How to Play GradQuest</h2>
             <div style="margin-top: 16px; line-height: 1.7; font-size: 0.95rem;">
-                <p><strong>🎯 Goal:</strong> Publish 3 journal papers and defend your thesis!</p>
 
-                <p style="margin-top: 14px;"><strong>📊 Research Pipeline:</strong></p>
+                <p><strong>🎯 Goal:</strong> Publish 3 journal papers, complete your thesis, and defend!</p>
+
+                <p style="margin-top: 14px;"><strong>📱 Mobile Navigation (4 Tabs):</strong></p>
+                <ul style="margin-left: 20px; font-size: 0.9rem;">
+                    <li><strong>📊 Status</strong>: Your stats (date, morale, advisor, publications) + event messages
+                    </li>
+                    <li><strong>🎯 Actions</strong>: All the things you can do each month</li>
+                    <li><strong>🔬 Lab</strong>: Research pipeline, status effects, graduation progress</li>
+                    <li><strong>⏩ Next</strong>: Advance to the next month</li>
+                </ul>
+
+                <p style="margin-top: 14px;"><strong>📊 Status Tab Explained:</strong></p>
+                <ul style="margin-left: 20px; font-size: 0.9rem;">
+                    <li><strong>📅 Date</strong>: Current month/year and credits earned</li>
+                    <li><strong>📰 Publications</strong>: Papers published (J=Journal, C=Conference)</li>
+                    <li><strong>💪 Morale</strong>: Your mental health (drops monthly, recover with breaks)</li>
+                    <li><strong>👨‍🏫 Advisor</strong>: Relationship with your advisor (affects outcomes)</li>
+                    <li><strong>🤝 Network</strong>: Professional connections (unlocks bonuses at 40/60/80)</li>
+                    <li><strong>📚 Quals Prep</strong>: Study level for qualifying exam (need 3+ to pass)</li>
+                    <li><strong>🎯 Alignment</strong>: How well your research matches advisor's goals</li>
+                </ul>
+
+                <p style="margin-top: 14px;"><strong>🔬 Research Pipeline:</strong></p>
                 <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                    📚 Read → 💡 Idea → 🔬 Findings → 🎯 Discovery → 📊 Figures (×3) → 📝 Paper
+                    📚 Read Papers → 💡 Get Idea → 🔬 Develop Findings → 🎯 Key Discovery → 📊 Make Figures (×3) → 📝
+                    Submit Paper
                 </p>
 
-                <p style="margin-top: 14px;"><strong>📋 Publication Tracks:</strong></p>
+                <p style="margin-top: 14px;"><strong>📋 Common Actions Explained:</strong></p>
                 <ul style="margin-left: 20px; font-size: 0.9rem;">
-                    <li><strong>Journal Paper</strong>: 8-12 months, counts toward graduation</li>
+                    <li><strong>📚 Read Papers</strong>: Search for new research ideas (40% chance of idea)</li>
+                    <li><strong>💡 Work on Idea</strong>: Develop idea into preliminary findings</li>
+                    <li><strong>🔬 Develop Findings</strong>: Turn findings into a key discovery</li>
+                    <li><strong>📊 Make Figures</strong>: Create figures for your paper (need 3)</li>
+                    <li><strong>📝 Draft Paper</strong>: Write and submit to journal/conference</li>
+                    <li><strong>✍️ Write Thesis</strong>: Work on your dissertation (~12% progress each time)</li>
+                    <li><strong>🎓 Pitch Session</strong>: Meet with advisor (learn preferences, gain alignment)</li>
+                    <li><strong>📚 Study for Quals</strong>: Prepare for qualifying exam</li>
+                    <li><strong>☕ Take Break</strong>: Rest to recover morale (+15)</li>
+                </ul>
+
+                <p style="margin-top: 14px;"><strong>📰 Publications:</strong></p>
+                <ul style="margin-left: 20px; font-size: 0.9rem;">
+                    <li><strong>Journal Paper</strong>: 8-12 months review, counts toward graduation</li>
                     <li><strong>Conference Paper</strong>: 4 months, builds network (+15)</li>
-                </ul>
-
-                <p style="margin-top: 14px;"><strong>🧑‍🏫 Advisor System:</strong></p>
-                <ul style="margin-left: 20px; font-size: 0.9rem;">
-                    <li>Your advisor has hidden traits that affect outcomes</li>
-                    <li>Use <strong>Pitch Session</strong> to learn their preferences</li>
-                    <li>Signals: fast/slow response, harsh/encouraging tone</li>
-                </ul>
-
-                <p style="margin-top: 14px;"><strong>🤝 Peer Network:</strong></p>
-                <ul style="margin-left: 20px; font-size: 0.9rem;">
-                    <li>Build through conferences and pitch sessions</li>
-                    <li><strong>40+</strong>: Study Group (quals prep bonus)</li>
-                    <li><strong>60+</strong>: Pre-register discount (-3 vs -5)</li>
-                    <li><strong>80+</strong>: Peer Review Assist</li>
-                </ul>
-
-                <p style="margin-top: 14px;"><strong>🎯 Strategic Alignment:</strong></p>
-                <ul style="margin-left: 20px; font-size: 0.9rem;">
-                    <li>Increases through successful pitch sessions</li>
-                    <li>Reduces monthly morale decay (-1 per 25 alignment)</li>
-                    <li>Triggers advisor pep talks at high levels</li>
-                </ul>
-
-                <p style="margin-top: 14px;"><strong>🚪 Strategic Exits:</strong></p>
-                <ul style="margin-left: 20px; font-size: 0.9rem;">
-                    <li><strong>Master's Exit</strong>: Requires 30 credits + 18 months</li>
-                    <li>Early Exit → Career Pivot</li>
-                    <li>Late Exit → Technical Specialist (+salary)</li>
                 </ul>
 
                 <p style="margin-top: 14px;"><strong>⚠️ Key Events:</strong></p>
                 <ul style="margin-left: 20px; font-size: 0.9rem;">
-                    <li>Qual exam: September Year 2 (prep level 3+ to pass!)</li>
-                    <li>First failure gives ONE retake chance (3 months)</li>
-                    <li>Imposter syndrome, getting scooped, teaching duty</li>
-                    <li>Reviewer #2 may request major revisions</li>
+                    <li><strong>Qual Exam</strong>: September Year 2 (prep level 3+ to pass!)</li>
+                    <li><strong>Teaching Load</strong>: When funding runs out (-50% speed)</li>
+                    <li><strong>Emergency Grant</strong>: Escape teaching load (appears when funding low)</li>
                 </ul>
 
-                <p style="margin-top: 14px;"><strong>🏥 Emergency Options:</strong></p>
+                <p style="margin-top: 14px;"><strong>🏆 Graduation Requirements:</strong></p>
                 <ul style="margin-left: 20px; font-size: 0.9rem;">
-                    <li><strong>Medical Leave</strong>: +40 morale when critical, costs 3-6 months (one-time)</li>
-                    <li><strong>Vacation</strong>: Advisor may suggest rest when morale low</li>
-                    <li>After 2 failed figures: learning bonus (+30% success)</li>
+                    <li>✅ Pass qualifying exam</li>
+                    <li>✅ Publish 3+ journal papers</li>
+                    <li>✅ Complete thesis (100%)</li>
+                    <li>✅ Defend (final action!)</li>
                 </ul>
+
             </div>
             <div class="modal-actions">
                 <button class="modal-btn primary" onclick="game.hideHelp()">Got it!</button>
@@ -3723,7 +3730,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.38'
+                    version: '2.39'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -4423,13 +4430,13 @@
                 }
 
                 // Always available
-                actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Search for ideas', telemetry: 'research' });
+                actions.push({ id: 'read', name: '📚 Read Papers', desc: '40% chance of new idea', telemetry: 'research' });
 
                 if (this.getItem('idea') > 0) {
-                    actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: 'Develop preliminary results', telemetry: 'research' });
+                    actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: '→ Preliminary findings', telemetry: 'research' });
                 }
                 if (this.getItem('initial_findings') > 0) {
-                    actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: 'Work toward Key Discovery', telemetry: 'research' });
+                    actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: '→ Key Discovery', telemetry: 'research' });
                 }
                 if (this.getItem('key_discovery') > 0) {
                     const figures = this.getItem('figure') || 0;
@@ -4465,7 +4472,7 @@
                     actions.push({ id: 'pending', name: '⏳ Pending Papers', desc: s.pendingPapers.length + ' under review', disabled: true });
                 }
 
-                actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest and recover', telemetry: 'mental_health' });
+                actions.push({ id: 'break', name: '☕ Take a Break', desc: '+15 morale', telemetry: 'mental_health' });
 
                 // V2.10: Medical Leave (emergency escape, one-time use)
                 if (s.morale < 15 && !s.medicalLeaveUsed) {
@@ -4477,9 +4484,8 @@
                     actions.push({ id: 'vacation', name: '🏖️ Take Time Off', desc: 'Advisor suggested rest', telemetry: 'mental_health' });
                 }
 
-                // V2.2 Pro: Pitch Session (always available after first year)
                 if (s.statuses && s.statuses.has && !s.statuses.has('firstYear')) {
-                    actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: 'Get advisor feedback on ideas', telemetry: 'admin' });
+                    actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: '+Alignment, learn advisor style', telemetry: 'admin' });
                 }
 
                 // V2.28: Conferences now invitation-based (see spawnConferenceInvite)
