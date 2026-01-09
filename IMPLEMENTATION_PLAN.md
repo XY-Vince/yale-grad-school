@@ -4820,3 +4820,547 @@ V2.39 is the correct prelude to the Final Defense and V3.0:
 	•	UI complexity is finally under control
 	•	Social systems now justify their existence
 	•	Mobile-first constraints are shaping better design, not worse
+
+Below is a hard-truth, production-ready V2.40 improvement plan, followed by a clean JSON schema for Defense Actions that fits your existing architecture (rules-driven, transparent, replayable, non-RNG rage-inducing).
+
+I’m going to be direct where needed — this is endgame design, not flavor.
+
+⸻
+
+V2.40 — Defense Gauntlet & Legacy Update
+
+Design Review + Solid Improvement Plan
+
+Executive Verdict
+
+You are absolutely right to make V2.40 a skill check, not a luck check.
+
+Right now, GradQuest does something dangerous for a long-run sim:
+
+It asks for 80–120 months of commitment, then resolves everything with a binary screen.
+
+V2.40 fixes this if and only if the Defense Gauntlet:
+	•	Is deterministic enough to reward preparation
+	•	Is forgiving enough to avoid rage quits
+	•	Makes players say: “I lost because I played it wrong — and I know how to fix it.”
+
+Your current direction is correct. Below is how to make it land.
+
+⸻
+
+I. Defense Gauntlet — Critical Design Observations
+
+✅ What You’re Doing Right
+	1.	Multi-turn structure (Presentation → Q&A → Deliberation)
+	•	This mirrors real defenses perfectly.
+	•	It naturally maps to different stats (Research, Credits, Network).
+	2.	Committee as entities, not numbers
+	•	Advisor alignment affecting role is excellent.
+	•	External reviewer difficulty tied to Network is fair and legible.
+	3.	No hard “Game Over”
+	•	“Major Revisions” instead of failure is non-negotiable.
+	•	This preserves player dignity after long runs.
+
+⸻
+
+⚠️ Core Risks (and How to Fix Them)
+
+1. Resource Hoarding → One-Click Win
+If players can dump 80 Network or 60 Alignment in one turn, the battle trivializes.
+
+Fix: Hard per-turn spending caps
+
+Example:
+	•	Max Network spend per turn: 25
+	•	Max Alignment spend per turn: 15
+	•	Morale can spike but causes post-defense burnout
+
+This forces planning, not hoarding.
+
+⸻
+
+2. Action Illusion (Choices That Are Always Optimal)
+If “Leverage Network” is always the best final move, choice collapses.
+
+Fix: Committee-Specific Resistances
+Each committee member has:
+	•	a vulnerability
+	•	a resistance
+
+Example:
+	•	External Reviewer resists Network spam
+	•	Advisor resists Alignment if previously neglected
+	•	Methodologist resists “Storytelling”
+
+⸻
+
+3. RNG-Induced Rage
+Defense outcomes must never hinge on a single random roll.
+
+Fix: Bounded Variance Only
+	•	RNG only adds ±5–10% to approval gain
+	•	No “critical failure” events
+	•	The player always inches forward
+
+⸻
+
+II. Defense Gauntlet — Refined Mechanics
+
+Approval Meter Rules (Hard Constraints)
+	•	Starts at 30–50%, never 0
+	•	Cannot drop below 25%
+	•	Victory threshold: 100%
+	•	Failure state: <100% after 3 turns → Major Revisions
+
+This guarantees:
+
+No wasted run. No humiliation spiral.
+
+⸻
+
+Turn Structure (Refined)
+
+Turn 1 — Presentation (Foundation)
+Focus: Research credibility
+
+Available actions:
+	•	Present Data (Research Quality)
+	•	Frame the Narrative (Morale)
+	•	Preempt Criticism (Credits)
+
+⸻
+
+Turn 2 — Q&A (Stress Test)
+Focus: Preparation & advisor relationship
+
+Available actions:
+	•	Cite Literature (Credits)
+	•	Defer to Advisor (Alignment)
+	•	Acknowledge Limitations (Morale → reduces resistance)
+
+⸻
+
+Turn 3 — Deliberation (Politics)
+Focus: Social capital
+
+Available actions:
+	•	Leverage Network
+	•	Appeal to Impact (Alignment + Credits)
+	•	Hold Firm (no cost, low gain, safest)
+
+⸻
+
+III. Legacy & Epilogues — Hard Truths
+
+What Works
+	•	Multi-ending structure ✔
+	•	Non-binary success ✔
+	•	Linking endings to how you played ✔
+
+What’s Missing
+
+Bittersweet endings.
+
+Not everyone should “win” cleanly — but everyone should feel seen.
+
+Add at least:
+	•	Burnout Survivor (Graduated, Morale < 5)
+	•	Delayed Defender (Revisions taken twice)
+	•	Quiet Scholar (Low Network, High Credits)
+
+These validate different player psychologies.
+
+⸻
+
+IV. Actionable Implementation Plan (V2.40)
+
+1. Defense Engine
+	•	Implement defense_engine.js
+	•	Deterministic approval math
+	•	Per-turn resource caps
+	•	Committee resistances
+
+2. Defense UI
+	•	Full-screen modal
+	•	Hide all other UI
+	•	Show:
+	•	Approval Meter
+	•	Committee portraits + traits
+	•	Remaining turns
+
+3. Failure Handling
+	•	Replace “Fail” with:
+“Major Revisions Required (+6 months, +1 Morale Recovery Event)”
+
+4. Epilogue System
+	•	Compute Primary Ending
+	•	Add Secondary Trait Card
+	•	“Known for Mentorship”
+	•	“Published Slowly but Deeply”
+	•	“Network Builder”
+
+⸻
+
+JSON Schema — Defense Actions
+
+This is clean, extensible, ruleset-friendly, and matches your existing YAML/JSON philosophy.
+
+{
+  "defense_actions": [
+    {
+      "id": "present_data",
+      "name": "Present Data",
+      "phase": "presentation",
+      "cost": {
+        "morale": 5
+      },
+      "approval_gain": {
+        "base": 20,
+        "scales_with": "research_quality",
+        "modifier": 0.4
+      },
+      "caps": {
+        "max_gain": 30
+      },
+      "committee_interaction": {
+        "methodologist": 1.2,
+        "external_reviewer": 1.0,
+        "advisor": 0.9
+      }
+    },
+
+    {
+      "id": "cite_literature",
+      "name": "Cite Literature",
+      "phase": "qa",
+      "cost": {
+        "credits": 1
+      },
+      "approval_gain": {
+        "base": 15,
+        "scales_with": "credits",
+        "modifier": 0.6
+      },
+      "caps": {
+        "max_gain": 25
+      },
+      "committee_interaction": {
+        "methodologist": 1.3,
+        "external_reviewer": 1.1,
+        "advisor": 1.0
+      }
+    },
+
+    {
+      "id": "defer_to_advisor",
+      "name": "Defer to Advisor",
+      "phase": "qa",
+      "requirement": {
+        "alignment_min": 40
+      },
+      "cost": {
+        "alignment": 10
+      },
+      "approval_gain": {
+        "base": 18,
+        "scales_with": "alignment",
+        "modifier": 0.5
+      },
+      "caps": {
+        "max_gain": 28
+      },
+      "committee_interaction": {
+        "advisor": 1.5,
+        "external_reviewer": 0.9
+      }
+    },
+
+    {
+      "id": "leverage_network",
+      "name": "Leverage Network",
+      "phase": "deliberation",
+      "cost": {
+        "network": 20
+      },
+      "approval_gain": {
+        "base": 25,
+        "scales_with": "network",
+        "modifier": 0.3
+      },
+      "caps": {
+        "max_gain": 35,
+        "per_turn_network_spend": 25
+      },
+      "committee_interaction": {
+        "external_reviewer": 1.3,
+        "advisor": 0.8
+      }
+    },
+
+    {
+      "id": "hold_firm",
+      "name": "Hold Firm",
+      "phase": "any",
+      "cost": {},
+      "approval_gain": {
+        "base": 8,
+        "fixed": true
+      },
+      "caps": {
+        "max_gain": 10
+      },
+      "committee_interaction": {
+        "all": 1.0
+      }
+    }
+  ]
+}
+
+
+⸻
+
+Final Coach’s Take
+
+V2.40 is the moment GradQuest stops being “a clever sim” and becomes a remembered experience.
+
+Below is a V2.41 continuation that is blunt, systems-level, and implementable, followed by production-ready JavaScript for the Defense Criteria Evaluator that cleanly unlocks Defend for hybrid / conference-heavy portfolios.
+
+I’m going to be explicit about why each change matters — this is a rescue update, not a feature flex.
+
+⸻
+
+V2.41 — Accessibility & Feedback Update
+
+Deep Improvement Plan + Actionable Items
+
+Executive Diagnosis (No Sugarcoating)
+
+V2.40 succeeded narratively but failed structurally for a large fraction of players.
+
+The problem is not difficulty.
+The problem is gating the climax behind a single orthodox career path.
+
+Right now, GradQuest implicitly says:
+
+“If you didn’t play like a textbook R1 trainee, you don’t get an ending.”
+
+That is unacceptable for a simulation claiming realism.
+
+V2.41 must:
+	•	Lower the entry barrier
+	•	Expose hidden evaluation logic
+	•	Turn uncertainty into readable tension, not frustration
+
+Your proposed direction is correct. Below is how to harden it.
+
+⸻
+
+I. Flexible Defense Criteria — Critical Refinement
+
+What Works
+	•	Multiple portfolios ✔
+	•	Difficulty scaling via skepticism ✔
+	•	Allowing “early but risky” defenses ✔
+
+What Needs Tightening
+
+1. Conference-Heavy Paths Must Be Explicitly Legitimated
+In many real fields:
+	•	0J + 6C is normal
+	•	1J + 4C is strong
+	•	2J + 2C is excellent
+
+If the game treats these as “gambles” only, players will still feel punished.
+
+Solution: Three Tiers, Not Three Exceptions
+
+Tier	Portfolio Example	Skepticism Multiplier	Label
+Canonical	3J	1.0	“Standard Defense”
+Balanced	2J+2C / 1J+4C	1.2	“Field-Typical Defense”
+Conference-Driven	0J+6C	1.35	“Fast-Moving Field Defense”
+Early	2J / 1J+2C + Morale	1.5	“Early Defense”
+
+Language matters.
+Never label valid playstyles as “suboptimal” in UI.
+
+⸻
+
+2. Skepticism Must Affect Starting State, Not Win Probability
+You already started this — double down.
+
+Rule
+	•	Skepticism modifies:
+	•	Starting Approval
+	•	Committee resistance
+	•	NOT:
+	•	Random failure chance
+
+This keeps the system fair and legible.
+
+⸻
+
+II. Defense HUD — Make the Invisible Visible
+
+This is the single most important UX change since tabs.
+
+What the HUD Must Answer Instantly
+	•	“Why is this hard?”
+	•	“Which stat am I failing on?”
+	•	“What would have helped?”
+
+Mandatory HUD Elements (No Cuts)
+	1.	Approval Tug-of-War Bar
+	•	Smooth animation
+	•	Never jumps without explanation
+	2.	Committee Skepticism Gauge
+	•	Color + icon + tooltip
+	•	Shows:
+	•	Base skepticism
+	•	Portfolio modifier
+	•	Temporary debuffs (“You deflected that concern”)
+	3.	Action Impact Preview (Before Click)
+	•	On hover/tap:
+	•	+12 Approval
+	•	−8 Skepticism (Methodology)
+	•	This turns defense into strategy, not guessing.
+
+⸻
+
+III. Review Progress Bar — Psychological Fix, Not Just UI
+
+This is deceptively important.
+
+Why It Matters
+
+Waiting is where players quit.
+Not failing.
+
+The progress bar:
+	•	Converts dead time into anticipation
+	•	Confirms that actions matter
+
+Implementation Guidance
+	•	Always move forward (never stall visually)
+	•	Reviewer responses cause visible jumps
+	•	Late-stage reviews accelerate slightly (hope effect)
+
+⸻
+
+IV. Mock Defense — Brilliant Addition (But Use Carefully)
+
+Your idea is strong — here’s how to avoid abuse.
+
+Rules for Mock Defense
+	•	Reveals:
+	•	Committee skepticism tier
+	•	Strongest & weakest committee member
+	•	Does NOT reveal:
+	•	Exact approval numbers
+	•	Optimal action sequence
+
+Why
+
+Mock Defense should:
+	•	Reduce anxiety
+	•	Not solve the puzzle for them
+
+⸻
+
+V. Actionable Implementation Plan (Refined)
+
+1. Defense Criteria Engine
+	•	Replace single boolean with:
+
+{
+  allowed: boolean,
+  portfolio_type: string,
+  skepticism_multiplier: number
+}
+
+
+
+2. Defense HUD
+	•	Add:
+	•	Skepticism meter
+	•	Action preview tooltips
+	•	Bind every approval change to text feedback
+
+3. Research Pipeline
+	•	Add visual progress bar
+	•	Hook “Respond to Reviewers” → immediate bar jump
+
+4. Mock Defense
+	•	Add pre-defense modal
+	•	Consume 1 month
+	•	Cache result (no reroll spam)
+
+⸻
+
+JavaScript — Defense Criteria Evaluator
+
+This is drop-in logic for unlocking the Defend button with hybrid / conference-heavy portfolios.
+
+// logic/defenseCriteriaEvaluator.js
+
+export function evaluateDefenseCriteria(state) {
+  const journals = state.published_journals || 0;
+  const conferences = state.published_conferences || 0;
+  const morale = state.morale || 0;
+
+  // Helper
+  const result = (allowed, type, multiplier, label) => ({
+    allowed,
+    portfolioType: type,
+    skepticismMultiplier: multiplier,
+    label
+  });
+
+  // Tier 1: Canonical Path
+  if (journals >= 3) {
+    return result(true, "canonical", 1.0, "Standard Defense");
+  }
+
+  // Tier 2: Balanced Portfolio
+  if (journals >= 2 && conferences >= 2) {
+    return result(true, "balanced", 1.2, "Field-Typical Defense");
+  }
+
+  if (journals >= 1 && conferences >= 4) {
+    return result(true, "balanced", 1.25, "Conference-Weighted Defense");
+  }
+
+  // Tier 3: Conference-Driven Fields
+  if (journals === 0 && conferences >= 6) {
+    return result(true, "conference_heavy", 1.35, "Fast-Moving Field Defense");
+  }
+
+  // Tier 4: Early Defense (High Confidence)
+  if (journals >= 2 && morale >= 80) {
+    return result(true, "early", 1.5, "Early Defense (High Risk)");
+  }
+
+  // Not Ready
+  return result(false, "ineligible", 0, "Not Defense Ready");
+}
+
+UI Usage Example
+
+const defenseStatus = evaluateDefenseCriteria(gameState);
+
+defendButton.disabled = !defenseStatus.allowed;
+
+if (defenseStatus.allowed) {
+  defendButton.title =
+    `${defenseStatus.label}\nCommittee Skepticism ×${defenseStatus.skepticismMultiplier}`;
+}
+
+
+⸻
+
+Final Coach’s Take
+
+V2.41 is a trust repair patch.
+
+You are telling the player:
+
+“However you survived grad school — we recognize it.”

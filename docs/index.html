@@ -394,13 +394,121 @@
             font-size: 1.1rem;
             font-weight: bold;
             border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s;
+            margin-top: 16px;
         }
 
-        .event-modal-btn:active {
-            transform: scale(0.97);
+        /* V2.40: Defense Gauntlet Styles */
+        .defense-modal {
+            text-align: center;
+        }
+
+        .defense-phase {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .phase-label {
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        .phase-name {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .defense-meter {
+            margin: 16px 0;
+        }
+
+        .meter-label {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .meter-bar {
+            height: 24px;
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f87171, #fbbf24, #4ade80);
+            border-radius: 12px;
+            transition: width 0.5s ease;
+        }
+
+        .meter-threshold {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: white;
+        }
+
+        .defense-committee {
+            display: flex;
+            justify-content: space-around;
+            margin: 16px 0;
+            gap: 8px;
+        }
+
+        .committee-member {
+            background: var(--bg-card);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .defense-actions {
+            display: grid;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .defense-action-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--accent-primary);
+            color: var(--text-primary);
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .defense-action-btn:hover {
+            background: var(--accent-primary);
+            transform: scale(1.02);
+        }
+
+        .defense-action-btn .action-title {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .defense-action-btn .action-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .defense-result {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 16px;
         }
 
         /* ===========================================
@@ -643,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.39</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.41</span></h1>
         </header>
 
         <div id="app">
@@ -898,6 +1006,52 @@
             <div class="modal-actions">
                 <button class="modal-btn primary" onclick="game.thesisDefend()">🎓 Defend Thesis</button>
                 <button class="modal-btn secondary" onclick="game.thesisStay()">📖 Stay for Research</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- V2.40: Defense Gauntlet Modal -->
+    <div class="modal-overlay" id="defense-modal">
+        <div class="modal defense-modal" style="max-width: 500px;">
+            <h2 style="text-align: center;">🎓 Thesis Defense</h2>
+
+            <!-- Phase Indicator -->
+            <div class="defense-phase" id="defense-phase">
+                <span class="phase-label">Turn 1/3</span>
+                <span class="phase-name">📊 Presentation</span>
+            </div>
+
+            <!-- V2.41: Portfolio Type -->
+            <div id="defense-portfolio"
+                style="text-align: center; margin-bottom: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                Standard Defense · Skepticism: ×1.0
+            </div>
+
+            <!-- Approval Meter -->
+            <div class="defense-meter">
+                <div class="meter-label">Committee Approval: <span id="defense-approval">35</span>%</div>
+                <div class="meter-bar">
+                    <div class="meter-fill" id="defense-meter-fill" style="width: 35%"></div>
+                    <div class="meter-threshold"></div>
+                </div>
+            </div>
+
+            <!-- Committee -->
+            <div class="defense-committee" id="defense-committee">
+                <div class="committee-member">👨‍🏫 Advisor</div>
+                <div class="committee-member">📐 Methodologist</div>
+                <div class="committee-member">🔬 External</div>
+            </div>
+
+            <!-- Actions -->
+            <div class="defense-actions" id="defense-actions">
+                <!-- Actions populated by JS -->
+            </div>
+
+            <!-- Result (hidden until complete) -->
+            <div class="defense-result" id="defense-result" style="display: none;">
+                <div id="defense-result-text"></div>
+                <button class="modal-btn primary" onclick="game.endDefense()">Continue</button>
             </div>
         </div>
     </div>
@@ -3730,7 +3884,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.39'
+                    version: '2.41'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -4449,23 +4603,23 @@
                 if (this.getItem('rejected_paper') > 0) {
                     actions.push({ id: 'revise', name: '✏️ Revise Paper', desc: 'Revise and resubmit' });
                 }
-                // V2.5: Thesis requires 3 "journal equivalents" (2 conf papers = 1 journal)
+                // V2.41: Flexible defense criteria
+                const defenseStatus = this.evaluateDefenseCriteria();
                 const journalPapers = this.getItem('paper') || 0;
                 const confPapers = s.confPaperCount || 0;
-                const journalEquivalent = journalPapers + Math.floor(confPapers / 2);
 
                 // V2.18: Defense Prep Gate - lock actions when ready to graduate
-                if (journalEquivalent >= 3 && !s.defensePrepared) {
+                if (defenseStatus.allowed && !s.defensePrepared) {
                     // Only finale actions available
                     return [
-                        { id: 'prepare_defense', name: '🎓 Prepare Defense', desc: 'Organize your thesis chapters' },
+                        { id: 'prepare_defense', name: '🎓 Prepare Defense', desc: `${defenseStatus.label} (×${defenseStatus.skepticismMultiplier} skepticism)` },
                         { id: 'polish_thesis', name: '✨ Polish Thesis', desc: 'Final revisions (+5 morale)' },
                         { id: 'break', name: '☕ Take a Break', desc: 'Rest before the big day' }
                     ];
                 }
 
-                if (journalEquivalent >= 3 && s.defensePrepared) {
-                    actions.push({ id: 'thesis', name: '🎓 Defend Thesis!', desc: `Ready! (${journalPapers}J + ${confPapers}C)` });
+                if (defenseStatus.allowed && s.defensePrepared) {
+                    actions.push({ id: 'thesis', name: '🎓 Defend Thesis!', desc: `${defenseStatus.label} (${journalPapers}J + ${confPapers}C)` });
                 }
                 // V1.8: Show pending papers
                 if (s.pendingPapers && s.pendingPapers.length > 0) {
@@ -5313,14 +5467,208 @@
             },
 
             // Thesis actions
+            // V2.40: Defense Gauntlet State
+            defenseState: null,
+
+            // V2.41: Flexible Defense Criteria Evaluator
+            evaluateDefenseCriteria() {
+                const journals = this.getItem('paper') || 0;
+                const conferences = this.state.confPaperCount || 0;
+                const morale = this.state.morale || 0;
+
+                // Helper to create result
+                const result = (allowed, type, multiplier, label) => ({
+                    allowed, portfolioType: type, skepticismMultiplier: multiplier, label
+                });
+
+                // Tier 1: Canonical Path (3+ journals)
+                if (journals >= 3) {
+                    return result(true, 'canonical', 1.0, 'Standard Defense');
+                }
+
+                // Tier 2: Balanced Portfolio
+                if (journals >= 2 && conferences >= 2) {
+                    return result(true, 'balanced', 1.15, 'Field-Typical Defense');
+                }
+                if (journals >= 1 && conferences >= 4) {
+                    return result(true, 'balanced', 1.25, 'Conference-Weighted Defense');
+                }
+
+                // Tier 3: Conference-Driven Fields
+                if (journals === 0 && conferences >= 6) {
+                    return result(true, 'conference_heavy', 1.35, 'Fast-Moving Field Defense');
+                }
+
+                // Tier 4: Early Defense (High Morale)
+                if (journals >= 2 && morale >= 80) {
+                    return result(true, 'early', 1.5, 'Early Defense (High Risk)');
+                }
+
+                // Not Ready
+                return result(false, 'ineligible', 0, 'Not Defense Ready');
+            },
+
+            // V2.40: Start Defense Gauntlet
             thesisDefend() {
                 document.getElementById('thesis-modal').classList.remove('active');
-                if (this.random() < 0.9) {
-                    this.showMessage('🎓🎉 CONGRATULATIONS, DOCTOR! 🎉🎓\n\nYou\'ve successfully defended your thesis!');
-                } else {
-                    this.showMessage('😅 The defense was rough, but you passed with major revisions!');
+
+                // V2.41: Get defense criteria and apply skepticism
+                const defenseStatus = this.evaluateDefenseCriteria();
+                const skepticism = defenseStatus.skepticismMultiplier || 1.0;
+
+                // Initialize defense state
+                const thesisBonus = (this.state.thesisProgress || 0) >= 100 ? 15 : 0;
+                const paperBonus = (this.getItem('paper') || 0) * 5;
+                const confBonus = (this.state.confPaperCount || 0) * 2;
+                const baseApproval = 35 + thesisBonus + Math.floor((paperBonus + confBonus) / 2);
+
+                // Apply skepticism (higher skepticism = lower start)
+                const startApproval = Math.max(25, Math.min(50, Math.floor(baseApproval / skepticism)));
+
+                this.defenseState = {
+                    turn: 1,
+                    approval: startApproval,
+                    maxTurns: 3,
+                    phases: ['📊 Presentation', '❓ Q&A', '🤝 Deliberation'],
+                    complete: false,
+                    portfolioLabel: defenseStatus.label,
+                    skepticism: skepticism
+                };
+
+                // Show defense modal
+                document.getElementById('defense-modal').classList.add('active');
+                this.updateDefenseUI();
+            },
+
+            // V2.40: Update Defense UI
+            updateDefenseUI() {
+                const ds = this.defenseState;
+                const s = this.state;
+
+                // Update phase
+                document.querySelector('.phase-label').textContent = `Turn ${ds.turn}/${ds.maxTurns}`;
+                document.querySelector('.phase-name').textContent = ds.phases[ds.turn - 1];
+
+                // V2.41: Update portfolio label
+                const portfolioDiv = document.getElementById('defense-portfolio');
+                if (portfolioDiv && ds.portfolioLabel) {
+                    portfolioDiv.textContent = `${ds.portfolioLabel} · Skepticism: ×${ds.skepticism.toFixed(1)}`;
                 }
-                this.endGame(true, 'graduation', 'Congratulations, you have earned your PhD!');
+
+                // Update approval meter
+                document.getElementById('defense-approval').textContent = Math.round(ds.approval);
+                document.getElementById('defense-meter-fill').style.width = `${Math.min(100, ds.approval)}%`;
+
+                // Generate actions for current turn
+                const actionsDiv = document.getElementById('defense-actions');
+                actionsDiv.innerHTML = '';
+
+                const actions = this.getDefenseActions(ds.turn);
+                actions.forEach(action => {
+                    const btn = document.createElement('button');
+                    btn.className = 'defense-action-btn';
+                    btn.innerHTML = `<div class="action-title">${action.name}</div><div class="action-desc">${action.desc}</div>`;
+                    btn.onclick = () => this.doDefenseAction(action);
+                    actionsDiv.appendChild(btn);
+                });
+            },
+
+            // V2.40: Get actions for current turn
+            getDefenseActions(turn) {
+                const s = this.state;
+                const papers = this.getItem('paper') || 0;
+                const alignment = s.strategicAlignment || 0;
+                const network = s.peerNetwork || 10;
+                const morale = s.morale || 50;
+                const credits = s.credits || 0;
+
+                if (turn === 1) { // Presentation
+                    return [
+                        { id: 'present_data', name: '📊 Present Data', desc: `+${15 + Math.min(10, papers * 2)}% (based on papers)`, gain: 15 + Math.min(10, papers * 2) },
+                        { id: 'frame_narrative', name: '📝 Frame Narrative', desc: `+${10 + Math.floor(morale / 10)}% (based on morale)`, gain: 10 + Math.floor(morale / 10) },
+                        { id: 'preempt_criticism', name: '🛡️ Preempt Criticism', desc: `+${12 + Math.floor(credits / 5)}% (based on credits)`, gain: 12 + Math.floor(credits / 5) }
+                    ];
+                } else if (turn === 2) { // Q&A
+                    return [
+                        { id: 'cite_literature', name: '📚 Cite Literature', desc: `+${15 + Math.floor(credits / 4)}% (based on credits)`, gain: 15 + Math.floor(credits / 4) },
+                        { id: 'defer_advisor', name: '👨‍🏫 Defer to Advisor', desc: `+${15 + Math.floor(alignment / 4)}% (based on alignment)`, gain: 15 + Math.floor(alignment / 4) },
+                        { id: 'acknowledge_limits', name: '🤔 Acknowledge Limits', desc: '+12% (safe, reduces resistance)', gain: 12 }
+                    ];
+                } else { // Deliberation
+                    return [
+                        { id: 'leverage_network', name: '🤝 Leverage Network', desc: `+${20 + Math.floor(network / 4)}% (based on network)`, gain: 20 + Math.floor(network / 4) },
+                        { id: 'appeal_impact', name: '🌟 Appeal to Impact', desc: `+${15 + Math.floor((alignment + credits) / 8)}% (alignment + credits)`, gain: 15 + Math.floor((alignment + credits) / 8) },
+                        { id: 'hold_firm', name: '🧘 Hold Firm', desc: '+10% (safe, no cost)', gain: 10 }
+                    ];
+                }
+            },
+
+            // V2.40: Execute defense action
+            doDefenseAction(action) {
+                const ds = this.defenseState;
+
+                // Apply gain (capped per action)
+                const maxGain = 35;
+                const gain = Math.min(maxGain, action.gain);
+                ds.approval = Math.min(100, ds.approval + gain);
+
+                // Small variance (+/- 5%)
+                const variance = (this.random() - 0.5) * 10;
+                ds.approval = Math.max(25, Math.min(100, ds.approval + variance));
+
+                // Advance turn
+                ds.turn++;
+
+                if (ds.turn > ds.maxTurns) {
+                    // Defense complete - show result
+                    ds.complete = true;
+                    this.showDefenseResult();
+                } else {
+                    this.updateDefenseUI();
+                }
+            },
+
+            // V2.40: Show defense result
+            showDefenseResult() {
+                const ds = this.defenseState;
+                const actionsDiv = document.getElementById('defense-actions');
+                actionsDiv.style.display = 'none';
+
+                const resultDiv = document.getElementById('defense-result');
+                const resultText = document.getElementById('defense-result-text');
+                resultDiv.style.display = 'block';
+
+                if (ds.approval >= 100) {
+                    resultText.innerHTML = `<h3>🎓🎉 CONGRATULATIONS, DOCTOR! 🎉🎓</h3>
+                        <p>Final Approval: ${Math.round(ds.approval)}%</p>
+                        <p>The committee unanimously approved your thesis!</p>`;
+                } else {
+                    resultText.innerHTML = `<h3>📝 Major Revisions Required</h3>
+                        <p>Final Approval: ${Math.round(ds.approval)}%</p>
+                        <p>The committee requires revisions. (+6 months, +20 morale)</p>`;
+                }
+            },
+
+            // V2.40: End defense and apply result
+            endDefense() {
+                const ds = this.defenseState;
+                document.getElementById('defense-modal').classList.remove('active');
+                document.getElementById('defense-actions').style.display = 'grid';
+                document.getElementById('defense-result').style.display = 'none';
+
+                if (ds.approval >= 100) {
+                    this.showMessage('🎓🎉 CONGRATULATIONS, DOCTOR! 🎉🎓\n\nYou\'ve successfully defended your thesis!');
+                    this.endGame(true, 'graduation', 'Congratulations, you have earned your PhD!');
+                } else {
+                    // Major revisions - return to game
+                    this.state.morale = Math.min(100, this.state.morale + 20);
+                    for (let i = 0; i < 6; i++) this.advanceMonth();
+                    this.showMessage('📝 The committee requires major revisions. Take 6 months to improve your thesis, then try again.');
+                    this.state.defensePrepared = false; // Must prepare again
+                    this.updateUI();
+                }
+
+                this.defenseState = null;
             },
 
             // V1.7: Help modal
