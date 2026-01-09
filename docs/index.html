@@ -387,30 +387,21 @@
                 font-size: 0.85rem;
             }
 
-            /* Horizontal scrolling stats bar */
+            /* V2.36: Unfolded stats grid (no horizontal scroll) */
             .stats-bar {
-                display: flex;
-                overflow-x: auto;
-                gap: 10px;
-                padding-bottom: 10px;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                /* Firefox */
-            }
-
-            .stats-bar::-webkit-scrollbar {
-                display: none;
-                /* Chrome, Safari */
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                padding-bottom: 8px;
             }
 
             .stat-card {
-                flex: 0 0 140px;
-                min-width: 140px;
-                padding: 12px;
+                min-width: unset;
+                padding: 10px;
             }
 
             .stat-value {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
 
             /* Larger tap targets (48px minimum) */
