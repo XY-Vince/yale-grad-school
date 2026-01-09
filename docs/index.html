@@ -643,7 +643,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.37</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.38</span></h1>
         </header>
 
         <div id="app">
@@ -705,7 +705,9 @@
             <div id="game-screen" style="display: none;">
                 <!-- V2.36: Tab Content - Status (default on mobile) -->
                 <div class="tab-content active" data-tab="status">
+                    <!-- V2.38: Optimized stats layout -->
                     <div class="stats-bar">
+                        <!-- Row 1: Date + Publications -->
                         <div class="stat-card">
                             <div class="stat-label">📅 Date</div>
                             <div class="stat-value" id="date">Sep, Year 1</div>
@@ -714,6 +716,14 @@
                                 Month <span id="total-months">1</span> · <span id="credits-display">0</span> credits
                             </div>
                         </div>
+                        <div class="stat-card">
+                            <div class="stat-label">📰 Publications</div>
+                            <div class="stat-value"><span id="papers">0</span> <span id="pub-breakdown"
+                                    style="font-size: 0.55rem; color: var(--text-secondary);">(0 J + 0 C)</span></div>
+                            <div id="review-status" style="font-size: 0.7rem; margin-top: 2px;"></div>
+                        </div>
+
+                        <!-- Row 2: Morale + Advisor -->
                         <div class="stat-card">
                             <div class="stat-label">💪 Morale</div>
                             <div class="stat-value" style="font-size: 1.2rem;" id="morale-status">😊 Good</div>
@@ -728,19 +738,19 @@
                                 <div class="progress-fill high" id="advisor-bar" style="width: 50%"></div>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-label">📰 Publications</div>
-                            <div class="stat-value"><span id="papers">0</span> <span id="pub-breakdown"
-                                    style="font-size: 0.55rem; color: var(--text-secondary);">(0 J + 0 C)</span></div>
-                            <div id="review-status" style="font-size: 0.7rem; margin-top: 2px;"></div>
-                        </div>
-                        <!-- V2.2 Pro: Peer Network -->
+
+                        <!-- Row 3: Network + Quals/Alignment -->
                         <div class="stat-card">
                             <div class="stat-label">🤝 Network</div>
                             <div class="stat-value"><span id="peer-network">10</span></div>
                         </div>
-                        <!-- V2.16: Strategic Alignment meter -->
-                        <div class="stat-card">
+                        <!-- V2.38: Quals shown until passed, then Alignment takes its place -->
+                        <div class="stat-card" id="quals-prep-card" style="display: none;">
+                            <div class="stat-label">📚 Quals Prep</div>
+                            <div class="stat-value"><span id="quals-prep-value">0</span>/3</div>
+                            <div id="quals-warning" style="font-size: 0.65rem;"></div>
+                        </div>
+                        <div class="stat-card" id="alignment-card" style="display: none;">
                             <div class="stat-label">🎯 Alignment</div>
                             <div class="stat-value"><span id="alignment-value">0</span></div>
                             <div style="height: 4px; background: #333; border-radius: 2px; margin-top: 4px;">
@@ -749,29 +759,15 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- V2.16: Quals Prep visualizer -->
-                        <div class="stat-card" id="quals-prep-card" style="display: none;">
-                            <div class="stat-label">📚 Quals Prep</div>
-                            <div class="stat-value"><span id="quals-prep-value">0</span>/3</div>
-                            <div id="quals-warning" style="font-size: 0.65rem;"></div>
-                        </div>
                     </div>
 
-                    <!-- V2.20: Event display with acknowledgement -->
-                    <div class="event-panel" style="display: flex; gap: 12px;">
-                        <div style="flex: 2;">
-                            <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📢 What Happened</h3>
-                            <div class="message-log" id="message-log" style="min-height: 80px;">Your PhD journey
-                                begins...
-                            </div>
-                            <!-- V2.37: Removed acknowledge button - using modal instead -->
+                    <!-- V2.38: Full-width event panel -->
+                    <div class="event-panel" style="display: block;">
+                        <h3 style="font-size: 1rem; margin-bottom: 10px;">📢 What Happened</h3>
+                        <div class="message-log" id="message-log"
+                            style="min-height: 150px; font-size: 1rem; line-height: 1.5;">Your PhD journey begins...
                         </div>
-                        <div style="flex: 1; opacity: 0.7;">
-                            <h3 style="font-size: 0.9rem; margin-bottom: 8px;">📜 Previously</h3>
-                            <div class="message-log" id="message-log-prev"
-                                style="min-height: 80px; font-size: 0.85rem;">-
-                            </div>
-                        </div>
+                        <!-- V2.37: Removed acknowledge button - using modal instead -->
                     </div>
                 </div>
                 <!-- End Tab: Status -->
@@ -3230,6 +3226,7 @@
                     peerNetwork: document.getElementById('peer-network'),
                     alignmentValue: document.getElementById('alignment-value'),
                     alignmentBar: document.getElementById('alignment-bar'),
+                    alignmentCard: document.getElementById('alignment-card'), // V2.38
                     qualsCard: document.getElementById('quals-prep-card'),
                     qualsValue: document.getElementById('quals-prep-value'),
                     qualsWarning: document.getElementById('quals-warning'),
@@ -3726,7 +3723,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.37'
+                    version: '2.38'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -5371,14 +5368,17 @@
                 this.dom.alignmentBar.style.width = `${Math.min(100, ui.alignment)}%`;
 
                 // Quals Prep visualizer (from UIState)
+                // V2.38: Show Quals OR Alignment, not both
                 if (ui.qualsVisible) {
                     this.dom.qualsCard.style.display = 'block';
+                    this.dom.alignmentCard.style.display = 'none'; // Hide alignment when quals showing
                     this.dom.qualsValue.textContent = ui.qualsLevel;
                     this.dom.qualsCard.style.borderColor = ui.qualsWarning.border;
                     this.dom.qualsWarning.innerHTML = ui.qualsWarning.text;
                     this.dom.qualsWarning.style.color = ui.qualsWarning.color;
                 } else if (ui.qualsPassed) {
                     this.dom.qualsCard.style.display = 'none';
+                    this.dom.alignmentCard.style.display = 'block'; // Show alignment after quals passed
                 }
 
                 // Morale (from UIState helper methods)
