@@ -2,6 +2,34 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.34.0] - 2026-01-08 "Mobile UX Optimization"
+
+**Theme**: Thumb-zone ergonomics and breathing room for mobile players.
+
+### 📱 Sticky Bottom Action Bar
+- **Save + Advance Month** buttons fixed to bottom
+- Visible only on mobile (≤768px)
+- Thumb-zone placement for one-handed play
+
+### 👆 Larger Tap Targets
+- Minimum 48px button height on mobile
+- Touch active states (`scale(0.97)`)
+
+### 📊 Horizontal Stats Scroll
+- Stats bar now scrolls horizontally on mobile
+- Prevents vertical content crush
+
+### 🎯 Single-Column Actions (≤480px)
+- Full-width action buttons on narrow screens
+- Improved readability
+
+### 📐 Layout Refinements
+- Compact header (16px padding vs 30px)
+- Body bottom padding for sticky bar
+- Modal fullscreen on mobile
+
+---
+
 ## [2.33.0] - 2026-01-08 "Momentum Without Power Creep"
 
 **Theme**: Early game feels sticky without becoming trivial — skills pay off within months, not years.

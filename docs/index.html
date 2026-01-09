@@ -337,6 +337,181 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        /* ===========================================
+           V2.34: MOBILE UX OPTIMIZATION
+           Thumb-zone ergonomics, readability, breathing room
+           =========================================== */
+
+        /* Touch feedback for all interactive elements */
+        .action-btn:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        .start-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Bottom action bar hidden on desktop */
+        .bottom-action-bar {
+            display: none;
+        }
+
+        /* Mobile-specific styles (768px and below) */
+        @media (max-width: 768px) {
+
+            /* Compact header to save screen real estate */
+            .header {
+                padding: 16px 0;
+                margin-bottom: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.85rem;
+            }
+
+            /* Horizontal scrolling stats bar */
+            .stats-bar {
+                display: flex;
+                overflow-x: auto;
+                gap: 10px;
+                padding-bottom: 10px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                /* Firefox */
+            }
+
+            .stats-bar::-webkit-scrollbar {
+                display: none;
+                /* Chrome, Safari */
+            }
+
+            .stat-card {
+                flex: 0 0 140px;
+                min-width: 140px;
+                padding: 12px;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            /* Larger tap targets (48px minimum) */
+            .action-btn {
+                min-height: 48px;
+                padding: 12px 14px;
+            }
+
+            .action-name {
+                font-size: 1rem;
+            }
+
+            .action-desc {
+                font-size: 0.8rem;
+            }
+
+            /* Message log readability */
+            .message-log {
+                font-size: 0.9rem;
+                line-height: 1.8;
+                max-height: 120px;
+            }
+
+            /* Panel spacing */
+            .panel {
+                padding: 16px;
+                margin-bottom: 12px;
+            }
+
+            /* Container padding */
+            .container {
+                padding: 12px;
+                padding-bottom: 90px;
+                /* Space for sticky bottom bar */
+            }
+
+            /* Sticky bottom action bar */
+            .bottom-action-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg-secondary);
+                padding: 12px 16px;
+                border-top: 2px solid var(--accent-primary);
+                z-index: 50;
+                display: flex;
+                gap: 10px;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+
+            .bottom-action-bar .action-btn {
+                flex: 1;
+                min-height: 48px;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .bottom-action-bar .action-btn.advance-btn {
+                background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+                border: none;
+            }
+
+            /* Modal adjustments for mobile */
+            .modal {
+                width: 95%;
+                max-height: 85vh;
+                overflow-y: auto;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+                min-height: 44px;
+            }
+        }
+
+        /* Narrow mobile (480px and below) - single column actions */
+        @media (max-width: 480px) {
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .stat-card {
+                flex: 0 0 120px;
+                min-width: 120px;
+            }
+
+            .stat-value {
+                font-size: 1.1rem;
+            }
+
+            .badge-list {
+                gap: 4px;
+            }
+
+            .item-badge,
+            .status-badge {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+        }
     </style>
 </head>
 
@@ -344,7 +519,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.33</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.34</span></h1>
         </header>
 
         <div id="app">
@@ -543,6 +718,18 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- V2.34: Mobile Bottom Action Bar (hidden on desktop via CSS) -->
+            <div class="bottom-action-bar" id="mobile-action-bar">
+                <button class="action-btn" onclick="game.save()">
+                    <div class="action-name">💾</div>
+                    <div class="action-desc">Save</div>
+                </button>
+                <button class="action-btn advance-btn" onclick="game.doAction('advance')">
+                    <div class="action-name">⏩ Next</div>
+                    <div class="action-desc">Advance Month</div>
+                </button>
             </div>
 
             <!-- End Screen -->
@@ -3347,7 +3534,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.33'
+                    version: '2.34'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
