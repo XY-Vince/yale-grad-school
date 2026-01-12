@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.41</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.42</span></h1>
         </header>
 
         <div id="app">
@@ -2182,7 +2182,7 @@
                 if (npc.archetype === 'The_Rival') {
                     this.state.morale = Math.max(0, this.state.morale - 5);
                     this.state.stress = Math.min(100, (this.state.stress || 0) + 10);
-                    this.appendSystemEvent(`📄 ${npc.name} published before you!\nThe pressure is on. -5 morale, +10 stress`);
+                    this.showMessage(`📄 ${npc.name} published before you!\n\nThe pressure is on.\n-5 morale, +10 stress\n\n👉 Consider accelerating your research`);
                 } else {
                     this.state.morale = Math.min(100, this.state.morale + 5);
                     this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5);
@@ -2826,7 +2826,7 @@
                     expiresIn: 2 // expires in 2 months
                 };
 
-                this.appendSystemEvent(`📩 Conference Invitation!\n${conf.emoji} ${conf.name}\nCost: ${conf.fundingCost} funding months\nExpires in 2 months`);
+                this.showMessage(`📩 CONFERENCE INVITATION!\n\n${conf.emoji} ${conf.name}\nCost: ${conf.fundingCost} funding months\nExpires in 2 months\n\n👉 Go to Actions to Accept/Decline`);
             },
 
             // V2.28: Get conference action choices
@@ -2961,7 +2961,7 @@
                 if (s.activeConference) {
                     s.activeConference.expiresIn -= 1;
                     if (s.activeConference.expiresIn === 1) {
-                        this.appendSystemEvent(`⏰ Conference invite expires next month!`);
+                        this.showMessage(`⏰ Conference invite expires NEXT MONTH!\n\n👉 Go to Actions to Accept/Decline NOW`);
                     }
                     if (s.activeConference.expiresIn <= 0) {
                         this.appendSystemEvent(`❌ Conference invitation expired.`);
@@ -3313,7 +3313,7 @@
                 if (!s.qualsPassed && s.year === 2 && s.month >= 6 && s.month <= 9) {
                     if (s.gameMode !== 'QUALS_WINDOW') {
                         s.gameMode = 'QUALS_WINDOW';
-                        this.appendSystemEvent('📚 QUALS WINDOW: Focus on exam preparation!');
+                        this.showMessage('📚 QUALS WINDOW OPEN!\n\nFocus on exam preparation!\n\n👉 Go to Actions → Study for Quals');
                     }
                     return;
                 }
@@ -3322,7 +3322,7 @@
                 if (s.morale < 15 || s.advisorScore < 20) {
                     if (s.gameMode !== 'PROBATION') {
                         s.gameMode = 'PROBATION';
-                        this.appendSystemEvent('⚠️ CRISIS MODE: Address your situation immediately!');
+                        this.showMessage('⚠️ CRISIS MODE!\n\nAddress your situation immediately!\n\n👉 Take a Break, Medical Leave, or consider options');
                     }
                     return;
                 }
@@ -3884,7 +3884,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.41'
+                    version: '2.42'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -3990,9 +3990,9 @@
                 this.showEventModal(msg);
                 this.waitingForAcknowledge = true;
 
-                // V2.2: Log to event history
+                // V2.2/V2.42: Log to event history (modal: true = shown with modal)
                 if (this.state && this.state.eventLog) {
-                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg });
+                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg, modal: true });
                 }
             },
 
@@ -4016,9 +4016,9 @@
                     el.textContent = current + separator + msg.slice(0, ++i);
                     if (i >= msg.length) clearInterval(this.typeTimer);
                 }, 15);
-                // V2.2: Log to event history
+                // V2.2/V2.42: Log to event history (modal: false = silent, easily missed)
                 if (this.state && this.state.eventLog) {
-                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg });
+                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg, modal: false });
                 }
             },
 
@@ -4043,14 +4043,22 @@
             // V2.5: Show full event history modal
             showHistory() {
                 const log = this.state.eventLog || [];
-                const allEvents = log.slice().reverse(); // V2.5: Show all events
-                let html = `<h3 style="margin-bottom: 12px;">📜 Event History (${log.length} events)</h3>`;
+                const allEvents = log.slice().reverse();
+
+                // V2.42: Count modal vs silent events
+                const modalCount = log.filter(e => e.modal === true).length;
+                const silentCount = log.filter(e => e.modal !== true).length;
+
+                let html = `<h3 style="margin-bottom: 8px;">📜 Event History (${log.length} events)</h3>`;
+                html += `<div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">🔔 Modal: ${modalCount} | 📝 Silent: ${silentCount}</div>`;
                 html += '<div style="max-height: 400px; overflow-y: auto; font-size: 0.85rem; line-height: 1.6;">';
                 if (allEvents.length === 0) {
                     html += '<p style="color: var(--text-secondary);">No events yet.</p>';
                 } else {
                     allEvents.forEach(e => {
-                        html += `<p style="margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px;"><strong>Month ${e.month}:</strong> ${e.text.replace(/\n/g, '<br>')}</p>`;
+                        const icon = e.modal ? '🔔' : '📝';
+                        const style = e.modal ? 'border-left: 3px solid var(--accent-primary); padding-left: 8px;' : '';
+                        html += `<p style="margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; ${style}"><strong>${icon} Month ${e.month}:</strong> ${e.text.replace(/\n/g, '<br>')}</p>`;
                     });
                 }
                 html += '</div><button class="modal-btn primary" onclick="game.hideHistory()" style="margin-top: 16px;">Close</button>';
@@ -4162,7 +4170,7 @@
                 if (this.state.morale <= 10 && this.state.morale > 5) {
                     this.appendMessage('⚠️ CRITICAL: Your mental health is severely compromised. You feel disconnected from everything.');
                 } else if (this.state.morale <= 5 && this.state.morale > 0) {
-                    this.appendMessage('🚨 EMERGENCY: You can barely function. One more setback and you\'re done.');
+                    this.showMessage('🚨 EMERGENCY!\n\nYou can barely function.\nOne more setback and you\'re done.\n\n👉 Take a Break or Medical Leave NOW');
                 }
 
                 // V2.11: Escalating MS-Out warnings based on lowMoraleMonths
@@ -4194,9 +4202,9 @@
                     this.state.vacationOffered = true;
                     this.state.advisorInterventions = interventions + 1;
                     if (interventions >= patienceLimit - 1) {
-                        this.appendMessage('🧑‍🏫 Your advisor sighs: "This is the last time I can suggest this. Take some time off."');
+                        this.showMessage('🧑‍🏫 Your advisor sighs: "This is the last time I can suggest this. Take some time off."\n\n👉 Go to Actions → Take Time Off');
                     } else {
-                        this.appendMessage('🧑‍🏫 Your advisor notices you\'re struggling:\n"You look exhausted. Why don\'t you take a week off? I insist."');
+                        this.showMessage('🧑‍🏫 Your advisor notices you\'re struggling:\n"You look exhausted. Why don\'t you take a week off? I insist."\n\n👉 Go to Actions → Take Time Off');
                     }
                 } else if (interventions >= patienceLimit && !this.state.advisorPatienceExhausted) {
                     // V2.18: Advisor patience exhausted - stop offering rescues
@@ -4209,7 +4217,7 @@
                 // V2.4: Early MS-Out in Year 1 if morale critical (<15)
                 if (this.state.year === 1 && this.state.morale < 15 && !this.state.msOutOffered) {
                     this.state.msOutOffered = true;
-                    this.appendMessage('💔 Your advisor takes you aside: "This isn\'t working out. Maybe consider a Master\'s exit?"');
+                    this.showMessage('💔 Your advisor takes you aside:\n\n"This isn\'t working out. Maybe consider a Master\'s exit?"\n\n👉 Check Actions for MS-Out option');
                 }
 
                 // V1.8: Process pending papers
@@ -4233,7 +4241,7 @@
                                     this.addItem('paper');
                                     s.advisorScore = Math.min(100, s.advisorScore + 15);
                                     s.morale = Math.min(100, s.morale + 10);
-                                    this.appendMessage('🎉 ACCEPTED! Paper published! (+10 morale)');
+                                    this.showMessage('🎉 PAPER ACCEPTED! Published!\n\n+10 morale, +15 advisor score\n\n📄 Journal papers: ' + (this.getItem('paper') || 0));
                                 } else if (roll < acceptRate + 0.25 && !isRevision) {
                                     // V2.4: Expanded Reviewer #2 snark library
                                     this.addItem('rejected_paper');
@@ -4251,7 +4259,7 @@
                                     this.appendMessage(reviewer2Msgs[Math.floor(this.random() * reviewer2Msgs.length)]);
                                 } else {
                                     this.addItem('rejected_paper');
-                                    this.appendMessage('😢 REJECTED. The reviewers were not convinced. You can revise and resubmit.');
+                                    this.showMessage('😢 REJECTED! The reviewers were not convinced.\n\n👉 Go to Actions → Revise Paper');
                                 }
                             }
                         }
@@ -4286,9 +4294,9 @@
                     if (this.state.year === 1 && this.state.month === 9) {
                         this.appendMessage('⚠️ QUALS APPROACHING: Your qualifying exam is in 12 months (September Year 2). Start preparing!');
                     } else if (this.state.year === 2 && this.state.month === 7) {
-                        this.appendMessage('⏳ QUALS IN 2 MONTHS: Prep level = ' + (this.state.qualifyLevel || 0) + '. You need 3 to pass!');
+                        this.showMessage('⏳ QUALS IN 2 MONTHS!\n\nPrep level = ' + (this.state.qualifyLevel || 0) + '\nYou need 3 to pass!\n\n👉 Study for Quals NOW');
                     } else if (this.state.year === 2 && this.state.month === 8) {
-                        this.appendMessage('🚨 QUALS NEXT MONTH! Prep level = ' + (this.state.qualifyLevel || 0) + '. CRITICAL - prepare now!');
+                        this.showMessage('🚨 QUALS NEXT MONTH! Prep level = ' + (this.state.qualifyLevel || 0) + '. CRITICAL!\n\n👉 Go to Actions → Study for Quals');
                     }
                 }
 
@@ -4299,7 +4307,7 @@
 
                 // V2.9: Quals retake trigger (3 months after first failure)
                 if (this.state.qualsDelayMonth && this.state.totalMonths >= this.state.qualsDelayMonth && !this.state.qualsPassed) {
-                    this.appendMessage('🚨 QUALS RETAKE TIME! This is your last chance!');
+                    this.showMessage('🚨 QUALS RETAKE TIME! This is your LAST chance!\n\n👉 Go to Actions → Study for Quals');
                     this.triggerQuals();
                     this.state.qualsDelayMonth = null; // Clear so it doesn't repeat
                 }
@@ -4431,7 +4439,7 @@
                                 this.appendMessage('📋 CONFERENCE ACCEPTED! (+15 network, +8 morale)');
                             } else {
                                 this.addItem('rejected_paper'); // Can revise for journal
-                                this.appendMessage('📋 Conference rejected. Consider revising for journal submission.');
+                                this.showMessage('📋 Conference REJECTED!\n\n👉 Go to Actions → Revise Paper (for journal)');
                             }
                         }
                     }
@@ -4448,7 +4456,7 @@
                         s.morale = Math.min(100, s.morale + pepGain);
                         this.appendMessage('🧑‍🏫 Your advisor gives you a pep talk: "You\'ve published well. Keep pushing - you\'re almost there." (+' + pepGain + ' morale)');
                     } else {
-                        this.appendMessage('🤔 Your advisor notices your struggle. "Have you considered the Master\'s exit?"');
+                        this.showMessage('🤔 Your advisor notices your struggle:\n\n"Have you considered the Master\'s exit?"\n\n👉 Check Actions for MS-Out option');
                     }
                 }
 
