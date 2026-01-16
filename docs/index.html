@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.42</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.43</span></h1>
         </header>
 
         <div id="app">
@@ -2881,6 +2881,7 @@
                         s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + Math.floor(conf.networkGain * 0.3));
                         s.morale = Math.min(100, s.morale + 5);
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+                        s.lastConferenceMonth = s.totalMonths; // V2.43: Cooldown tracking
                         msg = `🖼️ Poster Presentation at ${conf.name}!\n+${Math.floor(conf.networkGain * 0.3)} network, +5 morale\n"Solid conversations. Low risk, steady gain."`;
                         // 15% chance for idea (casual conversations)
                         if (this.random() < 0.15) {
@@ -2892,6 +2893,7 @@
                     case 'conf_talk':
                         this.spendFunding(conf.fundingCost);
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+                        s.lastConferenceMonth = s.totalMonths; // V2.43: Cooldown tracking
                         const talkSuccess = this.random() < (0.6 + (s.strategicAlignment || 0) * 0.003);
                         if (talkSuccess) {
                             s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain);
@@ -2919,6 +2921,7 @@
                         s.morale = Math.min(100, s.morale + 15);
                         s.stress = Math.max(0, (s.stress || 0) - 40);
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+                        s.lastConferenceMonth = s.totalMonths; // V2.43: Cooldown tracking
 
                         // 30% chance for idea (conversations spark ideas)
                         let ideaGained = false;
@@ -3884,7 +3887,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.42'
+                    version: '2.43'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -4629,9 +4632,17 @@
                 if (defenseStatus.allowed && s.defensePrepared) {
                     actions.push({ id: 'thesis', name: '🎓 Defend Thesis!', desc: `${defenseStatus.label} (${journalPapers}J + ${confPapers}C)` });
                 }
-                // V1.8: Show pending papers
+                // V2.43: Show pending papers with status
                 if (s.pendingPapers && s.pendingPapers.length > 0) {
-                    actions.push({ id: 'pending', name: '⏳ Pending Papers', desc: s.pendingPapers.length + ' under review', disabled: true });
+                    const awaitingFeedback = s.pendingPapers.filter(p => p.feedbackAvailable).length;
+                    const inReview = s.pendingPapers.length - awaitingFeedback;
+                    let statusText = '';
+                    if (awaitingFeedback > 0) {
+                        statusText = `📬 ${awaitingFeedback} awaiting response`;
+                    } else {
+                        statusText = `⏳ ${inReview} under review`;
+                    }
+                    actions.push({ id: 'pending', name: '📄 Pending Papers', desc: statusText, disabled: !awaitingFeedback });
                 }
 
                 actions.push({ id: 'break', name: '☕ Take a Break', desc: '+15 morale', telemetry: 'mental_health' });
@@ -4650,14 +4661,21 @@
                     actions.push({ id: 'pitch', name: '💬 Pitch Session', desc: '+Alignment, learn advisor style', telemetry: 'admin' });
                 }
 
-                // V2.28: Conferences now invitation-based (see spawnConferenceInvite)
-                // Add "Seek Conference" action to increase invite chance
-                if (!s.activeConference && (s.conferencesThisYear || 0) < 2) {
+                // V2.43: Conference actions with 3-month cooldown
+                const confCooldown = s.lastConferenceMonth ? s.totalMonths - s.lastConferenceMonth : 99;
+                if (!s.activeConference && (s.conferencesThisYear || 0) < 2 && confCooldown >= 3) {
                     actions.push({
                         id: 'seek_conference',
                         name: '🎤 Seek Conference',
                         desc: 'Network to find opportunities (seasonal)',
                         telemetry: 'conference'
+                    });
+                } else if (confCooldown < 3) {
+                    actions.push({
+                        id: 'conf_recovery',
+                        name: '🎤 Conference Cooldown',
+                        desc: `${3 - confCooldown} month(s) until ready`,
+                        disabled: true
                     });
                 }
 
@@ -5458,8 +5476,10 @@
                         s.lastHighThroughput = s.totalMonths;
                         s.morale = Math.max(0, s.morale - 10); // 2x normal cost
                         if (this.random() < 0.4) {
-                            s.figuresReady = (s.figuresReady || 0) + 2;
-                            msg = '⚡ HIGH-THROUGHPUT SUCCESS!\n+2 Figures ready\nYou pushed hard and it paid off!';
+                            // V2.43: Actually add figures to items so they show in UI
+                            this.addItem('figure');
+                            this.addItem('figure');
+                            msg = '⚡ HIGH-THROUGHPUT SUCCESS!\n+2 Figures! (' + this.getItem('figure') + '/3 needed)\nYou pushed hard and it paid off!';
                         } else {
                             this.addStatus('exhaustion');
                             s.morale = Math.max(0, s.morale - 10);
@@ -5478,51 +5498,76 @@
             // V2.40: Defense Gauntlet State
             defenseState: null,
 
-            // V2.41: Flexible Defense Criteria Evaluator
+            // V2.43: Defense Criteria with Skepticism Breakdown
             evaluateDefenseCriteria() {
                 const journals = this.getItem('paper') || 0;
                 const conferences = this.state.confPaperCount || 0;
                 const morale = this.state.morale || 0;
+                const alignment = this.state.strategicAlignment || 0;
+                const network = this.state.peerNetwork || 0;
 
-                // Helper to create result
-                const result = (allowed, type, multiplier, label) => ({
-                    allowed, portfolioType: type, skepticismMultiplier: multiplier, label
-                });
+                let baseSkepticism = 0;
+                let label = '';
+                let breakdown = [];
+                let allowed = false;
 
-                // Tier 1: Canonical Path (3+ journals)
+                // V2.43: Three clear defense paths
                 if (journals >= 3) {
-                    return result(true, 'canonical', 1.0, 'Standard Defense');
+                    allowed = true;
+                    baseSkepticism = 1.0;
+                    label = 'Gold Standard';
+                    breakdown.push('Gold Standard Portfolio (×1.0)');
+                } else if (journals >= 2 && conferences >= 2) {
+                    allowed = true;
+                    baseSkepticism = 1.25;
+                    label = 'Hybrid Portfolio';
+                    breakdown.push('Hybrid Portfolio (+25%)');
+                } else if (journals >= 2 && morale >= 80) {
+                    allowed = true;
+                    baseSkepticism = 1.5;
+                    label = 'Early Gamble';
+                    breakdown.push('Early Defense (+50%)');
                 }
 
-                // Tier 2: Balanced Portfolio
-                if (journals >= 2 && conferences >= 2) {
-                    return result(true, 'balanced', 1.15, 'Field-Typical Defense');
-                }
-                if (journals >= 1 && conferences >= 4) {
-                    return result(true, 'balanced', 1.25, 'Conference-Weighted Defense');
+                if (!allowed) {
+                    return { allowed: false, skepticismMultiplier: 0, label: 'Not Defense Ready', breakdown: ['Not eligible'] };
                 }
 
-                // Tier 3: Conference-Driven Fields
-                if (journals === 0 && conferences >= 6) {
-                    return result(true, 'conference_heavy', 1.35, 'Fast-Moving Field Defense');
+                // V2.43: Modifiers
+                let finalSkepticism = baseSkepticism;
+
+                // Low advisor alignment increases skepticism
+                if (alignment < 40) {
+                    finalSkepticism *= 1.1;
+                    breakdown.push('Low Advisor Alignment (+10%)');
                 }
 
-                // Tier 4: Early Defense (High Morale)
-                if (journals >= 2 && morale >= 80) {
-                    return result(true, 'early', 1.5, 'Early Defense (High Risk)');
+                // Strong network reduces skepticism
+                if (network >= 70) {
+                    finalSkepticism *= 0.9;
+                    breakdown.push('Strong Network (-10%)');
                 }
 
-                // Not Ready
-                return result(false, 'ineligible', 0, 'Not Defense Ready');
+                // Clamp
+                finalSkepticism = Math.min(Math.max(finalSkepticism, 0.75), 2.0);
+
+                return {
+                    allowed: true,
+                    portfolioType: label.toLowerCase().replace(' ', '_'),
+                    skepticismMultiplier: Number(finalSkepticism.toFixed(2)),
+                    label: label,
+                    breakdown: breakdown
+                };
             },
 
             // V2.40: Start Defense Gauntlet
             thesisDefend() {
                 document.getElementById('thesis-modal').classList.remove('active');
 
-                // V2.41: Get defense criteria and apply skepticism
+                // V2.43: Get defense criteria with breakdown
                 const defenseStatus = this.evaluateDefenseCriteria();
                 const skepticism = defenseStatus.skepticismMultiplier || 1.0;
+                const breakdown = defenseStatus.breakdown || [];
 
                 // Initialize defense state
                 const thesisBonus = (this.state.thesisProgress || 0) >= 100 ? 15 : 0;
@@ -5540,10 +5585,15 @@
                     phases: ['📊 Presentation', '❓ Q&A', '🤝 Deliberation'],
                     complete: false,
                     portfolioLabel: defenseStatus.label,
-                    skepticism: skepticism
+                    skepticism: skepticism,
+                    breakdown: breakdown
                 };
 
-                // Show defense modal
+                // V2.43: Show skepticism breakdown tooltip
+                const breakdownText = breakdown.join('\n• ');
+                this.showMessage(`🎓 THESIS DEFENSE BEGINS!\n\nCommittee Skepticism: ×${skepticism.toFixed(2)}\n• ${breakdownText}\n\nStarting Approval: ${startApproval}%`);
+
+                // Show defense modal after acknowledging
                 document.getElementById('defense-modal').classList.add('active');
                 this.updateDefenseUI();
             },

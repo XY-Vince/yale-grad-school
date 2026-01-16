@@ -5364,3 +5364,242 @@ V2.41 is a trust repair patch.
 You are telling the player:
 
 “However you survived grad school — we recognize it.”
+
+Below is a clean V2.43 continuation, tightened to remove redundancy with V2.41 while directly addressing what the Run 1 / Run 2 logs actually exposed. I’ll be blunt where the design is still leaking friction, then give you actionable fixes, and finish with production-ready JS for Hybrid Portfolio → Skepticism calculation.
+
+⸻
+
+V2.43 — Accessibility, Timing & Feedback Integrity Update
+
+Executive Diagnosis (from real runs, not theory)
+
+V2.43 is not about “more features.”
+It is about making the simulation internally honest.
+
+From the logs, three trust-breaking issues emerged:
+	1.	Timing lies
+Actions unlock before their fictional preconditions exist (review responses before reviews).
+	2.	Feedback lies
+Logs promise state changes that don’t materialize (+2 figures that don’t exist).
+	3.	Endgame visibility gap
+Players can reach Defense now, but don’t understand how hard it will be until it’s too late.
+
+This update fixes those systemic credibility issues.
+
+⸻
+
+I. Defense Accessibility — Finalized, No More Waffling
+
+You are correct to standardize on three entry paths for V2.43.
+Do not keep adding exceptions; instead, make skepticism continuous.
+
+Final Defense Entry Paths (V2.43)
+
+Path	Requirement	Base Skepticism
+Gold Standard	3 Journals	1.0×
+Hybrid	2 Journals + 2 Conferences	1.25×
+Early Gamble	2 Journals + Morale ≥ 80	1.5×
+
+Design correction:
+Conference-heavy paths beyond 2C belong in V2.44+ once balancing data exists.
+For now, restraint improves clarity.
+
+⸻
+
+II. Defense HUD — What’s Still Missing (Fix This)
+
+You already added Approval + Skepticism indicators. Good.
+
+Required Additions (V2.43)
+
+1. Starting Skepticism Breakdown (One-Time Tooltip)
+At Defense start, show:
+
+Committee Skepticism: +25%
+• Hybrid Portfolio (+20%)
+• Low Advisor Alignment (+5%)
+
+This prevents retroactive regret.
+
+2. Skepticism Is Sticky
+Once increased, skepticism does not auto-decay.
+Only explicit actions reduce it.
+
+This forces:
+	•	Strategic sequencing
+	•	Less button-mashing
+
+⸻
+
+III. High-Priority Fixes — Why They Matter More Than New Content
+
+1. High-Throughput Feedback Loop (Critical)
+
+Root cause:
+Figures are treated as promises, not state.
+
+Correct fix (you chose the right one):
+	•	Immediately increment state.figures_ready
+	•	Convert next validation into quality refinement
+
+Additional requirement (do not skip):
+	•	Log line must say “Figures auto-generated”, not “ready”
+
+This aligns wording with causality.
+
+⸻
+
+2. Review Response Timing (Psychological Repair)
+
+This was a major immersion break.
+
+Correct mental model:
+
+You cannot respond to feedback that does not exist.
+
+V2.43 Rule
+	•	Submission → Silent Period
+	•	Month 4–8 → FeedbackReceived event fires
+	•	Only then:
+	•	Polite Revision
+	•	Aggressive Rebuttal
+
+UI consequence:
+	•	Replace buttons with:
+“Awaiting Reviewer Feedback…”
+
+This reduces anxiety by acknowledging uncertainty.
+
+⸻
+
+3. Conference Overlap Prevention (Simulation Integrity)
+
+Cooldown is correct. Add one more constraint:
+	•	Conferences pause lab work for that month
+(soft cost: −1 Research Action)
+
+Otherwise, conferences are pure upside.
+
+⸻
+
+IV. HMI Polish — These Clarifications Are Solid (One Note)
+
+Your action clarifications are good. One correction:
+
+🤝 Ask Peer
+
+Costs 20 Network to ensure next Figure validation succeeds
+
+Add:
+	•	Consumes the figure (no stacking guarantees)
+
+This prevents degenerate hoarding strategies.
+
+⸻
+
+V. Actionable Implementation Plan (Tightened)
+
+Code
+	•	Update defense_manager.js:
+	•	Hybrid entry
+	•	Skepticism multiplier injection
+	•	Fix high_throughput_engine.js:
+	•	Immediate figure increment
+	•	Add conference_cooldown to world state
+
+UI
+	•	Defense start tooltip: Skepticism sources
+	•	Review card progress bar (Month X / Y)
+	•	Disable response buttons until feedback exists
+
+Logic
+	•	Mock Defense:
+	•	Reveal range of skepticism (Low / Medium / High)
+	•	Cache result for 12 months
+
+⸻
+
+JavaScript — Hybrid Portfolio Skepticism Calculator
+
+This is clean, extensible, and honest.
+It does not hardcode paths — it derives skepticism from ratios.
+
+// logic/defenseSkepticism.js
+
+export function calculateCommitteeSkepticism(state) {
+  const journals = state.published_journals || 0;
+  const conferences = state.published_conferences || 0;
+  const morale = state.morale || 0;
+
+  let skepticism = 1.0;
+  let breakdown = [];
+
+  // Base portfolio logic
+  if (journals >= 3) {
+    breakdown.push("Gold Standard Portfolio");
+    skepticism *= 1.0;
+  } 
+  else if (journals >= 2 && conferences >= 2) {
+    breakdown.push("Hybrid Portfolio (+25%)");
+    skepticism *= 1.25;
+  } 
+  else if (journals >= 2 && morale >= 80) {
+    breakdown.push("Early Defense Confidence (+50%)");
+    skepticism *= 1.5;
+  } 
+  else {
+    return {
+      eligible: false,
+      skepticism: null,
+      breakdown: ["Not defense eligible"]
+    };
+  }
+
+  // Advisor relationship modifier
+  if (state.alignment < 40) {
+    breakdown.push("Low Advisor Alignment (+10%)");
+    skepticism *= 1.1;
+  }
+
+  // Network mitigation
+  if (state.network >= 70) {
+    breakdown.push("Strong External Reputation (−10%)");
+    skepticism *= 0.9;
+  }
+
+  // Clamp for sanity
+  skepticism = Math.min(Math.max(skepticism, 0.75), 2.0);
+
+  return {
+    eligible: true,
+    skepticism: Number(skepticism.toFixed(2)),
+    breakdown
+  };
+}
+
+UI Hook Example
+
+const defenseEval = calculateCommitteeSkepticism(gameState);
+
+if (defenseEval.eligible) {
+  defendButton.disabled = false;
+  defendButton.title = defenseEval.breakdown.join("\n");
+} else {
+  defendButton.disabled = true;
+}
+
+
+⸻
+
+Final Coach’s Take
+
+V2.43 is the version where players stop blaming themselves
+and start understanding the system.
+
+That’s the moment when:
+	•	Losses feel fair
+	•	Wins feel earned
+	•	And even exits (Master’s) feel intentional, not accidental
+
+If V2.42 made GradQuest dramatic,
+V2.43 makes it trustworthy.
