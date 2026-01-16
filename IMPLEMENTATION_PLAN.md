@@ -5603,3 +5603,248 @@ That’s the moment when:
 
 If V2.42 made GradQuest dramatic,
 V2.43 makes it trustworthy.
+
+
+
+
+Below is a V2.45 Streamline Fix plan that is strict, opinionated, and implementable.
+
+⸻
+
+V2.45 — Streamline & Critical Path Lockdown
+
+Core Diagnosis (why this is necessary)
+
+Right now the game fails the “What should I do next?” test.
+
+Symptoms:
+	•	15–20 buttons compete for attention
+	•	Many actions are situationally correct but globally confusing
+	•	Non-critical actions distort pacing and mental load
+	•	Players don’t know which actions matter now vs ever
+
+This is not a balance problem.
+This is a systems hierarchy problem.
+
+V2.45 fixes this by explicitly declaring a Critical Path and temporarily hiding everything else.
+
+⸻
+
+I. Define the Critical Path (Non-Negotiable)
+
+These are the actions required to finish the game.
+They must remain visible, stable, and always understandable.
+
+1. Core Functions (Always Visible)
+
+These actions form the spine of GradQuest.
+They should never move, disappear, or be hidden.
+
+🧠 Idea → 📊 Data → 📄 Paper → 🧪 Thesis → ⚔️ Defense
+Core Action Set (V2.45)
+
+Phase	Core Action
+Ideation	Work on Idea
+Execution	Develop Findings
+Validation	Validate Discovery
+Dissemination	Submit Paper
+Writing	Write Thesis
+Endgame	Defend Thesis
+Time	Next Month
+
+Rules for Core Functions
+	•	Always visible
+	•	Always enabled when logically possible
+	•	Never nested
+	•	Never RNG-obscured without feedback
+
+If a player does only these, they must be able to graduate.
+
+⸻
+
+II. Everything Else Is Non-Critical (By Definition)
+
+If an action:
+	•	Optimizes RNG
+	•	Reduces risk
+	•	Improves efficiency
+	•	Adds flavor or realism
+
+…it is non-critical.
+
+That does not mean unimportant.
+It means not on the shortest successful path.
+
+⸻
+
+III. Group Non-Critical Functions into Clear Buckets
+
+Instead of 20 buttons, we define conceptual containers.
+
+Non-Critical Group A — Optimization & Insurance
+
+“Things you do to make the core path safer or faster.”
+
+Examples:
+	•	Pre-Register
+	•	Ask Peer
+	•	Optimize Pipeline
+	•	Equipment Maintenance
+	•	Pre-allocate (Comp)
+	•	Add Lemmas (Theo)
+
+Status in V2.45:
+🚫 Hidden
+
+Reason:
+These actions require strong mental models. Right now, they confuse more than they help.
+
+⸻
+
+Non-Critical Group B — Career & Reputation
+
+“Things that shape outcomes, not completion.”
+
+Examples:
+	•	Conference Attendance
+	•	Pitch Session
+	•	Networking Actions
+	•	Labmate Interactions
+	•	Collaboration / Rival interactions
+
+Status in V2.45:
+🚫 Hidden
+
+Reason:
+These systems depend on timing, visibility, and counter-play.
+Until logic is airtight, they dilute focus.
+
+⸻
+
+Non-Critical Group C — Recovery & Meta
+
+“Things you do when things go wrong.”
+
+Examples:
+	•	Take a Break
+	•	Vacation
+	•	Medical Leave
+	•	Emergency Grant
+	•	Teaching Load mitigation
+
+Status in V2.45:
+🚫 Hidden (except auto-triggered events)
+
+Reason:
+Manual recovery options add decision noise before players understand failure modes.
+
+⸻
+
+Non-Critical Group D — Curriculum & Skills
+
+“Permanent upgrades.”
+
+Examples:
+	•	Electives
+	•	Thesis Bootcamp
+	•	Scientific Writing
+	•	Grant Writing
+
+Status in V2.45:
+🚫 Hidden
+
+Reason:
+These are multiplicative systems layered on top of unstable baselines.
+They come back once the baseline is trusted.
+
+⸻
+
+IV. How They Are Hidden (Important)
+
+This is not deletion.
+
+V2.45 Hiding Rules
+	•	Non-critical actions:
+	•	Removed from Action Panel
+	•	Removed from Tabs
+	•	Not mentioned in tooltips
+	•	Their effects do not trigger
+	•	Their statuses do not appear
+	•	Their code remains intact, behind a feature flag
+
+Think of this as simulation safe mode.
+
+⸻
+
+V. UI After Streamlining (What the Player Sees)
+
+Action Panel (V2.45)
+
+[ Work on Idea ]
+[ Develop Findings ]
+[ Validate Discovery ]
+[ Submit Paper ]
+[ Write Thesis ]
+-------------------
+[ Defend Thesis ]   (locked until eligible)
+-------------------
+[ Next Month ]
+
+That’s it.
+
+This alone will:
+	•	Reduce cognitive load by ~60%
+	•	Make onboarding dramatically smoother
+	•	Reveal real balance issues in the core loop
+
+⸻
+
+VI. What V2.45 Is NOT Trying to Do
+
+Be explicit about this (internally):
+	•	❌ Not adding content
+	•	❌ Not balancing edge cases
+	•	❌ Not simulating real academia fully
+	•	❌ Not being “feature rich”
+
+V2.45 is about clarity, not realism.
+
+⸻
+
+VII. Actionable Implementation Plan (Concrete)
+
+1. Code
+	•	Add CRITICAL_PATH_MODE = true
+	•	Wrap all non-core actions in:
+
+if (!CRITICAL_PATH_MODE) { registerAction(...) }
+
+
+	•	Disable all side-system triggers
+
+2. UI
+	•	Hardcode Core Actions panel
+	•	Remove tabs entirely for now
+	•	Add a small label:
+“Focused Mode: Core Progression”
+
+3. Telemetry (Optional but Smart)
+
+Track:
+	•	Time to first paper
+	•	Time between papers
+	•	Time from thesis start to defense
+
+This will tell you if the core loop is actually fun.
+
+⸻
+
+VIII. What Comes Next (V2.46+)
+
+Once the core loop feels good:
+	•	V2.46: Reintroduce one non-critical group (Optimization)
+	•	V2.47: Reintroduce Career & Social
+	•	V2.48: Reintroduce Curriculum & Skills
+	•	V2.49: Full sandbox restored, but now understandable
+
+⸻

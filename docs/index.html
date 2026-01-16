@@ -751,7 +751,11 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.43</span></h1>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.45</span>
+                <span id="mode-label"
+                    style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
+                    Mode: Core Progression</span>
+            </h1>
         </header>
 
         <div id="app">
@@ -1147,6 +1151,8 @@
             // CONSTANTS - All thresholds in one place
             // ===========================================
             CONST: {
+                // V2.45: Critical Path Mode - show only core progression actions
+                CRITICAL_PATH_MODE: true,
                 // Morale thresholds
                 MORALE_CRITICAL: 15,
                 MORALE_LOW: 30,
@@ -3887,7 +3893,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.43'
+                    version: '2.45'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -4583,6 +4589,82 @@
             `;
             },
 
+            // V2.45: Critical Path Mode - streamlined core actions only
+            getCriticalPathActions() {
+                const s = this.state;
+                const actions = [];
+
+                // 1. IDEATION: Read Papers (always available to generate ideas)
+                actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Generate new idea (40% chance)' });
+
+                // 2. IDEATION → EXECUTION: Work on Idea
+                if (this.getItem('idea') > 0) {
+                    actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: `→ Preliminary Findings (${this.getItem('idea')} ideas)` });
+                }
+
+                // 3. EXECUTION → VALIDATION: Develop Findings
+                if (this.getItem('initial_findings') > 0) {
+                    actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: `→ Key Discovery (${this.getItem('initial_findings')} findings)` });
+                }
+
+                // 4. VALIDATION: Create Figures
+                if (this.getItem('key_discovery') > 0) {
+                    const figures = this.getItem('figure') || 0;
+                    if (this.hasStatus('brokenEquipment')) {
+                        actions.push({ id: 'work_figures_blocked', name: '📊 Validate Discovery', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
+                    } else {
+                        actions.push({ id: 'work_figures', name: '📊 Validate Discovery', desc: `Create figures (${figures}/3 needed)` });
+                    }
+                }
+
+                // 5. DISSEMINATION: Submit Paper (when ready)
+                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
+                    actions.push({ id: 'write_paper', name: '📝 Submit Paper', desc: 'Submit to journal (8-12 months)' });
+                }
+
+                // Show pending papers status (read-only info)
+                if (s.pendingPapers && s.pendingPapers.length > 0) {
+                    const awaitingFeedback = s.pendingPapers.filter(p => p.feedbackAvailable).length;
+                    if (awaitingFeedback > 0) {
+                        actions.push({ id: 'pending', name: '📬 Review Feedback', desc: `${awaitingFeedback} paper(s) need response` });
+                    } else {
+                        actions.push({ id: 'pending_info', name: '⏳ Papers Under Review', desc: `${s.pendingPapers.length} awaiting decision`, disabled: true });
+                    }
+                }
+
+                // Revision if rejected
+                if (this.getItem('rejected_paper') > 0) {
+                    actions.push({ id: 'revise', name: '✏️ Revise & Resubmit', desc: 'Address reviewer feedback' });
+                }
+
+                // 6. THESIS: Write Thesis (after first publication)
+                const journalPapers = this.getItem('paper') || 0;
+                if (journalPapers >= 1 && (s.thesisProgress || 0) < 100) {
+                    actions.push({ id: 'write_thesis', name: '📖 Write Thesis', desc: `Progress: ${s.thesisProgress || 0}%` });
+                }
+
+                // 7. ENDGAME: Defense
+                const defenseStatus = this.evaluateDefenseCriteria();
+                if (defenseStatus.allowed) {
+                    if (!s.defensePrepared) {
+                        actions.push({ id: 'prepare_defense', name: '🎓 Prepare Defense', desc: `${defenseStatus.label} (×${defenseStatus.skepticismMultiplier} skepticism)` });
+                    } else {
+                        actions.push({ id: 'thesis', name: '⚔️ Defend Thesis!', desc: `Ready! ${defenseStatus.label}` });
+                    }
+                }
+
+                // Quals (critical - keeps if needed)
+                if (!s.qualsPassed && s.year >= 1) {
+                    const prepLevel = s.qualifyLevel || 0;
+                    actions.push({ id: 'quals', name: '📚 Study for Quals', desc: `Prep level: ${prepLevel}/3 (need 3 to pass)` });
+                }
+
+                // TIME: Always last
+                actions.push({ id: 'advance', name: '⏩ Next Month', desc: 'Advance time' });
+
+                return actions;
+            },
+
             // Get available actions
             getActions() {
                 const s = this.state;
@@ -4592,6 +4674,11 @@
                 if (this.waitingForAcknowledge) {
                     actions.push({ id: 'reshow_modal', name: '📢 View Event', desc: 'Tap to see event details' });
                     return actions;
+                }
+
+                // V2.45: Critical Path Mode - show only core progression actions
+                if (this.CONST.CRITICAL_PATH_MODE) {
+                    return this.getCriticalPathActions();
                 }
 
                 // Always available
