@@ -4617,9 +4617,10 @@
                     }
                 }
 
-                // 5. DISSEMINATION: Submit Paper (when ready)
+                // 5. DISSEMINATION: Submit Paper (when ready) - both paths are valid for graduation
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
-                    actions.push({ id: 'write_paper', name: '📝 Submit Paper', desc: 'Submit to journal (8-12 months)' });
+                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (4mo, +network)' });
+                    actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (8-12mo)' });
                 }
 
                 // Show pending papers status (read-only info)
