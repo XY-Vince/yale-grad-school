@@ -4657,6 +4657,23 @@
                 // RECOVERY: Take a Break (essential for morale management)
                 actions.push({ id: 'break', name: '☕ Take a Break', desc: '+15 morale (prevent burnout)' });
 
+                // GROUP C RECOVERY: Only appear when in crisis (never optimal)
+
+                // 🏖️ Vacation - only when burnout high AND advisor suggested
+                if (s.vacationOffered && (s.stress || 0) >= 60) {
+                    actions.push({ id: 'vacation', name: '🏖️ Take Vacation', desc: 'Advisor suggested (−burnout, costs time)' });
+                }
+
+                // 🏥 Medical Leave - only when morale critical (<10)
+                if (s.morale < 10 && !s.medicalLeaveUsed) {
+                    actions.push({ id: 'medical_leave', name: '🏥 Medical Leave', desc: '⚠️ EMERGENCY: Reset morale (3-6mo cost)' });
+                }
+
+                // 💰 Emergency Grant - only when funding collapsed AND teaching load active
+                if ((s.funding || 0) <= 0 && this.hasStatus('teachingLoad')) {
+                    actions.push({ id: 'emergency_grant', name: '💰 Emergency Grant', desc: '⚠️ ESCAPE: +12mo funding (permanent penalty)' });
+                }
+
                 // Quals (critical - keeps if needed)
                 if (!s.qualsPassed && s.year >= 1) {
                     const prepLevel = s.qualifyLevel || 0;
@@ -5246,6 +5263,17 @@
                         } else {
                             msg = '🏖️ You took time off as your advisor suggested.\nYou feel refreshed! (+' + vacGain + ' morale)\n\n✨ Renewed Perspective: +10% success for 3 months!';
                         }
+                        break;
+
+                    // V2.45 Group C: Emergency Grant (funding collapse escape hatch)
+                    case 'emergency_grant':
+                        s.funding = (s.funding || 0) + 12;
+                        this.removeStatus('teachingLoad');
+                        // Permanent penalty: High Scrutiny
+                        s.highScrutiny = true;
+                        s.grantPenalty = (s.grantPenalty || 0) + 0.2; // -20% future grant success
+                        s.baseSkepticism = (s.baseSkepticism || 0) + 1; // +1 committee skepticism
+                        msg = '💰 EMERGENCY GRANT SECURED!\n\n+12 months funding\nTeaching load removed\n\n⚠️ PERMANENT PENALTY:\n• High Scrutiny status\n• −20% future grant success\n• +1 Committee Skepticism';
                         break;
 
                     case 'seek_conference':

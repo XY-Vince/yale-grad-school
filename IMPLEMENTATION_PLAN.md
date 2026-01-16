@@ -5848,3 +5848,223 @@ Once the core loop feels good:
 	•	V2.49: Full sandbox restored, but now understandable
 
 ⸻
+
+
+
+⸻
+
+V2.45 — Group C: Recovery & Meta (Finalized Design)
+
+Design Mandate for Group C
+
+Group C actions exist ONLY to:
+	•	prevent irreversible death spirals
+	•	convert catastrophic states into delayed consequences
+
+They must never:
+	•	be optimal under normal play
+	•	compete with core actions
+	•	provide net-positive progress
+
+If a player wants to use Group C, something has already gone wrong.
+
+⸻
+
+Canonical Group C Actions (V2.45)
+
+Only three actions qualify.
+
+Action	Purpose	Player Agency
+🏖️ Vacation	Burnout recovery	Medium
+🏥 Medical Leave	Morale collapse recovery	Low
+💰 Emergency Grant	Funding collapse recovery	Low
+
+Everything else stays hidden or auto-triggered.
+
+⸻
+
+1️⃣ 🏖️ Vacation — Controlled Burnout Release
+
+What problem it solves
+
+Chronic burnout, not emergencies.
+
+Trigger Conditions
+	•	Burnout ≥ threshold (e.g. 60)
+	•	Advisor suggests it explicitly
+	•	Button appears only then
+
+❗ Player cannot vacation “early” or “optimally”
+
+⸻
+
+Player Choice
+
+The only choice is duration.
+
+Option	Effect
+1 month	−20 Burnout
+2 months	−40 Burnout
+3 months	−60 Burnout
+
+
+⸻
+
+Costs
+	•	Time (obvious)
+	•	No morale gain
+	•	No productivity
+
+⸻
+
+Design Notes
+	•	This is maintenance, not healing
+	•	It prevents collapse but does not advance anything
+	•	Advisor framing makes it narratively justified
+
+⸻
+
+Why this works
+	•	Clear cause → clear effect
+	•	No optimization pressure
+	•	No false hope
+
+⸻
+
+2️⃣ 🏥 Medical Leave — Emergency Reset Button
+
+What problem it solves
+
+Acute morale collapse (panic, breakdown, crisis).
+
+This is not a strategic choice.
+
+⸻
+
+Trigger Conditions (Hard Gate)
+	•	Morale < 10
+	•	Auto-prompted event
+	•	Player cannot access it otherwise
+
+⸻
+
+Player Choice
+
+None.
+
+This is forced, with light flavor variation only.
+
+⸻
+
+Effects (Deterministic)
+	•	Duration: 3–6 months (rolled once, disclosed)
+	•	Morale → 50
+	•	Burnout → 0
+	•	All projects paused (nothing progresses)
+
+⸻
+
+Long-Term Cost
+
+Applies hidden but persistent status:
+	•	Medical_Record
+	•	−10% advisor trust
+	•	+10% committee skepticism later
+
+This cost is never removed.
+
+⸻
+
+Design Notes
+	•	This is a narrative scar
+	•	It saves the run, but it changes the story
+	•	Zero ambiguity about trade-offs
+
+⸻
+
+3️⃣ 💰 Emergency Grant — Funding Collapse Escape Hatch
+
+What problem it solves
+
+Funding = 0 → Teaching Load death spiral.
+
+⸻
+
+Trigger Conditions
+	•	Funding ≤ 0
+	•	Teaching Load status active
+	•	Button appears only then
+
+⸻
+
+Player Choice
+
+None on outcome — only on whether to accept consequences.
+
+⸻
+
+Effects (Always Succeeds)
+	•	Funding +12 months
+	•	Removes Teaching Load immediately
+
+⸻
+
+Long-Term Cost (Critical)
+
+Applies permanent status:
+	•	High Scrutiny
+	•	−20% future grant success
+	•	+1 Committee Skepticism baseline
+
+This stacks with other reputational penalties.
+
+⸻
+
+Design Notes
+	•	This is debt, not relief
+	•	It buys time at the cost of credibility
+	•	Players should feel the weight later
+
+⸻
+
+Explicitly Clarified: ta_overload (NOT an action)
+
+You’re absolutely right to exclude it.
+
+Correct classification
+	•	Status effect
+	•	RNG-generated
+	•	Triggered by:
+	•	low funding
+	•	department needs
+	•	unlucky roll
+
+Player Interaction
+	•	None directly
+	•	Can only be removed by:
+	•	Emergency Grant
+	•	Long-term funding success
+
+This preserves realism and avoids degenerate loops.
+
+⸻
+
+Summary Table (Group C, V2.45)
+
+Action	Voluntary	Strategic	Net Positive
+Vacation	Yes (conditional)	❌	❌
+Medical Leave	❌	❌	❌
+Emergency Grant	Yes (forced context)	❌	❌
+
+✅ Perfect — that’s exactly how Recovery systems should look.
+
+⸻
+
+Final Recommendation
+
+Lock Group C now. Do not touch it again.
+
+Once these rules are enforced:
+	•	Players will stop hoarding recovery tools
+	•	Death spirals become survivable but costly
+	•	Emotional beats feel earned, not random
