@@ -4653,6 +4653,9 @@
                     }
                 }
 
+                // RECOVERY: Take a Break (essential for morale management)
+                actions.push({ id: 'break', name: '☕ Take a Break', desc: '+15 morale (prevent burnout)' });
+
                 // Quals (critical - keeps if needed)
                 if (!s.qualsPassed && s.year >= 1) {
                     const prepLevel = s.qualifyLevel || 0;
