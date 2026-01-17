@@ -4660,7 +4660,14 @@
                 // Show pending papers status (read-only info)
                 if (s.pendingPapers && s.pendingPapers.length > 0) {
                     const awaitingFeedback = s.pendingPapers.filter(p => p.feedbackAvailable).length;
-                    if (awaitingFeedback > 0) {
+
+                    // V2.48: If player just clicked pending, show response options
+                    if (s.currentReviewPaperIndex !== undefined && s.pendingPapers[s.currentReviewPaperIndex]?.feedbackAvailable) {
+                        const idx = s.currentReviewPaperIndex;
+                        actions.push({ id: `review_polite_${idx}`, name: '📝 Polite Revision', desc: '+1 month, +25% accept, +3 alignment' });
+                        actions.push({ id: `review_aggressive_${idx}`, name: '⚔️ Aggressive Rebuttal', desc: '-10 morale, +15% accept, risk' });
+                        actions.push({ id: `review_delay_${idx}`, name: '⏳ Delay Response', desc: '+1 month wait, -10% accept' });
+                    } else if (awaitingFeedback > 0) {
                         actions.push({ id: 'pending', name: '📬 Review Feedback', desc: `${awaitingFeedback} paper(s) need response` });
                     } else {
                         actions.push({ id: 'pending_info', name: '⏳ Papers Under Review', desc: `${s.pendingPapers.length} awaiting decision`, disabled: true });
@@ -5234,11 +5241,23 @@
                         msg = '📮 Paper submitted! Now we wait for the reviewers...';
                         break;
 
+                    // V2.48: Review Feedback action - respond to pending paper reviews
+                    case 'pending':
+                        // Find first paper with feedback
+                        const paperWithFeedback = s.pendingPapers.findIndex(p => p.feedbackAvailable);
+                        if (paperWithFeedback >= 0) {
+                            s.currentReviewPaperIndex = paperWithFeedback;
+                            msg = '📬 REVIEWER FEEDBACK RECEIVED\n\nChoose your response strategy:\n\n📝 Polite Revision: +1 month, +25% accept, +3 alignment\n⚔️ Aggressive Rebuttal: -10 morale, +15% accept, risk\n⏳ Delay Response: +1 month wait, -10% accept\n\n(Response actions will appear after this)';
+                        } else {
+                            msg = '📧 No papers currently have feedback available.';
+                        }
+                        break;
+
                     case 'revise':
                         this.removeItem('rejected_paper');
                         // V1.8: Revision goes to pending
                         s.pendingPapers.push({ submitted: s.totalMonths, type: 'revision' });
-                        msg = '📮 Revision submitted! Fingers crossed...';
+                        msg = '📮 Revision submitted!\n\nYour revision enters the review queue.\n• Wait time: 2-4 months\n• Acceptance rate: 70%';
                         break;
 
                     case 'break':
@@ -5658,6 +5677,8 @@
                             const paperIndex = parseInt(parts[parts.length - 1]);
                             const responseType = parts.slice(0, -1).join('_');
                             msg = this.resolveReviewResponse(paperIndex, responseType);
+                            // V2.48: Clear review state so response buttons disappear
+                            delete s.currentReviewPaperIndex;
                             if (msg) break;
                         }
                         // V2.33: Elective courses
