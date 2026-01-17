@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.45</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.46</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -3893,7 +3893,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.45'
+                    version: '2.46'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -4594,6 +4594,20 @@
                 const s = this.state;
                 const actions = [];
 
+                // V2.46: Conference Actions at TOP (when active) - ONE CHOICE per conference
+                if (s.activeConference) {
+                    const conf = s.activeConference;
+                    if (s.conferenceChoiceMade) {
+                        // Already chose - show status
+                        actions.push({ id: 'conf_status', name: `🎤 Conference - ${s.conferenceChoiceMade}`, desc: `Attending ${conf.name}`, disabled: true });
+                    } else {
+                        // Choose ONE primary activity
+                        actions.push({ id: 'conf_poster', name: '🖼️ Conference - Poster', desc: `${conf.name}: Safe visibility, modest network` });
+                        actions.push({ id: 'conf_talk', name: '🎤 Conference - Talk', desc: `${conf.name}: Risk reputation for prestige` });
+                        actions.push({ id: 'conf_network', name: '🤝 Conference - Network', desc: `${conf.name}: Maximize connections, no spotlight` });
+                    }
+                }
+
                 // 1. IDEATION: Read Papers (always available to generate ideas)
                 actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Generate new idea (40% chance)' });
 
@@ -4653,6 +4667,7 @@
                         actions.push({ id: 'thesis', name: '⚔️ Defend Thesis!', desc: `Ready! ${defenseStatus.label}` });
                     }
                 }
+
 
                 // RECOVERY: Take a Break (essential for morale management)
                 actions.push({ id: 'break', name: '☕ Take a Break', desc: '+15 morale (prevent burnout)' });
