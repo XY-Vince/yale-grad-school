@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.47</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.48</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -3896,7 +3896,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.47'
+                    version: '2.48'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -4540,6 +4540,23 @@
                 this.state.isEnded = true;
                 this.state.endState = { won, reason, message };
 
+                // V2.48: Clear defense state to prevent zombie events
+                this.state.defenseActive = false;
+                this.state.defenseResolved = true;
+
+                // V2.48: Victory label based on duration
+                let victoryLabel = '';
+                if (won && (reason === 'graduation' || reason === 'defense' || reason === 'phd_complete')) {
+                    const months = this.state.totalMonths;
+                    if (months <= 72) {
+                        victoryLabel = '⚡ Fast Track';
+                    } else if (months <= 96) {
+                        victoryLabel = '🏔️ Long Haul';
+                    } else {
+                        victoryLabel = '💪 Survivor';
+                    }
+                }
+
                 // V2.18: Resolve career ending
                 const exitType = (reason === 'graduation' || reason === 'defense') ? 'PhD' :
                     (reason === 'ms_out') ? 'MS' : null;
@@ -4560,11 +4577,11 @@
                     title = `🎓 Master's Degree Earned! 🎓`;
                     endMessage = `${career.emoji} Your Career: ${career.name}\n\n${career.desc}`;
                 } else if (won && career) {
-                    title = '🎓🎉 Congratulations, Doctor! 🎉🎓';
-                    endMessage = `${career.emoji} Your Career: ${career.name}\n\n${career.desc}`;
+                    title = `🎓🎉 Congratulations, Doctor! 🎉🎓`;
+                    endMessage = `${victoryLabel}\n\n${career.emoji} Your Career: ${career.name}\n\n${career.desc}`;
                 } else if (won) {
                     title = '🎓🎉 Congratulations, Doctor! 🎉🎓';
-                    endMessage = 'You have defended your thesis and earned your PhD!';
+                    endMessage = `${victoryLabel}\n\nYou have defended your thesis and earned your PhD!`;
                 } else {
                     title = '💔 Game Over 💔';
                     endMessage = message;
@@ -4577,7 +4594,7 @@
                 const confPapers = this.state.confPaperCount || 0;
                 document.getElementById('end-stats').innerHTML = `
                 <p style="color: var(--text-secondary); margin-bottom: 12px;">
-                    Months elapsed: ${this.state.totalMonths}<br>
+                    Months elapsed: ${this.state.totalMonths}${victoryLabel ? ' ' + victoryLabel : ''}<br>
                     Publications: ${journalPapers + confPapers} (${journalPapers} Journal + ${confPapers} Conference)<br>
                     Final morale: ${this.state.morale}%<br>
                     Peer Network: ${this.state.peerNetwork || 0}<br>
@@ -5366,8 +5383,10 @@
 
                     // V2.45: Write Thesis action (core progression)
                     // V2.47: Diminishing returns after 80%
+                    // V2.48: Stress clamp - high stress caps late progress
                     case 'write_thesis':
                         const currentProgress = s.thesisProgress || 0;
+                        const currentStress = s.stress || 0;
                         let progressGain = 20;
                         let moraleCost = 5;
 
@@ -5375,7 +5394,14 @@
                         if (currentProgress >= 80) {
                             progressGain = 10 + Math.floor(this.random() * 6); // 10-15% instead of 20%
                             moraleCost = 10; // Double morale cost
-                            msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (diminishing returns)\n-' + moraleCost + ' morale (final stretch is grueling)\n\n"Almost there..."';
+
+                            // V2.48: Stress clamp - high stress blocks progress
+                            if (currentStress >= 80) {
+                                progressGain = Math.min(progressGain, 5);
+                                msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (⚠️ STRESS BLOCKING)\n-' + moraleCost + ' morale\n\n"Can\'t focus... need a break."';
+                            } else {
+                                msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (diminishing returns)\n-' + moraleCost + ' morale (final stretch is grueling)\n\n"Almost there..."';
+                            }
                         } else {
                             msg = '📖 Thesis Progress: ' + (currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress\n-' + moraleCost + ' morale (writing is draining)\n\n"One chapter at a time..."';
                         }
