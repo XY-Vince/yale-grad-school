@@ -3,7 +3,7 @@
 > *Navigate the PhD journey: Publish, survive, and thrive—or strategically exit.*
 
 [![Play Now](https://img.shields.io/badge/▶_Play_Now-GitHub_Pages-blue?style=for-the-badge)](https://xy-vince.github.io/GradQuest/)
-[![Version](https://img.shields.io/badge/Version-2.36-green?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.46-green?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
@@ -16,13 +16,12 @@
 
 ## 📖 About
 
-GradQuest is a **strategic PhD life simulator** that models the North American graduate school experience. It's not just about survival—it's about **resilience, strategy, and agency**.
+GradQuest is a **strategic PhD life simulator** that models the North American graduate school experience. 
 
-**Core Philosophy:**
-- Failures should feel **earned**, not random
-- Recovery mechanics exist for those who **learn** from mistakes
-- Degrees must be **earned**, not clicked through
-- Time must be **felt**, outcomes must be **acknowledged**
+**V2.46: Focused Mode** - Streamlined to core progression only:
+- 🎯 Reduced cognitive load by ~60%
+- Clear action pipeline: Idea → Discovery → Paper → Thesis → Defense
+- Recovery actions appear only when needed
 
 ---
 
@@ -35,111 +34,52 @@ GradQuest is a **strategic PhD life simulator** that models the North American g
 
 ---
 
-## 🔬 Field Specialization (V2.20+)
+## 🔬 Core Actions (V2.46 Focused Mode)
 
-Choose your research identity at game start:
-
-| Field | Accelerator | Key Traits |
-|-------|-------------|------------|
-| 🔬 **Experimentalist** | Protocol Reuse | Lab-based, equipment-dependent |
-| 📐 **Theoretician** | Conceptual Breakthrough | Math-focused, abstract results |
-| 💻 **Computational** | Pipeline Automation | Data-driven, server-dependent |
-
----
-
-## 📑 Thesis Phases (V2.23)
-
-Your thesis is a **gated project**, not a passive meter:
-
-| Phase | Threshold | What Happens |
-|-------|-----------|--------------|
-| 📝 **Planning** | 0% | Outline not yet approved |
-| 📑 **Outline Approved** | 25% | +10 Alignment boost |
-| 🧐 **Draft Review** | 75% | Committee reviewing |
-| 🎓 **Defense Ready** | 100% + 3 papers | Can schedule defense! |
-
-**Paper-Backed Caps**: Each journal paper = 25% thesis cap (no papers = no thesis progress)
+| Phase | Action | Description |
+|-------|--------|-------------|
+| **Ideation** | 📚 Read Papers | Generate new ideas |
+| **Execution** | 💡 Work on Idea | → Preliminary Findings |
+| **Execution** | 🔬 Develop Findings | → Key Discovery |
+| **Validation** | 📊 Validate Discovery | Create figures (3 needed) |
+| **Dissemination** | 📋 Conference Paper | Quick publish (4mo) |
+| **Dissemination** | � Journal Paper | Submit for review (8-12mo) |
+| **Writing** | 📖 Write Thesis | +20% per action |
+| **Endgame** | 🎓 Defend Thesis | Final exam! |
+| **Recovery** | ☕ Take a Break | +15 morale |
+| **Quals** | 📚 Study for Quals | Prep level 3 to pass |
 
 ---
 
-## 📊 Core Systems
+## 🎤 Conferences (V2.46)
 
-### Research Pipeline
-```
-📚 Read → 💡 Idea → 🔬 Findings → 🎯 Discovery → 📊 Figures (×3) → 📝 Paper
-```
+- **2 conferences per year max**
+- Appear at top of action list when available
+- **One choice per conference**: Poster, Talk, or Network
 
-### Stats Dashboard
+---
+
+## 🛡️ Recovery Actions (Emergency Only)
+
+These appear **only when in crisis**:
+
+| Action | Trigger | Effect |
+|--------|---------|--------|
+| 🏖️ Vacation | Burnout ≥60 + advisor offered | −burnout |
+| 🏥 Medical Leave | Morale <10 | Reset +40 morale (3-6mo) |
+| 💰 Emergency Grant | Funding=0 + teaching load | +12mo funding (permanent penalty) |
+
+---
+
+## � Stats Dashboard
 
 | Stat | Description |
 |------|-------------|
-| **😊 Morale** | Falls to 0 = Game Over |
-| **📊 Stress** | 60+ = Stressed, 100+ = Exhausted (V2.21) |
+| **� Morale** | Falls to 0 = Game Over |
 | **🧑‍🏫 Advisor** | Affects outcomes, triggers interventions |
-| **📰 Papers** | 3 journal papers for PhD |
-| **🤝 Network** | Unlocks abilities at 40/60/80 thresholds |
-| **🎯 Alignment** | Reduces morale decay, advisor protection |
-| **📚 Credits** | Required for Master's Exit (30+) |
-
-### Semester System
-- **Spring** (Jan-May): +3 credits/month
-- **Summer** (Jun-Jul): Internships only
-- **Fall** (Aug-Dec): +3 credits/month
-
----
-
-## 🛡️ Support Systems (V2.21+)
-
-### Advisor Intervention
-- **Passive Shield** (Alignment ≥40): −25% morale penalties
-- **Active Help** (Alignment ≥60): Emergency support when in crisis
-
-### Peer Intervention
-- **Trigger**: Network ≥60, morale <30
-- **Effect**: +10 morale, −30 stress
-- "Your labmates noticed you disappearing..."
-
----
-
-## 🎓 Career Endings (V2.18+)
-
-Your final stats determine your career path:
-
-**PhD Paths**: Tenure Track Professor, Research Scientist, Data Science Lead
-**MS-Out Paths**: R&D Lead, Senior Data Scientist, Software Engineer, Career Pivot
-
----
-
-## 🧑‍🏫 Advisor System
-
-Your advisor has **hidden traits** affecting outcomes:
-
-| Trait | Signals |
-|-------|---------|
-| **Risk Tolerance** | "I like bold ideas" vs cautious feedback |
-| **Attention Span** | Fast vs slow response times |
-| **Strictness** | Harsh vs encouraging tone |
-
-Use **💬 Pitch Session** to learn preferences and build alignment.
-
----
-
-## 📅 Key Milestones
-
-| Event | When | Requirement |
-|-------|------|-------------|
-| **📚 Quals** | Sep Year 2 | Prep level 3+ |
-| **🚪 MS-Out** | Morale <30 | 30 credits + 18 months |
-| **💼 Internship** | Jun-Jul, Year 2+ | 3 months, +25 network |
-
----
-
-## 🎲 Random Events
-
-Events are now **visually tagged**:
-- **🎲** Random events (imposter syndrome, scoops)
-- **🧑‍🏫** Advisor interventions
-- **⚠️** System pressure warnings
+| **� Papers** | 3 journal papers for PhD |
+| **🤝 Network** | Unlocks abilities at 40/60/80 |
+| **📚 Quals** | Pass by September Year 2 |
 
 ---
 
@@ -151,9 +91,8 @@ Events are now **visually tagged**:
 ### Run Locally
 ```bash
 git clone https://github.com/XY-Vince/GradQuest.git
-cd GradQuest
-pip install -r requirements.txt
-python run_web.py
+cd GradQuest/docs
+# Open index.html in browser
 ```
 
 ---
@@ -164,18 +103,11 @@ See [CHANGELOG.md](CHANGELOG.md) for full history.
 
 | Version | Theme |
 |---------|-------|
-| **v2.35** | Tab Navigation — mobile app-shell pattern |
-| **v2.34** | Mobile UX — thumb-zone, sticky bar, tap targets |
-| **v2.33** | Momentum Without Power Creep — curriculum, workshops |
-| v2.28-32 | Thesis, Survival, Conferences, Rivals, Visibility |
-| v2.20-27 | Labmates, Advisors, Defense |
-| v2.10-19 | Career Endings, UX, Resilience |
-
----
-
-## 🤝 Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+| **v2.46** | Conference Streamline — 2/year, one-choice |
+| **v2.45** | Focused Mode — core actions only |
+| **v2.43** | Defense Integrity — skepticism breakdown |
+| **v2.42** | Event Modal Audit — visual notification system |
+| **v2.40** | Defense Gauntlet — 3-turn minigame |
 
 ---
 
