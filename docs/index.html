@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.46</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.47</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -3896,7 +3896,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.46'
+                    version: '2.47'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -5365,14 +5365,27 @@
                         break;
 
                     // V2.45: Write Thesis action (core progression)
+                    // V2.47: Diminishing returns after 80%
                     case 'write_thesis':
-                        s.thesisProgress = (s.thesisProgress || 0) + 20;
-                        s.morale = Math.max(0, s.morale - 5); // Writing is draining
+                        const currentProgress = s.thesisProgress || 0;
+                        let progressGain = 20;
+                        let moraleCost = 5;
+
+                        // V2.47: Diminishing returns after 80%
+                        if (currentProgress >= 80) {
+                            progressGain = 10 + Math.floor(this.random() * 6); // 10-15% instead of 20%
+                            moraleCost = 10; // Double morale cost
+                            msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (diminishing returns)\n-' + moraleCost + ' morale (final stretch is grueling)\n\n"Almost there..."';
+                        } else {
+                            msg = '📖 Thesis Progress: ' + (currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress\n-' + moraleCost + ' morale (writing is draining)\n\n"One chapter at a time..."';
+                        }
+
+                        s.thesisProgress = Math.min(100, currentProgress + progressGain);
+                        s.morale = Math.max(0, s.morale - moraleCost);
+
                         if (s.thesisProgress >= 100) {
                             s.thesisProgress = 100;
-                            msg = '📖 THESIS COMPLETE!\n\n100% progress reached!\n-5 morale (writing is draining)\n\n🎓 You can now prepare for defense!';
-                        } else {
-                            msg = '📖 Thesis Progress: ' + s.thesisProgress + '%\n\n+20% progress\n-5 morale (writing is draining)\n\n"One chapter at a time..."';
+                            msg = '📖 THESIS COMPLETE!\n\n100% progress reached!\n\n🎓 You can now prepare for defense!';
                         }
                         break;
 
@@ -5381,7 +5394,16 @@
                         return; // Don't advance month yet
 
                     case 'advance':
-                        msg = 'Time passes...';
+                        // V2.47: Guaranteed fallback event - always communicate something
+                        const fallbackMessages = [
+                            'The semester grinds on...',
+                            'Another month in the lab.',
+                            'Days blur into weeks...',
+                            'You settle into the routine.',
+                            'Coffee sustains you.',
+                            'The calendar pages turn.'
+                        ];
+                        msg = fallbackMessages[Math.floor(this.random() * fallbackMessages.length)];
                         break;
 
                     // V2.2 Pro: Pitch Session
@@ -5654,13 +5676,24 @@
                 const morale = this.state.morale || 0;
                 const alignment = this.state.strategicAlignment || 0;
                 const network = this.state.peerNetwork || 0;
+                const thesisProgress = this.state.thesisProgress || 0;
 
                 let baseSkepticism = 0;
                 let label = '';
                 let breakdown = [];
                 let allowed = false;
 
-                // V2.43: Three clear defense paths
+                // V2.47: HARD GATE - Thesis must be 100% complete
+                if (thesisProgress < 100) {
+                    return {
+                        allowed: false,
+                        skepticismMultiplier: 0,
+                        label: `Thesis: ${thesisProgress}%`,
+                        breakdown: [`Thesis progress: ${thesisProgress}/100% required`]
+                    };
+                }
+
+                // V2.43: Three clear defense paths (only checked after thesis complete)
                 if (journals >= 3) {
                     allowed = true;
                     baseSkepticism = 1.0;
@@ -5679,7 +5712,7 @@
                 }
 
                 if (!allowed) {
-                    return { allowed: false, skepticismMultiplier: 0, label: 'Not Defense Ready', breakdown: ['Not eligible'] };
+                    return { allowed: false, skepticismMultiplier: 0, label: 'Need Papers', breakdown: ['Need 3J, or 2J+2C, or 2J+80M'] };
                 }
 
                 // V2.43: Modifiers
