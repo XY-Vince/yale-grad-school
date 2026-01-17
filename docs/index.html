@@ -4240,7 +4240,7 @@
                         const wait = s.totalMonths - paper.submitted;
                         const isRevision = paper.type === 'revision';
                         const minWait = isRevision ? 2 : 3;  // Minimum 2-3 months
-                        const maxWait = isRevision ? 4 : 6;  // Maximum 4-6 months
+                        const maxWait = isRevision ? 3 : 6;  // V2.48: Revision 3mo, Journal 6mo
 
                         // Only check after minimum wait time
                         if (wait >= minWait) {
@@ -4653,8 +4653,8 @@
 
                 // 5. DISSEMINATION: Submit Paper (when ready) - both paths are valid for graduation
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
-                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (4mo, +network)' });
-                    actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (8-12mo)' });
+                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (3mo, +network)' });
+                    actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (3-6mo)' });
                 }
 
                 // Show pending papers status (read-only info)
@@ -4831,8 +4831,8 @@
 
                 // V2.2 Pro: Conference paper submission (if has figures but want quick publish)
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
-                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (4mo, +network)' });
-                    actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (8-12mo)' });
+                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (3mo, +network)' });
+                    actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (3-6mo)' });
                 }
 
                 // V2.2 Pro: Show pending conference papers
