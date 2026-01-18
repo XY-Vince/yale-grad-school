@@ -2187,11 +2187,20 @@
             },
 
             // V2.27: Labmate publication event
+            // V2.51: Fixed - rival only "beats" you if you have 0 papers
             triggerLabmatePublication(npc) {
                 if (npc.archetype === 'The_Rival') {
-                    this.state.morale = Math.max(0, this.state.morale - 5);
-                    this.state.stress = Math.min(100, (this.state.stress || 0) + 10);
-                    this.showMessage(`📄 ${npc.name} published before you!\n\nThe pressure is on.\n-5 morale, +10 stress\n\n👉 Consider accelerating your research`);
+                    const playerPapers = this.getItem('paper') || 0;
+                    if (playerPapers === 0) {
+                        // Rival truly published first - full penalty
+                        this.state.morale = Math.max(0, this.state.morale - 5);
+                        this.state.stress = Math.min(100, (this.state.stress || 0) + 10);
+                        this.showMessage(`📄 ${npc.name} published before you!\n\nThe pressure is on.\n-5 morale, +10 stress`);
+                    } else {
+                        // Player already has papers - rival is just keeping pace
+                        this.state.stress = Math.min(100, (this.state.stress || 0) + 5);
+                        this.appendSystemEvent(`📄 ${npc.name} published another paper.\nYou have ${playerPapers} paper(s). Keep up the pace! +5 stress`);
+                    }
                 } else {
                     this.state.morale = Math.min(100, this.state.morale + 5);
                     this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5);
