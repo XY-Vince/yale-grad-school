@@ -3982,8 +3982,15 @@
             typeTimer: null,
             previousEvent: '', // V2.20: Track last event (not last month)
             waitingForAcknowledge: false, // V2.20: Block actions until acknowledged
+            messageQueue: [], // V2.50: Queue for multiple modals per turn
 
             showMessage(msg) {
+                // V2.50: Queue messages if modal already showing
+                if (this.waitingForAcknowledge) {
+                    this.messageQueue.push(msg);
+                    return;
+                }
+
                 const el = document.getElementById('message-log');
                 const prevEl = document.getElementById('message-log-prev');
                 if (this.typeTimer) clearInterval(this.typeTimer);
@@ -4012,7 +4019,14 @@
             acknowledgeEvent() {
                 this.confirmEventModal();
                 this.waitingForAcknowledge = false;
-                this.updateUI(); // Refresh actions
+
+                // V2.50: Show next queued message if any
+                if (this.messageQueue.length > 0) {
+                    const nextMsg = this.messageQueue.shift();
+                    setTimeout(() => this.showMessage(nextMsg), 100);
+                } else {
+                    this.updateUI(); // Refresh actions only when all messages read
+                }
             },
 
             // Append message
