@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.52</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.53</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -2899,69 +2899,80 @@
                 s.atConference = true;
 
                 switch (choiceId) {
+                    // V2.53: POSTER - Damage Control / Stability (guaranteed safety)
                     case 'conf_poster':
                         this.spendFunding(conf.fundingCost);
                         s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + Math.floor(conf.networkGain * 0.3));
-                        s.morale = Math.min(100, s.morale + 5);
+                        s.morale = Math.min(100, s.morale + 10);
+                        s.stress = Math.max(0, (s.stress || 0) - 20); // V2.53: Stress reduction
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
-                        s.lastConferenceMonth = s.totalMonths; // V2.43: Cooldown tracking
-                        msg = `🖼️ Poster Presentation at ${conf.name}!\n+${Math.floor(conf.networkGain * 0.3)} network, +5 morale\n"Solid conversations. Low risk, steady gain."`;
-                        // 15% chance for idea (casual conversations)
-                        if (this.random() < 0.15) {
+                        s.lastConferenceMonth = s.totalMonths;
+                        msg = `🖼️ POSTER: Safe Progress\n\n+${Math.floor(conf.networkGain * 0.3)} network, +10 morale, -20 stress\n\n"No drama. Solid conversations. Safe progress."\n\n✓ Convert attendance into stability`;
+                        // 10% chance for idea (casual conversations)
+                        if (this.random() < 0.10) {
                             this.addItem('idea');
-                            msg += '\n💡 A poster discussion sparked a new idea!';
+                            msg += '\n\n💡 A poster discussion sparked an idea!';
                         }
                         break;
 
+                    // V2.53: TALK - Reputation Gamble (high risk, high reward)
                     case 'conf_talk':
                         this.spendFunding(conf.fundingCost);
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
-                        s.lastConferenceMonth = s.totalMonths; // V2.43: Cooldown tracking
-                        const talkSuccess = this.random() < (0.6 + (s.strategicAlignment || 0) * 0.003);
+                        s.lastConferenceMonth = s.totalMonths;
+
+                        // V2.53: Success scales with alignment AND morale
+                        const alignment = s.strategicAlignment || 0;
+                        const morale = s.morale || 50;
+                        const talkSuccessChance = 0.4 + (alignment * 0.004) + (morale * 0.002); // 40% base + up to 40% from alignment + 20% from morale
+                        const talkSuccess = this.random() < talkSuccessChance;
+
                         if (talkSuccess) {
-                            s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain);
-                            s.morale = Math.min(100, s.morale + 15);
-                            msg = `🎤 Your talk at ${conf.name} was a hit!\n+${conf.networkGain} network, +15 morale\n"Your talk sparked real interest."`;
-                            // 40% chance for idea on successful talk (deep engagement)
-                            if (this.random() < 0.4) {
+                            s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain * 1.5); // V2.53: Higher upside
+                            s.morale = Math.min(100, s.morale + 20);
+                            s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 5); // V2.53: Reputation boost
+                            msg = `🎤 TALK: Big Win!\n\n+${Math.floor(conf.networkGain * 1.5)} network, +20 morale, +5 reputation\n\n"Your talk was the highlight. People took notice."\n\n★ Trade safety for visibility — paid off!`;
+                            // 50% chance for idea on hit talk
+                            if (this.random() < 0.5) {
                                 this.addItem('idea');
-                                msg += '\n💡 The Q&A inspired a breakthrough idea!';
+                                msg += '\n\n💡 The Q&A sparked a breakthrough!';
                             }
                         } else {
-                            s.morale = Math.max(0, s.morale - 10);
-                            msg = `🎤 Tough questions at ${conf.name}.\n-10 morale\n"You'll refine the story."`;
-                            // 20% chance even on fail (learning from criticism)
-                            if (this.random() < 0.2) {
-                                this.addItem('idea');
-                                msg += '\n💡 But the criticism gave you a new angle...';
-                            }
+                            s.morale = Math.max(0, s.morale - 15);
+                            s.stress = Math.min(100, (s.stress || 0) + 15); // V2.53: Real downside
+                            s.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 3); // V2.53: Reputation hit
+                            msg = `🎤 TALK: Rough Reception\n\n-15 morale, +15 stress, -3 reputation\n\n"Tough questions. The room was skeptical."\n\n⚠️ High risk play didn't work this time`;
                         }
                         break;
 
+                    // V2.53: NETWORK - Future-Oriented (invest now, cash out later)
                     case 'conf_network':
                         this.spendFunding(conf.fundingCost);
-                        s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain);
-                        s.morale = Math.min(100, s.morale + 15);
-                        s.stress = Math.max(0, (s.stress || 0) - 40);
+                        const existingNetwork = s.peerNetwork || 0;
+                        const networkBonus = Math.floor(conf.networkGain * (1 + existingNetwork * 0.01)); // Scales with existing network
+                        s.peerNetwork = Math.min(100, existingNetwork + networkBonus);
+                        s.morale = Math.min(100, s.morale + 5); // V2.53: Reduced immediate morale
+                        s.stress = Math.max(0, (s.stress || 0) - 15);
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
-                        s.lastConferenceMonth = s.totalMonths; // V2.43: Cooldown tracking
+                        s.lastConferenceMonth = s.totalMonths;
 
-                        // 30% chance for idea (conversations spark ideas)
-                        let ideaGained = false;
-                        if (this.random() < 0.3) {
+                        // V2.53: Future leverage - chance for collaboration offer or grant lead
+                        let futureBonus = '';
+                        const networkRoll = this.random();
+                        if (networkRoll < 0.25) {
+                            s.collaborationOffered = true; // New state flag
+                            futureBonus = '\n\n🤝 COLLABORATION OFFERED: A professor wants to discuss a joint project!';
+                        } else if (networkRoll < 0.40) {
+                            s.fundingMonths = (s.fundingMonths || 0) + 3; // Small grant lead
+                            futureBonus = '\n\n💰 GRANT LEAD: +3 funding months from a new connection!';
+                        }
+
+                        msg = `🤝 NETWORK: Future Investment\n\n+${networkBonus} network, +5 morale, -15 stress\n\n"New faces, new opportunities. Seeds planted."\n\n⏳ Invest now, cash out later${futureBonus}`;
+
+                        // 20% chance for idea
+                        if (this.random() < 0.2) {
                             this.addItem('idea');
-                            ideaGained = true;
-                        }
-
-                        if (conf.freshPerspective) {
-                            this.addStatus('fresh_perspective');
-                            s.freshPerspectiveUntil = s.totalMonths + 3;
-                            msg = `🍷 Networking at ${conf.name}!\n+${conf.networkGain} network, +15 morale, -40 stress\n✨ Fresh Perspective gained (3 months)\n"Late nights, new faces. You return energized."`;
-                        } else {
-                            msg = `🍷 Networking at ${conf.name}!\n+${conf.networkGain} network, +15 morale, -40 stress\n"Great conversations and new connections."`;
-                        }
-                        if (ideaGained) {
-                            msg += '\n💡 A late-night conversation sparked an idea!';
+                            msg += '\n\n💡 A late-night chat sparked an idea!';
                         }
                         break;
 
@@ -3125,17 +3136,17 @@
                     {
                         id: 'review_polite',
                         name: '📝 Polite Revision',
-                        desc: '+1 month, +25% acceptance, +3 alignment'
+                        desc: 'Slow but safe: +30% accept, +5 alignment'
                     },
                     {
                         id: 'review_aggressive',
                         name: '⚔️ Aggressive Rebuttal',
-                        desc: '-10 morale, +15% acceptance, risk advisor disapproval'
+                        desc: 'Force decision: 50/50 win/backlash (morale helps)'
                     },
                     {
                         id: 'review_delay',
                         name: '⏳ Delay Response',
-                        desc: '+1 month delay, -10% acceptance (stacking)'
+                        desc: 'Protection: wait, no penalty, -5 stress'
                     }
                 ];
             },
@@ -3149,39 +3160,45 @@
                 let msg = '';
 
                 switch (responseType) {
+                    // V2.53: POLITE - Relationship Preservation (maximize goodwill)
                     case 'review_polite':
-                        paper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 1;
-                        paper.bonusChance = (paper.bonusChance || 0) + 0.25;
-                        s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 3);
+                        paper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 2; // V2.53: Slower
+                        paper.bonusChance = (paper.bonusChance || 0) + 0.30; // V2.53: Higher acceptance
+                        paper.skepticismReduction = (paper.skepticismReduction || 0) + 0.1; // V2.53: Reduces future skepticism
+                        s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 5); // V2.53: Good for relationships
                         paper.feedbackAvailable = false;
-                        msg = `📝 Polite Revision submitted.\n+1 month review time\n+25% acceptance chance\n+3 advisor alignment\n"Diplomacy has its merits."`;
+                        msg = `📝 POLITE: Maximize Goodwill\n\n+2 months review time\n+30% acceptance chance\n+5 advisor alignment\n\n"The diplomatic route. Relationships preserved."\n\n✓ Best for skeptical committees`;
                         break;
 
+                    // V2.53: AGGRESSIVE - Force the Issue (faster, risky)
                     case 'review_aggressive':
-                        s.morale = Math.max(0, s.morale - 10);
-                        paper.bonusChance = (paper.bonusChance || 0) + 0.15;
+                        const moraleBonus = Math.max(0, (s.morale || 50) - 50) * 0.005; // V2.53: Scales with morale
+                        const successChance = 0.5 + moraleBonus; // 50% base + up to 25% from high morale
+
+                        paper.reviewMonthsRemaining = 0; // V2.53: Immediate resolution
                         paper.feedbackAvailable = false;
 
-                        // Advisor-sensitive risk
-                        const advisorType = s.advisor?.archetype;
-                        if (advisorType === 'The_Tormentor') {
-                            s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 2);
-                            msg = `⚔️ Aggressive Rebuttal submitted.\n-10 morale, +15% acceptance\n${s.advisor?.emoji} "${s.advisor?.name} approves: 'Show them who's right.'"`;
-                        } else if (advisorType === 'The_Mentor') {
-                            s.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 5);
-                            s.advisor.tension = Math.min(100, (s.advisor.tension || 0) + 10);
-                            msg = `⚔️ Aggressive Rebuttal submitted.\n-10 morale, +15% acceptance, -5 alignment\n${s.advisor?.emoji} "${s.advisor?.name} sighs: 'That wasn't necessary.'"`;
+                        if (this.random() < successChance) {
+                            paper.bonusChance = (paper.bonusChance || 0) + 0.20;
+                            s.morale = Math.min(100, s.morale + 5); // V2.53: Confidence boost
+                            msg = `⚔️ AGGRESSIVE: They Backed Down!\n\n+20% acceptance, +5 morale\nImmediate resolution\n\n"You called their bluff. Reviewers relented."\n\n★ Force the issue — worked!`;
                         } else {
-                            msg = `⚔️ Aggressive Rebuttal submitted.\n-10 morale, +15% acceptance\n"Bold move. We'll see if it pays off."`;
+                            paper.bonusChance = (paper.bonusChance || 0) - 0.15;
+                            s.morale = Math.max(0, s.morale - 15);
+                            s.stress = Math.min(100, (s.stress || 0) + 10);
+                            s.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 5);
+                            msg = `⚔️ AGGRESSIVE: Backlash!\n\n-15% acceptance, -15 morale, +10 stress\n-5 advisor alignment\n\n"That escalated poorly."\n\n⚠️ Force the issue — backfired`;
                         }
                         break;
 
+                    // V2.53: DELAY - Protection Mode (do nothing on purpose)
                     case 'review_delay':
+                        // V2.53: No penalties, just wait - state can change
                         paper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 1;
-                        paper.bonusChance = (paper.bonusChance || 0) - 0.10;
-                        paper.delayPenalties = (paper.delayPenalties || 0) + 1;
-                        paper.feedbackAvailable = false;
-                        msg = `⏳ Response delayed.\n+1 month wait\n-10% acceptance chance\n"The reviewers are getting impatient..."`;
+                        paper.feedbackAvailable = true; // V2.53: Keep available - can respond next turn
+                        // V2.53: Small stress relief from not having to decide
+                        s.stress = Math.max(0, (s.stress || 0) - 5);
+                        msg = `⏳ DELAY: Strategic Pause\n\n+1 month wait\n-5 stress (pressure released)\nFeedback still available\n\n"Not ready to commit. Wait for better conditions."\n\n⏸️ Do nothing on purpose — protection`;
                         break;
                 }
 
@@ -3912,7 +3929,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.52'
+                    version: '2.53'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
