@@ -4324,13 +4324,23 @@
                 }
 
                 // V2.9: Quals countdown warnings
+                // V2.51: Skip warnings if already prepared (level >= 3)
+                const prepLevel = this.state.qualifyLevel || 0;
                 if (!this.state.qualsPassed && this.state.year <= 2) {
-                    if (this.state.year === 1 && this.state.month === 9) {
+                    if (this.state.year === 1 && this.state.month === 9 && prepLevel < 3) {
                         this.appendMessage('⚠️ QUALS APPROACHING: Your qualifying exam is in 12 months (September Year 2). Start preparing!');
                     } else if (this.state.year === 2 && this.state.month === 7) {
-                        this.showMessage('⏳ QUALS IN 2 MONTHS!\n\nPrep level = ' + (this.state.qualifyLevel || 0) + '\nYou need 3 to pass!\n\n👉 Study for Quals NOW');
+                        if (prepLevel >= 3) {
+                            this.appendMessage('✅ QUALS IN 2 MONTHS: Prep level = ' + prepLevel + '. You\'re ready!');
+                        } else {
+                            this.showMessage('⏳ QUALS IN 2 MONTHS!\n\nPrep level = ' + prepLevel + '\nYou need 3 to pass!\n\n👉 Study for Quals NOW');
+                        }
                     } else if (this.state.year === 2 && this.state.month === 8) {
-                        this.showMessage('🚨 QUALS NEXT MONTH! Prep level = ' + (this.state.qualifyLevel || 0) + '. CRITICAL!\n\n👉 Go to Actions → Study for Quals');
+                        if (prepLevel >= 3) {
+                            this.appendMessage('✅ QUALS NEXT MONTH: Prep level = ' + prepLevel + '. Good luck!');
+                        } else {
+                            this.showMessage('🚨 QUALS NEXT MONTH! Prep level = ' + prepLevel + '. CRITICAL!\n\n👉 Go to Actions → Study for Quals');
+                        }
                     }
                 }
 
