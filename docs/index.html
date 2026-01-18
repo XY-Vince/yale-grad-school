@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.49</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.50</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -2084,8 +2084,8 @@
                 s.labmates.forEach(npc => {
                     if (!npc.active) return;
 
-                    // Progress
-                    npc.progress += 5 + Math.floor(this.random() * 11); // 5-15
+                    // V2.50: Slowed rival progress (target ~30 months to publish)
+                    npc.progress += 2 + Math.floor(this.random() * 4); // 2-5 per month
                     npc.stress += Math.floor(this.random() * 16) - 5; // -5 to +10
                     npc.stress = Math.max(0, Math.min(100, npc.stress));
 
@@ -3896,7 +3896,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.49'
+                    version: '2.50'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -5428,8 +5428,14 @@
                         s.thesisProgress = Math.min(100, currentProgress + progressGain);
                         s.morale = Math.max(0, s.morale - moraleCost);
 
+                        // V2.50: Sync with graduation panel
+                        if (s.graduation) {
+                            s.graduation.thesis_progress = s.thesisProgress;
+                        }
+
                         if (s.thesisProgress >= 100) {
                             s.thesisProgress = 100;
+                            if (s.graduation) s.graduation.thesis_progress = 100;
                             msg = '📖 THESIS COMPLETE!\n\n100% progress reached!\n\n🎓 You can now prepare for defense!';
                         }
                         break;
