@@ -2978,8 +2978,10 @@
                 // Tick down conference expiration
                 if (s.activeConference) {
                     s.activeConference.expiresIn -= 1;
+                    // V2.51: Removed modal reminder - redundant with initial invite
+                    // Expiry handled silently
                     if (s.activeConference.expiresIn === 1) {
-                        this.showMessage(`⏰ Conference invite expires NEXT MONTH!`);
+                        this.appendSystemEvent(`⏰ Conference invite expires next month.`);
                     }
                     if (s.activeConference.expiresIn <= 0) {
                         this.appendSystemEvent(`❌ Conference invitation expired.`);
