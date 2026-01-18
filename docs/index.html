@@ -5445,6 +5445,7 @@
                     // V2.45: Write Thesis action (core progression)
                     // V2.47: Diminishing returns after 80%
                     // V2.48: Stress clamp - high stress caps late progress
+                    // V2.51: Randomized early progress (avg ~35%)
                     case 'write_thesis':
                         const currentProgress = s.thesisProgress || 0;
                         const currentStress = s.stress || 0;
@@ -5464,7 +5465,9 @@
                                 msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (diminishing returns)\n-' + moraleCost + ' morale (final stretch is grueling)\n\n"Almost there..."';
                             }
                         } else {
-                            msg = '📖 Thesis Progress: ' + (currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress\n-' + moraleCost + ' morale (writing is draining)\n\n"One chapter at a time..."';
+                            // V2.51: Randomize early progress (20-50%, average ~35%)
+                            progressGain = 20 + Math.floor(this.random() * 31); // 20-50%
+                            msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress\n-' + moraleCost + ' morale (writing is draining)\n\n"One chapter at a time..."';
                         }
 
                         s.thesisProgress = Math.min(100, currentProgress + progressGain);
