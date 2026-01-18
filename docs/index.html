@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.51</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.52</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -3913,7 +3913,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.51'
+                    version: '2.52'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -5870,8 +5870,18 @@
                 };
 
                 // V2.43: Show skepticism breakdown tooltip
+                // V2.52: Clear any queued messages to prevent modal after defense
+                this.messageQueue = [];
+                this.waitingForAcknowledge = false;
+
                 const breakdownText = breakdown.join('\n• ');
-                this.showMessage(`🎓 THESIS DEFENSE BEGINS!\n\nCommittee Skepticism: ×${skepticism.toFixed(2)}\n• ${breakdownText}\n\nStarting Approval: ${startApproval}%`);
+
+                // V2.52: Show defense info directly in defense modal, not as queued message
+                // Defense modal shows immediately, info goes to event log
+                const msg = `🎓 THESIS DEFENSE BEGINS!\n\nCommittee Skepticism: ×${skepticism.toFixed(2)}\n• ${breakdownText}\n\nStarting Approval: ${startApproval}%`;
+                if (this.state && this.state.eventLog) {
+                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg, modal: false });
+                }
 
                 // Show defense modal after acknowledging
                 document.getElementById('defense-modal').classList.add('active');

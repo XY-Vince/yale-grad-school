@@ -6849,3 +6849,87 @@ VI. Summary: What This Achieves
 ✔ Makes rules legible through behavior, not text dumps
 
 This is exactly the right level of correction before activating more buttons again.
+
+
+This **V2.52 Logic Audit** addresses the structural drift identified in V2.51. The goal is to enforce **Strict Domain Ownership** to stop "stat leakage" where multiple functions compete to mutate the same variable, leading to the desyncs observed in your recent runs (e.g., the High-Throughput figure bug and the Thesis/Graduation Panel drift).
+
+---
+
+### I. The "Source of Truth" Consolidation
+
+We will eliminate the **Dual Thesis Progress** and **Advisor Fragmentation** issues by centralizing ownership.
+
+#### 1. Thesis & Graduation Domain
+
+* **DEPRECATE**: `graduation.thesis_progress`.
+* **SOLE OWNER**: `state.thesisProgress`.
+* **MUTATION RULE**: Only `doAction('write_thesis')` and the `Legacy Sync` (when a senior labmate leaves) can mutate this value.
+* **VIEW RULE**: The Graduation Panel must be a "Passive Observer." It reads `state.thesisProgress` and `state.items.paper.length` every frame but possesses zero mutation logic.
+
+#### 2. The Advisor "Black Box"
+
+* **DEPRECATE**: `advisorScore`, `advisorTension`, `vacationOffered` as top-level variables.
+* **SOLE OWNER**: `state.advisor` object.
+* **MUTATION RULE**: Mutated only by the **Advisor Personality Engine**.
+* *Direct Mutation*: `state.advisor.alignment` (renamed from advisorScore).
+* *Hidden State*: `state.advisor.tension` and `state.advisor.interventionCount`.
+* *Temporary State*: `state.advisor.activeOffer` (e.g., "vacation" or "master's exit").
+
+
+
+---
+
+### II. The Research Pipeline: Item Ownership
+
+The "High-Throughput Figure Bug" (where text said +2 but state stayed +1) occurred because the event system didn't have ownership of the inventory.
+
+* **DOMAIN OWNER**: `InventoryManager`
+* **MUTATION RULES**:
+1. **Figures**: Only `run_experiment` and `high_throughput` can call `addItem('figure')`.
+2. **Validation**: `validate_discovery` does *not* create figures; it checks if `figures >= 3` and replaces them with a `journal_ready_discovery`.
+3. **The Reviewer Loop**: The "Polite Revision" and "Aggressive Rebuttal" actions are **Gatekeepers**. They cannot mutate `state.items.paper`; they only mutate the `state.pendingPapers[i].acceptanceChance` property. Only the `processPendingPapers` resolution system can move an item from `pending` to `items.paper`.
+
+
+
+---
+
+### III. Time & Resource Domain (The "Resilience Engine")
+
+The "Morale touched by 38 locations" issue makes the game impossible to balance.
+
+* **DOMAIN OWNER**: `ResilienceEngine`
+* **MUTATION RULES**:
+* **Morale/Stress**: All actions call a central `updateWellness(moraleDelta, stressDelta)` helper.
+* **The "Safety Valve"**: This helper is the *only* place allowed to trigger `Crisis Mode` or `Exhaustion`. If a random event drops morale, it passes through this helper, which then checks for the `Advisor Shield` (Alignment) before applying the final value.
+
+
+
+---
+
+### IV. V2.52 State Ownership Map (Refined)
+
+| Domain | State Variables | Exclusive Mutator System |
+| --- | --- | --- |
+| **Chronology** | `year`, `month`, `totalMonths` | **TimeEngine** (via `advanceMonth`) |
+| **Inventory** | `ideas`, `findings`, `figures`, `papers` | **InventoryEngine** (via `addItem/removeItem`) |
+| **Academic** | `thesisProgress`, `qualifyLevel`, `credits` | **ProgressionEngine** (Action-driven) |
+| **Wellness** | `morale`, `stress`, `statuses` | **ResilienceEngine** (Centralized Wrapper) |
+| **Social** | `labmates[]`, `rivalProgress`, `resentment` | **SocialEngine** (Monthly Lab Update) |
+| **Bureaucracy** | `fundingMonths`, `activeConference` | **AdminEngine** (Clock & Spawner) |
+
+---
+
+### V. Strategic Improvement: Fixing the "Review Timing" Bug
+
+The Audit reveals why Revisions appear at the wrong time: they are currently owned by the `ActionPanel` (checking for any pending paper) rather than the `PaperObject` itself.
+
+* **V2.52 Change**: `pendingPapers` will now have a `phase` property: `['submitted', 'under_review', 'revisions_requested']`.
+* **Ownership**: The `ActionPanel` will only display "Respond to Reviewers" if `pendingPapers.some(p => p.phase === 'revisions_requested')`.
+* **Trigger**: This phase is flipped only by a modal event, preventing the "instant revision" bug.
+
+### VI. Audit of "Unclear Functions"
+
+To resolve the user confusion regarding specific actions:
+
+1. **Pre-register Idea**: Owned by **SocialEngine**. It places a "Lock" on `items.idea`. If a Rival's `processLabmates()` triggers a scoop, it checks this lock first.
+2. **Bootcamp/Writing**: Owned by **ProgressionEngine**. These are "Stat Overlays." They don't mutate the thesis directly; they mutate the `state.modifiers.thesisSpeed` which the `write_thesis` action then reads.
