@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.50</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.51</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -1563,8 +1563,9 @@
                 const thesisEl = document.getElementById('thesis-progress');
                 if (papersEl) papersEl.textContent = `${g.papers_published} / ${g.papers_required}`;
                 if (thesisEl) {
-                    // V2.32: Show efficiency in tooltip
-                    thesisEl.textContent = `${g.thesis_progress}%`;
+                    // V2.51: Use thesisProgress as single source of truth
+                    const displayProgress = this.state.thesisProgress || g.thesis_progress || 0;
+                    thesisEl.textContent = `${displayProgress}%`;
                     thesisEl.title = `Efficiency: ${roadmap.efficiency}%/action\n${roadmap.efficiencyBreakdown}`;
                 }
 
@@ -1572,7 +1573,9 @@
                 const papersBar = document.getElementById('papers-bar');
                 const thesisBar = document.getElementById('thesis-bar');
                 if (papersBar) papersBar.style.width = `${Math.min(100, (g.papers_published / g.papers_required) * 100)}%`;
-                if (thesisBar) thesisBar.style.width = `${g.thesis_progress}%`;
+                // V2.51: Use thesisProgress as single source
+                const barProgress = this.state.thesisProgress || g.thesis_progress || 0;
+                if (thesisBar) thesisBar.style.width = `${barProgress}%`;
 
                 // V2.32: Enhanced defense status with roadmap info
                 const defenseEl = document.getElementById('defense-status');
@@ -2799,6 +2802,9 @@
                 const s = this.state;
                 const season = this.getSeason();
 
+                // V2.51: No conferences before month 6 (get settled first)
+                if (s.totalMonths < 6) return;
+
                 // V2.46: Limit to 2 conferences per year
                 if ((s.conferencesThisYear || 0) >= 2) return;
 
@@ -3896,7 +3902,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.50'
+                    version: '2.51'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
