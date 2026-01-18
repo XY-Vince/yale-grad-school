@@ -1533,11 +1533,9 @@
                 // V2.23: Paper-backed thesis cap (papers limit thesis velocity)
                 const paperCap = Math.min(journalPapers * 25, 100);
 
-                // Thesis progress based on figures and discoveries (capped by papers)
-                const figures = this.getItem('figure') || 0;
-                const discoveries = this.getItem('key_discovery') || 0;
-                const rawProgress = figures * 20 + discoveries * 10;
-                s.graduation.thesis_progress = Math.min(paperCap, rawProgress);
+                // V2.52: Graduation panel syncs FROM thesisProgress (single source of truth)
+                // Only set graduation.thesis_progress for display, don't compute it here
+                s.graduation.thesis_progress = s.thesisProgress || 0;
 
                 // V2.23: Resolve phase
                 s.graduation.thesis_phase = this.resolveThesisPhase();
@@ -2178,7 +2176,8 @@
 
                     // Check collaboration dependency
                     if (npc.collaborations > 2) {
-                        this.state.graduation.thesis_progress = Math.max(0, (this.state.graduation?.thesis_progress || 0) - 10);
+                        // V2.52: Mutate thesisProgress (single source of truth)
+                        this.state.thesisProgress = Math.max(0, (this.state.thesisProgress || 0) - 10);
                         this.appendSystemEvent(`🎓 ${npc.name} defended and left the lab.\nYou lost a key source of support.\n-15 network, -10 morale, -10% thesis progress`);
                     } else {
                         this.appendSystemEvent(`🎓 ${npc.name} defended and left the lab.\nYou lost a key source of support.\n-15 network, -10 morale`);
@@ -5679,16 +5678,17 @@
 
                         const dGain = Math.max(3, dBase + dFoundation + dAlignment - dFriction);
 
-                        s.graduation.thesis_progress = Math.min(100, (s.graduation.thesis_progress || 0) + dGain);
+                        // V2.52: Use thesisProgress as single source of truth
+                        s.thesisProgress = Math.min(100, (s.thesisProgress || 0) + dGain);
                         s.morale = Math.max(0, s.morale - 15);
                         s.dissertation.draft_quality += dGain * 0.2;
 
                         // Risk: 20% chance of revision request
                         if (this.random() < 0.2) {
                             s.dissertation.committee_friction += 3;
-                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.graduation.thesis_progress}%)\n-15 Morale\n\n⚠️ Your advisor requests structural revisions.\nCommittee friction increased.`;
+                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.thesisProgress}%)\n-15 Morale\n\n⚠️ Your advisor requests structural revisions.\nCommittee friction increased.`;
                         } else {
-                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.graduation.thesis_progress}%)\n-15 Morale\n\n"Good progress. Keep writing."`;
+                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.thesisProgress}%)\n-15 Morale\n\n"Good progress. Keep writing."`;
                         }
 
                         // Check for phase transition
