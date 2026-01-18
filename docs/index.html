@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.48</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.49</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -2835,7 +2835,7 @@
                     expiresIn: 2 // expires in 2 months
                 };
 
-                this.showMessage(`📩 CONFERENCE INVITATION!\n\n${conf.emoji} ${conf.name}\nCost: ${conf.fundingCost} funding months\nExpires in 2 months\n\n👉 Go to Actions to Accept/Decline`);
+                this.showMessage(`📩 CONFERENCE INVITATION!\n\n${conf.emoji} ${conf.name}\nCost: ${conf.fundingCost} funding months\nExpires in 2 months`);
             },
 
             // V2.28: Get conference action choices
@@ -2973,7 +2973,7 @@
                 if (s.activeConference) {
                     s.activeConference.expiresIn -= 1;
                     if (s.activeConference.expiresIn === 1) {
-                        this.showMessage(`⏰ Conference invite expires NEXT MONTH!\n\n👉 Go to Actions to Accept/Decline NOW`);
+                        this.showMessage(`⏰ Conference invite expires NEXT MONTH!`);
                     }
                     if (s.activeConference.expiresIn <= 0) {
                         this.appendSystemEvent(`❌ Conference invitation expired.`);
@@ -3896,7 +3896,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.48'
+                    version: '2.49'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -4492,7 +4492,7 @@
 
             // Trigger qualifying exam
             triggerQuals() {
-                let msg = '═══════════════════════════════════\n📝 QUALIFYING EXAM TIME! 📝\n═══════════════════════════════════\n\n';
+                let msg = '📝 QUALIFYING EXAM TIME!\n\n';
 
                 // V2.3: Study Group buff (network >= 50 counts as +1 prep)
                 const hasStudyGroup = (this.state.peerNetwork || 0) >= 50;
@@ -5247,7 +5247,7 @@
                         const paperWithFeedback = s.pendingPapers.findIndex(p => p.feedbackAvailable);
                         if (paperWithFeedback >= 0) {
                             s.currentReviewPaperIndex = paperWithFeedback;
-                            msg = '📬 REVIEWER FEEDBACK RECEIVED\n\nChoose your response strategy:\n\n📝 Polite Revision: +1 month, +25% accept, +3 alignment\n⚔️ Aggressive Rebuttal: -10 morale, +15% accept, risk\n⏳ Delay Response: +1 month wait, -10% accept\n\n(Response actions will appear after this)';
+                            msg = '📬 REVIEWER FEEDBACK RECEIVED\n\nResponse options available:\n• 📝 Polite Revision\n• ⚔️ Aggressive Rebuttal\n• ⏳ Delay Response';
                         } else {
                             msg = '📧 No papers currently have feedback available.';
                         }

@@ -6060,11 +6060,792 @@ Emergency Grant	Yes (forced context)	❌	❌
 
 ⸻
 
-Final Recommendation
 
-Lock Group C now. Do not touch it again.
 
-Once these rules are enforced:
-	•	Players will stop hoarding recovery tools
-	•	Death spirals become survivable but costly
-	•	Emotional beats feel earned, not random
+So for Group B.1 (Conference Actions) the goal is:
+
+Clarify, constrain, and normalize
+not redesign.
+
+We will remove ambiguity, reduce buttons, and make outcomes legible, while keeping the underlying mechanics intact.
+
+⸻
+
+V2.46 — Group B.1: Conference Actions (Streamlined, Minimal Change)
+
+Design Mandate (Strict)
+
+Conference actions should:
+	•	be opportunistic, not spammable
+	•	trade time & funding for network / reputation
+	•	never directly advance the thesis or papers
+	•	never be required for completion
+
+They are career-shaping, not progress-critical.
+
+⸻
+
+Step 0 — Remove seek_conference ✅
+
+Decision
+
+✔ Remove button entirely
+
+Rationale
+	•	It duplicates the conference invitation spawner
+	•	It creates confusion about agency vs RNG
+	•	It adds a useless “search” step before meaningful choice
+
+Correct Model (Already Mostly Implemented)
+	•	Conferences spawn automatically (seasonal, cooldown-based)
+	•	Player agency starts after invitation appears
+
+No other system needs to change.
+
+⸻
+
+Final Conference Action Set (V2.45)
+
+We keep four actions, but only 2–3 are visible at any given time.
+
+Action ID	Name	When Visible
+conf_poster	🖼️ Poster Presentation	When conference active
+conf_talk	🎤 Give Talk	When conference active + eligible
+conf_network	🤝 Network at Conference	When conference active
+conf_paper	📋 Conference Paper	When conference active OR shortly after
+
+
+⸻
+
+Core Clarification: One Conference = One Primary Choice
+
+This is the single most important rule, and it already mostly exists implicitly.
+
+New Explicit Rule
+
+At a given conference, you may choose only ONE of:
+
+	•	Poster
+	•	Talk
+	•	Network
+
+After choosing one:
+	•	The other two are disabled
+	•	UI clearly labels: “Primary conference activity selected”
+
+📌 This alone removes a huge amount of confusion.
+
+⸻
+
+Action-by-Action Clarification (No Mechanical Rewrite)
+
+1️⃣ 🖼️ Poster Presentation (Safe Option)
+
+Role
+	•	Low-risk visibility
+	•	Modest gains
+	•	Never backfires
+
+Costs
+	•	1 month
+	•	conference funding cost (unchanged)
+
+Effects
+	•	+Network (small, deterministic)
+	•	+Morale (small)
+	•	+Reputation (tiny or none)
+
+Clarification Added
+
+“Poster sessions are informal. You gain exposure but limited prestige.”
+
+This sets expectations clearly.
+
+⸻
+
+2️⃣ 🎤 Give Talk (High-Risk / High-Reward)
+
+Role
+	•	Reputation spike
+	•	Career-defining moments
+	•	Where failures matter
+
+Visibility Condition
+	•	Requires:
+	•	Discovery OR
+	•	Validated figures OR
+	•	High alignment (advisor backs you)
+
+(Whatever you already have — just surface it in tooltip.)
+
+Costs
+	•	1 month
+	•	conference funding cost
+	•	Morale risk
+
+Outcomes
+	•	Success:
+	•	Large Network
+	•	Reputation
+	•	Possible Alignment boost
+	•	Failure:
+	•	Morale hit
+	•	Temporary “Shaken” status
+
+⚠️ No permanent damage — just short-term pain.
+
+⸻
+
+3️⃣ 🤝 Network at Conference (Social Focus)
+
+Role
+	•	Pure networking
+	•	Escape hatch during stagnation
+	•	Setup for later collaboration
+
+Costs
+	•	1 month
+	•	conference funding cost
+	•	Slight exhaustion
+
+Effects
+	•	+Network (largest among conference actions)
+	•	Possible labmate unlocks / future collabs
+	•	No reputation
+
+Clarification Added
+
+“You prioritized conversations over visibility.”
+
+This explains why reputation doesn’t move.
+
+⸻
+
+4️⃣ 📋 Conference Paper (Fast, Shallow Output)
+
+This one causes confusion, so we clarify scope, not mechanics.
+
+Role
+	•	Quick CV padding
+	•	Hybrid-defense enabler
+	•	Not a substitute for journals
+
+Timing
+	•	Either:
+	•	Selected as part of conference
+	•	Or unlocked shortly after attendance
+
+(Keep your current logic, just explain it.)
+
+Costs
+	•	1 month
+	•	Minor morale
+
+Effects
+	•	Counts as Conference Paper
+	•	Enables Hybrid Portfolio paths
+	•	Lower impact than journals
+
+Critical Clarification
+
+“Conference papers demonstrate activity, not depth.”
+
+This prevents players from overvaluing them.
+
+⸻
+
+UI & Logic Streamlining (Minimal Code Impact)
+
+1. Conference Card Structure (No New Systems)
+
+When a conference is active, show a single card:
+
+🎤 Intl. Conference on X (Summer)
+Choose ONE primary activity:
+[ Poster ]  [ Talk ]  [ Network ]
+
+After selection:
+	•	Card updates to “You are attending as: Talk”
+	•	Other buttons disabled
+
+⸻
+
+2. Tooltip Standardization (Big Win, Low Risk)
+
+Every conference button gets one-line logic truth:
+	•	Poster → “Safe visibility, modest network”
+	•	Talk → “Risk reputation for prestige”
+	•	Network → “Maximize connections, no spotlight”
+	•	Conf Paper → “Fast publish, low impact”
+
+No hidden math explanations needed.
+
+⸻
+
+What We Are Explicitly NOT Doing (Important)
+
+❌ No new conference tiers
+❌ No new RNG systems
+❌ No rebalancing numbers
+❌ No dependency on specialization
+❌ No new currencies
+
+This preserves consistency.
+
+⸻
+
+Summary — Why This Works
+	•	Removes a whole button (seek_conference)
+	•	Reduces simultaneous choices
+	•	Makes consequences legible
+	•	Preserves existing balance
+	•	Avoids cascading logic changes
+
+This is exactly the kind of surgical cleanup V2.46 needs.
+
+⸻
+
+
+
+
+⸻
+
+V2.47 — State Integrity & Endgame Fairness Update
+
+Primary Goal:
+Eliminate race conditions, make late-game outcomes causally fair, and ensure that nothing fires unless the underlying state truly supports it.
+
+This is not a content update. It is a logic contract enforcement update.
+
+⸻
+
+I. Hard Gating & State Integrity Fixes (Must-Fix)
+
+These are non-negotiable correctness fixes. No balance discussion until these are enforced.
+
+⸻
+
+1️⃣ Hard Gate the Defense Trigger (Critical Bug)
+
+Problem
+	•	Defense unlocked before ThesisProgress == 100
+	•	UI and narrative desync
+
+Fix (Authoritative Rule)
+
+Defense eligibility must be derived from state, never from events.
+
+New Single Source of Truth
+	•	can_defend = (thesis_progress >= 100) AND defense_not_attempted
+
+Enforcement Points
+	•	Defense button visibility
+	•	Defense invitation text
+	•	Graduation panel messaging
+	•	Advisor dialogue hooks
+
+If thesis_progress < 100:
+	•	Defense-related UI must not render
+	•	Events attempting to announce defense are ignored
+
+📌 This eliminates all premature victory paths.
+
+⸻
+
+2️⃣ Conference Invitation De-duplication (Race Condition)
+
+Problem
+	•	Duplicate invitations appear in adjacent months
+
+Fix
+Introduce event-type locking:
+
+Rule
+
+Only one pending invitation per conference_id may exist at any time.
+
+Logic Constraint
+	•	Before pushing an invitation:
+	•	Check pendingEvents for same conference_id
+	•	Check conferenceCooldown > 0
+
+Result
+	•	No duplicate spam
+	•	Cleaner event queue
+	•	More readable log
+
+This is purely defensive logic—no balance change.
+
+⸻
+
+3️⃣ Empty Game Ticks (Silent Failure)
+
+Problem
+	•	Months advance with no log content
+	•	Player perceives bug or stall
+
+Root Cause
+	•	Event generator fails all condition checks
+
+Fix: Guaranteed Fallback Event
+
+Rule
+
+Every month must produce at least one loggable outcome.
+
+Fallback Options (Priority Order)
+	1.	Micro-state update (e.g. morale decay summary)
+	2.	Environmental narration (“The semester grinds on…”)
+	3.	Advisor ambient comment (non-stat-changing)
+
+📌 Even “nothing happened” must be communicated.
+
+⸻
+
+II. Targeted Gameplay Refinements (Low-Risk, High-Value)
+
+These do not change progression structure—only realism and fairness.
+
+⸻
+
+4️⃣ Thesis Momentum: Diminishing Returns (Late-Game Realism)
+
+Problem
+	•	Linear progress trivializes final stretch
+	•	Writing fatigue not modeled
+
+Adjustment
+Introduce soft diminishing returns after 80%:
+	•	0–80%: current logic unchanged
+	•	80–100%:
+	•	Higher morale cost
+	•	Reduced progress per action
+	•	Stronger impact from Thesis Bootcamp / Advisor Support
+
+Design Intent
+	•	Not harder overall
+	•	Harder without preparation
+
+This rewards planning instead of raw clicking.
+
+⸻
+
+5️⃣ Rival Interaction: Explicit Scoop Protection
+
+You already gestured at this in logs—now formalize it.
+
+Rule
+
+pre_register grants 6 months of Scoop Immunity against rivals working on the same topic.
+
+Effects
+	•	Rival progress may continue
+	•	Scoop event is blocked
+	•	Log explicitly explains why scoop failed
+
+📌 This turns rivalry from RNG punishment into a strategic duel.
+
+⸻
+
+6️⃣ Conference Funding ROI (Contextual, Not Global)
+
+Problem
+	•	Conferences feel irresponsible when funding is low
+
+Refinement
+When funding_months <= threshold:
+	•	Conference attendance:
+	•	Slightly increases chance of:
+	•	Emergency Grant
+	•	Collaborator event
+	•	Tooltip explicitly states this
+
+No new buttons. No new currency. Just smarter consequences.
+
+⸻
+
+III. Defense Gauntlet Fairness Improvements
+
+These ensure the endgame reflects the entire journey, not the last roll.
+
+⸻
+
+7️⃣ Portfolio-Weighted Defense Difficulty
+
+Problem
+	•	All “3 Journal Papers” treated equally
+
+Refinement
+Initial skepticism modifier is influenced by:
+	•	Journal count (baseline)
+	•	Average paper quality / impact tier
+	•	Conference vs journal ratio
+
+This is weighting, not a new stat.
+
+📌 Players who invested in quality feel it.
+
+⸻
+
+8️⃣ Advisor Alignment: Rolling Average (Critical Narrative Fix)
+
+This is one of the most important fixes in V2.47.
+
+Problem
+	•	Defense uses latest advisor interaction
+	•	Long-term relationship invalidated
+
+Fix
+Define:
+
+DefenseAlignment = rolling_average(AdvisorAlignment over last N years)
+
+Implications
+	•	Early neglect still matters
+	•	One good month can’t erase years of friction
+	•	One bad month doesn’t erase trust
+
+This aligns perfectly with the PhD fantasy.
+
+⸻
+
+IV. V2.47 Actionable Implementation Checklist
+
+Logic
+	1.	Enforce defense eligibility strictly via thesis_progress == 100
+	2.	Add conference invitation de-duplication
+	3.	Add guaranteed fallback log per month
+	4.	Implement scoop immunity from pre-registration
+	5.	Switch defense alignment to rolling average
+
+Balance
+	6.	Apply diminishing returns to thesis after 80%
+	7.	Weight defense skepticism by portfolio quality
+	8.	Add contextual funding ROI to conferences
+
+UI / Feedback
+	9.	Explicit log messages for:
+	•	Blocked scoops
+	•	Defense lockouts
+	•	Fallback monthly events
+	10.	Tooltip updates for:
+
+	•	Pre-registration
+	•	Conference risk at low funding
+	•	Defense eligibility conditions
+
+⸻
+
+Strategic Positioning
+
+V2.47 is not flashy. That’s good.
+
+It:
+	•	Fixes trust-breaking bugs
+	•	Makes failure feel fair
+	•	Makes success feel earned
+	•	Prepares the codebase for V3.0 polish
+
+
+	Good findings. Below are concise, surgical fixes — no redesigns, no feature creep. Each item maps 1 bug → 1 fix → 1 enforcement rule so it’s easy to implement and hard to regress.
+
+⸻
+V2.48
+I. Structural “Zombie” Bug Fixes (Must-Fix)
+
+1️⃣ Defense Fail-Safe Loop (State Not Clearing)
+
+Bug
+After successful defense, a DEFENSE MODE event still fires (Month 89).
+
+Root Cause
+defense_state is not terminally resolved; success does not invalidate queued defense-related events.
+
+Fix
+	•	Introduce a terminal flag: defense_resolved = true
+	•	On defense success:
+
+state.defense_active = false
+state.defense_resolved = true
+clearQueuedEvents(type="DEFENSE")
+
+Rule
+
+No defense-related event may fire if defense_resolved === true.
+
+⸻
+
+2️⃣ Duplicate Crisis Modals (Priority Collision)
+
+Bug
+Emergency + Crisis modals fire in the same month (Month 71).
+
+Root Cause
+Independent event generators with no arbitration layer.
+
+Fix
+Implement a single event priority gate per tick.
+
+const EVENT_PRIORITY = ["EMERGENCY", "CRISIS", "WARNING", "INFO"]
+
+function dispatchEvents(events) {
+  return events.sort(byPriority)[0] // only highest fires
+}
+
+Rule
+
+Max one blocking modal per month.
+
+⸻
+
+3️⃣ Advisor “Contextual Ghosting” (Trait Not Enforced)
+
+Bug
+Advisor with “Phantom” trait appears too frequently.
+
+Root Cause
+Advisor availability not checked before interaction resolution.
+
+Fix
+Add availability roll at action resolution, not UI display.
+
+if (advisor.trait === "PHANTOM" && Math.random() < 0.5) {
+  return "Your advisor is unavailable this month."
+}
+
+Rule
+
+Advisor traits must gate execution, not just flavor text.
+
+⸻
+
+II. Gameplay Logic Tightening (Low Risk, High Clarity)
+
+4️⃣ Diminishing Returns + Burnout Wall
+
+Observed
+Large thesis jumps (+13%) under high stress.
+
+Fix
+Clamp late-stage progress when stress is high.
+
+if (thesis > 80 && stress > 80) {
+  progress = Math.min(progress, 5)
+}
+
+Rule
+
+High stress caps late-game progress — no silent nerfs.
+
+⸻
+
+5️⃣ Rival Scooping → Counterplay (No RNG Nerf)
+
+Observed
+Rival scoops feel punitive, not strategic.
+
+Fix
+Introduce Spite Buff on scoop.
+
+onScoop() {
+  addStatus("SPITE", {
+    duration: 3,
+    research_speed: +20%,
+    stress_gain: +100%
+  })
+}
+
+Rule
+
+Every punishment grants a risky short-term upside.
+
+⸻
+
+6️⃣ TA Duties → Advisor-Dependent Outcome
+
+Observed
+TA effects feel disconnected from advisor relationship.
+
+Fix
+Scale TA outcome with advisor alignment.
+
+if (advisor_alignment > 60) {
+  morale += 5
+  network += 3
+} else {
+  stress += 5
+}
+
+Rule
+
+Background obligations reflect advisor support level.
+
+⸻
+
+III. Win / Loss Condition Clarification (No New Systems)
+
+7️⃣ Victory Classification (Narrative Only)
+
+Observed
+89-month completion is long but valid.
+
+Fix
+Add post-game label, no mechanical change.
+
+Duration	Label
+≤72 mo	“Fast Track”
+73–96 mo	“Long Haul”
+>96 mo	“Survivor”
+
+Rule
+
+Duration affects epilogue tone, not success.
+
+⸻
+
+IV. Minimal Enforcement Checklist (Add These Guards)
+
+Add these 5 assertions — they catch almost all regressions you saw:
+
+assert(!(defense_resolved && defense_active))
+assert(oneBlockingModalPerMonth)
+assert(advisor_trait_checked_on_action)
+assert(thesis <= 100)
+assert(month_log.length > 0)
+
+
+⸻
+
+Net Result (Why This Works)
+
+✔ Removes zombie events
+✔ Makes advisor traits mechanically real
+✔ Reduces rage-inducing RNG without softening difficulty
+✔ Preserves your existing balance
+✔ No new UI or systems required
+
+
+2.49
+
+Below is a tight, implementation-ready fix list. Each item is framed as Rule → Enforcement → Outcome so it’s robust without rewriting systems.
+
+⸻
+
+I. Conference Overlap (Critical)
+
+❌ Problem
+
+Conferences still overlap, and players can act multiple times inside a single 2-month conference window.
+
+✅ Fix
+
+Single-Action Conference Lock
+
+Rule
+	•	A conference occupies a 2-month window.
+	•	At most ONE conference action total may be taken during that window.
+
+Enforcement
+	•	The moment any conference action is taken (poster / talk / network / paper):
+	•	Lock all other conference actions.
+	•	Mark the window as Consumed.
+	•	Additional invitations may exist but are non-interactable until the window closes.
+
+Outcome
+	•	No overlap.
+	•	No double dipping.
+	•	Clear player expectation: choose your shot.
+
+⸻
+
+II. Modal Event Collisions (Visibility Bug)
+
+❌ Problem
+
+Multiple modal events can fire in one turn, but the player only sees one → hidden penalties.
+
+✅ Fix
+
+One-Modal-Per-Turn Rule
+
+Rule
+	•	Only one blocking modal may appear per turn.
+
+Enforcement
+	•	All modal events are ranked by severity:
+	•	Emergency > Crisis > Warning > Info
+	•	Only the highest-priority modal is shown.
+	•	Lower-priority modals are queued or converted to log entries.
+
+Outcome
+	•	No invisible state changes.
+	•	No stacked emotional hits.
+	•	Cleaner event pacing.
+
+⸻
+
+III. Conference UI Text Cleanup (Clarity)
+
+❌ Problem
+
+UI text implies extra steps or hidden mechanics that no longer exist.
+
+✅ Fix
+
+Remove misleading scaffolding text
+
+Remove entirely
+	•	“👉 Go to Actions to Accept/Decline”
+	•	“(Response actions will appear after this)”
+
+Rule
+	•	If an action is available, it must be visible immediately.
+	•	If not available, do not hint that it will appear later unless timing-gated.
+
+Outcome
+	•	No false affordances.
+	•	No player confusion about “missing buttons”.
+
+⸻
+
+IV. Qualifying Exam Log Spam (Narrative Noise)
+
+❌ Problem
+the lines before and after ""qualifying exam time"" exceeds event window
+
+✅ Fix
+
+remove them
+
+⸻
+
+V. Conference Window Messaging (Implicit Fix)
+
+❌ Problem
+
+Players don’t realize the conference window is already spent.
+
+✅ Fix
+
+Passive Lock Feedback
+
+Rule
+	•	When a conference window is consumed:
+	•	Other conference actions remain visible but disabled.
+	•	Tooltip: “Conference window already used this cycle.”
+
+Outcome
+	•	No surprise locks.
+	•	No guesswork.
+
+⸻
+
+VI. Summary: What This Achieves
+
+✔ Eliminates conference overlap without new systems
+✔ Prevents invisible penalties from stacked modals
+✔ Cleans UI lies and narrative spam
+✔ Preserves existing balance and pacing
+✔ Makes rules legible through behavior, not text dumps
+
+This is exactly the right level of correction before activating more buttons again.
