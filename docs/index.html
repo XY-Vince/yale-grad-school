@@ -4723,9 +4723,10 @@
 
                 // GROUP C RECOVERY: Only appear when in crisis (never optimal)
 
-                // 🏖️ Vacation - only when burnout high AND advisor suggested
-                if (s.vacationOffered && (s.stress || 0) >= 60) {
-                    actions.push({ id: 'vacation', name: '🏖️ Take Vacation', desc: 'Advisor suggested (−burnout, costs time)' });
+                // 🏖️ Vacation - shows when advisor suggested (not requiring high stress)
+                // V2.51: Removed stress >= 60 requirement - advisor suggestion alone is trigger
+                if (s.vacationOffered && !s.onVacation) {
+                    actions.push({ id: 'vacation', name: '🏖️ Take Time Off', desc: 'Advisor suggested rest' });
                 }
 
                 // 🏥 Medical Leave - only when morale critical (<10)
