@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.54</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.53</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -3929,7 +3929,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.54'
+                    version: '2.53'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -5182,8 +5182,8 @@
                             '📚 Productive reading session. (+2 network)',
                             '📚 Deep literature review - you feel more prepared.'
                         ];
-                        // V2.54: Increased idea rate from 40% to 60%
-                        if (this.random() < 0.6) {
+                        // V2.53: 50% idea rate (balanced)
+                        if (this.random() < 0.5) {
                             this.addItem('idea');
                             msg = this.pick(readSuccess);
                         } else {
@@ -5237,9 +5237,9 @@
                             '🧑‍🏫 Advisor: "Reviewers would tear this apart..."'
                         ];
                         // V2.12: Renewed Perspective bonus (+10%)
-                        // V2.54: Increased base rate from 35% to 50%
+                        // V2.53: 45% base rate (balanced)
                         const perspectiveBonus = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
-                        if (this.random() < (0.50 + perspectiveBonus)) {
+                        if (this.random() < (0.45 + perspectiveBonus)) {
                             this.removeItem('initial_findings');
                             this.addItem('key_discovery');
                             s.morale = Math.min(100, s.morale + 5);
