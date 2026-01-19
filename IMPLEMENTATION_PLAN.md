@@ -6933,3 +6933,153 @@ To resolve the user confusion regarding specific actions:
 
 1. **Pre-register Idea**: Owned by **SocialEngine**. It places a "Lock" on `items.idea`. If a Rival's `processLabmates()` triggers a scoop, it checks this lock first.
 2. **Bootcamp/Writing**: Owned by **ProgressionEngine**. These are "Stat Overlays." They don't mutate the thesis directly; they mutate the `state.modifiers.thesisSpeed` which the `write_thesis` action then reads.
+
+V2.54: update from Hidden Metrics audit (some of the version numbers below are messed up, should all be V2.54)
+Good timing to audit this — the hidden metrics are doing too much invisible work, and that’s the root cause of several balance and UX complaints you’ve been fixing since V2.40.
+
+Below is a concise, system-level audit followed by actionable to-dos, scoped so they won’t cause cascading inconsistencies.
+
+⸻
+
+1. High-Risk Hidden Metrics (Must Be Surfaced or Soft-Revealed)
+
+These are currently game-deciding but insufficiently communicated.
+
+🔥 stress (0–100)
+
+Audit finding
+	•	Stress ≥80 hard-blocks thesis progress and triggers crises.
+	•	From logs, players often don’t know why writing stalls → feels like a bug.
+
+Fix (minimal, robust)
+	•	Add explicit threshold messaging, not raw numbers:
+	•	Stress High: Writing efficiency severely reduced
+	•	Add one-line tooltip on blocked actions:
+	•	“Blocked due to accumulated stress.”
+
+To-dos
+	•	Add status flag: stress_state = normal | high | critical
+	•	Surface high/critical as an icon or banner (no number required)
+	•	Log stress-based blocks explicitly in event history
+
+⸻
+
+💰 fundingMonths
+
+Audit finding
+	•	This is effectively a timer to failure, yet players only get alerts at 12 / 6 / 0.
+	•	Conferences + emergency grants interact with it in opaque ways.
+
+Fix
+	•	Treat funding like oxygen, not a surprise cliff.
+
+To-dos
+	•	Add persistent label: Funding: Stable / Tight / Critical
+	•	When funding <6, annotate any action that consumes funding
+	•	Tie conference ROI messaging explicitly to funding:
+	•	“Low funding increases chance of emergency grant leads.”
+
+⸻
+
+🎓 qualsPrepLevel
+
+Audit finding
+	•	Appears only as warnings → feels arbitrary.
+	•	Long repeated “qualifying exam time” lines clutter logs (you already flagged this).
+
+Fix
+	•	Collapse quals into a single progress narrative, not repeated noise.
+
+To-dos
+	•	Remove repetitive “qualifying exam time” log spam ✅
+	•	Replace with one rolling status:
+	•	Quals: Unprepared / Borderline / Ready
+	•	Fire one decisive quals event when threshold crossed
+
+⸻
+
+2. Medium-Risk Metrics (Need Consistent Mental Models)
+
+These are manipulable, but players lack intuition about how.
+
+🤝 peerNetwork
+
+Audit finding
+	•	Used everywhere: defense, collaborations, reviews, conferences.
+	•	Players can’t tell when spending Network is worth it.
+
+Fix
+	•	Clarify spend vs leverage.
+
+To-dos
+	•	Tag actions clearly:
+	•	“Consumes Network” vs “Scales with Network”
+	•	Cap Network spend per phase (e.g., defense, conference)
+	•	Add soft feedback:
+	•	“Your strong network dampened reviewer skepticism.”
+
+⸻
+
+🎯 strategicAlignment / advisorScore
+
+Audit finding
+	•	Both affect defense, talks, and advisor behavior.
+	•	Confusion between recent mood vs long-term relationship (you already spotted this).
+
+Fix
+	•	Enforce time-scale separation.
+
+To-dos
+	•	Make advisorScore a rolling average (long-term)
+	•	Use short-term flags for recent praise/conflict
+	•	Defense should read advisorScore only, never last-event mood
+
+⸻
+
+3. Low-Priority Metrics (Keep Hidden, But Stabilize)
+
+These are doing narrative work — they should stay mysterious, but consistent.
+
+🕶️ Advisor tension / Committee friction / Social debt
+
+Audit finding
+	•	Good flavor, but they sometimes leak via contradictory logs (e.g. “Phantom advisor” still very present).
+
+Fix
+	•	Enforce availability gating, not just flavor text.
+
+To-dos
+	•	Add failure chance to advisor actions if advisor trait = Phantom
+	•	Prevent committee friction from stacking silently across retries
+	•	Auto-decay social debt unless reinforced by new events
+
+⸻
+
+4. Global Structural Fixes (Hidden Metrics Hygiene)
+
+These prevent future regressions.
+
+📊 Telemetry & Guardrails
+
+To-dos
+	•	Log why an action failed (stress, funding, availability)
+	•	One state mutation per system per tick (no silent double writes)
+	•	Add invariant checks:
+	•	Defense cannot start unless thesisProgress == 100
+	•	Only one crisis-tier modal per month (already identified)
+
+⸻
+
+5. Priority Summary (What to Do First)
+
+Immediate (V2.45–V2.46 safe)
+	1.	Surface stress & funding states (no numbers)
+	2.	Remove quals log spam
+	3.	Separate advisor long-term vs short-term signals
+
+Next Iteration
+4. Clarify Network spend vs leverage
+5. Enforce advisor availability traits
+6. Add failure-reason logging
+
+⸻

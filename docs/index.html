@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.53</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.54</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -855,6 +855,16 @@
                         <div class="stat-card">
                             <div class="stat-label">🤝 Network</div>
                             <div class="stat-value"><span id="peer-network">10</span></div>
+                        </div>
+                        <!-- V2.54: Stress State (hidden metric surfaced) -->
+                        <div class="stat-card" id="stress-card">
+                            <div class="stat-label">😤 Stress</div>
+                            <div class="stat-value" id="stress-state" style="font-size: 0.9rem;">😌 Normal</div>
+                        </div>
+                        <!-- V2.54: Funding State (hidden metric surfaced) -->
+                        <div class="stat-card" id="funding-card">
+                            <div class="stat-label">💰 Funding</div>
+                            <div class="stat-value" id="funding-state" style="font-size: 0.9rem;">✅ Stable</div>
                         </div>
                         <!-- V2.38: Quals shown until passed, then Alignment takes its place -->
                         <div class="stat-card" id="quals-prep-card" style="display: none;">
@@ -3929,7 +3939,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.53'
+                    version: '2.54'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -6111,6 +6121,38 @@
                 this.dom.advisorBar.style.width = `${ui.advisorScore}%`;
                 this.dom.advisorStatus.textContent = ui.advisorText;
                 this.dom.advisorBar.className = 'progress-fill ' + ui.advisorClass;
+
+                // V2.54: Stress State (surfaced hidden metric)
+                const stressEl = document.getElementById('stress-state');
+                if (stressEl) {
+                    const stress = s.stress || 0;
+                    if (stress >= 80) {
+                        stressEl.textContent = '🔥 Critical';
+                        stressEl.style.color = '#ef4444';
+                    } else if (stress >= 50) {
+                        stressEl.textContent = '⚠️ High';
+                        stressEl.style.color = '#f59e0b';
+                    } else {
+                        stressEl.textContent = '😌 Normal';
+                        stressEl.style.color = '#4ade80';
+                    }
+                }
+
+                // V2.54: Funding State (surfaced hidden metric)
+                const fundingEl = document.getElementById('funding-state');
+                if (fundingEl) {
+                    const funding = s.fundingMonths || 0;
+                    if (funding <= 6) {
+                        fundingEl.textContent = '🚨 Critical';
+                        fundingEl.style.color = '#ef4444';
+                    } else if (funding <= 12) {
+                        fundingEl.textContent = '⚠️ Tight';
+                        fundingEl.style.color = '#f59e0b';
+                    } else {
+                        fundingEl.textContent = '✅ Stable';
+                        fundingEl.style.color = '#4ade80';
+                    }
+                }
 
                 // Actions
                 try {
