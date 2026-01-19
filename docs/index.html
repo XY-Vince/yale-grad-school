@@ -5182,8 +5182,8 @@
                             '📚 Productive reading session. (+2 network)',
                             '📚 Deep literature review - you feel more prepared.'
                         ];
-                        // V2.53: 50% idea rate (balanced)
-                        if (this.random() < 0.5) {
+                        // V2.53: 45% idea rate (balanced)
+                        if (this.random() < 0.45) {
                             this.addItem('idea');
                             msg = this.pick(readSuccess);
                         } else {
