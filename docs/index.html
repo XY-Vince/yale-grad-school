@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.54</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.55</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -865,6 +865,16 @@
                         <div class="stat-card" id="stress-card">
                             <div class="stat-label">😤 Stress</div>
                             <div class="stat-value" id="stress-state" style="font-size: 0.9rem;">😌 Normal</div>
+                        </div>
+                        <!-- V2.55: Active Buffs (hidden timers surfaced) -->
+                        <div class="stat-card" id="buffs-card">
+                            <div class="stat-label">✨ Buffs</div>
+                            <div class="stat-value" id="active-buffs" style="font-size: 0.7rem;">—</div>
+                        </div>
+                        <!-- V2.55: Advisor Tension (hidden state surfaced) -->
+                        <div class="stat-card" id="tension-card">
+                            <div class="stat-label">🤝 Tension</div>
+                            <div class="stat-value" id="advisor-tension" style="font-size: 0.9rem;">😊 Good</div>
                         </div>
                         <!-- V2.38: Quals shown until passed, then Alignment takes its place -->
                         <div class="stat-card" id="quals-prep-card" style="display: none;">
@@ -3939,7 +3949,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.54'
+                    version: '2.55'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
@@ -6151,6 +6161,41 @@
                     } else {
                         fundingEl.textContent = '✅ Stable';
                         fundingEl.style.color = '#4ade80';
+                    }
+                }
+
+                // V2.55: Active Buffs Display
+                const buffsEl = document.getElementById('active-buffs');
+                if (buffsEl) {
+                    let buffs = [];
+                    if (s.freshPerspectiveUntil && s.totalMonths < s.freshPerspectiveUntil) {
+                        const remaining = s.freshPerspectiveUntil - s.totalMonths;
+                        buffs.push(`✨ Fresh (${remaining}mo)`);
+                    }
+                    if (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) {
+                        const remaining = s.renewedPerspectiveUntil - s.totalMonths;
+                        buffs.push(`🔄 Renewed (${remaining}mo)`);
+                    }
+                    if (s.peerReviewShieldActive) {
+                        buffs.push('🛡️ Shield');
+                    }
+                    buffsEl.textContent = buffs.length > 0 ? buffs.join(' ') : '—';
+                    buffsEl.style.color = buffs.length > 0 ? '#4ade80' : '#6b7280';
+                }
+
+                // V2.55: Advisor Tension Indicator
+                const tensionEl = document.getElementById('advisor-tension');
+                if (tensionEl && s.advisor) {
+                    const tension = s.advisor.tension || 0;
+                    if (tension >= 60) {
+                        tensionEl.textContent = '😠 Strained';
+                        tensionEl.style.color = '#ef4444';
+                    } else if (tension >= 30) {
+                        tensionEl.textContent = '😐 Tense';
+                        tensionEl.style.color = '#f59e0b';
+                    } else {
+                        tensionEl.textContent = '😊 Good';
+                        tensionEl.style.color = '#4ade80';
                     }
                 }
 

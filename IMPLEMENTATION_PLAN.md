@@ -7083,3 +7083,22 @@ Next Iteration
 6. Add failure-reason logging
 
 ⸻
+
+Actionable To-Dos (Phased for V2.55)
+Phase 1: Transparency & Telemetry (1 Week) – Fix Opacity
+
+Surface Semi-Hidden Metrics: Make advisorScore/strategicAlignment visible post-quals (e.g., as Advisor UI bar tooltip: "Tension: Medium"). YAML: Add visibility: post_quals.
+Log All Hidden Changes: Enforce telemetry dump for changes (e.g., CSV: month, metric, delta, trigger). Tie to rules.md: "Hidden metrics must emit log tokens."
+Add Caps/Decay: For accumulators (socialDebt, advisorInterventions), add decay (-5/6mo) and caps (max 100). Test: 100 sims, ensure no infinite spirals.
+
+Phase 2: Integration & Balance (1-2 Weeks) – Enhance Agency
+
+Specialization Modifiers: Link to hidden states (e.g., Experimentalist: -equipment break prob; Theoretician: +draft_quality). YAML overlay: specialization_mods.
+Defense Prep Visibility: Make thesis_quality/presentation_skill progress bars (replaces hidden). Add "Prep Defense" action >Year 5.
+Punishment Ramps: Per standards, add recovery for all (e.g., high network counters scoop via "Pre-Register Idea"). QA Test: Reduce V2.27-style losses by 20%.
+
+Phase 3: Schema & Polish (2-4 Weeks) – Forward-Proof
+
+Version Metrics: Add schema_version to hidden states; migrate saves for V3.0 (e.g., add collaborationOffered flag default).
+UI Tokens for Hidden: Use status-warning for high tension/revision_load (e.g., 🔥 icon tooltip: "Committee Friction: High").
+Audit Tool: Build YAML validator/CI script: Fail if hidden metric lacks desc/effect/range. Metrics: Aim inspiration <4/run, median 60-75mo.
