@@ -1,117 +1,84 @@
-# GradQuest Hidden Metrics
+# GradQuest Hidden Metrics (V2.54 Update)
 
-## Core Hidden Stats
+## Now Visible in UI ✅
 
-| Metric | Range | Default | Description |
-|--------|-------|---------|-------------|
-| **`stress`** | 0-100 | 0 | Mental strain. High stress (≥80) blocks thesis progress, triggers crisis events |
-| **`fundingMonths`** | 0+ | 36 | Research funding. Burns 0.5/month. Conferences cost funding. At 0 → teaching load |
-| **`strategicAlignment`** | 0-100 | 0 | Reputation/advisor alignment. Affects talk success, reviews, defense |
-| **`peerNetwork`** | 0-100 | 10 | Peer connections. Helps collaborations, defense, can bypass review delays |
-| **`advisorScore`** | 0-100 | 50 | Advisor relationship. Affects interventions, defense skepticism |
-
----
-
-## Advisor Hidden State
-
-| Metric | Description |
-|--------|-------------|
-| `advisor.tension` | Hidden tension from aggressive actions. Builds over time |
-| `advisor.riskTolerance` | 30-70. Advisor personality trait |
-| `advisor.attentionSpan` | 30-70. How often advisor checks in |
-| `advisor.strictness` | 30-70. Punishment severity |
-| `advisorInterventions` | Count of vacation suggestions. 3+ = patience exhausted |
-| `vacationOffered` | Flag: advisor has suggested time off |
+| Metric | UI Display | Thresholds |
+|--------|------------|------------|
+| **Stress** | 😌 Normal / ⚠️ High / 🔥 Critical | 0-49 / 50-79 / 80+ |
+| **Funding** | ✅ Stable / ⚠️ Tight / 🚨 Critical | >12mo / 7-12mo / ≤6mo |
+| **Network** | Raw number (0-100) | Always visible |
+| **Quals Prep** | X/3 (until passed) | Shows when quals approaching |
+| **Alignment** | Raw number (after quals) | Replaces quals prep |
 
 ---
 
-## Dissertation State (Hidden)
+## Still Hidden Metrics
+
+### Core Stats (Medium Priority to Surface)
+
+| Metric | Range | Effect |
+|--------|-------|--------|
+| `advisorScore` | 0-100, default 50 | Defense skepticism, interventions |
+| `strategicAlignment` | 0-100, default 0 | Talk success, reviews, defense |
+
+### Advisor Hidden State
 
 | Metric | Effect |
 |--------|--------|
-| `dissertation.draft_quality` | Improves from writing. Affects review RNG |
-| `dissertation.revision_load` | Slows progress after 75% complete |
-| `dissertation.committee_friction` | Increases defense failure chance |
+| `advisor.tension` | Builds from aggressive actions |
+| `advisor.riskTolerance` | 30-70, personality trait |
+| `advisorInterventions` | Count of vacation suggestions |
 
----
+### Dissertation State
 
-## Defense Hidden State
+| Metric | Effect |
+|--------|--------|
+| `dissertation.draft_quality` | Affects review RNG |
+| `dissertation.revision_load` | Slows progress >75% |
+| `dissertation.committee_friction` | Defense failure chance |
+
+### Defense Hidden State
 
 | Metric | Affects |
 |--------|---------|
-| `defenseState.thesis_quality` | From figures, polish, papers |
-| `defenseState.presentation_skill` | From practice, teaching, network |
-| `defenseState.committee_support` | From alignment, advisor, past interactions |
+| `defenseState.thesis_quality` | From figures, papers |
+| `defenseState.presentation_skill` | From teaching, network |
+| `defenseState.committee_support` | From alignment, advisor |
 
----
-
-## Academic Progress (Partially Hidden)
-
-| Metric | Description |
-|--------|-------------|
-| `qualifyLevel` | 0-5. Quals prep level. Need 3 to pass. Shown in quals messages but no permanent UI |
-| `credits` | Coursework credits. Need 30 for MS-Out |
-| `thesisProgress` | 0-100. **SHOWN** in graduation panel |
-
----
-
-## Social/Collaboration
-
-| Metric | Description |
-|--------|-------------|
-| `socialDebt` | +10 per collaboration use, decays -10/6mo. Increases future collab cost |
-| `lastCollabMonth` | For social debt decay tracking |
-| `collaborationOffered` | Flag from networking events |
-
----
-
-## Timing/Cooldown (Hidden)
-
-| Metric | Purpose |
-|--------|---------|
-| `lastVacationMonth` | Vacation cooldown tracking |
-| `vacationsThisYear` | Annual vacation limit |
-| `lastScoopMonth` | 6-month scoop cooldown |
-| `lastConferenceMonth` | Conference cooldown |
-| `conferencesThisYear` | 2/year limit |
-| `inspirationsThisYear` | Cap at 2/year |
-
----
-
-## Buffs/Effects (Hidden Timers)
+### Social/Collaboration
 
 | Metric | Effect |
 |--------|--------|
-| `freshPerspectiveUntil` | +research success until this month |
-| `renewedPerspectiveUntil` | +10% develop findings success |
-| `equipmentStabilizedUntil` | Equipment won't break |
-| `peerReviewShieldActive` | Paper protected from harsh reviews |
+| `socialDebt` | +10 per collab, decays -10/6mo |
+| `collaborationOffered` | Flag from networking |
+
+### Timing/Cooldowns
+
+| Metric | Purpose |
+|--------|---------|
+| `lastVacationMonth` | Vacation cooldown |
+| `lastScoopMonth` | 6-month scoop cooldown |
+| `lastConferenceMonth` | Conference cooldown |
+| `conferencesThisYear` | 2/year limit |
+
+### Buffs/Effects (Hidden Timers)
+
+| Metric | Effect |
+|--------|--------|
+| `freshPerspectiveUntil` | +research success |
+| `renewedPerspectiveUntil` | +10% develop findings |
+| `equipmentStabilizedUntil` | Equipment protected |
+| `peerReviewShieldActive` | Paper protected |
 
 ---
 
-## What's Currently Visible in UI
+## Recommended Next Steps
 
-- **Morale** (main stat bar)
-- **Thesis Progress** (graduation panel bar)
-- **Papers Published** (graduation panel)
-- **Year/Month** (header)
-- **Inventory** (ideas, findings, figures, discoveries)
-- **Event Log** (scrollable history)
+### Already Done ✅
+- Stress state indicator
+- Funding state indicator
 
----
-
-## Recommendation: Metrics to Surface
-
-### High Priority (player frustration when hidden)
-1. **Stress** - Players don't know why thesis progress is blocked
-2. **Funding Months** - Critical resource, only warned at 12/6/0
-3. **Quals Prep Level** - Only shown in warning messages
-
-### Medium Priority (nice to know)
-4. **Network** - Affects many systems
-5. **Alignment/Reputation** - Affects talks and reviews
-
-### Low Priority (intentionally mysterious)
-6. Advisor tension
-7. Committee friction
-8. Social debt
+### Next Priority
+1. **Quals prep** → clearer progress narrative (not just warnings)
+2. **Advisor relationship** → long-term vs short-term signals
+3. **Network spend** → tag which actions consume vs scale with network
