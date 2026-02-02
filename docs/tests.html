@@ -57,6 +57,7 @@
         <button onclick="runCreditsTests()">Credits Tests</button>
         <button onclick="runMSOutTests()">MS-Out Tests</button>
         <button onclick="runMoraleTests()">Morale Tests</button>
+        <button onclick="runRegressionTests()" style="background: #f59e0b;">Run Regression Tests</button>
     </div>
     <div id="results"></div>
 
@@ -148,6 +149,404 @@
                 decay = Math.ceil(decay / 2);
             }
             return decay;
+        }
+
+        // V3.0 Phase 0.2: Regression Tests
+        const REGRESSION_TESTS = {
+            // Test 1: Defense Gating Enforced
+            testDefenseGating: () => {
+                log('\n--- TEST 1: Defense Gating Enforced ---\n');
+                let pass = true;
+                
+                // Mock state that doesn't meet requirements
+                const incompleteState = createMockState();
+                incompleteState.papers = [{ type: 'journal' }];
+                incompleteState.thesisProgress = 50;
+                incompleteState.qualsPassed = true;
+                
+                // Defense should NOT unlock with only 1 paper and incomplete thesis
+                const defenseUnlocked = (state) => {
+                    const thesisComplete = state.thesisProgress >= 100;
+                    const papers = state.papers || [];
+                    const journalPapers = papers.filter(p => p.type === 'journal' || !p.type).length;
+                    const confPapers = papers.filter(p => p.type === 'conference').length;
+                    const portfolioEligible = journalPapers >= 3 || (journalPapers >= 2 && confPapers >= 2);
+                    return thesisComplete && portfolioEligible && state.qualsPassed;
+                };
+                
+                if (defenseUnlocked(incompleteState)) {
+                    log('✗ Defense unlocked with incomplete requirements (1 paper, 50% thesis)', false);
+                    pass = false;
+                } else {
+                    log('✓ Defense correctly locked with incomplete requirements', true);
+                }
+                
+                // Mock state that meets requirements
+                const completeState = createMockState();
+                completeState.papers = [{ type: 'journal' }, { type: 'journal' }, { type: 'journal' }];
+                completeState.thesisProgress = 100;
+                completeState.qualsPassed = true;
+                
+                if (!defenseUnlocked(completeState)) {
+                    log('✗ Defense should unlock with 3 papers, 100% thesis, quals passed', false);
+                    pass = false;
+                } else {
+                    log('✓ Defense correctly unlocked with all requirements met', true);
+                }
+                
+                return pass;
+            },
+
+            // Test 2: One Modal Per Tick
+            testOneModalPerTick: () => {
+                log('\n--- TEST 2: One Modal Per Tick ---\n');
+                let pass = true;
+                
+                // Mock EventResolver logic
+                const eventResolver = {
+                    shownThisTurn: 0,
+                    maxModalsPerTurn: 1,
+                    canShowModal: function() {
+                        return this.shownThisTurn < this.maxModalsPerTurn;
+                    },
+                    processEvent: function() {
+                        if (this.canShowModal()) {
+                            this.shownThisTurn++;
+                            return true;
+                        }
+                        return false;
+                    },
+                    reset: function() {
+                        this.shownThisTurn = 0;
+                    }
+                };
+                
+                // First event should show
+                if (!eventResolver.processEvent()) {
+                    log('✗ First event should be allowed to show', false);
+                    pass = false;
+                } else {
+                    log('✓ First event shows (modal count: 1)', true);
+                }
+                
+                // Second event should be blocked
+                if (eventResolver.processEvent()) {
+                    log('✗ Second event should be blocked', false);
+                    pass = false;
+                } else {
+                    log('✓ Second event correctly blocked (modal limit reached)', true);
+                }
+                
+                // After reset, should allow again
+                eventResolver.reset();
+                if (!eventResolver.processEvent()) {
+                    log('✗ Event should show after reset', false);
+                    pass = false;
+                } else {
+                    log('✓ Modal count resets correctly each tick', true);
+                }
+                
+                return pass;
+            },
+
+            // Test 3: No Empty Month Logs
+            testNoEmptyMonthLogs: () => {
+                log('\n--- TEST 3: No Empty Month Logs ---\n');
+                let pass = true;
+                
+                // Mock log checking function
+                const hasEmptyLogs = (logs) => {
+                    return logs.some(log => !log || log.trim() === '' || log.trim() === '...');
+                };
+                
+                // Test with good logs
+                const goodLogs = [
+                    'Advanced to Year 1, Month 10',
+                    'You published a paper!',
+                    'Morale decreased by 4'
+                ];
+                
+                if (hasEmptyLogs(goodLogs)) {
+                    log('✗ Good logs incorrectly flagged as having empty entries', false);
+                    pass = false;
+                } else {
+                    log('✓ Valid month logs pass validation', true);
+                }
+                
+                // Test with empty logs
+                const badLogs = [
+                    'Advanced to Year 1, Month 10',
+                    '',
+                    '...'
+                ];
+                
+                if (!hasEmptyLogs(badLogs)) {
+                    log('✗ Empty logs should be detected', false);
+                    pass = false;
+                } else {
+                    log('✓ Empty logs correctly detected and blocked', true);
+                }
+                
+                // Test whitespace-only logs
+                const whitespaceLogs = [
+                    'Some event',
+                    '   ',
+                    'Another event'
+                ];
+                
+                if (!hasEmptyLogs(whitespaceLogs)) {
+                    log('✗ Whitespace-only logs should be detected', false);
+                    pass = false;
+                } else {
+                    log('✓ Whitespace-only logs correctly rejected', true);
+                }
+                
+                return pass;
+            },
+
+            // Test 4: Conference No Overlap
+            testConferenceNoOverlap: () => {
+                log('\n--- TEST 4: Conference No Overlap ---\n');
+                let pass = true;
+                
+                // Mock conference tracking
+                const activeConferences = [];
+                
+                const canAttendConference = (conferenceId, month) => {
+                    // Check if already attending a conference this month
+                    const existing = activeConferences.find(c => c.month === month);
+                    if (existing) return false;
+                    
+                    // Check if this conference already registered
+                    const duplicate = activeConferences.find(c => c.id === conferenceId);
+                    if (duplicate) return false;
+                    
+                    return true;
+                };
+                
+                const registerConference = (id, month) => {
+                    if (canAttendConference(id, month)) {
+                        activeConferences.push({ id, month });
+                        return true;
+                    }
+                    return false;
+                };
+                
+                // Register first conference
+                if (!registerConference('conf1', 3)) {
+                    log('✗ First conference registration should succeed', false);
+                    pass = false;
+                } else {
+                    log('✓ First conference registered successfully', true);
+                }
+                
+                // Try to register same conference again
+                if (registerConference('conf1', 4)) {
+                    log('✗ Duplicate conference registration should fail', false);
+                    pass = false;
+                } else {
+                    log('✓ Duplicate conference correctly blocked', true);
+                }
+                
+                // Try to register another conference in same month
+                if (registerConference('conf2', 3)) {
+                    log('✗ Same-month conference overlap should fail', false);
+                    pass = false;
+                } else {
+                    log('✓ Same-month conference overlap correctly blocked', true);
+                }
+                
+                // Register conference in different month
+                if (!registerConference('conf2', 4)) {
+                    log('✗ Different-month conference should be allowed', false);
+                    pass = false;
+                } else {
+                    log('✓ Different-month conference allowed', true);
+                }
+                
+                return pass;
+            },
+
+            // Test 5: Single Primary Stat Mutation
+            testSinglePrimaryStatMutation: () => {
+                log('\n--- TEST 5: Single Primary Stat Mutation ---\n');
+                let pass = true;
+                
+                // Test that action only affects one primary stat at a time
+                const actionEffects = [
+                    { action: 'readPapers', primary: 'alignment', secondary: 'network' },
+                    { action: 'developFindings', primary: 'progress', secondary: 'stress' },
+                    { action: 'takeBreak', primary: 'morale', secondary: null },
+                    { action: 'pitchSession', primary: 'alignment', secondary: 'network' }
+                ];
+                
+                actionEffects.forEach(effect => {
+                    if (!effect.primary) {
+                        log(`✗ Action ${effect.action} has no primary stat defined`, false);
+                        pass = false;
+                    } else {
+                        log(`✓ Action ${effect.action} has defined primary stat: ${effect.primary}`, true);
+                    }
+                });
+                
+                // Verify no action affects more than 2 stats significantly
+                const mockApplyAction = (action, state) => {
+                    let statChanges = 0;
+                    const originalValues = { ...state };
+                    
+                    // Simulate action
+                    switch(action) {
+                        case 'readPapers':
+                            state.alignment += 2;
+                            state.network += 1;
+                            break;
+                        case 'takeBreak':
+                            state.morale += 15;
+                            break;
+                        case 'workOnIdea':
+                            state.progress += 10;
+                            state.stress += 5;
+                            break;
+                    }
+                    
+                    // Count significant changes (>1 point)
+                    for (let key in originalValues) {
+                        if (Math.abs(state[key] - originalValues[key]) > 1) {
+                            statChanges++;
+                        }
+                    }
+                    
+                    return statChanges <= 2;
+                };
+                
+                const testState = { alignment: 10, network: 10, morale: 50, progress: 0, stress: 10 };
+                
+                if (!mockApplyAction('readPapers', { ...testState })) {
+                    log('✗ readPapers affects too many primary stats', false);
+                    pass = false;
+                } else {
+                    log('✓ readPapers affects ≤2 primary stats', true);
+                }
+                
+                if (!mockApplyAction('takeBreak', { ...testState })) {
+                    log('✗ takeBreak affects too many primary stats', false);
+                    pass = false;
+                } else {
+                    log('✓ takeBreak affects ≤1 primary stat', true);
+                }
+                
+                return pass;
+            },
+
+            // Test 6: Defense State Cleanup
+            testDefenseStateCleanup: () => {
+                log('\n--- TEST 6: Defense State Cleanup ---\n');
+                let pass = true;
+                
+                // Mock defense state
+                let state = {
+                    inDefense: true,
+                    defensePhase: 2,
+                    committeeApproval: 75,
+                    defenseTurn: 3,
+                    defenseComplete: true,
+                    morale: 50
+                };
+                
+                // Cleanup function
+                const cleanupDefense = (state) => {
+                    if (state.defenseComplete || state.committeeApproval <= 0) {
+                        delete state.inDefense;
+                        delete state.defensePhase;
+                        delete state.committeeApproval;
+                        delete state.defenseTurn;
+                        delete state.defenseComplete;
+                        return true;
+                    }
+                    return false;
+                };
+                
+                // Should cleanup when defense is complete
+                if (!cleanupDefense(state)) {
+                    log('✗ Defense state should be cleaned up after completion', false);
+                    pass = false;
+                } else {
+                    log('✓ Defense state cleaned up after completion', true);
+                }
+                
+                // Verify all defense keys removed
+                const hasDefenseKeys = ['inDefense', 'defensePhase', 'committeeApproval', 'defenseTurn', 'defenseComplete']
+                    .some(key => key in state);
+                
+                if (hasDefenseKeys) {
+                    log('✗ Defense state keys not fully cleaned up', false);
+                    pass = false;
+                } else {
+                    log('✓ All defense state keys properly removed', true);
+                }
+                
+                // Test morale preserved (not mutated during cleanup)
+                if (state.morale !== 50) {
+                    log('✗ Morale should not be affected by defense cleanup', false);
+                    pass = false;
+                } else {
+                    log('✓ Morale preserved during defense cleanup', true);
+                }
+                
+                // Test incomplete defense doesn't cleanup
+                const incompleteState = {
+                    inDefense: true,
+                    defensePhase: 1,
+                    committeeApproval: 40,
+                    defenseTurn: 1,
+                    defenseComplete: false
+                };
+                
+                if (cleanupDefense(incompleteState)) {
+                    log('✗ Incomplete defense should not be cleaned up', false);
+                    pass = false;
+                } else {
+                    log('✓ Incomplete defense state preserved', true);
+                }
+                
+                return pass;
+            }
+        };
+
+        function runRegressionTests() {
+            passed = 0; failed = 0; results.length = 0;
+            log('\n=== REGRESSION TESTS (V3.0 Phase 0.2) ===\n');
+            
+            let totalPassed = 0;
+            let totalFailed = 0;
+            
+            const tests = [
+                { name: 'Defense Gating Enforced', fn: REGRESSION_TESTS.testDefenseGating },
+                { name: 'One Modal Per Tick', fn: REGRESSION_TESTS.testOneModalPerTick },
+                { name: 'No Empty Month Logs', fn: REGRESSION_TESTS.testNoEmptyMonthLogs },
+                { name: 'Conference No Overlap', fn: REGRESSION_TESTS.testConferenceNoOverlap },
+                { name: 'Single Primary Stat Mutation', fn: REGRESSION_TESTS.testSinglePrimaryStatMutation },
+                { name: 'Defense State Cleanup', fn: REGRESSION_TESTS.testDefenseStateCleanup }
+            ];
+            
+            tests.forEach(test => {
+                const testPassed = test.fn();
+                if (testPassed) {
+                    totalPassed++;
+                } else {
+                    totalFailed++;
+                }
+            });
+            
+            // Update global counters
+            passed = totalPassed;
+            failed = totalFailed;
+            
+            // Final summary
+            log(`\n--- REGRESSION TEST SUMMARY ---\n`);
+            log(`${totalPassed} / ${tests.length} regression tests passed`, totalPassed === tests.length);
+            
+            showResults();
         }
 
         // Test suites

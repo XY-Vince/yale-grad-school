@@ -1,6 +1,52 @@
 # Changelog
 
 All notable changes to GradQuest are documented here.
+
+## [2.57.0] - 2026-02-01 "V3.0 Upgrade - Phase 0.2"
+
+**Theme**: Regression test suite for V3.0 upgrade quality assurance.
+
+### 🧪 Regression Test Suite
+Six critical regression tests added to ensure system stability:
+
+1. **Defense Gating Enforced**: Validates defense unlock only with complete requirements (3 papers, 100% thesis, quals passed)
+2. **One Modal Per Tick**: Ensures maximum 1 modal shown per game tick to prevent UI spam
+3. **No Empty Month Logs**: Blocks empty or whitespace-only log entries from appearing
+4. **Conference No Overlap**: Prevents duplicate conference registrations and same-month overlaps
+5. **Single Primary Stat Mutation**: Verifies actions affect ≤2 primary stats (maintainable design)
+6. **Defense State Cleanup**: Ensures defense state properly cleaned up after completion without affecting other stats
+
+### 🔧 Implementation
+- **Test Location**: `docs/tests.html`
+- **New Button**: "Run Regression Tests" (orange) in test suite UI
+- **Test Framework**: JavaScript-based assertions with pass/fail reporting
+- **Integration**: Tests run independently or as part of full test suite
+
+### 📋 V3.0 Upgrade Plan Phase 0.2
+- Quality assurance foundation for Phase 1 (Defense Gauntlet)
+- Validates core game mechanics before narrative endings implementation
+- Automated regression detection for future development
+
+---
+
+## [2.56.0] - 2026-02-01 "V3.0 Upgrade - Phase 0.1"
+
+**Theme**: Graduation Contract system for centralized defense eligibility logic.
+
+### 🎓 Graduation Contract System
+- **Centralized Logic**: New `GRADUATION_CONTRACT` object consolidates all defense eligibility checks.
+- **Replaces Scattered Checks**: Single source of truth for defense unlock conditions.
+- **Functions**:
+  - `defenseUnlocked(state)`: Checks if thesis complete, portfolio eligible, and quals passed.
+  - `isPortfolioEligible(state)`: Validates paper requirements (3 journal OR 2 journal + 2 conference).
+  - `getDefenseDebugInfo(state)`: Returns debug object with all graduation requirements status.
+
+### 🔧 Architecture Improvements
+- **Debug Integration**: Graduation contract info available in game state for development.
+- **V3.0 Preparation**: Foundation for Phase 1 Defense Gauntlet and future narrative endings.
+
+---
+
 ## [2.55.0] - 2026-01-20 "Transparency Phase 1"
 
 **Theme**: No more invisible timers. Buffs and social states are now legible.

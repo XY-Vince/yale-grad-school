@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.55</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.57</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -1163,7 +1163,81 @@
     </div>
 
     <script>
+        // ===========================================
+        // V2.55: EVENT RESOLVER (Central Event Arbitration)
+        // Prevents modal collisions and zombie events
+        // All events route through here exclusively
+        // ===========================================
+        class EventResolver {
+            constructor() {
+                this.eventQueue = [];
+                this.processedThisTick = new Set();
+                this.maxModalsPerTurn = 1;
+                this.shownThisTurn = 0;
+            }
+
+            // Priority weights: Emergency > Major > Minor
+            priorityWeight(event) {
+                const weights = { Emergency: 100, Major: 50, Minor: 10 };
+                return weights[event.priority] || 0;
+            }
+
+            // Central entry point - called once per game tick
+            resolveTick(state) {
+                // 1. Collect pending events from all systems
+                const pendingEvents = this.collectPendingEvents(state);
+
+                // 2. Sort by priority
+                pendingEvents.sort((a, b) => this.priorityWeight(b) - this.priorityWeight(a));
+
+                // 3. Process highest priority only (prevents modal spam)
+                if (pendingEvents.length > 0) {
+                    const topEvent = pendingEvents[0];
+                    this.processEvent(topEvent, state);
+                }
+
+                // 4. Reset for next tick
+                this.shownThisTurn = 0;
+                this.processedThisTick.clear();
+            }
+
+            collectPendingEvents(state) {
+                // Collect from all game systems
+                const events = [];
+                // Crisis events (Emergency priority)
+                if (state.morale < 10 && !state.recoveryActions?.includes('medical_leave')) {
+                    events.push({ id: 'morale_crisis', priority: 'Emergency', owner: 'Wellness' });
+                }
+                if (state.funding <= 0 && !state.recoveryActions?.includes('emergency_grant')) {
+                    events.push({ id: 'funding_crisis', priority: 'Emergency', owner: 'Academic' });
+                }
+                // Additional event collection from other systems...
+                return events;
+            }
+
+            processEvent(event, state) {
+                if (this.processedThisTick.has(event.id)) return;
+                this.processedThisTick.add(event.id);
+
+                // Check modal limit
+                if (this.shownThisTurn >= this.maxModalsPerTurn) {
+                    console.log(`[EventResolver] Queued: ${event.id} (modal limit reached)`);
+                    return;
+                }
+
+                // Process based on owner
+                console.log(`[EventResolver] Processing: ${event.id} (Owner: ${event.owner}, Priority: ${event.priority})`);
+                this.shownThisTurn++;
+            }
+
+            canShowModal(priority) {
+                return this.shownThisTurn < this.maxModalsPerTurn;
+            }
+        }
+
+        // ===========================================
         // GradQuest - Pure JavaScript Game Engine
+        // ===========================================
         const game = {
             state: null,
 
@@ -3472,14 +3546,42 @@
             },
 
             // ===========================================
-            // V2.18: IMMUTABLE STATE UPDATES
             // ===========================================
-            updateState(changes) {
-                this.state = { ...this.state, ...changes };
+            // V2.18 / V2.55: IMMUTABLE STATE UPDATES
+            // STATE_OWNERS: Wellness (morale/stress), Inventory (items),
+            //               Academic (funding/credits), Social (network),
+            //               Chronology (month/year)
+            // All mutations must declare owner in calling code
+            // ===========================================
+            updateState(changes, stateOwner = 'Unknown') {
+                // V2.55: Log state owner for debugging
                 if (Object.keys(changes).length <= 3) {
-                    console.log('[STATE]', changes);
+                    console.log(`[STATE] Owner: ${stateOwner}`, changes);
                 }
+                this.state = { ...this.state, ...changes };
             },
+
+            // ===========================================
+            // V2.55: STATE OWNERSHIP DOMAINS (Mandatory)
+            // Use these owners when calling updateState():
+            //
+            // Wellness: morale, stress, burnout, exhaustion
+            //   - Actions: break, vacation, medical_leave
+            //
+            // Inventory: items (ideas, figures, papers), statuses
+            //   - Actions: read, experiment, write, submit
+            //
+            // Academic: funding, credits, teaching_load, quals
+            //   - Actions: emergency_grant, teaching, study
+            //
+            // Social: peerNetwork, strategicAlignment, labmates
+            //   - Actions: network, collaborate, conference
+            //
+            // Chronology: month, year, totalMonths, gameMode
+            //   - System: advanceMonth(), phase transitions
+            //
+            // Example: this.updateState({ morale: 50 }, 'Wellness');
+            // ===========================================
 
             // ===========================================
             // V2.18: VARIANT MESSAGES (3+ per action)
@@ -3582,6 +3684,45 @@
                 return { text: '', color: '', border: '' };
             },
 
+            // ===========================================
+            // V2.55: SFX Token System (V3.0 Audio Prep)
+            // Maps actions to sound effect tokens
+            // ===========================================
+            getSfxToken(actionId) {
+                if (!actionId) return null;
+
+                const sfxMap = {
+                    'read_papers': { sound: 'page_flip', volume: 0.3 },
+                    'experiment': { sound: 'lab_ambient', volume: 0.4 },
+                    'submit_paper': { sound: 'submit_click', volume: 0.5 },
+                    'paper_accepted': { sound: 'success_chime', volume: 0.8, priority: 2 },
+                    'paper_rejected': { sound: 'error_buzz', volume: 0.6 },
+                    'funding_crisis': { sound: 'alert_tone', volume: 1.0, priority: 3 },
+                    'defense_start': { sound: 'fanfare', volume: 0.9, priority: 2 },
+                    'break': { sound: 'relaxation', volume: 0.4 },
+                    'conference': { sound: 'crowd_murmur', volume: 0.5 }
+                };
+
+                return sfxMap[actionId] || null;
+            },
+
+            // ===========================================
+            // V2.55: Ethical Score Calculator (V3.0 Endings Prep)
+            // Scores choice history for narrative branching
+            // ===========================================
+            calculateEthicalScore(history) {
+                if (!history || !history.ethicalDecisions) return 50; // Neutral default
+
+                const unethical = history.ethicalDecisions.filter(d => !d.ethical).length;
+                const ethical = history.ethicalDecisions.filter(d => d.ethical).length;
+                const total = history.ethicalDecisions.length;
+
+                if (total === 0) return 50;
+
+                // Score 0-100 based on ratio
+                return Math.round((ethical / total) * 100);
+            },
+
             // Transform GameState → UIState (derived display values)
             toUIState() {
                 const s = this.state;
@@ -3642,7 +3783,18 @@
 
                     // Game state flags
                     isEnded: s.isEnded,
-                    endState: s.endState
+                    endState: s.endState,
+
+                    // V2.55: SFX Token (preparation for V3.0 audio system)
+                    // Returns sound effect info for last action (null if no sound)
+                    sfxToken: this.getSfxToken(s.lastAction),
+
+                    // V2.55: Choice History Summary (for narrative feedback)
+                    choiceSummary: {
+                        ethicalScore: this.calculateEthicalScore(s.choiceHistory),
+                        mentorshipScore: s.choiceHistory.mentorshipInteractions.reduce((a, m) => a + (m.impact || 0), 0),
+                        collaborationPattern: s.choiceHistory.collaborationCount > 3 ? 'high' : 'low'
+                    }
                 };
             },
 
@@ -3832,6 +3984,23 @@
                         committee_friction: 0    // Increases failure chance
                     },
 
+                    // V2.55: Choice History (for V3.0 narrative endings)
+                    // Tracks ethical decisions, mentorship quality, collaboration patterns
+                    choiceHistory: {
+                        ethicalDecisions: [],    // { choice: 'aggressive_reply', ethical: false, month: 12 }
+                        mentorshipInteractions: [], // { type: 'positive', impact: +5, month: 24 }
+                        collaborationCount: 0,
+                        conferenceChoices: [],   // { conference: 'neuro2025', choice: 'poster', month: 18 }
+                        peerAssists: 0,          // Times helped peers
+                        timesAskedHelp: 0,       // Times asked for help
+                        teachingRefusals: 0,     // Times refused teaching
+                        advisorConflicts: 0      // Times ignored advisor
+                    },
+
+                    // V2.55: Last Action Tracking (for sfxToken system)
+                    lastAction: null,
+                    lastActionMonth: 0,
+
                     // V2.24: Peer Review Shield (costs 20 Network)
                     peerReviewShieldActive: false,
                     equipmentStabilizedUntil: 0, // V2.24: Preventive calibration
@@ -3949,7 +4118,7 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.55'
+                    version: '2.57'
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
