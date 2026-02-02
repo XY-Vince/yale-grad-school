@@ -1614,7 +1614,7 @@
 
                     // Stress relief
                     s.stress = Math.max(0, s.stress - 40);
-                    s.morale = Math.min(100, s.morale + 15);
+                    s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 15);
 
                     this.appendAdvisorEvent('Your advisor noticed you struggling and scheduled a supportive meeting. (+15 morale, stress reduced)');
                     return true;
@@ -1633,7 +1633,7 @@
                 if (network >= 60 && s.morale < 30 && cooldownPassed) {
                     s.lastPeerInterventionMonth = s.totalMonths;
                     s.stress = Math.max(0, s.stress - 30);
-                    s.morale = Math.min(100, s.morale + 10);
+                    s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
 
                     this.appendRandomEvent('🤝 Your labmates noticed you disappearing and invited you for coffee. "We\'ve all been there." (+10 morale, −30 stress)');
                     return true;
@@ -2400,7 +2400,7 @@
                         this.appendSystemEvent(`📄 ${npc.name} published another paper.\nYou have ${playerPapers} paper(s). Keep up the pace! +5 stress`);
                     }
                 } else {
-                    this.state.morale = Math.min(100, this.state.morale + 5);
+                    this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5);
                     this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5);
                     this.appendSystemEvent(`📄 ${npc.name} published!\nThe lab's reputation helps everyone. +5 morale, +5 network`);
                 }
@@ -2776,7 +2776,7 @@
                 // Normal workshop submission
                 s.workshopsThisYear = workshopsThisYear + 1;
                 s.workshopPapersTotal = (s.workshopPapersTotal || 0) + 1;
-                s.morale = Math.min(100, s.morale + 8);
+                s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 8);
                 s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + 5);
 
                 // Bonus: boost next journal acceptance
@@ -2840,7 +2840,7 @@
                 npc.loyalty += 10;
 
                 // Gain partial paper credit
-                this.state.morale = Math.min(100, this.state.morale + 5);
+                this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5);
                 this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 3);
 
                 if (npc.archetype === 'The_Senior') {
@@ -3102,7 +3102,7 @@
                     case 'conf_poster':
                         this.spendFunding(conf.fundingCost);
                         s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + Math.floor(conf.networkGain * 0.3));
-                        s.morale = Math.min(100, s.morale + 10);
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
                         s.stress = Math.max(0, (s.stress || 0) - 20); // V2.53: Stress reduction
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
                         s.lastConferenceMonth = s.totalMonths;
@@ -3128,7 +3128,7 @@
 
                         if (talkSuccess) {
                             s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain * 1.5); // V2.53: Higher upside
-                            s.morale = Math.min(100, s.morale + 20);
+                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 20);
                             s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 5); // V2.53: Reputation boost
                             msg = `🎤 TALK: Big Win!\n\n+${Math.floor(conf.networkGain * 1.5)} network, +20 morale, +5 reputation\n\n"Your talk was the highlight. People took notice."\n\n★ Trade safety for visibility — paid off!`;
                             // 50% chance for idea on hit talk
@@ -3150,7 +3150,7 @@
                         const existingNetwork = s.peerNetwork || 0;
                         const networkBonus = Math.floor(conf.networkGain * (1 + existingNetwork * 0.01)); // Scales with existing network
                         s.peerNetwork = Math.min(100, existingNetwork + networkBonus);
-                        s.morale = Math.min(100, s.morale + 5); // V2.53: Reduced immediate morale
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5); // V2.53: Reduced immediate morale
                         s.stress = Math.max(0, (s.stress || 0) - 15);
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
                         s.lastConferenceMonth = s.totalMonths;
@@ -3379,7 +3379,7 @@
 
                         if (this.random() < successChance) {
                             paper.bonusChance = (paper.bonusChance || 0) + 0.20;
-                            s.morale = Math.min(100, s.morale + 5); // V2.53: Confidence boost
+                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5); // V2.53: Confidence boost
                             msg = `⚔️ AGGRESSIVE: They Backed Down!\n\n+20% acceptance, +5 morale\nImmediate resolution\n\n"You called their bluff. Reviewers relented."\n\n★ Force the issue — worked!`;
                         } else {
                             paper.bonusChance = (paper.bonusChance || 0) - 0.15;
@@ -4629,7 +4629,7 @@
                                 if (roll < acceptRate) {
                                     this.addItem('paper');
                                     s.advisorScore = Math.min(100, s.advisorScore + 15);
-                                    s.morale = Math.min(100, s.morale + 10);
+                                    s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
                                     this.showMessage('🎉 PAPER ACCEPTED! Published!\n\n+10 morale, +15 advisor score\n\n📄 Journal papers: ' + (this.getItem('paper') || 0));
                                 } else if (roll < acceptRate + 0.25 && !isRevision) {
                                     // V2.4: Expanded Reviewer #2 snark library
@@ -4717,7 +4717,7 @@
                     this.state.inspirationsThisYear = inspirations + 1;
                     this.state.telemetry.inspirationCount++; // V2.19: Track for balance
                     const inspireMorale = inspirations === 0 ? 15 : 10; // Diminishing
-                    this.state.morale = Math.min(100, this.state.morale + inspireMorale);
+                    this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + inspireMorale);
                     this.addItem('idea');
                     this.appendRandomEvent(`💡 A sudden flash of inspiration strikes! (+${inspireMorale} morale, +1 idea)`);
                     // 20% dead end follow-up
@@ -4774,12 +4774,12 @@
                 if (month === 12) { // December holidays
                     if (this.random() < 0.5) {
                         this.appendRandomEvent('🎄 Holiday break! Time to rest. (+5 morale)');
-                        this.state.morale = Math.min(100, this.state.morale + 5);
+                        this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5);
                     }
                 } else if (month >= 6 && month <= 8) { // Summer
                     if (this.random() < 0.15) {
                         this.appendRandomEvent('☀️ Summer focus! Fewer distractions. (+3 morale)');
-                        this.state.morale = Math.min(100, this.state.morale + 3);
+                        this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 3);
                     }
                 } else if (month === 9) { // September - new semester chaos
                     if (this.random() < 0.3) {
@@ -4815,7 +4815,7 @@
                         this.state.isTeaching = false;
                         this.removeStatus('teaching');
                         const teachBonus = 5 + Math.floor(this.random() * 5);
-                        this.state.morale = Math.min(100, this.state.morale + teachBonus);
+                        this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + teachBonus);
                         this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5); // V2.5: +network
                         this.appendMessage('🎓 TA duty complete! Students appreciated you. (+' + teachBonus + ' morale, +5 network)');
                     }
@@ -4834,7 +4834,7 @@
                             if (this.random() < confAccept) {
                                 s.confPaperCount = (s.confPaperCount || 0) + 1; // V2.5: Track count
                                 s.peerNetwork = Math.min(100, s.peerNetwork + 15);
-                                s.morale = Math.min(100, s.morale + 8);
+                                s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 8);
                                 this.appendMessage('📋 CONFERENCE ACCEPTED! (+15 network, +8 morale)');
                             } else {
                                 this.addItem('rejected_paper'); // Can revise for journal
@@ -4852,7 +4852,7 @@
                     if (totalPubs >= 2) {
                         // V2.8: Pep talk instead of MS-Out for productive students
                         const pepGain = 15 + Math.floor(this.random() * 6);
-                        s.morale = Math.min(100, s.morale + pepGain);
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + pepGain);
                         this.appendMessage('🧑‍🏫 Your advisor gives you a pep talk: "You\'ve published well. Keep pushing - you\'re almost there." (+' + pepGain + ' morale)');
                     } else {
                         this.showMessage('🤔 Your advisor notices your struggle:\n\n"Have you considered the Master\'s exit?"\n\n👉 Check Actions for MS-Out option');
@@ -4891,7 +4891,7 @@
                     } else {
                         msg += effectiveLevel >= 4 ? '✅ Your thorough preparation paid off!' : '✅ You passed the qualifying exam!';
                     }
-                    this.state.morale = Math.min(100, this.state.morale + (effectiveLevel >= 4 ? 25 : 15));
+                    this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + (effectiveLevel >= 4 ? 25 : 15));
                     this.state.qualsPassed = true;
 
                     // V2.11: "New Lease on Life" buff after successful retake
@@ -5547,7 +5547,7 @@
                         if (this.random() < 0.45) {
                             this.removeItem('idea');
                             this.addItem('initial_findings');
-                            s.morale = Math.min(100, s.morale + 5);
+                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
                             msg = '🧑‍🏫 Advisor: "This is promising! Keep going." (+5 morale)\n' + this.pick(ideaSuccess);
                         } else {
                             msg = this.pick(ideaFail);
@@ -5572,7 +5572,7 @@
                         if (this.random() < (0.45 + perspectiveBonus)) {
                             this.removeItem('initial_findings');
                             this.addItem('key_discovery');
-                            s.morale = Math.min(100, s.morale + 5);
+                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
                             msg = this.pick(findSuccess);
                             if (perspectiveBonus > 0) msg += '\n✨ Renewed perspective helped!';
                         } else {
@@ -5585,7 +5585,7 @@
                         if (s.peerReviewShieldActive) {
                             s.peerReviewShieldActive = false;
                             this.addItem('figure');
-                            s.morale = Math.min(100, s.morale + 5);
+                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
                             msg = '🤝 PEER-ASSISTED SUCCESS!\n📊 Figure created thanks to peer feedback! (' + this.getItem('figure') + '/3 needed)\n"Your colleague\'s notes helped you nail the visualization."';
                             break;
                         }
@@ -5597,7 +5597,7 @@
                         const figPerspective = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
                         if (this.random() < (0.6 + figBonus + figPerspective)) {
                             this.addItem('figure');
-                            s.morale = Math.min(100, s.morale + 3);
+                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 3);
                             s.consecutiveFigRejections = 0; // Reset on success
                             if (figRejections >= 2) {
                                 msg = '📊 You\'re finally seeing what reviewers want! Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)';
@@ -5652,7 +5652,7 @@
 
                     case 'break':
                         const gain = 5 + Math.floor(this.random() * 10);
-                        s.morale = Math.min(100, s.morale + gain);
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + gain);
                         s.advisorScore = Math.max(0, s.advisorScore - 3);
                         msg = this.getMessage('break') + ' (+' + gain + ' morale)';
                         if (this.hasStatus('exhaustion') && this.random() < 0.4) {
@@ -5669,7 +5669,7 @@
                     case 'medical_leave':
                         const leaveDuration = 3 + Math.floor(this.random() * 4); // 3-6 months
                         s.medicalLeaveUsed = true;
-                        s.morale = Math.min(100, s.morale + 40);
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 40);
                         if (this.hasStatus('exhaustion')) this.removeStatus('exhaustion');
                         if (this.hasStatus('burnout')) this.removeStatus('burnout');
                         // Reset current project (lose progress)
@@ -5781,12 +5781,12 @@
                     // V2.18: Defense Prep Gate actions
                     case 'prepare_defense':
                         s.defensePrepared = true;
-                        s.morale = Math.min(100, s.morale + 10);
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
                         msg = '📝 You organize your thesis chapters and prepare your defense slides.\n\n+10 morale from the sense of accomplishment.\n\n🎓 You can now defend your thesis!';
                         break;
 
                     case 'polish_thesis':
-                        s.morale = Math.min(100, s.morale + 5);
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
                         msg = '✨ You polish your thesis, fixing typos and improving figures.\n\n+5 morale from the satisfaction of good work.';
                         break;
 
@@ -5911,7 +5911,7 @@
                     case 'internship':
                         s.internshipThisYear = true;
                         s.peerNetwork = Math.min(100, (s.peerNetwork || 10) + 25);
-                        s.morale = Math.min(100, s.morale + 15);
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 15);
                         s.advisorScore = Math.max(0, s.advisorScore - 5);
                         // Advance 3 months
                         for (let i = 0; i < 3; i++) {
@@ -6358,7 +6358,7 @@
                     this.endGame(true, 'graduation', 'Congratulations, you have earned your PhD!');
                 } else {
                     // Major revisions - return to game
-                    this.state.morale = Math.min(100, this.state.morale + 20);
+                    this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 20);
                     for (let i = 0; i < 6; i++) this.advanceMonth();
                     this.showMessage('📝 The committee requires major revisions. Take 6 months to improve your thesis, then try again.');
                     this.state.defensePrepared = false; // Must prepare again
@@ -6386,7 +6386,7 @@
 
             thesisStay() {
                 document.getElementById('thesis-modal').classList.remove('active');
-                this.state.morale = Math.min(100, this.state.morale + 20);
+                this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 20);
                 this.state.advisorScore = Math.min(100, this.state.advisorScore + 10);
                 this.showMessage('You decide to stay and do more research. Your advisor is pleased. (+20 morale)');
                 this.advanceMonth();
