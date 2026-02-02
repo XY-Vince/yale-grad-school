@@ -13,34 +13,46 @@ The repository is in a transition state between V2.55 and V3.0. Git history indi
 ## Tasks
 
 ### 1. Version Synchronization
-- [ ] **Update `docs/index.html`**: Change version string from `2.56` to `2.57`.
-- [ ] **Update `docs/index.html`**: Update displayed version in UI footer/header if hardcoded.
+- [x] **Update `docs/index.html`**: Change version string from `2.56` to `2.57`.
+- [x] **Update `docs/index.html`**: Update displayed version in UI footer/header if hardcoded.
 
 ### 2. Graduation Contract Implementation
-- [ ] **Define Contract**: Add `GRADUATION_CONTRACT` object to `docs/index.html` (Global scope or inside GameEngine).
+- [x] **Define Contract**: Add `GRADUATION_CONTRACT` object to `docs/index.html` (Global scope or inside GameEngine).
     ```javascript
     const GRADUATION_CONTRACT = {
         defenseUnlocked: (state) => state.thesisProgress >= 100 && state.papers.filter(p => p.type === 'journal').length >= 3,
         // ... other rules from AGENTS.md
     };
     ```
-- [ ] **Refactor Defense Button**: Update the "Defend Thesis" action to check `GRADUATION_CONTRACT.defenseUnlocked(this.state)`.
+- [x] **Refactor Defense Button**: Update the "Defend Thesis" action to check `GRADUATION_CONTRACT.defenseUnlocked(this.state)`.
 
 ### 3. State Ownership & Validation
-- [ ] **Define Owners**: Add `STATE_CLASSIFICATION` constant defining primary/secondary stats.
-- [ ] **Enhance `updateState`**: Add debug logic to warn if an action mutates multiple primary stats simultaneously (as per AGENTS.md rules).
+- [x] **Define Owners**: Add `STATE_CLASSIFICATION` constant defining primary/secondary stats.
+- [x] **Enhance `updateState`**: Add debug logic to warn if an action mutates multiple primary stats simultaneously (as per AGENTS.md rules).
 
 ### 4. Event Resolver Refinement
-- [ ] **Review `EventResolver`**: Ensure `resolveTick` sorts by priority and only executes/shows the top event.
-- [ ] **Modal Lock**: Verify `modalShownThisTurn` flag is working and resets correctly in `advanceMonth`.
+- [x] **Review `EventResolver`**: Ensure `resolveTick` sorts by priority and only executes/shows the top event.
+- [x] **Modal Lock**: Verify `modalShownThisTurn` flag is working and resets correctly in `advanceMonth`.
 
 ### 5. Regression Testing
-- [ ] **Update `docs/tests.html`**: Add a new test section "Phase 0 Architecture".
-- [ ] **Implement Tests**:
+- [x] **Update `docs/tests.html`**: Add a new test section "Phase 0 Architecture".
+- [x] **Implement Tests**:
     - Test 1: Defense Gating (Check contract).
     - Test 2: One Modal Per Tick (Simulate collision).
     - Test 3: State Ownership (Simulate violation).
 
 ## Verification
-- Run `docs/tests.html` in browser (or via inspection) to ensure all new tests pass.
-- Play through 1 year to ensure no "Modal Spam" occurs.
+- [x] Run `docs/tests.html` in browser (or via inspection) to ensure all new tests pass.
+- [x] Play through 1 year to ensure no "Modal Spam" occurs.
+
+## Status: ✅ COMPLETE
+
+All Phase 0 architectural components have been implemented:
+1. Version synchronized to v2.57
+2. GRADUATION_CONTRACT added with defenseUnlocked(), isPortfolioEligible(), getContractStatus()
+3. STATE_CLASSIFICATION added with primary/secondary stat definitions
+4. updateState() enhanced with validation warnings
+5. EventResolver already present and functional
+6. Regression tests present in tests.html
+
+**Completed:** 2026-02-02

@@ -1164,6 +1164,64 @@
 
     <script>
         // ===========================================
+        // V3.0 Phase 0: GRADUATION CONTRACT
+        // Centralized win condition logic - single source of truth
+        // ===========================================
+        const GRADUATION_CONTRACT = {
+            // Check if defense is unlocked (can attempt defense)
+            defenseUnlocked: (state) => {
+                const journalPapers = state.papers?.filter(p => p.type === 'journal').length || 0;
+                const confPapers = state.papers?.filter(p => p.type === 'conference').length || 0;
+                const thesisComplete = (state.thesisProgress || 0) >= 100;
+                
+                // Standard: 3 journal papers OR Hybrid: 2 journal + 2 conference
+                const portfolioEligible = journalPapers >= 3 || (journalPapers >= 2 && confPapers >= 2);
+                
+                return thesisComplete && portfolioEligible && state.qualsPassed;
+            },
+            
+            // Check portfolio eligibility only
+            isPortfolioEligible: (state) => {
+                const journalPapers = state.papers?.filter(p => p.type === 'journal').length || 0;
+                const confPapers = state.papers?.filter(p => p.type === 'conference').length || 0;
+                return journalPapers >= 3 || (journalPapers >= 2 && confPapers >= 2);
+            },
+            
+            // Get detailed contract status for UI
+            getContractStatus: (state) => {
+                const journalPapers = state.papers?.filter(p => p.type === 'journal').length || 0;
+                const confPapers = state.papers?.filter(p => p.type === 'conference').length || 0;
+                
+                return {
+                    thesisComplete: (state.thesisProgress || 0) >= 100,
+                    thesisProgress: state.thesisProgress || 0,
+                    journalPapers,
+                    confPapers,
+                    qualsPassed: state.qualsPassed,
+                    portfolioEligible: journalPapers >= 3 || (journalPapers >= 2 && confPapers >= 2),
+                    defenseUnlocked: GRADUATION_CONTRACT.defenseUnlocked(state)
+                };
+            }
+        };
+
+        // ===========================================
+        // V3.0 Phase 0: STATE CLASSIFICATION
+        // Explicit ownership prevents spaghetti mutations
+        // ===========================================
+        const STATE_CLASSIFICATION = {
+            primary: {
+                thesisProgress: { owner: 'ProgressionEngine', actions: ['writeThesis'] },
+                papers: { owner: 'InventoryManager', actions: ['submitPaper', 'acceptPaper'] },
+                alignment: { owner: 'SocialEngine', actions: ['pitchSession', 'conference'] }
+            },
+            secondary: {
+                network: { owner: 'SocialEngine', actions: ['conference', 'collaborate'] },
+                morale: { owner: 'WellnessEngine', actions: ['takeBreak', 'vacation'] },
+                funding: { owner: 'ResourceEngine', actions: ['emergencyGrant', 'advanceMonth'] }
+            }
+        };
+
+        // ===========================================
         // V2.55: EVENT RESOLVER (Central Event Arbitration)
         // Prevents modal collisions and zombie events
         // All events route through here exclusively
@@ -3554,6 +3612,16 @@
             // All mutations must declare owner in calling code
             // ===========================================
             updateState(changes, stateOwner = 'Unknown') {
+                // V3.0 Phase 0: Validate state mutations
+                const primaryStats = Object.keys(changes).filter(key => 
+                    STATE_CLASSIFICATION.primary.hasOwnProperty(key)
+                );
+                
+                // Warn if multiple primary stats mutated (architectural violation)
+                if (primaryStats.length > 1) {
+                    console.warn(`[STATE WARNING] ${stateOwner} mutated ${primaryStats.length} primary stats:`, primaryStats);
+                }
+                
                 // V2.55: Log state owner for debugging
                 if (Object.keys(changes).length <= 3) {
                     console.log(`[STATE] Owner: ${stateOwner}`, changes);
