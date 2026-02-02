@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.56</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.57</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -4207,9 +4207,22 @@
             messageQueue: [], // V2.50: Queue for multiple modals per turn
 
             showMessage(msg) {
+                // V2.57: Log sanitization - remove instructional clutter
+                const SUPPRESS_PATTERNS = [
+                    /\(Remember to study\)/gi,
+                    /Response actions will appear[^.]*/gi,
+                    /Go to Actions to[^.]*/gi,
+                    /👉[^\n]*/g
+                ];
+                let cleanMsg = msg;
+                for (const pattern of SUPPRESS_PATTERNS) {
+                    cleanMsg = cleanMsg.replace(pattern, '').trim();
+                }
+                cleanMsg = cleanMsg.replace(/\s+/g, ' ').trim();
+
                 // V2.50: Queue messages if modal already showing
                 if (this.waitingForAcknowledge) {
-                    this.messageQueue.push(msg);
+                    this.messageQueue.push(cleanMsg);
                     return;
                 }
 
@@ -4225,15 +4238,15 @@
                 }
 
                 // Display message in log
-                el.textContent = msg;
+                el.textContent = cleanMsg;
 
                 // V2.37: Show centered modal for user confirmation
-                this.showEventModal(msg);
+                this.showEventModal(cleanMsg);
                 this.waitingForAcknowledge = true;
 
                 // V2.2/V2.42: Log to event history (modal: true = shown with modal)
-                if (this.state && this.state.eventLog) {
-                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg, modal: true });
+                if (this.state && this.state.eventLog && cleanMsg.length > 0) {
+                    this.state.eventLog.push({ month: this.state.totalMonths, text: cleanMsg, modal: true });
                 }
             },
 
@@ -4253,6 +4266,19 @@
 
             // Append message
             appendMessage(msg) {
+                // V2.57: Log sanitization - remove instructional clutter
+                const SUPPRESS_PATTERNS = [
+                    /\(Remember to study\)/gi,
+                    /Response actions will appear[^.]*/gi,
+                    /Go to Actions to[^.]*/gi,
+                    /👉[^\n]*/g
+                ];
+                let cleanMsg = msg;
+                for (const pattern of SUPPRESS_PATTERNS) {
+                    cleanMsg = cleanMsg.replace(pattern, '').trim();
+                }
+                cleanMsg = cleanMsg.replace(/\s+/g, ' ').trim();
+
                 const el = document.getElementById('message-log');
                 if (this.typeTimer) clearInterval(this.typeTimer);
                 const current = el.textContent.trim();
@@ -4261,12 +4287,12 @@
                 el.textContent = current + separator;
                 let i = 0;
                 this.typeTimer = setInterval(() => {
-                    el.textContent = current + separator + msg.slice(0, ++i);
-                    if (i >= msg.length) clearInterval(this.typeTimer);
+                    el.textContent = current + separator + cleanMsg.slice(0, ++i);
+                    if (i >= cleanMsg.length) clearInterval(this.typeTimer);
                 }, 15);
                 // V2.2/V2.42: Log to event history (modal: false = silent, easily missed)
-                if (this.state && this.state.eventLog) {
-                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg, modal: false });
+                if (this.state && this.state.eventLog && cleanMsg.length > 0) {
+                    this.state.eventLog.push({ month: this.state.totalMonths, text: cleanMsg, modal: false });
                 }
             },
 

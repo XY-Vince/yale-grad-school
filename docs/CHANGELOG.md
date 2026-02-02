@@ -2,6 +2,32 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.57.0] - 2026-02-01 "V3.0 Upgrade - Phase 0 Complete"
+
+**Theme**: Architecture hardening completion - state integrity and modal discipline.
+
+### 🔧 Phase 0.4: Defense State Cleanup
+- **Proper Cleanup**: Defense completion now clears all defense flags
+- **No Zombie State**: defenseActive, defenseTurn, and all defense tracks reset
+- **UI Mode Reset**: Returns to 'NORMAL' after defense completion
+
+### 📝 Phase 0.5: Log Sanitization
+- **Removed Clutter**: Instructional text no longer appears in event log
+- **Filtered Patterns**: "Remember to study", "Response actions will appear", "Go to Actions to"
+- **Cleaner UI**: Only meaningful events appear in the log
+
+### ✅ Phase 0 Complete
+All Phase 0 infrastructure tasks completed:
+- ✅ Graduation Contract (0.1)
+- ✅ Regression Tests (0.2)
+- ✅ Event Resolver (0.3)
+- ✅ Defense Cleanup (0.4)
+- ✅ Log Sanitization (0.5)
+
+Ready for Phase 1: Defense Gauntlet enhancements.
+
+---
+
 ## [2.56.0] - 2026-02-01 "V3.0 Upgrade - Phase 0.2"
 
 **Theme**: Regression test suite for V3.0 upgrade quality assurance.
