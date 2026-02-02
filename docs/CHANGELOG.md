@@ -2,7 +2,7 @@
 
 All notable changes to GradQuest are documented here.
 
-## [2.57.0] - 2026-02-01 "V3.0 Upgrade - Phase 0.2"
+## [2.56.0] - 2026-02-01 "V3.0 Upgrade - Phase 0.2"
 
 **Theme**: Regression test suite for V3.0 upgrade quality assurance.
 
@@ -1260,4 +1260,3 @@ Based on 256-month stress test observations. Prevents infinite equilibrium and a
 - Core engine port from TypeScript PhD Simulator
 - Full research pipeline
 - CLI and web interfaces
-
