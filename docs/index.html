@@ -3563,7 +3563,7 @@
                 }
 
                 // PROBATION: Very low morale or advisor unhappy
-                if (s.morale < 15 || s.advisorScore < 20) {
+                if (s.morale < GAME_CONSTANTS.MIN_MORALE_FOR_CRITICAL || s.advisorScore < 20) {
                     if (s.gameMode !== 'PROBATION') {
                         s.gameMode = 'PROBATION';
                         this.showMessage('⚠️ CRISIS MODE!\n\nAddress your situation immediately!\n\n👉 Take a Break, Medical Leave, or consider options');
@@ -4529,7 +4529,7 @@
                 }
                 this.state.morale = Math.max(0, this.state.morale - decay);
                 // V2.11: Track low morale months for escalating MS-Out
-                if (this.state.morale < 15) {
+                if (this.state.morale < GAME_CONSTANTS.MIN_MORALE_FOR_CRITICAL) {
                     this.state.lowMoraleMonths = (this.state.lowMoraleMonths || 0) + 1;
                 } else {
                     this.state.lowMoraleMonths = 0;
@@ -4604,7 +4604,7 @@
                 }
 
                 // V2.4: Early MS-Out in Year 1 if morale critical (<15)
-                if (this.state.year === 1 && this.state.morale < 15 && !this.state.msOutOffered) {
+                if (this.state.year === 1 && this.state.morale < GAME_CONSTANTS.MIN_MORALE_FOR_CRITICAL && !this.state.msOutOffered) {
                     this.state.msOutOffered = true;
                     this.showMessage('💔 Your advisor takes you aside:\n\n"This isn\'t working out. Maybe consider a Master\'s exit?"\n\n👉 Check Actions for MS-Out option');
                 }
@@ -5186,7 +5186,7 @@
                 actions.push({ id: 'break', name: '☕ Take a Break', desc: '+15 morale', telemetry: 'mental_health' });
 
                 // V2.10: Medical Leave (emergency escape, one-time use)
-                if (s.morale < 15 && !s.medicalLeaveUsed) {
+                if (s.morale < GAME_CONSTANTS.MIN_MORALE_FOR_CRITICAL && !s.medicalLeaveUsed) {
                     actions.push({ id: 'medical_leave', name: '🏥 Medical Leave', desc: 'Emergency: +40 morale, costs 3-6 months', telemetry: 'mental_health' });
                 }
 
@@ -5201,7 +5201,7 @@
 
                 // V2.43: Conference actions with 3-month cooldown
                 const confCooldown = s.lastConferenceMonth ? s.totalMonths - s.lastConferenceMonth : 99;
-                if (!s.activeConference && (s.conferencesThisYear || 0) < 2 && confCooldown >= 3) {
+                if (!s.activeConference && (s.conferencesThisYear || 0) < GAME_CONSTANTS.MAX_CONFERENCES_PER_YEAR && confCooldown >= GAME_CONSTANTS.CONFERENCE_COOLDOWN_MONTHS) {
                     actions.push({
                         id: 'seek_conference',
                         name: '🎤 Seek Conference',
