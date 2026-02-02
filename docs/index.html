@@ -3790,7 +3790,7 @@
 
             // Helper: Get quals warning state
             getQualsWarning(s) {
-                const monthsToQuals = (2 * 12 + 9) - s.totalMonths;
+                const monthsToQuals = (GAME_CONSTANTS.QUALS_YEAR * GAME_CONSTANTS.MONTHS_PER_YEAR + GAME_CONSTANTS.QUALS_MONTH) - s.totalMonths;
                 if (s.year === 2 && s.month >= 6 && monthsToQuals <= 3) {
                     return { text: '🚨 <b>IMMINENT!</b>', color: '#f87171', border: '#f87171' };
                 } else if (s.year === 2) {
@@ -3915,7 +3915,7 @@
 
             // V2.19: Get Quals countdown for banner
             getQualsCountdown(s) {
-                const qualsMonth = 2 * 12 + 9; // September Year 2
+                const qualsMonth = GAME_CONSTANTS.QUALS_YEAR * GAME_CONSTANTS.MONTHS_PER_YEAR + GAME_CONSTANTS.QUALS_MONTH; // September Year 2
                 const monthsUntil = qualsMonth - s.totalMonths;
                 if (monthsUntil <= 0) return null;
                 if (monthsUntil > 12) return null; // Don't show until Year 1 Sept
