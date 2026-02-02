@@ -1274,7 +1274,8 @@
         // All events route through here exclusively
         // ===========================================
         class EventResolver {
-            constructor() {
+            constructor(gameInstance) {
+                this.game = gameInstance;
                 this.eventQueue = [];
                 this.processedThisTick = new Set();
                 this.maxModalsPerTurn = 1;
@@ -1287,56 +1288,168 @@
                 return weights[event.priority] || 0;
             }
 
-            // Central entry point - called once per game tick
-            resolveTick(state) {
-                // 1. Collect pending events from all systems
-                const pendingEvents = this.collectPendingEvents(state);
-
-                // 2. Sort by priority
-                pendingEvents.sort((a, b) => this.priorityWeight(b) - this.priorityWeight(a));
-
-                // 3. Process highest priority only (prevents modal spam)
-                if (pendingEvents.length > 0) {
-                    const topEvent = pendingEvents[0];
-                    this.processEvent(topEvent, state);
-                }
-
-                // 4. Reset for next tick
-                this.shownThisTurn = 0;
-                this.processedThisTick.clear();
-            }
-
-            collectPendingEvents(state) {
-                // Collect from all game systems
-                const events = [];
-                // Crisis events (Emergency priority)
-                if (state.morale < 10 && !state.recoveryActions?.includes('medical_leave')) {
-                    events.push({ id: 'morale_crisis', priority: 'Emergency', owner: 'Wellness' });
-                }
-                if (state.funding <= 0 && !state.recoveryActions?.includes('emergency_grant')) {
-                    events.push({ id: 'funding_crisis', priority: 'Emergency', owner: 'Academic' });
-                }
-                // Additional event collection from other systems...
-                return events;
-            }
-
-            processEvent(event, state) {
-                if (this.processedThisTick.has(event.id)) return;
-                this.processedThisTick.add(event.id);
-
-                // Check modal limit
-                if (this.shownThisTurn >= this.maxModalsPerTurn) {
-                    console.log(`[EventResolver] Queued: ${event.id} (modal limit reached)`);
+            // Add event to queue with validation
+            enqueue(event) {
+                // Validation
+                if (!event.id || !event.priority || !event.message || !event.owner) {
+                    console.error('[EventResolver] Invalid event structure:', event);
                     return;
                 }
 
-                // Process based on owner
-                console.log(`[EventResolver] Processing: ${event.id} (Owner: ${event.owner}, Priority: ${event.priority})`);
-                this.shownThisTurn++;
+                // Add to queue
+                this.eventQueue.push(event);
+                console.log(`[EventResolver] Enqueued: ${event.id} (${event.priority})`);
+
+                // Enforce max queue size (50), drop oldest Minor
+                if (this.eventQueue.length > 50) {
+                    const oldestMinorIndex = this.eventQueue.findIndex(e => e.priority === 'Minor');
+                    if (oldestMinorIndex !== -1) {
+                        const dropped = this.eventQueue.splice(oldestMinorIndex, 1)[0];
+                        console.log(`[EventResolver] Queue overflow - dropped: ${dropped.id}`);
+                    } else {
+                        // If no Minor events, drop oldest (FIFO fallback)
+                        this.eventQueue.shift();
+                    }
+                }
             }
 
-            canShowModal(priority) {
+            // Central entry point - called once per game tick
+            resolveTick(state) {
+                // 1. Sort by priority
+                this.eventQueue.sort((a, b) => this.priorityWeight(b) - this.priorityWeight(a));
+
+                const nextQueue = [];
+                this.shownThisTurn = 0;
+
+                // 2. Process events
+                for (const event of this.eventQueue) {
+                    if (this.processedThisTick.has(event.id)) {
+                        nextQueue.push(event); // Keep just in case, but shouldn't happen
+                        continue;
+                    }
+
+                    if (event.priority === 'Emergency') {
+                        // Emergency: Bypass limits
+                        this.renderModal(event);
+                        this.processedThisTick.add(event.id);
+                    } else if (event.priority === 'Major') {
+                        // Major: Respect modal limit
+                        if (this.canShowModal()) {
+                            this.renderModal(event);
+                            this.processedThisTick.add(event.id);
+                        } else {
+                            nextQueue.push(event); // Defer
+                        }
+                    } else {
+                        // Minor: Silent log
+                        this.logSilent(event);
+                        this.processedThisTick.add(event.id);
+                    }
+                }
+
+                // 3. Update queue with deferred events
+                this.eventQueue = nextQueue;
+
+                // 4. Clear processing tracking for next tick
+                this.processedThisTick.clear();
+            }
+
+            canShowModal() {
                 return this.shownThisTurn < this.maxModalsPerTurn;
+            }
+
+            // Render modal (replaces showMessage)
+            renderModal(event) {
+                // Sanitization (from legacy showMessage)
+                const SUPPRESS_PATTERNS = [
+                    /\(Remember to study\)/gi,
+                    /Response actions will appear[^.]*/gi,
+                    /Go to Actions to[^.]*/gi,
+                    /👉[^\n]*/g
+                ];
+                let cleanMsg = event.message;
+                for (const pattern of SUPPRESS_PATTERNS) {
+                    cleanMsg = cleanMsg.replace(pattern, '').trim();
+                }
+                cleanMsg = cleanMsg.replace(/\s+/g, ' ').trim();
+
+                // Update log UI
+                const el = document.getElementById('message-log');
+                const prevEl = document.getElementById('message-log-prev');
+                
+                // Shift current to previous
+                const currentText = el.textContent.trim();
+                if (prevEl && currentText && currentText !== 'Your PhD journey begins...' && currentText !== '-') {
+                    this.game.previousEvent = currentText;
+                    prevEl.textContent = this.game.previousEvent;
+                }
+
+                // Display new message
+                el.textContent = cleanMsg;
+
+                // Show modal via Game method
+                this.game.showEventModal(cleanMsg);
+                this.game.waitingForAcknowledge = true;
+                this.shownThisTurn++;
+
+                // Log to history
+                if (this.game.state && this.game.state.eventLog) {
+                    this.game.state.eventLog.push({ 
+                        month: this.game.state.totalMonths, 
+                        text: cleanMsg, 
+                        modal: true 
+                    });
+                }
+                
+                console.log(`[EventResolver] Processing: ${event.id} (Owner: ${event.owner}, Priority: ${event.priority})`);
+            }
+
+            // Silent log (replaces appendMessage/appendSystemEvent)
+            logSilent(event) {
+                // Sanitization
+                const SUPPRESS_PATTERNS = [
+                    /\(Remember to study\)/gi,
+                    /Response actions will appear[^.]*/gi,
+                    /Go to Actions to[^.]*/gi,
+                    /👉[^\n]*/g
+                ];
+                let cleanMsg = event.message;
+                for (const pattern of SUPPRESS_PATTERNS) {
+                    cleanMsg = cleanMsg.replace(pattern, '').trim();
+                }
+                cleanMsg = cleanMsg.replace(/\s+/g, ' ').trim();
+
+                // Typewriter effect logic
+                const el = document.getElementById('message-log');
+                // Note: We don't clear typeTimer here as it belongs to Game, 
+                // but we should probably manage it if we want full encapsulation.
+                // For now, access via game instance if possible, or just manipulate DOM.
+                // Legacy appendMessage cleared this.typeTimer. 
+                // We'll access game.typeTimer if it exists, or just accept potential overlap for now 
+                // (Task 6 will remove legacy, maybe we should move timer here later).
+                // Actually, let's access game.typeTimer
+                if (this.game.typeTimer) clearInterval(this.game.typeTimer);
+
+                const current = el.textContent.trim();
+                const separator = current ? '\n' : '';
+
+                el.textContent = current + separator;
+                let i = 0;
+                this.game.typeTimer = setInterval(() => {
+                    el.textContent = current + separator + cleanMsg.slice(0, ++i);
+                    if (i >= cleanMsg.length) clearInterval(this.game.typeTimer);
+                }, 15);
+
+                // Log to history
+                if (this.game.state && this.game.state.eventLog) {
+                    this.game.state.eventLog.push({ 
+                        month: this.game.state.totalMonths, 
+                        text: cleanMsg, 
+                        modal: false 
+                    });
+                }
+
+                console.log(`[EventResolver] Logging silent: ${event.id} (${event.priority})`);
             }
         }
 
