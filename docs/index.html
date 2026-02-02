@@ -2370,7 +2370,7 @@
 
                 if (npc.monthsRemaining <= 0) {
                     npc.active = false;
-                    this.state.peerNetwork = Math.max(0, (this.state.peerNetwork || 0) - 15);
+                    this.updateState({ peerNetwork: Math.max(0, (this.state.peerNetwork || 0) - 15) }, 'Social');
                     this.updateState({ morale: Math.max(0, this.state.morale - 10) }, 'Wellness');
 
                     // Check collaboration dependency
@@ -2392,16 +2392,16 @@
                     if (playerPapers === 0) {
                         // Rival truly published first - full penalty
                         this.updateState({ morale: Math.max(0, this.state.morale - 5) }, 'Wellness');
-                        this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 10);
+                        this.updateState({ stress: Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 10) }, 'Wellness');
                         this.showMessage(`📄 ${npc.name} published before you!\n\nThe pressure is on.\n-5 morale, +10 stress`);
                     } else {
                         // Player already has papers - rival is just keeping pace
-                        this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 5);
+                        this.updateState({ stress: Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 5) }, 'Wellness');
                         this.appendSystemEvent(`📄 ${npc.name} published another paper.\nYou have ${playerPapers} paper(s). Keep up the pace! +5 stress`);
                     }
                 } else {
                     this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5) }, 'Wellness');
-                    this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5);
+                    this.updateState({ peerNetwork: Math.min(100, (this.state.peerNetwork || 0) + 5) }, 'Social');
                     this.appendSystemEvent(`📄 ${npc.name} published!\nThe lab's reputation helps everyone. +5 morale, +5 network`);
                 }
             },
@@ -2841,7 +2841,7 @@
 
                 // Gain partial paper credit
                 this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5) }, 'Wellness');
-                this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 3);
+                this.updateState({ peerNetwork: Math.min(100, (this.state.peerNetwork || 0) + 3) }, 'Social');
 
                 if (npc.archetype === 'The_Senior') {
                     // Senior provides mentorship
@@ -4816,7 +4816,7 @@
                         this.removeStatus('teaching');
                         const teachBonus = 5 + Math.floor(this.random() * 5);
                         this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + teachBonus);
-                        this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5); // V2.5: +network
+                        this.updateState({ peerNetwork: Math.min(100, (this.state.peerNetwork || 0) + 5) }, 'Social'); // V2.5: +network
                         this.appendMessage('🎓 TA duty complete! Students appreciated you. (+' + teachBonus + ' morale, +5 network)');
                     }
                 }
@@ -4861,10 +4861,10 @@
 
                 // V2.21: Accumulate stress based on actions and status
                 if (this.hasStatus('exhaustion')) {
-                    this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 5);
+                    this.updateState({ stress: Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 5) }, 'Wellness');
                 }
                 if (s.morale < GAME_CONSTANTS.MIN_MORALE_FOR_WARNING) {
-                    this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 3);
+                    this.updateState({ stress: Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 3) }, 'Wellness');
                 }
 
                 // V2.21: Check for support interventions
