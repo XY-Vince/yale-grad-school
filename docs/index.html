@@ -1222,6 +1222,53 @@
         };
 
         // ===========================================
+        // V3.0 Phase 0: GAME CONSTANTS
+        // Centralized magic numbers for maintainability
+        // ===========================================
+        const GAME_CONSTANTS = {
+            // Graduation Requirements
+            REQUIRED_JOURNAL_PAPERS: 3,
+            REQUIRED_CONF_PAPERS_FOR_HYBRID: 2,
+            MIN_JOURNAL_PAPERS_FOR_HYBRID: 2,
+            MAX_THESIS_PROGRESS: 100,
+            
+            // Stats Limits
+            MAX_MORALE: 100,
+            MAX_STRESS: 120,
+            MAX_NETWORK: 100,
+            MAX_ALIGNMENT: 100,
+            
+            // Morale Thresholds
+            MIN_MORALE_FOR_CRITICAL: 15,
+            MIN_MORALE_FOR_WARNING: 30,
+            
+            // Timing
+            MONTHS_PER_YEAR: 12,
+            QUALS_YEAR: 2,
+            QUALS_MONTH: 9,
+            QUALS_PREP_REQUIRED: 3,
+            
+            // Paper Review
+            MIN_PAPER_WAIT_MONTHS: 3,
+            MAX_PAPER_WAIT_MONTHS: 6,
+            REVISION_WAIT_MONTHS: 2,
+            MAX_REVISION_WAIT_MONTHS: 3,
+            
+            // Conference
+            MAX_CONFERENCES_PER_YEAR: 2,
+            CONFERENCE_COOLDOWN_MONTHS: 2,
+            
+            // Defense
+            DEFENSE_TURNS: 3,
+            BASE_COMMITTEE_APPROVAL: 35,
+            
+            // Items
+            MAX_FIGURES: 3,
+            MAX_IDEAS: 5,
+            MAX_KEY_DISCOVERIES: 3,
+        };
+
+        // ===========================================
         // V2.55: EVENT RESOLVER (Central Event Arbitration)
         // Prevents modal collisions and zombie events
         // All events route through here exclusively
@@ -1984,7 +2031,7 @@
                 const reasons = [];
 
                 if (papers >= 4) reasons.push('strong publication record');
-                else if (papers >= 3) reasons.push('solid publication record');
+                else if (papers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS) reasons.push('solid publication record');
                 else reasons.push('limited publications');
 
                 if ((s.strategicAlignment || 0) >= 60) reasons.push('excellent advisor alignment');
