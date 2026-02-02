@@ -4273,13 +4273,17 @@
                 const bounds = { figure: GAME_CONSTANTS.MAX_FIGURES, idea: GAME_CONSTANTS.MAX_IDEAS, key_discovery: GAME_CONSTANTS.MAX_KEY_DISCOVERIES };
                 const current = this.state.items[id] || 0;
                 const max = bounds[id] || 99;
-                this.state.items[id] = Math.min(max, current + count);
+                const newItems = { ...this.state.items };
+                newItems[id] = Math.min(max, current + count);
+                this.updateState({ items: newItems }, 'Inventory');
             },
 
             // Remove item
             removeItem(id, count = 1) {
-                this.state.items[id] = Math.max(0, (this.state.items[id] || 0) - count);
-                if (this.state.items[id] === 0) delete this.state.items[id];
+                const newItems = { ...this.state.items };
+                newItems[id] = Math.max(0, (newItems[id] || 0) - count);
+                if (newItems[id] === 0) delete newItems[id];
+                this.updateState({ items: newItems }, 'Inventory');
             },
 
             // Check status
@@ -4289,12 +4293,16 @@
 
             // Add status
             addStatus(id) {
-                this.state.statuses.add(id);
+                const newStatuses = new Set(this.state.statuses);
+                newStatuses.add(id);
+                this.updateState({ statuses: newStatuses }, 'Inventory');
             },
 
             // Remove status
             removeStatus(id) {
-                this.state.statuses.delete(id);
+                const newStatuses = new Set(this.state.statuses);
+                newStatuses.delete(id);
+                this.updateState({ statuses: newStatuses }, 'Inventory');
             },
 
             // V1.9: Load game from within gameplay
