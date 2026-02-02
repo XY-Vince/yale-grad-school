@@ -6202,7 +6202,7 @@
                 const thesisBonus = (this.state.thesisProgress || 0) >= 100 ? 15 : 0;
                 const paperBonus = (this.getItem('paper') || 0) * 5;
                 const confBonus = (this.state.confPaperCount || 0) * 2;
-                const baseApproval = 35 + thesisBonus + Math.floor((paperBonus + confBonus) / 2);
+                const baseApproval = GAME_CONSTANTS.BASE_COMMITTEE_APPROVAL + thesisBonus + Math.floor((paperBonus + confBonus) / 2);
 
                 // Apply skepticism (higher skepticism = lower start)
                 const startApproval = Math.max(25, Math.min(50, Math.floor(baseApproval / skepticism)));
