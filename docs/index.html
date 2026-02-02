@@ -2287,7 +2287,7 @@
                     // V2.50: Slowed rival progress (target ~30 months to publish)
                     npc.progress += 2 + Math.floor(this.random() * 4); // 2-5 per month
                     npc.stress += Math.floor(this.random() * 16) - 5; // -5 to +10
-                    npc.stress = Math.max(0, Math.min(100, npc.stress));
+                    npc.stress = Math.max(0, Math.min(GAME_CONSTANTS.MAX_STRESS, npc.stress));
 
                     // Archetype-specific checks
                     if (npc.archetype === 'The_Rival') {
@@ -2392,11 +2392,11 @@
                     if (playerPapers === 0) {
                         // Rival truly published first - full penalty
                         this.state.morale = Math.max(0, this.state.morale - 5);
-                        this.state.stress = Math.min(100, (this.state.stress || 0) + 10);
+                        this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 10);
                         this.showMessage(`📄 ${npc.name} published before you!\n\nThe pressure is on.\n-5 morale, +10 stress`);
                     } else {
                         // Player already has papers - rival is just keeping pace
-                        this.state.stress = Math.min(100, (this.state.stress || 0) + 5);
+                        this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 5);
                         this.appendSystemEvent(`📄 ${npc.name} published another paper.\nYou have ${playerPapers} paper(s). Keep up the pace! +5 stress`);
                     }
                 } else {
@@ -2908,7 +2908,7 @@
                 s.peerNetwork = Math.max(0, (s.peerNetwork || 0) - 20);
                 rival.progress = Math.max(0, rival.progress - 30);
                 rival.resentment = (rival.resentment || 0) + 15;
-                rival.stress = Math.min(100, rival.stress + 10);
+                rival.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, rival.stress + 10);
 
                 // High resentment makes future collaboration impossible
                 if (rival.resentment >= 50) {
@@ -3138,7 +3138,7 @@
                             }
                         } else {
                             s.morale = Math.max(0, s.morale - 15);
-                            s.stress = Math.min(100, (s.stress || 0) + 15); // V2.53: Real downside
+                            s.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (s.stress || 0) + 15); // V2.53: Real downside
                             s.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 3); // V2.53: Reputation hit
                             msg = `🎤 TALK: Rough Reception\n\n-15 morale, +15 stress, -3 reputation\n\n"Tough questions. The room was skeptical."\n\n⚠️ High risk play didn't work this time`;
                         }
@@ -3384,7 +3384,7 @@
                         } else {
                             paper.bonusChance = (paper.bonusChance || 0) - 0.15;
                             s.morale = Math.max(0, s.morale - 15);
-                            s.stress = Math.min(100, (s.stress || 0) + 10);
+                            s.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (s.stress || 0) + 10);
                             s.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 5);
                             msg = `⚔️ AGGRESSIVE: Backlash!\n\n-15% acceptance, -15 morale, +10 stress\n-5 advisor alignment\n\n"That escalated poorly."\n\n⚠️ Force the issue — backfired`;
                         }
@@ -4685,13 +4685,13 @@
                     if (this.state.year === 1 && this.state.month === 9 && prepLevel < 3) {
                         this.appendMessage('⚠️ QUALS APPROACHING: Your qualifying exam is in 12 months (September Year 2). Start preparing!');
                     } else if (this.state.year === 2 && this.state.month === 7) {
-                        if (prepLevel >= 3) {
+                        if (prepLevel >= GAME_CONSTANTS.QUALS_PREP_REQUIRED) {
                             this.appendMessage('✅ QUALS IN 2 MONTHS: Prep level = ' + prepLevel + '. You\'re ready!');
                         } else {
                             this.showMessage('⏳ QUALS IN 2 MONTHS!\n\nPrep level = ' + prepLevel + '\nYou need 3 to pass!\n\n👉 Study for Quals NOW');
                         }
                     } else if (this.state.year === 2 && this.state.month === 8) {
-                        if (prepLevel >= 3) {
+                        if (prepLevel >= GAME_CONSTANTS.QUALS_PREP_REQUIRED) {
                             this.appendMessage('✅ QUALS NEXT MONTH: Prep level = ' + prepLevel + '. Good luck!');
                         } else {
                             this.showMessage('🚨 QUALS NEXT MONTH! Prep level = ' + prepLevel + '. CRITICAL!\n\n👉 Go to Actions → Study for Quals');
@@ -4885,7 +4885,7 @@
                 const hasStudyGroup = (this.state.peerNetwork || 0) >= 50;
                 const effectiveLevel = this.state.qualifyLevel + (hasStudyGroup ? 1 : 0);
 
-                if (effectiveLevel >= 3) {
+                if (effectiveLevel >= GAME_CONSTANTS.QUALS_PREP_REQUIRED) {
                     if (hasStudyGroup && this.state.qualifyLevel < 2) {
                         msg += '✅ Your study group helped you pass!';
                     } else {
@@ -5039,7 +5039,7 @@
                 }
 
                 // 5. DISSEMINATION: Submit Paper (when ready) - both paths are valid for graduation
-                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
+                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= GAME_CONSTANTS.MAX_FIGURES) {
                     actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (3mo, +network)' });
                     actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (3-6mo)' });
                 }
@@ -5218,7 +5218,7 @@
                 }
 
                 // V2.2 Pro: Conference paper submission (if has figures but want quick publish)
-                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= 3) {
+                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= GAME_CONSTANTS.MAX_FIGURES) {
                     actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (3mo, +network)' });
                     actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (3-6mo)' });
                 }
