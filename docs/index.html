@@ -3545,7 +3545,7 @@
                 const papers = (this.getItem('paper') || 0) + Math.floor((s.confPaperCount || 0) / 2);
 
                 // FINALE: 3+ papers and thesis prep done
-                if (papers >= 3 && s.defensePrepared) {
+                if (papers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS && s.defensePrepared) {
                     if (s.gameMode !== 'FINALE') {
                         s.gameMode = 'FINALE';
                         this.appendSystemEvent('🎓 DEFENSE MODE: Time to finish your thesis!');
@@ -4524,7 +4524,7 @@
                     decay = Math.ceil(decay / 2);
                 }
                 // V2.12: Light at the End of the Tunnel - 50% decay reduction with 3 journal papers
-                if ((this.getItem('paper') || 0) >= 3) {
+                if ((this.getItem('paper') || 0) >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS) {
                     decay = Math.ceil(decay / 2);
                 }
                 this.state.morale = Math.max(0, this.state.morale - decay);
@@ -5438,7 +5438,7 @@
                 }
 
                 // V2.25: Defend Thesis (requires 100% thesis, 3+ papers, quals passed)
-                if ((g.thesis_progress || 0) >= 100 && papers >= 3 && s.qualsPassed && !s.defenseOutcome) {
+                if ((g.thesis_progress || 0) >= GAME_CONSTANTS.MAX_THESIS_PROGRESS && papers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS && s.qualsPassed && !s.defenseOutcome) {
                     const readinessText = this.getDefenseReadinessText();
                     actions.push({
                         id: 'defend_thesis',
@@ -6141,7 +6141,7 @@
                 }
 
                 // V2.43: Three clear defense paths (only checked after thesis complete)
-                if (journals >= 3) {
+                if (journals >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS) {
                     allowed = true;
                     baseSkepticism = 1.0;
                     label = 'Gold Standard';
@@ -6567,7 +6567,7 @@
                 }
                 // V2.12: Light at the End of the Tunnel (3 journal papers)
                 const journalPapersCount = this.getItem('paper') || 0;
-                if (journalPapersCount >= 3) {
+                if (journalPapersCount >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS) {
                     statusHTML += `<span class="status-badge positive">🏁 Almost There!</span>`;
                 }
 
