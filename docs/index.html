@@ -2376,7 +2376,7 @@
                     // Check collaboration dependency
                     if (npc.collaborations > 2) {
                         // V2.52: Mutate thesisProgress (single source of truth)
-                        this.state.thesisProgress = Math.max(0, (this.state.thesisProgress || 0) - 10);
+                        this.updateState({ thesisProgress: Math.max(0, (this.state.thesisProgress || 0) - 10) }, 'Progression');
                         this.appendSystemEvent(`🎓 ${npc.name} defended and left the lab.\nYou lost a key source of support.\n-15 network, -10 morale, -10% thesis progress`);
                     } else {
                         this.appendSystemEvent(`🎓 ${npc.name} defended and left the lab.\nYou lost a key source of support.\n-15 network, -10 morale`);
@@ -2845,7 +2845,7 @@
 
                 if (npc.archetype === 'The_Senior') {
                     // Senior provides mentorship
-                    this.state.strategicAlignment = Math.min(100, (this.state.strategicAlignment || 0) + 3);
+                    this.updateState({ strategicAlignment: Math.min(100, (this.state.strategicAlignment || 0) + 3) }, 'Social');
                     return `🤝 Collaboration with ${npc.name}!\n+5 morale, +3 network, +3 alignment\n"${npc.name} shares valuable experience."`;
                 } else {
                     // Rival collaboration is tense but productive
@@ -2992,7 +2992,7 @@
 
             // V2.28: Spend funding
             spendFunding(cost) {
-                this.state.fundingMonths = Math.max(0, (this.state.fundingMonths || 0) - cost);
+                this.updateState({ fundingMonths: Math.max(0, (this.state.fundingMonths || 0) - cost) }, 'Academic');
             },
 
             // V2.28: Get current season
@@ -4481,7 +4481,7 @@
                 const isSemester = (currentMonth >= 1 && currentMonth <= 5) || (currentMonth >= 8 && currentMonth <= 12); // Spring or Fall
                 const canEarnCredits = isSemester && !this.state.isTeaching && !this.state.onMedicalLeave;
                 if (canEarnCredits) {
-                    this.state.credits = (this.state.credits || 0) + 3;
+                    this.updateState({ credits: (this.state.credits || 0) + 3 }, 'Academic');
                 }
 
                 // V2.27: Process labmates each month
@@ -4737,7 +4737,7 @@
                         // Soft cap: reduced impact
                         const reducedLoss = 1 + Math.floor(this.random() * 2); // 1-2 only
                         this.updateState({ morale: Math.max(0, this.state.morale - reducedLoss) }, 'Wellness');
-                        this.state.strategicAlignment = (this.state.strategicAlignment || 0) + 2; // Self-awareness
+                        this.updateState({ strategicAlignment: (this.state.strategicAlignment || 0) + 2 }, 'Social'); // Self-awareness
                         this.appendRandomEvent('🧘 You recognize this feeling again. It passes faster this time. (-' + reducedLoss + ' morale, +2 alignment)');
                     } else {
                         const imposterMsgs = [
@@ -6387,7 +6387,7 @@
             thesisStay() {
                 document.getElementById('thesis-modal').classList.remove('active');
                 this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 20) }, 'Wellness');
-                this.state.advisorScore = Math.min(100, this.state.advisorScore + 10);
+                this.updateState({ advisorScore: Math.min(100, this.state.advisorScore + 10) }, 'Social');
                 this.showMessage('You decide to stay and do more research. Your advisor is pleased. (+20 morale)');
                 this.advanceMonth();
             },
