@@ -2769,7 +2769,7 @@
                 // Soft cap: max 2 per year
                 if (workshopsThisYear >= 2) {
                     s.morale = Math.max(0, s.morale - 3);
-                    s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + 2);
+                    s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 2);
                     return `📋 Workshop Paper Submitted (Diminished Returns)\n-3 morale, +2 network\n\n⚠️ You've already submitted ${workshopsThisYear} this year.\nConsider focusing on journal submissions.`;
                 }
 
@@ -2777,7 +2777,7 @@
                 s.workshopsThisYear = workshopsThisYear + 1;
                 s.workshopPapersTotal = (s.workshopPapersTotal || 0) + 1;
                 s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 8);
-                s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + 5);
+                s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 5);
 
                 // Bonus: boost next journal acceptance
                 s.workshopJournalBoost = (s.workshopJournalBoost || 0) + 0.05;
@@ -3101,7 +3101,7 @@
                     // V2.53: POSTER - Damage Control / Stability (guaranteed safety)
                     case 'conf_poster':
                         this.spendFunding(conf.fundingCost);
-                        s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + Math.floor(conf.networkGain * 0.3));
+                        s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + Math.floor(conf.networkGain * 0.3));
                         s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
                         s.stress = Math.max(0, (s.stress || 0) - 20); // V2.53: Stress reduction
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
@@ -3127,7 +3127,7 @@
                         const talkSuccess = this.random() < talkSuccessChance;
 
                         if (talkSuccess) {
-                            s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + conf.networkGain * 1.5); // V2.53: Higher upside
+                            s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + conf.networkGain * 1.5); // V2.53: Higher upside
                             s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 20);
                             s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 5); // V2.53: Reputation boost
                             msg = `🎤 TALK: Big Win!\n\n+${Math.floor(conf.networkGain * 1.5)} network, +20 morale, +5 reputation\n\n"Your talk was the highlight. People took notice."\n\n★ Trade safety for visibility — paid off!`;
@@ -3149,7 +3149,7 @@
                         this.spendFunding(conf.fundingCost);
                         const existingNetwork = s.peerNetwork || 0;
                         const networkBonus = Math.floor(conf.networkGain * (1 + existingNetwork * 0.01)); // Scales with existing network
-                        s.peerNetwork = Math.min(100, existingNetwork + networkBonus);
+                        s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, existingNetwork + networkBonus);
                         s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5); // V2.53: Reduced immediate morale
                         s.stress = Math.max(0, (s.stress || 0) - 15);
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
@@ -4861,10 +4861,10 @@
 
                 // V2.21: Accumulate stress based on actions and status
                 if (this.hasStatus('exhaustion')) {
-                    this.state.stress = Math.min(120, (this.state.stress || 0) + 5);
+                    this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 5);
                 }
                 if (s.morale < 30) {
-                    this.state.stress = Math.min(120, (this.state.stress || 0) + 3);
+                    this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 3);
                 }
 
                 // V2.21: Check for support interventions
@@ -5522,7 +5522,7 @@
                                 s.strategicAlignment = (s.strategicAlignment || 0) + 2;
                                 msg = '📚 You read papers and gained perspective. (+2 alignment)';
                             } else {
-                                s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + 2);
+                                s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 2);
                                 msg = '📚 Productive reading session. You noted some collaborators. (+2 network)';
                             }
                         }
@@ -5750,7 +5750,7 @@
                             }
                             msg = `🎤 Networking paid off!\n-3 morale\n📩 ${s.activeConference.emoji} ${s.activeConference.name} invitation received!`;
                         } else {
-                            s.peerNetwork = Math.min(100, (s.peerNetwork || 0) + 2);
+                            s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 2);
                             msg = `🎤 You reached out to contacts.\n-3 morale, +2 network\nNo invitations yet, but connections strengthened.\n💡 Try again in ${season === 'winter' ? 'spring/summer' : 'a few months'}!`;
                         }
                         break;
