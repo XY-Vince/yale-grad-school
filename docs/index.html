@@ -1175,7 +1175,7 @@
                 const thesisComplete = (state.thesisProgress || 0) >= 100;
                 
                 // Standard: 3 journal papers OR Hybrid: 2 journal + 2 conference
-                const portfolioEligible = journalPapers >= 3 || (journalPapers >= 2 && confPapers >= 2);
+                const portfolioEligible = journalPapers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS || (journalPapers >= GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID && confPapers >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID);
                 
                 return thesisComplete && portfolioEligible && state.qualsPassed;
             },
@@ -1184,7 +1184,7 @@
             isPortfolioEligible: (state) => {
                 const journalPapers = state.papers?.filter(p => p.type === 'journal').length || 0;
                 const confPapers = state.papers?.filter(p => p.type === 'conference').length || 0;
-                return journalPapers >= 3 || (journalPapers >= 2 && confPapers >= 2);
+                return journalPapers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS || (journalPapers >= GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID && confPapers >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID);
             },
             
             // Get detailed contract status for UI
@@ -1193,12 +1193,12 @@
                 const confPapers = state.papers?.filter(p => p.type === 'conference').length || 0;
                 
                 return {
-                    thesisComplete: (state.thesisProgress || 0) >= 100,
+                    thesisComplete: (state.thesisProgress || 0) >= GAME_CONSTANTS.MAX_THESIS_PROGRESS,
                     thesisProgress: state.thesisProgress || 0,
                     journalPapers,
                     confPapers,
                     qualsPassed: state.qualsPassed,
-                    portfolioEligible: journalPapers >= 3 || (journalPapers >= 2 && confPapers >= 2),
+                    portfolioEligible: journalPapers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS || (journalPapers >= GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID && confPapers >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID),
                     defenseUnlocked: GRADUATION_CONTRACT.defenseUnlocked(state)
                 };
             }
