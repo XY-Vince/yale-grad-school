@@ -2445,7 +2445,7 @@
                 return {
                     visible: true,
                     name: rival.name,
-                    progress: Math.min(100, progress),
+                    progress: Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, progress),
                     stress: stress,
                     scoopRisk: scoopRisk,
                     resentment: resentment,
@@ -4270,7 +4270,7 @@
 
             // Add item - V2.7: Hard bounds to prevent overshoot
             addItem(id, count = 1) {
-                const bounds = { figure: 3, idea: 5, key_discovery: 3 };
+                const bounds = { figure: GAME_CONSTANTS.MAX_FIGURES, idea: GAME_CONSTANTS.MAX_IDEAS, key_discovery: GAME_CONSTANTS.MAX_KEY_DISCOVERIES };
                 const current = this.state.items[id] || 0;
                 const max = bounds[id] || 99;
                 this.state.items[id] = Math.min(max, current + count);
@@ -5808,17 +5808,17 @@
                             // V2.48: Stress clamp - high stress blocks progress
                             if (currentStress >= 80) {
                                 progressGain = Math.min(progressGain, 5);
-                                msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (⚠️ STRESS BLOCKING)\n-' + moraleCost + ' morale\n\n"Can\'t focus... need a break."';
+                                msg = '📖 Thesis Progress: ' + Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (⚠️ STRESS BLOCKING)\n-' + moraleCost + ' morale\n\n"Can\'t focus... need a break."';
                             } else {
-                                msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (diminishing returns)\n-' + moraleCost + ' morale (final stretch is grueling)\n\n"Almost there..."';
+                                msg = '📖 Thesis Progress: ' + Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress (diminishing returns)\n-' + moraleCost + ' morale (final stretch is grueling)\n\n"Almost there..."';
                             }
                         } else {
                             // V2.51: Randomize early progress (20-50%, average ~35%)
                             progressGain = 20 + Math.floor(this.random() * 31); // 20-50%
-                            msg = '📖 Thesis Progress: ' + Math.min(100, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress\n-' + moraleCost + ' morale (writing is draining)\n\n"One chapter at a time..."';
+                            msg = '📖 Thesis Progress: ' + Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress\n-' + moraleCost + ' morale (writing is draining)\n\n"One chapter at a time..."';
                         }
 
-                        s.thesisProgress = Math.min(100, currentProgress + progressGain);
+                        s.thesisProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, currentProgress + progressGain);
                         s.morale = Math.max(0, s.morale - moraleCost);
 
                         // V2.50: Sync with graduation panel
@@ -6028,7 +6028,7 @@
                         const dGain = Math.max(3, dBase + dFoundation + dAlignment - dFriction);
 
                         // V2.52: Use thesisProgress as single source of truth
-                        s.thesisProgress = Math.min(100, (s.thesisProgress || 0) + dGain);
+                        s.thesisProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, (s.thesisProgress || 0) + dGain);
                         s.morale = Math.max(0, s.morale - 15);
                         s.dissertation.draft_quality += dGain * 0.2;
 
