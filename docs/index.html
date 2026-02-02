@@ -4540,7 +4540,7 @@
                 }
                 // V2.4: Respect maxMorale cap (reduced by burnout)
                 const maxMorale = this.state.maxMorale || 100;
-                this.state.morale = Math.min(maxMorale, this.state.morale);
+                this.updateState({ morale: Math.min(maxMorale, this.state.morale) }, 'Wellness');
 
                 // V2.6: Advisor happiness level effects
                 const advScore = this.state.advisorScore;
@@ -4717,7 +4717,7 @@
                     this.state.inspirationsThisYear = inspirations + 1;
                     this.state.telemetry.inspirationCount++; // V2.19: Track for balance
                     const inspireMorale = inspirations === 0 ? 15 : 10; // Diminishing
-                    this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + inspireMorale);
+                    this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + inspireMorale) }, 'Wellness');
                     this.addItem('idea');
                     this.appendRandomEvent(`💡 A sudden flash of inspiration strikes! (+${inspireMorale} morale, +1 idea)`);
                     // 20% dead end follow-up
@@ -4736,7 +4736,7 @@
                     if (currentRecentImposter.length >= 2) {
                         // Soft cap: reduced impact
                         const reducedLoss = 1 + Math.floor(this.random() * 2); // 1-2 only
-                        this.state.morale = Math.max(0, this.state.morale - reducedLoss);
+                        this.updateState({ morale: Math.max(0, this.state.morale - reducedLoss) }, 'Wellness');
                         this.state.strategicAlignment = (this.state.strategicAlignment || 0) + 2; // Self-awareness
                         this.appendRandomEvent('🧘 You recognize this feeling again. It passes faster this time. (-' + reducedLoss + ' morale, +2 alignment)');
                     } else {
@@ -4747,7 +4747,7 @@
                             '🥺 Your labmate just published - why can\'t you?'
                         ];
                         const loss = 3 + Math.floor(this.random() * 5); // 3-7
-                        this.state.morale = Math.max(0, this.state.morale - loss);
+                        this.updateState({ morale: Math.max(0, this.state.morale - loss) }, 'Wellness');
                         this.appendRandomEvent(imposterMsgs[Math.floor(this.random() * imposterMsgs.length)] + ' (-' + loss + ' morale)');
                         currentRecentImposter.push(this.state.totalMonths);
                     }
@@ -4763,7 +4763,7 @@
                     this.state.lastScoopMonth = this.state.totalMonths;
                     this.state.telemetry.scoopCount++; // V2.19: Track for balance
                     const scoopLoss = 5 + Math.floor(this.random() * 5);
-                    this.state.morale = Math.max(0, this.state.morale - scoopLoss);
+                    this.updateState({ morale: Math.max(0, this.state.morale - scoopLoss) }, 'Wellness');
                     this.appendRandomEvent('📢 Another lab just published YOUR idea! (-1 idea, -' + scoopLoss + ' morale)');
                 } else if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk && isProtected) {
                     this.appendMessage('📄 Another lab tried to scoop you, but your pre-registration protects you!');
@@ -4774,17 +4774,17 @@
                 if (month === 12) { // December holidays
                     if (this.random() < 0.5) {
                         this.appendRandomEvent('🎄 Holiday break! Time to rest. (+5 morale)');
-                        this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5);
+                        this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5) }, 'Wellness');
                     }
                 } else if (month >= 6 && month <= 8) { // Summer
                     if (this.random() < 0.15) {
                         this.appendRandomEvent('☀️ Summer focus! Fewer distractions. (+3 morale)');
-                        this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 3);
+                        this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 3) }, 'Wellness');
                     }
                 } else if (month === 9) { // September - new semester chaos
                     if (this.random() < 0.3) {
                         this.appendRandomEvent('📚 New semester chaos! So many meetings... (-3 morale)');
-                        this.state.morale = Math.max(0, this.state.morale - 3);
+                        this.updateState({ morale: Math.max(0, this.state.morale - 3) }, 'Wellness');
                     }
                 }
 
@@ -4815,7 +4815,7 @@
                         this.state.isTeaching = false;
                         this.removeStatus('teaching');
                         const teachBonus = 5 + Math.floor(this.random() * 5);
-                        this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + teachBonus);
+                        this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + teachBonus) }, 'Wellness');
                         this.updateState({ peerNetwork: Math.min(100, (this.state.peerNetwork || 0) + 5) }, 'Social'); // V2.5: +network
                         this.appendMessage('🎓 TA duty complete! Students appreciated you. (+' + teachBonus + ' morale, +5 network)');
                     }
@@ -4891,7 +4891,7 @@
                     } else {
                         msg += effectiveLevel >= 4 ? '✅ Your thorough preparation paid off!' : '✅ You passed the qualifying exam!';
                     }
-                    this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + (effectiveLevel >= 4 ? 25 : 15));
+                    this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + (effectiveLevel >= 4 ? 25 : 15)) }, 'Wellness');
                     this.state.qualsPassed = true;
 
                     // V2.11: "New Lease on Life" buff after successful retake
@@ -4903,7 +4903,7 @@
                     // V2.9: Soft fail option (once)
                     if (!this.state.qualsFailedOnce) {
                         this.state.qualsFailedOnce = true;
-                        this.state.morale = Math.max(0, this.state.morale - 25);
+                        this.updateState({ morale: Math.max(0, this.state.morale - 25) }, 'Wellness');
                         this.addStatus('exhaustion');
                         this.state.qualsDelayMonth = this.state.totalMonths + 3; // Retry in 3 months
                         msg += '❌ QUALS FAILED ❌\n';
@@ -6358,7 +6358,7 @@
                     this.endGame(true, 'graduation', 'Congratulations, you have earned your PhD!');
                 } else {
                     // Major revisions - return to game
-                    this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 20);
+                    this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 20) }, 'Wellness');
                     for (let i = 0; i < 6; i++) this.advanceMonth();
                     this.showMessage('📝 The committee requires major revisions. Take 6 months to improve your thesis, then try again.');
                     this.state.defensePrepared = false; // Must prepare again
@@ -6386,7 +6386,7 @@
 
             thesisStay() {
                 document.getElementById('thesis-modal').classList.remove('active');
-                this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 20);
+                this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 20) }, 'Wellness');
                 this.state.advisorScore = Math.min(100, this.state.advisorScore + 10);
                 this.showMessage('You decide to stay and do more research. Your advisor is pleased. (+20 morale)');
                 this.advanceMonth();
