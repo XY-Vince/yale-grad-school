@@ -2371,7 +2371,7 @@
                 if (npc.monthsRemaining <= 0) {
                     npc.active = false;
                     this.state.peerNetwork = Math.max(0, (this.state.peerNetwork || 0) - 15);
-                    this.state.morale = Math.max(0, this.state.morale - 10);
+                    this.updateState({ morale: Math.max(0, this.state.morale - 10) }, 'Wellness');
 
                     // Check collaboration dependency
                     if (npc.collaborations > 2) {
@@ -2391,7 +2391,7 @@
                     const playerPapers = this.getItem('paper') || 0;
                     if (playerPapers === 0) {
                         // Rival truly published first - full penalty
-                        this.state.morale = Math.max(0, this.state.morale - 5);
+                        this.updateState({ morale: Math.max(0, this.state.morale - 5) }, 'Wellness');
                         this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 10);
                         this.showMessage(`📄 ${npc.name} published before you!\n\nThe pressure is on.\n-5 morale, +10 stress`);
                     } else {
@@ -2400,7 +2400,7 @@
                         this.appendSystemEvent(`📄 ${npc.name} published another paper.\nYou have ${playerPapers} paper(s). Keep up the pace! +5 stress`);
                     }
                 } else {
-                    this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5);
+                    this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5) }, 'Wellness');
                     this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 5);
                     this.appendSystemEvent(`📄 ${npc.name} published!\nThe lab's reputation helps everyone. +5 morale, +5 network`);
                 }
@@ -2840,7 +2840,7 @@
                 npc.loyalty += 10;
 
                 // Gain partial paper credit
-                this.state.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5);
+                this.updateState({ morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5) }, 'Wellness');
                 this.state.peerNetwork = Math.min(100, (this.state.peerNetwork || 0) + 3);
 
                 if (npc.archetype === 'The_Senior') {
@@ -4527,7 +4527,7 @@
                 if ((this.getItem('paper') || 0) >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS) {
                     decay = Math.ceil(decay / 2);
                 }
-                this.state.morale = Math.max(0, this.state.morale - decay);
+                this.updateState({ morale: Math.max(0, this.state.morale - decay) }, 'Wellness');
                 // V2.11: Track low morale months for escalating MS-Out
                 if (this.state.morale < GAME_CONSTANTS.MIN_MORALE_FOR_CRITICAL) {
                     this.state.lowMoraleMonths = (this.state.lowMoraleMonths || 0) + 1;
