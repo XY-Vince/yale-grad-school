@@ -1630,7 +1630,7 @@
                 const cooldownPassed = (s.totalMonths - (s.lastPeerInterventionMonth || 0)) >= 6;
 
                 // Peer intervention: network >= 60, morale < 30, off cooldown
-                if (network >= 60 && s.morale < 30 && cooldownPassed) {
+                if (network >= 60 && s.morale < GAME_CONSTANTS.MIN_MORALE_FOR_WARNING && cooldownPassed) {
                     s.lastPeerInterventionMonth = s.totalMonths;
                     s.stress = Math.max(0, s.stress - 30);
                     s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
@@ -4535,7 +4535,7 @@
                     this.state.lowMoraleMonths = 0;
                 }
                 // V2.19: Telemetry - track months spent in low morale
-                if (this.state.morale < 30) {
+                if (this.state.morale < GAME_CONSTANTS.MIN_MORALE_FOR_WARNING) {
                     this.state.telemetry.moraleLowMonths++;
                 }
                 // V2.4: Respect maxMorale cap (reduced by burnout)
@@ -4863,7 +4863,7 @@
                 if (this.hasStatus('exhaustion')) {
                     this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 5);
                 }
-                if (s.morale < 30) {
+                if (s.morale < GAME_CONSTANTS.MIN_MORALE_FOR_WARNING) {
                     this.state.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + 3);
                 }
 
@@ -5283,9 +5283,9 @@
                 // V2.15: MS-Out option (requires 30 credits + 18 months)
                 const hasEnoughCredits = (s.credits || 0) >= 30;
                 const hasEnoughTime = s.totalMonths >= 18;
-                if (s.msOutOffered && s.morale < 30 && hasEnoughCredits && hasEnoughTime) {
+                if (s.msOutOffered && s.morale < GAME_CONSTANTS.MIN_MORALE_FOR_WARNING && hasEnoughCredits && hasEnoughTime) {
                     actions.push({ id: 'ms_out', name: '🚪 Master\'s Exit', desc: 'Leave with MS degree' });
-                } else if (s.msOutOffered && s.morale < 30) {
+                } else if (s.msOutOffered && s.morale < GAME_CONSTANTS.MIN_MORALE_FOR_WARNING) {
                     const missing = [];
                     if (!hasEnoughCredits) missing.push((30 - (s.credits || 0)) + ' credits');
                     if (!hasEnoughTime) missing.push((18 - s.totalMonths) + ' months');
