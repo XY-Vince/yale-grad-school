@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.57</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.58</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -1727,9 +1727,9 @@
 
                     // Stress relief
                     s.stress = Math.max(0, s.stress - 40);
-                    s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 15);
+                    s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 18);
 
-                    this.appendAdvisorEvent('Your advisor noticed you struggling and scheduled a supportive meeting. (+15 morale, stress reduced)');
+                    this.appendAdvisorEvent('Your advisor noticed you struggling and scheduled a supportive meeting. (+18 morale, stress reduced)');
                     return true;
                 }
 
@@ -4233,6 +4233,9 @@
                     peerReviewShieldActive: false,
                     equipmentStabilizedUntil: 0, // V2.24: Preventive calibration
 
+                    // V2.58: Bad luck protection (pity timer)
+                    consecutiveFailures: 0,      // Reset on any success
+
                     // V2.28: Funding and Conference System
                     fundingMonths: 36,           // 3 years of funding (burns 0.5/month)
                     activeConference: null,      // Current conference invitation
@@ -5553,7 +5556,7 @@
                     actions.push({
                         id: 'write_dissertation',
                         name: '📝 Write Dissertation',
-                        desc: `-15 Morale: Progress thesis. ${flavorText}`,
+                        desc: `-12 Morale: Progress thesis. ${flavorText}`,
                         telemetry: 'dissertation'
                     });
                 }
@@ -5665,12 +5668,20 @@
                             '🧑‍🏫 Advisor: "Inconclusive. Try a different angle."',
                             '🧑‍🏫 Advisor: "Not quite what I had in mind..."'
                         ];
-                        if (this.random() < 0.45) {
+                        // V2.58: Bad luck protection
+                        const ideaFailures = s.consecutiveFailures || 0;
+                        let ideaPityBonus = 0;
+                        if (ideaFailures >= 5) ideaPityBonus = 1.0;
+                        else if (ideaFailures >= 4) ideaPityBonus = 0.8;
+                        
+                        if (this.random() < Math.min(1.0, 0.45 + ideaPityBonus)) {
                             this.removeItem('idea');
                             this.addItem('initial_findings');
                             s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
+                            s.consecutiveFailures = 0; // Reset on success
                             msg = '🧑‍🏫 Advisor: "This is promising! Keep going." (+5 morale)\n' + this.pick(ideaSuccess);
                         } else {
+                            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
                             msg = this.pick(ideaFail);
                         }
                         break;
@@ -5690,13 +5701,21 @@
                         // V2.12: Renewed Perspective bonus (+10%)
                         // V2.53: 45% base rate (balanced)
                         const perspectiveBonus = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
-                        if (this.random() < (0.45 + perspectiveBonus)) {
+                        // V2.58: Bad luck protection
+                        const findFailures = s.consecutiveFailures || 0;
+                        let findPityBonus = 0;
+                        if (findFailures >= 5) findPityBonus = 1.0;
+                        else if (findFailures >= 4) findPityBonus = 0.8;
+                        
+                        if (this.random() < Math.min(1.0, 0.45 + perspectiveBonus + findPityBonus)) {
                             this.removeItem('initial_findings');
                             this.addItem('key_discovery');
                             s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
+                            s.consecutiveFailures = 0; // Reset on success
                             msg = this.pick(findSuccess);
                             if (perspectiveBonus > 0) msg += '\n✨ Renewed perspective helped!';
                         } else {
+                            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
                             msg = this.pick(findFail);
                         }
                         break;
@@ -5707,6 +5726,7 @@
                             s.peerReviewShieldActive = false;
                             this.addItem('figure');
                             s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
+                            s.consecutiveFailures = 0; // Reset on success
                             msg = '🤝 PEER-ASSISTED SUCCESS!\n📊 Figure created thanks to peer feedback! (' + this.getItem('figure') + '/3 needed)\n"Your colleague\'s notes helped you nail the visualization."';
                             break;
                         }
@@ -5716,10 +5736,19 @@
                         const figBonus = figRejections >= 2 ? 0.3 : 0;
                         // V2.12: Renewed Perspective bonus (+10%)
                         const figPerspective = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
-                        if (this.random() < (0.6 + figBonus + figPerspective)) {
+                        // V2.58: Bad luck protection (pity timer)
+                        const figFailures = s.consecutiveFailures || 0;
+                        let figPityBonus = 0;
+                        if (figFailures >= 5) figPityBonus = 1.0; // Guarantee success
+                        else if (figFailures >= 4) figPityBonus = 0.8;
+                        
+                        const figSuccessRate = Math.min(1.0, 0.6 + figBonus + figPerspective + figPityBonus);
+                        
+                        if (this.random() < figSuccessRate) {
                             this.addItem('figure');
                             s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 3);
                             s.consecutiveFigRejections = 0; // Reset on success
+                            s.consecutiveFailures = 0; // Reset pity timer
                             if (figRejections >= 2) {
                                 msg = '📊 You\'re finally seeing what reviewers want! Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)';
                             } else {
@@ -5727,6 +5756,7 @@
                             }
                         } else {
                             s.consecutiveFigRejections = figRejections + 1;
+                            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
                             const figFail = [
                                 '😔 The visualization isn\'t clear enough...',
                                 '😔 Reviewer 2 would hate this figure.',
@@ -5772,10 +5802,10 @@
                         break;
 
                     case 'break':
-                        const gain = 5 + Math.floor(this.random() * 10);
-                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + gain);
+                        // V2.58: Fixed recovery amount for balance
+                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 18);
                         s.advisorScore = Math.max(0, s.advisorScore - 3);
-                        msg = this.getMessage('break') + ' (+' + gain + ' morale)';
+                        msg = this.getMessage('break') + ' (+18 morale)';
                         if (this.hasStatus('exhaustion') && this.random() < 0.4) {
                             this.removeStatus('exhaustion');
                             msg += '\n💆 You feel refreshed!';
@@ -5877,14 +5907,39 @@
                         break;
 
                     case 'quals':
-                        const points = Math.floor(this.random() * 3);
-                        s.qualifyLevel += points;
-                        if (points === 0) {
-                            msg = '📖 You studied but didn\'t retain much...';
-                        } else if (points === 1) {
-                            msg = '📖 Decent study session!';
+                        // V2.58: Weighted random for quals study (60% = 1, 20% = 0, 20% = 2)
+                        // V2.58: Bad luck protection - after 4+ failures, add 80% bonus; at 5+, guarantee success
+                        const qualsFailures = s.consecutiveFailures || 0;
+                        const roll = this.random();
+                        let points;
+                        
+                        if (qualsFailures >= 5) {
+                            points = 2; // Guaranteed high progress
+                        } else if (qualsFailures >= 4) {
+                            // 80% bonus: normally 60% for 1pt, now add 80% chance to upgrade 0→1 or 1→2
+                            const basePoints = roll < 0.6 ? 1 : (roll < 0.8 ? 0 : 2);
+                            if (basePoints === 0 && this.random() < 0.8) points = 1;
+                            else if (basePoints === 1 && this.random() < 0.8) points = 2;
+                            else points = basePoints;
                         } else {
-                            msg = '📖 Great progress on exam prep!';
+                            points = roll < 0.6 ? 1 : (roll < 0.8 ? 0 : 2);
+                        }
+                        
+                        s.qualifyLevel += points;
+                        
+                        if (points === 0) {
+                            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
+                            msg = '📖 You studied but didn\'t retain much...';
+                            if (s.consecutiveFailures >= 3) {
+                                msg += '\n💡 Keep going - you\'re building study habits!';
+                            }
+                        } else {
+                            s.consecutiveFailures = 0; // Reset on success
+                            if (points === 1) {
+                                msg = '📖 Decent study session!';
+                            } else {
+                                msg = '📖 Great progress on exam prep!';
+                            }
                         }
                         break;
 
@@ -6150,15 +6205,15 @@
 
                         // V2.52: Use thesisProgress as single source of truth
                         s.thesisProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, (s.thesisProgress || 0) + dGain);
-                        s.morale = Math.max(0, s.morale - 15);
+                        s.morale = Math.max(0, s.morale - 12);
                         s.dissertation.draft_quality += dGain * 0.2;
 
                         // Risk: 20% chance of revision request
                         if (this.random() < 0.2) {
                             s.dissertation.committee_friction += 3;
-                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.thesisProgress}%)\n-15 Morale\n\n⚠️ Your advisor requests structural revisions.\nCommittee friction increased.`;
+                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.thesisProgress}%)\n-12 Morale\n\n⚠️ Your advisor requests structural revisions.\nCommittee friction increased.`;
                         } else {
-                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.thesisProgress}%)\n-15 Morale\n\n"Good progress. Keep writing."`;
+                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.thesisProgress}%)\n-12 Morale\n\n"Good progress. Keep writing."`;
                         }
 
                         // Check for phase transition
