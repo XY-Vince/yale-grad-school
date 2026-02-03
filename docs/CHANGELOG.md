@@ -2,6 +2,38 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.59.1] - 2026-02-03 "Hotfix: Morale Death Spiral"
+
+**Theme**: Emergency balance patch to stop exhaustion from causing inevitable game overs.
+
+### 🚨 Critical Fixes
+- **"Take a Break" Reliability**: Exhaustion cure chance increased from 40% → 60%
+- **Exhaustion Penalty Reduced**: Monthly morale decay penalty reduced from 6 → 4
+- **Safety Valve for Reading**: 5% exhaustion trigger now only when morale > 20
+
+### 🎯 Impact
+Players should survive past Month 15 without getting trapped in an unavoidable death spiral.
+
+---
+
+## [2.59.0] - 2026-02-03 "Balance & Polish"
+
+**Theme**: Event system integration and gameplay balance improvements.
+
+### 🛠️ EventResolver Integration
+- **EventResolver Wired Up**: Now instantiated in `game.init()` and ticked in `advanceMonth()`.
+- **Refactored showMessage**: Messages now route through EventResolver for centralized event queuing.
+- **Modal Spam Prevention**: EventResolver ensures only 1 modal per turn maximum (highest priority).
+- **Fallback Support**: Graceful degradation if EventResolver unavailable (e.g., early initialization).
+
+### ⚖️ Gameplay Balance
+- **Research Success Rates Boosted**:
+  - **Work on Idea**: Base success rate increased from 45% → 55%.
+  - **Develop Findings**: Base success rate increased from 45% → 60%.
+  - Reduced early-game grind frustration while maintaining challenge.
+
+---
+
 ## [2.57.0] - 2026-02-01 "V3.0 Upgrade - Phase 0 Complete"
 
 **Theme**: Architecture hardening completion - state integrity and modal discipline.

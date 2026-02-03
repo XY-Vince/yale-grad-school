@@ -751,7 +751,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.58</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.59.1</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -1484,7 +1484,7 @@
                 FALL: { start: 8, end: 12 },
                 // Decay rates
                 BASE_DECAY: 4,
-                EXHAUSTION_DECAY: 6,
+                EXHAUSTION_DECAY: 4,
                 UNHAPPY_ADVISOR_DECAY: 6,
                 TA_DECAY: 3,
                 // Cooldowns
@@ -4317,6 +4317,9 @@
 
                 this.state = this.initState();
 
+                // V2.59: Instantiate EventResolver
+                this.eventResolver = new EventResolver(this);
+
                 // V2.20: Apply selected specialization
                 this.state.specialization = this.selectedSpecialization;
                 const spec = this.SPECIALIZATIONS[this.selectedSpecialization];
@@ -4443,9 +4446,9 @@
             typeTimer: null,
             previousEvent: '', // V2.20: Track last event (not last month)
             waitingForAcknowledge: false, // V2.20: Block actions until acknowledged
-            messageQueue: [], // V2.50: Queue for multiple modals per turn
+            messageQueue: [], // V2.50: Queue for multiple modals per turn (deprecated, using EventResolver)
 
-            showMessage(msg) {
+            showMessage(msg, priority = 'Major') {
                 // V2.57: Log sanitization - remove instructional clutter
                 const SUPPRESS_PATTERNS = [
                     /\(Remember to study\)/gi,
@@ -4459,33 +4462,34 @@
                 }
                 cleanMsg = cleanMsg.replace(/\s+/g, ' ').trim();
 
-                // V2.50: Queue messages if modal already showing
-                if (this.waitingForAcknowledge) {
-                    this.messageQueue.push(cleanMsg);
-                    return;
-                }
+                // V2.59: Use EventResolver for event queuing and modal control
+                if (this.eventResolver) {
+                    this.eventResolver.enqueue({
+                        id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        message: cleanMsg,
+                        priority: priority,
+                        owner: 'System'
+                    });
+                } else {
+                    // Fallback: Direct modal display (e.g., during initialization)
+                    const el = document.getElementById('message-log');
+                    const prevEl = document.getElementById('message-log-prev');
+                    if (this.typeTimer) clearInterval(this.typeTimer);
 
-                const el = document.getElementById('message-log');
-                const prevEl = document.getElementById('message-log-prev');
-                if (this.typeTimer) clearInterval(this.typeTimer);
+                    // Shift current event to "Previously"
+                    const currentText = el.textContent.trim();
+                    if (prevEl && currentText && currentText !== 'Your PhD journey begins...' && currentText !== '-') {
+                        this.previousEvent = currentText;
+                        prevEl.textContent = this.previousEvent;
+                    }
 
-                // V2.20: Shift current event to "Previously"
-                const currentText = el.textContent.trim();
-                if (prevEl && currentText && currentText !== 'Your PhD journey begins...' && currentText !== '-') {
-                    this.previousEvent = currentText;
-                    prevEl.textContent = this.previousEvent;
-                }
+                    el.textContent = cleanMsg;
+                    this.showEventModal(cleanMsg);
+                    this.waitingForAcknowledge = true;
 
-                // Display message in log
-                el.textContent = cleanMsg;
-
-                // V2.37: Show centered modal for user confirmation
-                this.showEventModal(cleanMsg);
-                this.waitingForAcknowledge = true;
-
-                // V2.2/V2.42: Log to event history (modal: true = shown with modal)
-                if (this.state && this.state.eventLog && cleanMsg.length > 0) {
-                    this.state.eventLog.push({ month: this.state.totalMonths, text: cleanMsg, modal: true });
+                    if (this.state && this.state.eventLog && cleanMsg.length > 0) {
+                        this.state.eventLog.push({ month: this.state.totalMonths, text: cleanMsg, modal: true });
+                    }
                 }
             },
 
@@ -4997,6 +5001,11 @@
 
                 // V2.19: Update game mode based on current state
                 this.updateGameMode();
+
+                // V2.59: EventResolver tick - resolve queued events
+                if (this.eventResolver) {
+                    this.eventResolver.resolveTick(this.state);
+                }
 
                 this.updateUI();
             },
@@ -5650,7 +5659,7 @@
                                 msg = '📚 Productive reading session. You noted some collaborators. (+2 network)';
                             }
                         }
-                        if (this.random() < 0.05) {
+                        if (s.morale > 20 && this.random() < 0.05) {
                             this.addStatus('exhaustion');
                             msg += '\n😫 All that reading has left you exhausted...';
                         }
@@ -5674,7 +5683,8 @@
                         if (ideaFailures >= 5) ideaPityBonus = 1.0;
                         else if (ideaFailures >= 4) ideaPityBonus = 0.8;
                         
-                        if (this.random() < Math.min(1.0, 0.45 + ideaPityBonus)) {
+                        // V2.59: Boosted base success rate from 0.45 to 0.55
+                        if (this.random() < Math.min(1.0, 0.55 + ideaPityBonus)) {
                             this.removeItem('idea');
                             this.addItem('initial_findings');
                             s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
@@ -5699,15 +5709,15 @@
                             '🧑‍🏫 Advisor: "Reviewers would tear this apart..."'
                         ];
                         // V2.12: Renewed Perspective bonus (+10%)
-                        // V2.53: 45% base rate (balanced)
+                        // V2.59: 60% base rate (boosted from 45%)
                         const perspectiveBonus = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
                         // V2.58: Bad luck protection
                         const findFailures = s.consecutiveFailures || 0;
                         let findPityBonus = 0;
                         if (findFailures >= 5) findPityBonus = 1.0;
                         else if (findFailures >= 4) findPityBonus = 0.8;
-                        
-                        if (this.random() < Math.min(1.0, 0.45 + perspectiveBonus + findPityBonus)) {
+
+                        if (this.random() < Math.min(1.0, 0.60 + perspectiveBonus + findPityBonus)) {
                             this.removeItem('initial_findings');
                             this.addItem('key_discovery');
                             s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
@@ -5806,7 +5816,7 @@
                         s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 18);
                         s.advisorScore = Math.max(0, s.advisorScore - 3);
                         msg = this.getMessage('break') + ' (+18 morale)';
-                        if (this.hasStatus('exhaustion') && this.random() < 0.4) {
+                        if (this.hasStatus('exhaustion') && this.random() < 0.6) {
                             this.removeStatus('exhaustion');
                             msg += '\n💆 You feel refreshed!';
                         }
@@ -5907,36 +5917,29 @@
                         break;
 
                     case 'quals':
-                        // V2.58: Weighted random for quals study (60% = 1, 20% = 0, 20% = 2)
-                        // V2.58: Bad luck protection - after 4+ failures, add 80% bonus; at 5+, guarantee success
-                        const qualsFailures = s.consecutiveFailures || 0;
+                        // Quals study: 20% = 2pts, 60% = 1pt, 20% = 0pts (original design)
                         const roll = this.random();
-                        let points;
-                        
-                        if (qualsFailures >= 5) {
-                            points = 2; // Guaranteed high progress
-                        } else if (qualsFailures >= 4) {
-                            // 80% bonus: normally 60% for 1pt, now add 80% chance to upgrade 0→1 or 1→2
-                            const basePoints = roll < 0.6 ? 1 : (roll < 0.8 ? 0 : 2);
-                            if (basePoints === 0 && this.random() < 0.8) points = 1;
-                            else if (basePoints === 1 && this.random() < 0.8) points = 2;
-                            else points = basePoints;
-                        } else {
-                            points = roll < 0.6 ? 1 : (roll < 0.8 ? 0 : 2);
-                        }
-                        
+                        let points = 0;
+                        if (roll < 0.2) points = 2;       // Top 20%
+                        else if (roll < 0.8) points = 1;  // Next 60%
+                        else points = 0;                  // Bottom 20% (failure chance is intentional)
+
                         s.qualifyLevel += points;
-                        
+
+                        // Pity timer: 80% bonus after 4 consecutive failures
                         if (points === 0) {
                             s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
-                            msg = '📖 You studied but didn\'t retain much...';
-                            if (s.consecutiveFailures >= 3) {
-                                msg += '\n💡 Keep going - you\'re building study habits!';
+                            if (s.consecutiveFailures >= 4) {
+                                s.qualifyLevel += 4; // 80% bonus (4 points)
+                                s.consecutiveFailures = 0;
+                                msg = '📖 Despite struggles, breakthrough insights clicked! (+4 prep)';
+                                break;
                             }
+                            msg = '📖 Study session didn\'t stick today. Maybe try again?';
                         } else {
-                            s.consecutiveFailures = 0; // Reset on success
+                            s.consecutiveFailures = 0; // Reset counter on progress
                             if (points === 1) {
-                                msg = '📖 Decent study session!';
+                                msg = '📖 Good study session!';
                             } else {
                                 msg = '📖 Great progress on exam prep!';
                             }
