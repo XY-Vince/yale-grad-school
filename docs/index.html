@@ -6238,22 +6238,13 @@
                         this.checkThesisPhaseTransition();
                         break;
 
-                    // V2.25: Defend Thesis
+                    // V2.25: Defend Thesis (Now triggers interactive gauntlet)
                     case 'defend_thesis':
-                        const defenseResult = this.attemptDefense();
+                        // V2.40: Defense Gauntlet Activation
+                        // Instead of RNG attemptDefense(), we now launch the interactive minigame
+                        this.thesisDefend();
+                        return; // Modal handles UI updates
 
-                        if (defenseResult.outcome === 'PASS_WITH_DISTINCTION' || defenseResult.outcome === 'PASS') {
-                            // PhD Complete!
-                            const career = this.resolveCareer();
-                            const explanation = this.getCareerExplanation();
-                            this.endGame('phd_complete', `${career.emoji} ${career.path}`);
-                            msg = `🎓 CONGRATULATIONS!\nYou have earned your PhD!\n\nCareer Path: ${career.emoji} ${career.path}\n${explanation}`;
-                        } else if (defenseResult.outcome === 'CONDITIONAL_PASS') {
-                            msg = `🎓⚠️ CONDITIONAL PASS\nScore: ${defenseResult.score} (Readiness: ${defenseResult.readiness})\n\nMinor revisions required.\nYou have 2 months to finalize.\n-15 Morale`;
-                        } else {
-                            msg = `❌ DEFENSE FAILED\nScore: ${defenseResult.score} (Readiness: ${defenseResult.readiness})\n\nMajor revisions required.\nYou must wait 6 months to try again.\n-30 Morale`;
-                        }
-                        break;
 
                     // V2.28: Conference actions
                     case 'conf_poster':
