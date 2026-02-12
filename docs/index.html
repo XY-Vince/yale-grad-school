@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.60</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.62</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -938,7 +938,24 @@
                         <div class="badge-list" id="statuses"><span class="empty-text">No effects</span></div>
                     </div>
 
-                    <!-- V2.22: Graduation Progress Card -->
+                        <!-- V2.62: Figure Quality Display -->
+                        <div class="panel" id="figure-quality-panel" style="margin-bottom: 10px;">
+                            <h3>📊 Figure Quality</h3>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 0.85rem;">Average Quality</span>
+                                <span id="figure-quality-value" style="font-size: 0.85rem; font-weight: 600;">—</span>
+                            </div>
+                            <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 8px;">
+                                <div id="figure-quality-bar"
+                                    style="height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b, #22c55e); border-radius: 6px; transition: width 0.3s ease;">
+                                </div>
+                            </div>
+                            <div id="figure-quality-desc" style="font-size: 0.7rem; color: var(--text-secondary);">
+                                Create figures while aligned with your advisor for higher quality
+                            </div>
+                        </div>
+
+                        <!-- V2.22: Graduation Progress Card -->
                     <div class="panel" id="graduation-card" style="margin-top: 10px;">
                         <h3>🎓 Graduation Progress</h3>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
@@ -3232,7 +3249,7 @@
                     choices.push({
                         id: 'conf_talk',
                         name: '🎤 Give Talk',
-                        desc: `Risky: 60% success (+${conf.networkGain} net, 40% 💡) or -10 morale (20% 💡)`
+                        desc: `Risky: 70% success (+${conf.networkGain} net, 40% 💡) or -10 morale (20% 💡)`
                     });
                     choices.push({
                         id: 'conf_network',
@@ -3286,7 +3303,7 @@
                         // V2.53: Success scales with alignment AND morale
                         const alignment = s.strategicAlignment || 0;
                         const morale = s.morale || 50;
-                        const talkSuccessChance = 0.4 + (alignment * 0.004) + (morale * 0.002); // 40% base + up to 40% from alignment + 20% from morale
+                        const talkSuccessChance = 0.7 + (alignment * 0.004) + (morale * 0.002); // 70% base + up to 40% from alignment + 20% from morale
                         const talkSuccess = this.random() < talkSuccessChance;
 
                         if (talkSuccess) {
@@ -4285,6 +4302,11 @@
                     // V2.58: Bad luck protection (pity timer)
                     consecutiveFailures: 0,      // Reset on any success
 
+                    // V2.62: Figure Quality System (tracks quality of figures for paper acceptance)
+                    figureQuality: 0,        // Average quality of figures created (0-100)
+                    figuresCreatedCount: 0,  // Count for calculating average
+                    lastPaperQuality: 0,     // Track quality for revisions
+
                     // V2.28: Funding and Conference System
                     fundingMonths: 36,           // 3 years of funding (burns 0.5/month)
                     activeConference: null,      // Current conference invitation
@@ -4852,19 +4874,32 @@
 
                         // Only check after minimum wait time
                         if (wait >= minWait) {
-                            // Guaranteed result at max wait, 30% chance per month after min
+                            // V2.62: Quality-based review resolution
                             if (wait >= maxWait || this.random() < 0.3) {
                                 s.pendingPapers.splice(i, 1);
-                                const acceptRate = isRevision ? 0.7 : 0.5; // V3.0: Adjusted
+                                
+                                // V2.62: Dynamic acceptance rate based on paper quality
+                                // Formula: 0.3 + (quality / 200) = 30% to 80% acceptance
+                                const paperQuality = paper.quality || 50;  // Default 50 if legacy paper
+                                const baseAcceptRate = isRevision ? 0.7 : (0.3 + (paperQuality / 200));
+                                const acceptRate = Math.min(0.8, baseAcceptRate);  // Cap at 80%
+                                
+                                // V2.62: Split rejection vs revision clearly
+                                // Acceptance: acceptRate
+                                // Major Revision: 25% chance (of remaining)
+                                // Rejection: 25% chance (of remaining)
+                                const revisionThreshold = acceptRate + (isRevision ? 0 : 0.25);
                                 const roll = this.random();
+                                
                                 if (roll < acceptRate) {
+                                    // ACCEPTED
                                     this.addItem('paper');
                                     s.advisorScore = Math.min(100, s.advisorScore + 15);
                                     s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
                                     this.showMessage('🎉 PAPER ACCEPTED! Published!\n\n+10 morale, +15 advisor score\n\n📄 Journal papers: ' + (this.getItem('paper') || 0));
-                                } else if (roll < acceptRate + 0.25 && !isRevision) {
-                                    // V2.4: Expanded Reviewer #2 snark library
-                                    this.addItem('rejected_paper');
+                                } else if (roll < revisionThreshold && !isRevision) {
+                                    // V2.62: MAJOR REVISION - distinct outcome
+                                    this.addItem('revision_required');  // New item type
                                     const reviewer2Msgs = [
                                         '📝 MAJOR REVISION. Reviewer #2 demands more experiments...',
                                         '📝 MAJOR REVISION. "The novelty is unclear..."',
@@ -4876,10 +4911,17 @@
                                         '📝 MAJOR REVISION. "The writing quality is unacceptable."',
                                         '📝 MAJOR REVISION. "I am not convinced this is publishable."'
                                     ];
-                                    this.appendMessage(reviewer2Msgs[Math.floor(this.random() * reviewer2Msgs.length)]);
+                                    this.appendMessage(reviewer2Msgs[Math.floor(this.random() * reviewer2Msgs.length)] + '\n👉 Go to Actions → Major Revision (quick turnaround)');
                                 } else {
+                                    // V2.62: REJECTION - distinct outcome
                                     this.addItem('rejected_paper');
-                                    this.showMessage('😢 REJECTED! The reviewers were not convinced.\n\n👉 Go to Actions → Revise Paper');
+                                    const rejectionMsgs = [
+                                        '😢 REJECTED. "The work does not meet our standards."',
+                                        '😢 REJECTED. "We cannot recommend publication at this time."',
+                                        '😢 REJECTED. "The methodology has fundamental flaws."',
+                                        '😢 REJECTED. "The contribution is too incremental."'
+                                    ];
+                                    this.showMessage(rejectionMsgs[Math.floor(this.random() * rejectionMsgs.length)] + '\n\n👉 Go to Actions → Resubmit (standard process)');
                                 }
                             }
                         }
@@ -5380,8 +5422,22 @@
                         actions.push({ id: 'work_figures', name: '📊 Validate Discovery', desc: `Figures: ${figures}/3` });
                     }
                 }
+                // V2.62: Split revision actions based on review outcome
+                if (this.getItem('revision_required') > 0) {
+                    // V2.62: Major Revision - quick turnaround, higher acceptance
+                    actions.push({ 
+                        id: 'revise_major', 
+                        name: '📝 Major Revision', 
+                        desc: 'Quick turnaround (2-3 mo), high accept chance' 
+                    });
+                }
                 if (this.getItem('rejected_paper') > 0) {
-                    actions.push({ id: 'revise', name: '✏️ Revise Paper', desc: 'Revise and resubmit' });
+                    // V2.62: Standard resubmit - normal process
+                    actions.push({ 
+                        id: 'resubmit', 
+                        name: '🔄 Resubmit Paper', 
+                        desc: 'Standard turnaround (3-6 mo), standard accept' 
+                    });
                 }
                 // V2.41: Flexible defense criteria
                 const defenseStatus = this.evaluateDefenseCriteria();
@@ -5857,10 +5913,30 @@
                             s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 3);
                             s.consecutiveFigRejections = 0; // Reset on success
                             s.consecutiveFailures = 0; // Reset pity timer
+
+                            // V2.62: Calculate figure quality
+                            const alignmentBonus = (s.strategicAlignment || 0) * 0.3;  // 0-30 points
+                            const networkBonus = (s.peerNetwork || 0) * 0.2;           // 0-20 points
+                            const rngComponent = this.random() * 50;                   // 0-50 points
+                            const quality = Math.min(100, Math.round(30 + alignmentBonus + networkBonus + rngComponent));
+
+                            // Update running average
+                            const currentAvg = s.figureQuality || 0;
+                            const currentCount = s.figuresCreatedCount || 0;
+                            s.figuresCreatedCount = currentCount + 1;
+                            s.figureQuality = Math.round(((currentAvg * currentCount) + quality) / s.figuresCreatedCount);
+
+                            // Quality descriptors
+                            let qualityDesc = '';
+                            if (quality >= 80) qualityDesc = ' ⭐ Exceptional';
+                            else if (quality >= 60) qualityDesc = ' ✅ Good';
+                            else if (quality >= 40) qualityDesc = ' ⚠️ Adequate';
+                            else qualityDesc = ' 🔧 Rough';
+
                             if (figRejections >= 2) {
-                                msg = '📊 You\'re finally seeing what reviewers want! Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)';
+                                msg = '📊 You\'re finally seeing what reviewers want! Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)\nQuality: ' + quality + '/100' + qualityDesc;
                             } else {
-                                msg = '📊 Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)';
+                                msg = '📊 Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)\nQuality: ' + quality + '/100' + qualityDesc;
                             }
                         } else {
                             s.consecutiveFigRejections = figRejections + 1;
@@ -5885,9 +5961,19 @@
                         this.removeItem('key_discovery');
                         // V2.1: Clear ALL figures (can't reuse for next paper)
                         delete this.state.items['figure'];
-                        // V1.8: Paper goes to pending review
-                        s.pendingPapers.push({ submitted: s.totalMonths, type: 'new' });
-                        msg = '📮 Paper submitted! Now we wait for the reviewers...';
+                        
+                        // V2.62: Snapshot figure quality into paper, then reset
+                        const paperQuality = s.figureQuality || 50;  // Default 50 if no figures
+                        s.pendingPapers.push({ 
+                            submitted: s.totalMonths, 
+                            type: 'new',
+                            quality: paperQuality  // V2.62: Store figure quality for review calculation
+                        });
+                        // V2.62: Reset figure quality tracking for next paper
+                        s.figureQuality = 0;
+                        s.figuresCreatedCount = 0;
+                        
+                        msg = '📮 Paper submitted! (Quality: ' + paperQuality + '/100)\nNow we wait for the reviewers...';
                         break;
 
                     // V2.48: Review Feedback action - respond to pending paper reviews
@@ -5902,11 +5988,32 @@
                         }
                         break;
 
-                    case 'revise':
+                    // V2.62: Major Revision action - quick turnaround, higher acceptance
+                    case 'revise_major':
+                        this.removeItem('revision_required');
+                        // V2.62: Major revision keeps some quality, shorter wait, higher accept
+                        const revisionQuality = Math.min(100, (s.lastPaperQuality || 50) + 10);  // +10 quality boost
+                        s.pendingPapers.push({ 
+                            submitted: s.totalMonths, 
+                            type: 'revision',
+                            quality: revisionQuality  // Carry forward improved quality
+                        });
+                        msg = '📮 Major revision submitted!\n\n• Wait time: 2-3 months\n• Acceptance rate: 70%';
+                        break;
+
+                    // V2.62: Standard resubmit action - normal process
+                    case 'resubmit':
                         this.removeItem('rejected_paper');
-                        // V1.8: Revision goes to pending
-                        s.pendingPapers.push({ submitted: s.totalMonths, type: 'revision' });
-                        msg = '📮 Revision submitted!\n\nYour revision enters the review queue.\n• Wait time: 2-4 months\n• Acceptance rate: 70%';
+                        // V2.62: Resubmit gets slight quality penalty from rejection
+                        const resubmitQuality = Math.max(30, (s.lastPaperQuality || 50) - 5);  // -5 quality penalty
+                        s.pendingPapers.push({ 
+                            submitted: s.totalMonths, 
+                            type: 'new',  // Treat as new submission
+                            quality: resubmitQuality
+                        });
+                        // V2.62: Track last paper quality for revisions
+                        s.lastPaperQuality = resubmitQuality;
+                        msg = '📮 Paper resubmitted!\n\n• Wait time: 3-6 months\n• Standard review process';
                         break;
 
                     case 'break':
@@ -6964,6 +7071,36 @@
                 } catch (e) {
                     console.error('Error in getActions:', e);
                     this.dom.actions.innerHTML = '<div style="color: red;">Error loading actions. Check console.</div>';
+                }
+
+                // V2.62: Figure Quality Display
+                const figureQualityPanel = document.getElementById('figure-quality-panel');
+                if (figureQualityPanel) {
+                    const figureCount = s.figuresCreatedCount || 0;
+                    const avgQuality = s.figureQuality || 0;
+                    
+                    if (figureCount > 0) {
+                        figureQualityPanel.style.display = 'block';
+                        document.getElementById('figure-quality-value').textContent = avgQuality + '/100';
+                        document.getElementById('figure-quality-bar').style.width = avgQuality + '%';
+                        
+                        const descEl = document.getElementById('figure-quality-desc');
+                        if (avgQuality >= 80) {
+                            descEl.textContent = '⭐ Exceptional quality figures - excellent acceptance odds!';
+                            descEl.style.color = '#4ade80';
+                        } else if (avgQuality >= 60) {
+                            descEl.textContent = '✅ Good quality - solid work for submission';
+                            descEl.style.color = '#60a5fa';
+                        } else if (avgQuality >= 40) {
+                            descEl.textContent = '⚠️ Adequate - consider more alignment/networking';
+                            descEl.style.color = '#fbbf24';
+                        } else {
+                            descEl.textContent = '🔧 Rough quality - risk of rejection';
+                            descEl.style.color = '#f87171';
+                        }
+                    } else {
+                        figureQualityPanel.style.display = 'none';
+                    }
                 }
 
                 // V2.0: Pipeline Visualizer
