@@ -504,6 +504,15 @@
             margin-top: 4px;
         }
 
+        .defense-tracks { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; }
+        .defense-track { display: flex; align-items: center; gap: 10px; }
+        .track-label { flex: 0 0 160px; font-size: 0.85rem; }
+        .track-bar { flex: 1; height: 16px; background: var(--bg-card); border-radius: 8px; overflow: hidden; }
+        .track-fill { height: 100%; background: linear-gradient(90deg, #f87171, #fbbf24, #4ade80); transition: width 0.3s; }
+        .track-value { flex: 0 0 40px; text-align: right; font-weight: bold; }
+        .defense-total { text-align: center; font-size: 1.1rem; font-weight: bold; margin: 10px 0; }
+        .member-mood { font-size: 1.2rem; }
+
         .defense-result {
             background: var(--bg-card);
             padding: 20px;
@@ -751,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.59.1</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.60</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -958,6 +967,18 @@
                         <div id="defense-status" style="font-size: 0.8rem; opacity: 0.7; text-align: center;">
                             🔒 Defense locked — publish 3 papers
                         </div>
+                        <!-- V2.60: Dissertation Quality (hidden metric surfaced) -->
+                        <div id="dissertation-quality-row" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); display: none;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 0.8rem;">📖 Dissertation Quality</span>
+                                <span id="dissertation-quality-value" style="font-size: 0.8rem; font-weight: 600;">—</span>
+                            </div>
+                            <div style="font-size: 0.65rem; color: var(--text-secondary);">
+                                Draft: <span id="draft-quality">0</span> | 
+                                Revisions: <span id="revision-load">0</span> | 
+                                Friction: <span id="committee-friction">0</span>
+                            </div>
+                        </div>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
                         <button class="action-btn save-btn" onclick="game.save()" style="flex: 1;">
@@ -1054,20 +1075,47 @@
                 Standard Defense · Skepticism: ×1.0
             </div>
 
-            <!-- Approval Meter -->
-            <div class="defense-meter">
-                <div class="meter-label">Committee Approval: <span id="defense-approval">35</span>%</div>
-                <div class="meter-bar">
-                    <div class="meter-fill" id="defense-meter-fill" style="width: 35%"></div>
-                    <div class="meter-threshold"></div>
+            <!-- 3-Track Meters (replaces single approval meter) -->
+            <div class="defense-tracks">
+                <div class="defense-track">
+                    <div class="track-label">📊 Thesis Quality (50%)</div>
+                    <div class="track-bar">
+                        <div class="track-fill" id="defense-meter-thesis" style="width: 0%"></div>
+                    </div>
+                    <span class="track-value" id="defense-thesis-value">0</span>%
                 </div>
+                <div class="defense-track">
+                    <div class="track-label">🎤 Presentation (25%)</div>
+                    <div class="track-bar">
+                        <div class="track-fill" id="defense-meter-presentation" style="width: 0%"></div>
+                    </div>
+                    <span class="track-value" id="defense-presentation-value">0</span>%
+                </div>
+                <div class="defense-track">
+                    <div class="track-label">🤝 Committee (25%)</div>
+                    <div class="track-bar">
+                        <div class="track-fill" id="defense-meter-committee" style="width: 0%"></div>
+                    </div>
+                    <span class="track-value" id="defense-committee-value">0</span>%
+                </div>
+            </div>
+
+            <!-- Weighted Total -->
+            <div class="defense-total">
+                Weighted Score: <span id="defense-weighted-total">0</span>% (need 65%)
             </div>
 
             <!-- Committee -->
             <div class="defense-committee" id="defense-committee">
-                <div class="committee-member">👨‍🏫 Advisor</div>
-                <div class="committee-member">📐 Methodologist</div>
-                <div class="committee-member">🔬 External</div>
+                <div class="committee-member" id="committee-chen" data-mood="neutral">
+                    <span class="member-mood">😐</span> Prof. Chen <small>Methodology Hawk</small>
+                </div>
+                <div class="committee-member" id="committee-smith" data-mood="neutral">
+                    <span class="member-mood">😐</span> Prof. Smith <small>Industry Friendly</small>
+                </div>
+                <div class="committee-member" id="committee-alvarez" data-mood="neutral">
+                    <span class="member-mood">😐</span> Prof. Alvarez <small>Silent but Deadly</small>
+                </div>
             </div>
 
             <!-- Actions -->
@@ -1263,7 +1311,7 @@
             
             // Defense
             DEFENSE_TURNS: 3,
-            BASE_COMMITTEE_APPROVAL: 35,
+            BASE_COMMITTEE_APPROVAL: 45,
             
             // Items
             MAX_FIGURES: 3,
@@ -3217,17 +3265,16 @@
                     // V2.53: POSTER - Damage Control / Stability (guaranteed safety)
                     case 'conf_poster':
                         this.spendFunding(conf.fundingCost);
-                        s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + Math.floor(conf.networkGain * 0.3));
-                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
-                        s.stress = Math.max(0, (s.stress || 0) - 20); // V2.53: Stress reduction
+                        s.pendingConferenceEffects = {
+                            networkGain: Math.floor(conf.networkGain * 0.3),
+                            morale: 10,
+                            stress: -20,
+                            ideaChance: 0.10
+                        };
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
                         s.lastConferenceMonth = s.totalMonths;
                         msg = `🖼️ POSTER: Safe Progress\n\n+${Math.floor(conf.networkGain * 0.3)} network, +10 morale, -20 stress\n\n"No drama. Solid conversations. Safe progress."\n\n✓ Convert attendance into stability`;
-                        // 10% chance for idea (casual conversations)
-                        if (this.random() < 0.10) {
-                            this.addItem('idea');
-                            msg += '\n\n💡 A poster discussion sparked an idea!';
-                        }
+                        // Idea chance handled in advanceMonth() after decay
                         break;
 
                     // V2.53: TALK - Reputation Gamble (high risk, high reward)
@@ -3243,19 +3290,19 @@
                         const talkSuccess = this.random() < talkSuccessChance;
 
                         if (talkSuccess) {
-                            s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + conf.networkGain * 1.5); // V2.53: Higher upside
-                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 20);
-                            s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 5); // V2.53: Reputation boost
+                            s.pendingConferenceEffects = {
+                                networkGain: Math.floor(conf.networkGain * 1.5),
+                                morale: 20,
+                                strategicAlignment: 5,
+                                ideaChance: 0.50
+                            };
                             msg = `🎤 TALK: Big Win!\n\n+${Math.floor(conf.networkGain * 1.5)} network, +20 morale, +5 reputation\n\n"Your talk was the highlight. People took notice."\n\n★ Trade safety for visibility — paid off!`;
-                            // 50% chance for idea on hit talk
-                            if (this.random() < 0.5) {
-                                this.addItem('idea');
-                                msg += '\n\n💡 The Q&A sparked a breakthrough!';
-                            }
                         } else {
-                            s.morale = Math.max(0, s.morale - 15);
-                            s.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (s.stress || 0) + 15); // V2.53: Real downside
-                            s.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 3); // V2.53: Reputation hit
+                            s.pendingConferenceEffects = {
+                                morale: -15,
+                                stress: 15,
+                                strategicAlignment: -3
+                            };
                             msg = `🎤 TALK: Rough Reception\n\n-15 morale, +15 stress, -3 reputation\n\n"Tough questions. The room was skeptical."\n\n⚠️ High risk play didn't work this time`;
                         }
                         break;
@@ -3265,9 +3312,6 @@
                         this.spendFunding(conf.fundingCost);
                         const existingNetwork = s.peerNetwork || 0;
                         const networkBonus = Math.floor(conf.networkGain * (1 + existingNetwork * 0.01)); // Scales with existing network
-                        s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, existingNetwork + networkBonus);
-                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5); // V2.53: Reduced immediate morale
-                        s.stress = Math.max(0, (s.stress || 0) - 15);
                         s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
                         s.lastConferenceMonth = s.totalMonths;
 
@@ -3282,13 +3326,14 @@
                             futureBonus = '\n\n💰 GRANT LEAD: +3 funding months from a new connection!';
                         }
 
-                        msg = `🤝 NETWORK: Future Investment\n\n+${networkBonus} network, +5 morale, -15 stress\n\n"New faces, new opportunities. Seeds planted."\n\n⏳ Invest now, cash out later${futureBonus}`;
+                        s.pendingConferenceEffects = {
+                            networkGain: networkBonus,
+                            morale: 5,
+                            stress: -15,
+                            ideaChance: 0.20
+                        };
 
-                        // 20% chance for idea
-                        if (this.random() < 0.2) {
-                            this.addItem('idea');
-                            msg += '\n\n💡 A late-night chat sparked an idea!';
-                        }
+                        msg = `🤝 NETWORK: Future Investment\n\n+${networkBonus} network, +5 morale, -15 stress\n\n"New faces, new opportunities. Seeds planted."\n\n⏳ Invest now, cash out later${futureBonus}`;
                         break;
 
                     case 'conf_skip':
@@ -4128,7 +4173,8 @@
                     isRunning: true,
                     isEnded: false,
                     endState: null,
-                    conferencesThisYear: 0,
+                    // Conference tracking fields
+                    conferencesThisYear: 0,      // Resets yearly; max 2 per year
                     pendingPapers: [],
                     // V2.1: Teaching duty
                     isTeaching: false,
@@ -4671,6 +4717,48 @@
                     decay = Math.ceil(decay / 2);
                 }
                 this.updateState({ morale: Math.max(0, this.state.morale - decay) }, 'Wellness');
+
+                // Apply pending conference effects AFTER decay (Bug #1 fix)
+                if (this.state.pendingConferenceEffects) {
+                    const effects = this.state.pendingConferenceEffects;
+                    const changes = {};
+                    
+                    if (effects.networkGain) {
+                        changes.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (this.state.peerNetwork || 0) + effects.networkGain);
+                    }
+                    if (effects.morale) {
+                        if (effects.morale > 0) {
+                            changes.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + effects.morale);
+                        } else {
+                            changes.morale = Math.max(0, this.state.morale + effects.morale);
+                        }
+                    }
+                    if (effects.stress) {
+                        if (effects.stress > 0) {
+                            changes.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (this.state.stress || 0) + effects.stress);
+                        } else {
+                            changes.stress = Math.max(0, (this.state.stress || 0) + effects.stress);
+                        }
+                    }
+                    if (effects.strategicAlignment) {
+                        if (effects.strategicAlignment > 0) {
+                            changes.strategicAlignment = Math.min(100, (this.state.strategicAlignment || 0) + effects.strategicAlignment);
+                        } else {
+                            changes.strategicAlignment = Math.max(0, (this.state.strategicAlignment || 0) + effects.strategicAlignment);
+                        }
+                    }
+                    
+                    this.updateState(changes, 'Conference');
+                    
+                    // Handle idea chance
+                    if (effects.ideaChance && this.random() < effects.ideaChance) {
+                        this.addItem('idea');
+                        this.appendMessage('💡 A conference discussion sparked an idea!');
+                    }
+                    
+                    this.state.pendingConferenceEffects = null;
+                }
+
                 // V2.11: Track low morale months for escalating MS-Out
                 if (this.state.morale < GAME_CONSTANTS.MIN_MORALE_FOR_CRITICAL) {
                     this.state.lowMoraleMonths = (this.state.lowMoraleMonths || 0) + 1;
@@ -4901,14 +4989,14 @@
                 const lastScoop = this.state.lastScoopMonth || 0;
                 const scoopCooldownOk = (this.state.totalMonths - lastScoop) >= 24;
                 const isProtected = this.state.ideaPreRegistered;
-                if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk && !isProtected) {
+                if (this.getItem('idea') > 0 && this.random() < 0.01 && scoopCooldownOk && !isProtected) {
                     this.removeItem('idea');
                     this.state.lastScoopMonth = this.state.totalMonths;
                     this.state.telemetry.scoopCount++; // V2.19: Track for balance
                     const scoopLoss = 5 + Math.floor(this.random() * 5);
                     this.updateState({ morale: Math.max(0, this.state.morale - scoopLoss) }, 'Wellness');
                     this.appendRandomEvent('📢 Another lab just published YOUR idea! (-1 idea, -' + scoopLoss + ' morale)');
-                } else if (this.getItem('idea') > 0 && this.random() < 0.03 && scoopCooldownOk && isProtected) {
+                } else if (this.getItem('idea') > 0 && this.random() < 0.01 && scoopCooldownOk && isProtected) {
                     this.appendMessage('📄 Another lab tried to scoop you, but your pre-registration protects you!');
                 }
 
@@ -5152,15 +5240,10 @@
                 // V2.46: Conference Actions at TOP (when active) - ONE CHOICE per conference
                 if (s.activeConference) {
                     const conf = s.activeConference;
-                    if (s.conferenceChoiceMade) {
-                        // Already chose - show status
-                        actions.push({ id: 'conf_status', name: `🎤 Conference - ${s.conferenceChoiceMade}`, desc: `Attending ${conf.name}`, disabled: true });
-                    } else {
-                        // Choose ONE primary activity
-                        actions.push({ id: 'conf_poster', name: '🖼️ Conference - Poster', desc: `${conf.name}: Safe visibility, modest network` });
-                        actions.push({ id: 'conf_talk', name: '🎤 Conference - Talk', desc: `${conf.name}: Risk reputation for prestige` });
-                        actions.push({ id: 'conf_network', name: '🤝 Conference - Network', desc: `${conf.name}: Maximize connections, no spotlight` });
-                    }
+                    // Choose ONE primary activity
+                    actions.push({ id: 'conf_poster', name: '🖼️ Conference - Poster', desc: `${conf.name}: Safe visibility, modest network` });
+                    actions.push({ id: 'conf_talk', name: '🎤 Conference - Talk', desc: `${conf.name}: Risk reputation for prestige` });
+                    actions.push({ id: 'conf_network', name: '🤝 Conference - Network', desc: `${conf.name}: Maximize connections, no spotlight` });
                 }
 
                 // 1. IDEATION: Read Papers (always available to generate ideas)
@@ -5767,7 +5850,7 @@
                         if (figFailures >= 5) figPityBonus = 1.0; // Guarantee success
                         else if (figFailures >= 4) figPityBonus = 0.8;
                         
-                        const figSuccessRate = Math.min(1.0, 0.6 + figBonus + figPerspective + figPityBonus);
+                        const figSuccessRate = Math.min(1.0, 0.75 + figBonus + figPerspective + figPityBonus);
                         
                         if (this.random() < figSuccessRate) {
                             this.addItem('figure');
@@ -5932,32 +6015,19 @@
                         break;
 
                     case 'quals':
-                        // Quals study: 20% = 2pts, 60% = 1pt, 20% = 0pts (original design)
+                        // Quals study: 20% = 2pts, 80% = 1pt (V2.60: Removed 0pt outcome for better balance)
                         const roll = this.random();
-                        let points = 0;
-                        if (roll < 0.2) points = 2;       // Top 20%
-                        else if (roll < 0.8) points = 1;  // Next 60%
-                        else points = 0;                  // Bottom 20% (failure chance is intentional)
+                        let points = 1;                   // V2.60: Guarantee at least 1 point
+                        if (roll < 0.2) points = 2;       // Top 20% get bonus
 
                         s.qualifyLevel += points;
 
-                        // Pity timer: 80% bonus after 4 consecutive failures
-                        if (points === 0) {
-                            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
-                            if (s.consecutiveFailures >= 4) {
-                                s.qualifyLevel += 4; // 80% bonus (4 points)
-                                s.consecutiveFailures = 0;
-                                msg = '📖 Despite struggles, breakthrough insights clicked! (+4 prep)';
-                                break;
-                            }
-                            msg = '📖 Study session didn\'t stick today. Maybe try again?';
+                        // V2.60: Simplified - always get at least 1 point, no pity timer needed
+                        s.consecutiveFailures = 0; // Reset counter on progress
+                        if (points === 1) {
+                            msg = '📖 Good study session!';
                         } else {
-                            s.consecutiveFailures = 0; // Reset counter on progress
-                            if (points === 1) {
-                                msg = '📖 Good study session!';
-                            } else {
-                                msg = '📖 Great progress on exam prep!';
-                            }
+                            msg = '📖 Great progress on exam prep!';
                         }
                         break;
 
@@ -6392,6 +6462,27 @@
                 // Apply skepticism (higher skepticism = lower start)
                 const startApproval = Math.max(25, Math.min(50, Math.floor(baseApproval / skepticism)));
 
+                // V2.55: 3-Track Defense Score Initialization
+                // 1. Gather stats
+                const papers = this.getItem('paper') || 0;
+                const confPapers = this.state.confPaperCount || 0;
+                const figureQuality = this.state.figureQuality || 0;
+                const morale = this.state.morale || 0;
+                const credits = this.state.credits || 0;
+                const alignment = this.state.strategicAlignment || 0;
+                const network = this.state.peerNetwork || 0;
+                const teaching = this.state.teachingExperience || 0;
+
+                // 2. Base calculations (Base 20 + stat contributions)
+                const thesisBase = 20 + (papers * 8) + (confPapers * 3) + (figureQuality * 0.3);
+                const presentationBase = 20 + (morale / 10) + (teaching * 0.5) + (network / 5);
+                const committeeBase = 20 + (alignment / 3) + (network / 4);
+
+                // 3. Calculate start values (clamp 15-60)
+                const thesisStart = Math.max(15, Math.min(60, thesisBase / skepticism));
+                const presentationStart = Math.max(15, Math.min(60, presentationBase / skepticism));
+                const committeeStart = Math.max(15, Math.min(60, committeeBase / skepticism));
+
                 this.defenseState = {
                     turn: 1,
                     approval: startApproval,
@@ -6400,8 +6491,36 @@
                     complete: false,
                     portfolioLabel: defenseStatus.label,
                     skepticism: skepticism,
-                    breakdown: breakdown
+                    breakdown: breakdown,
+                    thesis_quality: thesisStart,
+                    presentation_skill: presentationStart,
+                    committee_support: committeeStart,
+                    committee: [
+                        { name: 'Prof. Chen', tag: 'Methodology Hawk', bias: 'thesis_quality', mood: 'neutral' },
+                        { name: 'Prof. Smith', tag: 'Industry Friendly', bias: 'presentation_skill', mood: 'neutral' },
+                        { name: 'Prof. Alvarez', tag: 'Silent but Deadly', bias: 'committee_support', mood: 'neutral' }
+                    ]
                 };
+
+                // V2.55: Update committee moods based on track start values
+                this.defenseState.committee.forEach(member => {
+                    let trackValue;
+                    if (member.bias === 'thesis_quality') {
+                        trackValue = thesisStart;
+                    } else if (member.bias === 'presentation_skill') {
+                        trackValue = presentationStart;
+                    } else if (member.bias === 'committee_support') {
+                        trackValue = committeeStart;
+                    }
+
+                    if (trackValue > 40) {
+                        member.mood = 'positive';
+                    } else if (trackValue < 25) {
+                        member.mood = 'skeptical';
+                    } else {
+                        member.mood = 'neutral';
+                    }
+                });
 
                 // V2.43: Show skepticism breakdown tooltip
                 // V2.52: Clear any queued messages to prevent modal after defense
@@ -6437,9 +6556,50 @@
                     portfolioDiv.textContent = `${ds.portfolioLabel} · Skepticism: ×${ds.skepticism.toFixed(1)}`;
                 }
 
-                // Update approval meter
-                document.getElementById('defense-approval').textContent = Math.round(ds.approval);
-                document.getElementById('defense-meter-fill').style.width = `${Math.min(100, ds.approval)}%`;
+                // V2.55: Update 3-Track Meters
+                const thesisMeter = document.getElementById('defense-meter-thesis');
+                if (thesisMeter) {
+                    thesisMeter.style.width = `${Math.min(100, ds.thesis_quality)}%`;
+                    const thesisValue = document.getElementById('defense-thesis-value');
+                    if (thesisValue) thesisValue.textContent = Math.round(ds.thesis_quality);
+                }
+
+                const presentationMeter = document.getElementById('defense-meter-presentation');
+                if (presentationMeter) {
+                    presentationMeter.style.width = `${Math.min(100, ds.presentation_skill)}%`;
+                    const presentationValue = document.getElementById('defense-presentation-value');
+                    if (presentationValue) presentationValue.textContent = Math.round(ds.presentation_skill);
+                }
+
+                const committeeMeter = document.getElementById('defense-meter-committee');
+                if (committeeMeter) {
+                    committeeMeter.style.width = `${Math.min(100, ds.committee_support)}%`;
+                    const committeeValue = document.getElementById('defense-committee-value');
+                    if (committeeValue) committeeValue.textContent = Math.round(ds.committee_support);
+                }
+
+                // V2.55: Update Weighted Total
+                const weightedTotal = (ds.thesis_quality * 0.5) + (ds.presentation_skill * 0.25) + (ds.committee_support * 0.25);
+                const weightedTotalEl = document.getElementById('defense-weighted-total');
+                if (weightedTotalEl) weightedTotalEl.textContent = Math.round(weightedTotal);
+
+                // V2.55: Update Committee Moods
+                ds.committee.forEach((member, index) => {
+                    const memberEl = document.querySelectorAll('.committee-member')[index];
+                    if (memberEl) {
+                        const moodEl = memberEl.querySelector('.member-mood');
+                        if (moodEl) {
+                            let emoji = '😐';
+                            if (member.mood === 'positive') {
+                                emoji = '😊';
+                            } else if (member.mood === 'skeptical') {
+                                emoji = '🤨';
+                            }
+                            moodEl.textContent = emoji;
+                            moodEl.setAttribute('data-mood', member.mood);
+                        }
+                    }
+                });
 
                 // Generate actions for current turn
                 const actionsDiv = document.getElementById('defense-actions');
@@ -6449,7 +6609,10 @@
                 actions.forEach(action => {
                     const btn = document.createElement('button');
                     btn.className = 'defense-action-btn';
-                    btn.innerHTML = `<div class="action-title">${action.name}</div><div class="action-desc">${action.desc}</div>`;
+                    const trackIcons = Object.keys(action.tracks).map(t =>
+                        t === 'thesis_quality' ? '📊' : t === 'presentation_skill' ? '🎤' : '🤝'
+                    ).join('');
+                    btn.innerHTML = `<div class="action-title">${trackIcons} ${action.name}</div><div class="action-desc">${action.desc}</div>`;
                     btn.onclick = () => this.doDefenseAction(action);
                     actionsDiv.appendChild(btn);
                 });
@@ -6466,21 +6629,21 @@
 
                 if (turn === 1) { // Presentation
                     return [
-                        { id: 'present_data', name: '📊 Present Data', desc: `+${15 + Math.min(10, papers * 2)}% (based on papers)`, gain: 15 + Math.min(10, papers * 2) },
-                        { id: 'frame_narrative', name: '📝 Frame Narrative', desc: `+${10 + Math.floor(morale / 10)}% (based on morale)`, gain: 10 + Math.floor(morale / 10) },
-                        { id: 'preempt_criticism', name: '🛡️ Preempt Criticism', desc: `+${12 + Math.floor(credits / 5)}% (based on credits)`, gain: 12 + Math.floor(credits / 5) }
+                        { id: 'present_data', name: '📊 Present Data', desc: `+${15 + Math.min(10, papers * 2)}% (based on papers)`, gain: 15 + Math.min(10, papers * 2), tracks: { thesis_quality: 0.7, presentation_skill: 0.3 } },
+                        { id: 'frame_narrative', name: '📝 Frame Narrative', desc: `+${10 + Math.floor(morale / 10)}% (based on morale)`, gain: 10 + Math.floor(morale / 10), tracks: { presentation_skill: 0.6, committee_support: 0.4 } },
+                        { id: 'preempt_criticism', name: '🛡️ Preempt Criticism', desc: `+${12 + Math.floor(credits / 5)}% (based on credits)`, gain: 12 + Math.floor(credits / 5), tracks: { thesis_quality: 0.5, committee_support: 0.5 } }
                     ];
                 } else if (turn === 2) { // Q&A
                     return [
-                        { id: 'cite_literature', name: '📚 Cite Literature', desc: `+${15 + Math.floor(credits / 4)}% (based on credits)`, gain: 15 + Math.floor(credits / 4) },
-                        { id: 'defer_advisor', name: '👨‍🏫 Defer to Advisor', desc: `+${15 + Math.floor(alignment / 4)}% (based on alignment)`, gain: 15 + Math.floor(alignment / 4) },
-                        { id: 'acknowledge_limits', name: '🤔 Acknowledge Limits', desc: '+12% (safe, reduces resistance)', gain: 12 }
+                        { id: 'cite_literature', name: '📚 Cite Literature', desc: `+${15 + Math.floor(credits / 4)}% (based on credits)`, gain: 15 + Math.floor(credits / 4), tracks: { thesis_quality: 0.8, presentation_skill: 0.2 } },
+                        { id: 'defer_advisor', name: '👨‍🏫 Defer to Advisor', desc: `+${15 + Math.floor(alignment / 4)}% (based on alignment)`, gain: 15 + Math.floor(alignment / 4), tracks: { committee_support: 0.7, thesis_quality: 0.3 } },
+                        { id: 'acknowledge_limits', name: '🤔 Acknowledge Limits', desc: '+12% (safe, reduces resistance)', gain: 12, tracks: { committee_support: 0.6, presentation_skill: 0.4 } }
                     ];
                 } else { // Deliberation
                     return [
-                        { id: 'leverage_network', name: '🤝 Leverage Network', desc: `+${20 + Math.floor(network / 4)}% (based on network)`, gain: 20 + Math.floor(network / 4) },
-                        { id: 'appeal_impact', name: '🌟 Appeal to Impact', desc: `+${15 + Math.floor((alignment + credits) / 8)}% (alignment + credits)`, gain: 15 + Math.floor((alignment + credits) / 8) },
-                        { id: 'hold_firm', name: '🧘 Hold Firm', desc: '+10% (safe, no cost)', gain: 10 }
+                        { id: 'leverage_network', name: '🤝 Leverage Network', desc: `+${20 + Math.floor(network / 4)}% (based on network)`, gain: 20 + Math.floor(network / 4), tracks: { committee_support: 0.8, presentation_skill: 0.2 } },
+                        { id: 'appeal_impact', name: '🌟 Appeal to Impact', desc: `+${15 + Math.floor((alignment + credits) / 8)}% (alignment + credits)`, gain: 15 + Math.floor((alignment + credits) / 8), tracks: { presentation_skill: 0.5, committee_support: 0.5 } },
+                        { id: 'hold_firm', name: '🧘 Hold Firm', desc: '+10% (safe, no cost)', gain: 10, tracks: { thesis_quality: 0.6, committee_support: 0.4 } }
                     ];
                 }
             },
@@ -6490,13 +6653,39 @@
                 const ds = this.defenseState;
 
                 // Apply gain (capped per action)
-                const maxGain = 35;
-                const gain = Math.min(maxGain, action.gain);
-                ds.approval = Math.min(100, ds.approval + gain);
+                const gain = Math.min(35, action.gain);
 
-                // Small variance (+/- 5%)
-                const variance = (this.random() - 0.5) * 10;
-                ds.approval = Math.max(25, Math.min(100, ds.approval + variance));
+                // Apply gains to specified tracks
+                for (const [track, weight] of Object.entries(action.tracks)) {
+                    const trackGain = gain * weight;
+                    ds[track] = Math.min(100, ds[track] + trackGain);
+                }
+
+                // Apply variance (+/- 3%) to ALL 3 tracks independently
+                for (const track of ['thesis_quality', 'presentation_skill', 'committee_support']) {
+                    const variance = (this.random() - 0.5) * 6;
+                    ds[track] = Math.max(15, Math.min(100, ds[track] + variance));
+                }
+
+                // Update committee moods based on new track values
+                ds.committee.forEach(member => {
+                    let trackValue;
+                    if (member.bias === 'thesis_quality') {
+                        trackValue = ds.thesis_quality;
+                    } else if (member.bias === 'presentation_skill') {
+                        trackValue = ds.presentation_skill;
+                    } else if (member.bias === 'committee_support') {
+                        trackValue = ds.committee_support;
+                    }
+
+                    if (trackValue > 40) {
+                        member.mood = 'positive';
+                    } else if (trackValue < 25) {
+                        member.mood = 'skeptical';
+                    } else {
+                        member.mood = 'neutral';
+                    }
+                });
 
                 // Advance turn
                 ds.turn++;
@@ -6510,6 +6699,20 @@
                 }
             },
 
+            // V2.40: Get weakest track for feedback
+            getWeakestTrack(ds) {
+                const tracks = {
+                    thesis_quality: 'Thesis Quality',
+                    presentation_skill: 'Presentation Skill',
+                    committee_support: 'Committee Support'
+                };
+                return tracks[
+                    Object.keys(tracks).reduce(
+                        (a, b) => ds[a] < ds[b] ? a : b
+                    )
+                ];
+            },
+
             // V2.40: Show defense result
             showDefenseResult() {
                 const ds = this.defenseState;
@@ -6520,14 +6723,24 @@
                 const resultText = document.getElementById('defense-result-text');
                 resultDiv.style.display = 'block';
 
-                if (ds.approval >= 100) {
+                // Calculate weighted score (50% thesis, 25% presentation, 25% committee)
+                const finalScore =
+                    (ds.thesis_quality * 0.5) +
+                    (ds.presentation_skill * 0.25) +
+                    (ds.committee_support * 0.25);
+                ds.finalScore = finalScore;
+
+                if (finalScore >= 65) {
                     resultText.innerHTML = `<h3>🎓🎉 CONGRATULATIONS, DOCTOR! 🎉🎓</h3>
-                        <p>Final Approval: ${Math.round(ds.approval)}%</p>
-                        <p>The committee unanimously approved your thesis!</p>`;
+                        <p>Final Score: ${Math.round(finalScore)}%</p>
+                        <p>📊 Thesis: ${Math.round(ds.thesis_quality)}% | 🎤 Presentation: ${Math.round(ds.presentation_skill)}% | 🤝 Committee: ${Math.round(ds.committee_support)}%</p>
+                        <p>The committee approved your thesis!</p>`;
                 } else {
+                    const weakest = this.getWeakestTrack(ds);
                     resultText.innerHTML = `<h3>📝 Major Revisions Required</h3>
-                        <p>Final Approval: ${Math.round(ds.approval)}%</p>
-                        <p>The committee requires revisions. (+6 months, +20 morale)</p>`;
+                        <p>Final Score: ${Math.round(finalScore)}% (need 65%)</p>
+                        <p>📊 Thesis: ${Math.round(ds.thesis_quality)}% | 🎤 Presentation: ${Math.round(ds.presentation_skill)}% | 🤝 Committee: ${Math.round(ds.committee_support)}%</p>
+                        <p>Focus on: ${weakest} (+6 months, +20 morale)</p>`;
                 }
             },
 
@@ -6538,7 +6751,7 @@
                 document.getElementById('defense-actions').style.display = 'grid';
                 document.getElementById('defense-result').style.display = 'none';
 
-                if (ds.approval >= 100) {
+                if (ds.finalScore >= 65) {
                     this.showMessage('🎓🎉 CONGRATULATIONS, DOCTOR! 🎉🎓\n\nYou\'ve successfully defended your thesis!');
                     this.endGame(true, 'graduation', 'Congratulations, you have earned your PhD!');
                 } else {
@@ -6703,6 +6916,39 @@
                     } else {
                         tensionEl.textContent = '😊 Good';
                         tensionEl.style.color = '#4ade80';
+                    }
+                }
+
+                // V2.60: Dissertation Quality Display (surfaced hidden metric)
+                const dissQualityRow = document.getElementById('dissertation-quality-row');
+                if (dissQualityRow && s.dissertation) {
+                    const hasThesisProgress = s.thesisProgress > 0 || s.papers >= 2;
+                    if (hasThesisProgress) {
+                        dissQualityRow.style.display = 'block';
+                        const draftQuality = Math.round(s.dissertation.draft_quality || 0);
+                        const revisionLoad = s.dissertation.revision_load || 0;
+                        const friction = s.dissertation.committee_friction || 0;
+
+                        document.getElementById('draft-quality').textContent = draftQuality;
+                        document.getElementById('revision-load').textContent = revisionLoad;
+                        document.getElementById('committee-friction').textContent = friction;
+
+                        // Overall quality rating
+                        const qualityEl = document.getElementById('dissertation-quality-value');
+                        const totalScore = draftQuality - revisionLoad - friction;
+                        if (totalScore >= 80) {
+                            qualityEl.textContent = '⭐ Excellent';
+                            qualityEl.style.color = '#4ade80';
+                        } else if (totalScore >= 50) {
+                            qualityEl.textContent = '✅ Good';
+                            qualityEl.style.color = '#60a5fa';
+                        } else if (totalScore >= 20) {
+                            qualityEl.textContent = '⚠️ Fair';
+                            qualityEl.style.color = '#fbbf24';
+                        } else {
+                            qualityEl.textContent = '🔧 Needs Work';
+                            qualityEl.style.color = '#f87171';
+                        }
                     }
                 }
 

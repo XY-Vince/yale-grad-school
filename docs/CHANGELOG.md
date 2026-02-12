@@ -2,6 +2,16 @@
 
 All notable changes to GradQuest are documented here.
 
+## [2.59.2] - 2026-02-10 "Version Bump"
+
+**Theme**: Post-playtest version increment following V2.59.1 analysis.
+
+### 📋 Changes
+- Version bump to 2.59.2 for continued development
+- Updated all version references across codebase
+
+---
+
 ## [2.59.1] - 2026-02-03 "Hotfix: Morale Death Spiral"
 
 **Theme**: Emergency balance patch to stop exhaustion from causing inevitable game overs.
