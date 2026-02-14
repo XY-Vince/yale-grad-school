@@ -6951,12 +6951,12 @@
 
                 // Morale (from UIState helper methods)
                 this.dom.moraleBar.style.width = `${ui.morale}%`;
-                this.dom.moraleStatus.textContent = ui.moraleText;
+                this.dom.moraleStatus.textContent = ui.moraleText + ` (${Math.round(s.morale)}/100)`;
                 this.dom.moraleBar.className = 'progress-fill ' + ui.moraleClass;
 
                 // Advisor (from UIState helper methods)
                 this.dom.advisorBar.style.width = `${ui.advisorScore}%`;
-                this.dom.advisorStatus.textContent = ui.advisorText;
+                this.dom.advisorStatus.textContent = ui.advisorText + ` (${Math.round(s.advisorScore)}/100)`;
                 this.dom.advisorBar.className = 'progress-fill ' + ui.advisorClass;
 
                 // V2.54: Stress State (surfaced hidden metric)
@@ -6964,13 +6964,13 @@
                 if (stressEl) {
                     const stress = s.stress || 0;
                     if (stress >= 80) {
-                        stressEl.textContent = '🔥 Critical';
+                        stressEl.textContent = `🔥 Critical (${Math.round(stress)}/100)`;
                         stressEl.style.color = '#ef4444';
                     } else if (stress >= 50) {
-                        stressEl.textContent = '⚠️ High';
+                        stressEl.textContent = `⚠️ High (${Math.round(stress)}/100)`;
                         stressEl.style.color = '#f59e0b';
                     } else {
-                        stressEl.textContent = '😌 Normal';
+                        stressEl.textContent = `😌 Normal (${Math.round(stress)}/100)`;
                         stressEl.style.color = '#4ade80';
                     }
                 }
@@ -6980,13 +6980,13 @@
                 if (fundingEl) {
                     const funding = s.fundingMonths || 0;
                     if (funding <= 6) {
-                        fundingEl.textContent = '🚨 Critical';
+                        fundingEl.textContent = `🚨 Critical (${funding.toFixed(1)} mo)`;
                         fundingEl.style.color = '#ef4444';
                     } else if (funding <= 12) {
-                        fundingEl.textContent = '⚠️ Tight';
+                        fundingEl.textContent = `⚠️ Tight (${funding.toFixed(1)} mo)`;
                         fundingEl.style.color = '#f59e0b';
                     } else {
-                        fundingEl.textContent = '✅ Stable';
+                        fundingEl.textContent = `✅ Stable (${funding.toFixed(1)} mo)`;
                         fundingEl.style.color = '#4ade80';
                     }
                 }
@@ -7015,13 +7015,13 @@
                 if (tensionEl && s.advisor) {
                     const tension = s.advisor.tension || 0;
                     if (tension >= 60) {
-                        tensionEl.textContent = '😠 Strained';
+                        tensionEl.textContent = `😠 Strained (${Math.round(tension)}/100)`;
                         tensionEl.style.color = '#ef4444';
                     } else if (tension >= 30) {
-                        tensionEl.textContent = '😐 Tense';
+                        tensionEl.textContent = `😐 Tense (${Math.round(tension)}/100)`;
                         tensionEl.style.color = '#f59e0b';
                     } else {
-                        tensionEl.textContent = '😊 Good';
+                        tensionEl.textContent = `😊 Good (${Math.round(tension)}/100)`;
                         tensionEl.style.color = '#4ade80';
                     }
                 }
