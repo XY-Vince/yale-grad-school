@@ -332,8 +332,8 @@ class SmartPlaytester:
         
         # Priority 3: Pipeline - Research progression logic
         # Check if we can defend (3 papers + 100% thesis)
-        if papers >= 3 and thesis_progress >= 100:
-            if await self._click_action(page, ['Defend Thesis']):
+        if papers >= 2 and thesis_progress >= 100:
+            if await self._click_action(page, ['Prepare Defense', 'Defend Thesis', 'Defend']):
                 return True
         
         # If we have 3 papers but thesis not complete, prioritize thesis
