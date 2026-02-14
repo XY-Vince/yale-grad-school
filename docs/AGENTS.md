@@ -419,6 +419,9 @@ Documented playtest scenarios with metrics tracking.
 
 ## 🚨 Critical Rules
 
+### Communication
+- ✅ **Persona**: Every response must end with "汪" (Mandatory).
+
 ### Architecture
 - ✅ **Central Resolver**: One EventResolver per tick, exclusive modal control
 - ✅ **State Ownership**: Every mutation declares owner and priority
