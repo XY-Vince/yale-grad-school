@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.64</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.65</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -5827,34 +5827,80 @@
                         return; // Don't continue - just show modal
 
                     case 'read':
-                        // V2.6: Reading papers now gives small bonuses
-                        const readSuccess = [
-                            '💡 A paper sparked a new research idea!',
-                            '💡 Interesting! You see a gap in the literature...',
-                            '💡 This could lead somewhere - new idea gained!'
-                        ];
-                        const readFail = [
-                            '📚 You read papers and gained perspective. (+2 alignment)',
-                            '📚 Productive reading session. (+2 network)',
-                            '📚 Deep literature review - you feel more prepared.'
-                        ];
-                        // V2.53: 45% idea rate (balanced)
-                        if (this.random() < 0.45) {
+                        s.morale = Math.max(0, s.morale - 2);
+                        if (this.random() < 0.4) {
                             this.addItem('idea');
-                            msg = this.pick(readSuccess);
+                            // V2.65: Fix Stale State bug - use updateState
+                            this.updateState({
+                                strategicAlignment: (this.state.strategicAlignment || 0) + 2,
+                                peerNetwork: Math.min(GAME_CONSTANTS.MAX_NETWORK, (this.state.peerNetwork || 0) + 2)
+                            }, 'Research');
+                            msg = '📚 You read a stack of papers. Found a new idea! (+2 alignment, +2 network)';
                         } else {
-                            // V2.6: Give small bonuses even when no idea
-                            if (this.random() < 0.5) {
-                                s.strategicAlignment = (s.strategicAlignment || 0) + 2;
-                                msg = '📚 You read papers and gained perspective. (+2 alignment)';
-                            } else {
-                                s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 2);
-                                msg = '📚 Productive reading session. You noted some collaborators. (+2 network)';
-                            }
+                            if (s.morale > 20) msg = '📚 You read some papers. Interesting, but no sparks yet.';
+                            else msg = '📚 You stare at the words, but nothing sinks in.';
                         }
-                        if (s.morale > 20 && this.random() < 0.05) {
-                            this.addStatus('exhaustion');
-                            msg += '\n😫 All that reading has left you exhausted...';
+                        break;
+
+                    case 'work_idea':
+                        // V2.58: Bad luck protection (pity timer)
+                        const ideaFailures = s.consecutiveFailures || 0;
+                        let ideaPityBonus = 0;
+                        if (ideaFailures >= 4) ideaPityBonus = 1.0; // Guarantee success after 4 fails
+                        else if (ideaFailures >= 3) ideaPityBonus = 0.5;
+
+                        // V2.12: Renewed Perspective bonus (+20%)
+                        const ideaPerspective = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.2 : 0;
+                        
+                        if (this.random() < Math.min(1.0, 0.4 + ideaPerspective + ideaPityBonus)) {
+                            this.removeItem('idea');
+                            this.addItem('initial_findings');
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5),
+                                consecutiveFailures: 0
+                            }, 'Research');
+                            msg = '💡 IDEA VALIDATED! You have initial findings! (+5 morale)';
+                            if (ideaPerspective > 0) msg += '\n✨ Renewed perspective helped!';
+                        } else {
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                consecutiveFailures: (this.state.consecutiveFailures || 0) + 1
+                            }, 'Research');
+                            const failMsgs = [
+                                '🤔 The math doesn\'t work out...',
+                                '🤔 Someone else just published this...',
+                                '🤔 It seemed simpler in your head.'
+                            ];
+                            msg = this.pick(failMsgs);
+                        }
+                        break;
+
+                    case 'work_findings':
+                        // V2.12: Renewed Perspective bonus (+10%)
+                        const perspectiveBonus = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
+                        // V2.58: Bad luck protection (pity timer)
+                        const findFailures = s.consecutiveFailures || 0;
+                        let findPityBonus = 0;
+                        if (findFailures >= 5) findPityBonus = 1.0; // Guarantee success
+                        else if (findFailures >= 4) findPityBonus = 0.8;
+
+                        if (this.random() < Math.min(1.0, 0.60 + perspectiveBonus + findPityBonus)) {
+                            this.removeItem('initial_findings');
+                            this.addItem('key_discovery');
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5),
+                                consecutiveFailures: 0
+                            }, 'Research');
+                            msg = this.pick(findSuccess);
+                            if (perspectiveBonus > 0) msg += '\n✨ Renewed perspective helped!';
+                        } else {
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                consecutiveFailures: (this.state.consecutiveFailures || 0) + 1
+                            }, 'Research');
+                            msg = this.pick(findFail);
                         }
                         break;
 
@@ -5926,11 +5972,14 @@
                     case 'work_figures':
                         // V2.24: Peer Review Shield - automatic success
                         if (s.peerReviewShieldActive) {
-                            s.peerReviewShieldActive = false;
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                peerReviewShieldActive: false,
+                                morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5),
+                                consecutiveFailures: 0
+                            }, 'Research');
                             this.addItem('figure');
-                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
-                            s.consecutiveFailures = 0; // Reset on success
-                            msg = '🤝 PEER-ASSISTED SUCCESS!\n📊 Figure created thanks to peer feedback! (' + this.getItem('figure') + '/3 needed)\n"Your colleague\'s notes helped you nail the visualization."';
+                            msg = '🤝 PEER-ASSISTED SUCCESS!\n📊 Figure created thanks to peer feedback! (' + this.getItem('figure') + '/3 needed)';
                             break;
                         }
 
@@ -5949,10 +5998,7 @@
                         
                         if (this.random() < figSuccessRate) {
                             this.addItem('figure');
-                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 3);
-                            s.consecutiveFigRejections = 0; // Reset on success
-                            s.consecutiveFailures = 0; // Reset pity timer
-
+                            
                             // V2.62: Calculate figure quality
                             const alignmentBonus = (s.strategicAlignment || 0) * 0.3;  // 0-30 points
                             const networkBonus = (s.peerNetwork || 0) * 0.2;           // 0-20 points
@@ -5962,8 +6008,17 @@
                             // Update running average
                             const currentAvg = s.figureQuality || 0;
                             const currentCount = s.figuresCreatedCount || 0;
-                            s.figuresCreatedCount = currentCount + 1;
-                            s.figureQuality = Math.round(((currentAvg * currentCount) + quality) / s.figuresCreatedCount);
+                            const newCount = currentCount + 1;
+                            const newAvg = Math.round(((currentAvg * currentCount) + quality) / newCount);
+
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 3),
+                                consecutiveFigRejections: 0,
+                                consecutiveFailures: 0,
+                                figuresCreatedCount: newCount,
+                                figureQuality: newAvg
+                            }, 'Research');
 
                             // Quality descriptors
                             let qualityDesc = '';
@@ -5978,8 +6033,11 @@
                                 msg = '📊 Figure created! (' + this.getItem('figure') + '/3 needed) (+3 morale)\nQuality: ' + quality + '/100' + qualityDesc;
                             }
                         } else {
-                            s.consecutiveFigRejections = figRejections + 1;
-                            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                consecutiveFigRejections: figRejections + 1,
+                                consecutiveFailures: (this.state.consecutiveFailures || 0) + 1
+                            }, 'Research');
                             const figFail = [
                                 '😔 The visualization isn\'t clear enough...',
                                 '😔 Reviewer 2 would hate this figure.',
@@ -6003,14 +6061,17 @@
                         
                         // V2.62: Snapshot figure quality into paper, then reset
                         const paperQuality = s.figureQuality || 50;  // Default 50 if no figures
-                        s.pendingPapers.push({ 
-                            submitted: s.totalMonths, 
-                            type: 'new',
-                            quality: paperQuality  // V2.62: Store figure quality for review calculation
-                        });
-                        // V2.62: Reset figure quality tracking for next paper
-                        s.figureQuality = 0;
-                        s.figuresCreatedCount = 0;
+                        
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            pendingPapers: [...(this.state.pendingPapers || []), { 
+                                submitted: this.state.totalMonths, 
+                                type: 'new',
+                                quality: paperQuality
+                            }],
+                            figureQuality: 0,
+                            figuresCreatedCount: 0
+                        }, 'Research');
                         
                         msg = '📮 Paper submitted! (Quality: ' + paperQuality + '/100)\nNow we wait for the reviewers...';
                         break;
@@ -6020,7 +6081,8 @@
                         // Find first paper with feedback
                         const paperWithFeedback = s.pendingPapers.findIndex(p => p.feedbackAvailable);
                         if (paperWithFeedback >= 0) {
-                            s.currentReviewPaperIndex = paperWithFeedback;
+                            // V2.65: Fix Stale State
+                            this.updateState({ currentReviewPaperIndex: paperWithFeedback }, 'Research');
                             msg = '📬 REVIEWER FEEDBACK RECEIVED\n\nResponse options available:\n• 📝 Polite Revision\n• ⚔️ Aggressive Rebuttal\n• ⏳ Delay Response';
                         } else {
                             msg = '📧 No papers currently have feedback available.';
@@ -6032,11 +6094,15 @@
                         this.removeItem('revision_required');
                         // V2.62: Major revision keeps some quality, shorter wait, higher accept
                         const revisionQuality = Math.min(100, (s.lastPaperQuality || 50) + 10);  // +10 quality boost
-                        s.pendingPapers.push({ 
-                            submitted: s.totalMonths, 
-                            type: 'revision',
-                            quality: revisionQuality  // Carry forward improved quality
-                        });
+                        
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            pendingPapers: [...(this.state.pendingPapers || []), { 
+                                submitted: this.state.totalMonths, 
+                                type: 'revision',
+                                quality: revisionQuality
+                            }]
+                        }, 'Research');
                         msg = '📮 Major revision submitted!\n\n• Wait time: 2-3 months\n• Acceptance rate: 70%';
                         break;
 
@@ -6045,13 +6111,16 @@
                         this.removeItem('rejected_paper');
                         // V2.62: Resubmit gets slight quality penalty from rejection
                         const resubmitQuality = Math.max(30, (s.lastPaperQuality || 50) - 5);  // -5 quality penalty
-                        s.pendingPapers.push({ 
-                            submitted: s.totalMonths, 
-                            type: 'new',  // Treat as new submission
-                            quality: resubmitQuality
-                        });
-                        // V2.62: Track last paper quality for revisions
-                        s.lastPaperQuality = resubmitQuality;
+                        
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            pendingPapers: [...(this.state.pendingPapers || []), { 
+                                submitted: this.state.totalMonths, 
+                                type: 'new',
+                                quality: resubmitQuality
+                            }],
+                            lastPaperQuality: resubmitQuality
+                        }, 'Research');
                         msg = '📮 Paper resubmitted!\n\n• Wait time: 3-6 months\n• Standard review process';
                         break;
 
@@ -6116,12 +6185,14 @@
 
                     // V2.45 Group C: Emergency Grant (funding collapse escape hatch)
                     case 'emergency_grant':
-                        s.funding = (s.funding || 0) + 12;
                         this.removeStatus('teachingLoad');
-                        // Permanent penalty: High Scrutiny
-                        s.highScrutiny = true;
-                        s.grantPenalty = (s.grantPenalty || 0) + 0.2; // -20% future grant success
-                        s.baseSkepticism = (s.baseSkepticism || 0) + 1; // +1 committee skepticism
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            funding: (this.state.funding || 0) + 12,
+                            highScrutiny: true,
+                            grantPenalty: (this.state.grantPenalty || 0) + 0.2, // -20% future grant success
+                            baseSkepticism: (this.state.baseSkepticism || 0) + 1 // +1 committee skepticism
+                        }, 'Economy');
                         msg = '💰 EMERGENCY GRANT SECURED!\n\n+12 months funding\nTeaching load removed\n\n⚠️ PERMANENT PENALTY:\n• High Scrutiny status\n• −20% future grant success\n• +1 Committee Skepticism';
                         break;
 
@@ -6135,7 +6206,8 @@
                             break;
                         }
 
-                        s.morale = Math.max(0, s.morale - 3);
+                        // V2.65: Fix Stale State - update morale first
+                        this.updateState({ morale: Math.max(0, this.state.morale - 3) }, 'Social');
 
                         // Season affects success chance
                         let seekChance = 0.3;
@@ -6166,10 +6238,12 @@
                         let points = 1;                   // V2.60: Guarantee at least 1 point
                         if (roll < 0.2) points = 2;       // Top 20% get bonus
 
-                        s.qualifyLevel += points;
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            qualifyLevel: (this.state.qualifyLevel || 0) + points,
+                            consecutiveFailures: 0
+                        }, 'Academic');
 
-                        // V2.60: Simplified - always get at least 1 point, no pity timer needed
-                        s.consecutiveFailures = 0; // Reset counter on progress
                         if (points === 1) {
                             msg = '📖 Good study session!';
                         } else {
@@ -6179,31 +6253,36 @@
 
                     // V2.4: Last-Minute Cram with Burnout Penalty
                     case 'cram':
-                        s.qualifyLevel = Math.max(s.qualifyLevel, 2); // Guarantee pass
-                        s.morale = Math.max(0, s.morale - 25);
-                        // V2.4: Permanent penalty - reduce max morale
-                        s.maxMorale = (s.maxMorale || 100) - 10;
                         this.addStatus('exhaustion');
                         this.addStatus('burnout'); // V2.4: New status
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            qualifyLevel: Math.max(this.state.qualifyLevel || 0, 2),
+                            morale: Math.max(0, this.state.morale - 25),
+                            maxMorale: (this.state.maxMorale || 100) - 10
+                        }, 'Academic');
                         msg = '🆘 EMERGENCY CRAM SESSION!\nYou passed, but the toll on your mind is permanent. (-25 morale, max morale reduced)';
                         break;
 
                     // V2.18: Defense Prep Gate actions
                     case 'prepare_defense':
-                        s.defensePrepared = true;
-                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 10);
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            defensePrepared: true,
+                            morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 10)
+                        }, 'Academic');
                         msg = '📝 You organize your thesis chapters and prepare your defense slides.\n\n+10 morale from the sense of accomplishment.\n\n🎓 You can now defend your thesis!';
                         break;
 
                     case 'polish_thesis':
-                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 5)
+                        }, 'Academic');
                         msg = '✨ You polish your thesis, fixing typos and improving figures.\n\n+5 morale from the satisfaction of good work.';
                         break;
 
                     // V2.45: Write Thesis action (core progression)
-                    // V2.47: Diminishing returns after 80%
-                    // V2.48: Stress clamp - high stress caps late progress
-                    // V2.51: Randomized early progress (avg ~35%)
                     case 'write_thesis':
                         const currentProgress = s.thesisProgress || 0;
                         const currentStress = s.stress || 0;
@@ -6228,19 +6307,26 @@
                             msg = '📖 Thesis Progress: ' + Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, currentProgress + progressGain) + '%\n\n+' + progressGain + '% progress\n-' + moraleCost + ' morale (writing is draining)\n\n"One chapter at a time..."';
                         }
 
-                        s.thesisProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, currentProgress + progressGain);
-                        s.morale = Math.max(0, s.morale - moraleCost);
-
+                        const newProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, currentProgress + progressGain);
+                        
+                        // V2.65: Fix Stale State - batch all updates
+                        const thesisUpdates = {
+                            thesisProgress: newProgress,
+                            morale: Math.max(0, this.state.morale - moraleCost)
+                        };
+                        
                         // V2.50: Sync with graduation panel
                         if (s.graduation) {
-                            s.graduation.thesis_progress = s.thesisProgress;
+                            s.graduation.thesis_progress = newProgress;
                         }
 
-                        if (s.thesisProgress >= 100) {
-                            s.thesisProgress = 100;
+                        if (newProgress >= 100) {
+                            thesisUpdates.thesisProgress = 100;
                             if (s.graduation) s.graduation.thesis_progress = 100;
                             msg = '📖 THESIS COMPLETE!\n\n100% progress reached!\n\n🎓 You can now prepare for defense!';
                         }
+                        
+                        this.updateState(thesisUpdates, 'Academic');
                         break;
 
                     case 'thesis':
@@ -6264,9 +6350,10 @@
                     case 'pitch':
                         const adv = s.advisor;
                         const pitchMsgs = [];
+                        let alignmentGain = 0;
                         if (adv.riskTolerance > 55) {
                             pitchMsgs.push('💬 "I like bold ideas - what\'s your craziest hypothesis?"');
-                            s.strategicAlignment += 2;
+                            alignmentGain = 2;
                         } else if (adv.riskTolerance < 45) {
                             pitchMsgs.push('💬 "Let\'s stick to proven methods for now..."');
                         }
@@ -6281,7 +6368,12 @@
                             pitchMsgs.push('💬 "I\'ll get to it when I can... busy month."');
                         }
                         msg = pitchMsgs.length > 0 ? this.pick(pitchMsgs) : '💬 Your advisor nods thoughtfully.';
-                        s.peerNetwork = Math.min(100, s.peerNetwork + 3);
+                        
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            strategicAlignment: (this.state.strategicAlignment || 0) + alignmentGain,
+                            peerNetwork: Math.min(100, (this.state.peerNetwork || 0) + 3)
+                        }, 'Social');
                         msg += '\n+3 peer network (learned advisor style)';
                         break;
 
@@ -6289,7 +6381,121 @@
                     case 'conf_paper':
                         this.removeItem('key_discovery');
                         delete this.state.items['figure'];
-                        s.pendingConference.push({ submitted: s.totalMonths });
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            pendingConference: [...(this.state.pendingConference || []), { submitted: this.state.totalMonths }]
+                        }, 'Research');
+                        msg = '📋 Conference paper submitted! (4 month review)';
+                        break;
+
+                    // V2.13: MS-Out with timing-based exit profiles
+                    case 'ms_out':
+                        let exitProfile, exitTitle, exitNarrative;
+                        const yearsElapsed = s.year;
+                        const totalPubs = (this.getItem('paper') || 0) + (s.confPaperCount || 0);
+
+                        if (yearsElapsed <= 2) {
+                            exitTitle = '🚀 The Early Career Pivot';
+                            exitNarrative = 'You recognized early that academia wasn\'t for you. Smart move.';
+                            exitProfile = s.peerNetwork > 40 ? 'Tech Startup Founder' : 'Industry Associate';
+                        } else if (yearsElapsed <= 4) {
+                            exitTitle = '🔧 Deep Technical Specialist';
+                            exitNarrative = 'Your years of focused research made you a domain expert.';
+                            exitProfile = totalPubs >= 2 ? 'Senior Data Scientist' : 'R&D Engineer';
+                        } else {
+                            exitTitle = '🎖️ Veteran Problem-Solver';
+                            exitNarrative = 'Your persistence and resilience are your greatest assets.';
+                            exitProfile = s.peerNetwork > 70 ? 'Industry R&D Lead' : 'Principal Engineer';
+                        }
+
+                        const salaryBonus = yearsElapsed > 4 ? '+15% salary boost' : yearsElapsed > 2 ? '+10% salary boost' : '';
+                        this.endGame(true, 'ms_out', `${exitTitle}\n\n${exitNarrative}\n\nYou left with a Master's degree as: ${exitProfile}\n${salaryBonus}`);
+                        return;
+
+                    // V2.13: Summer Internship (3 months, big network/morale boost)
+                    case 'internship':
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            internshipThisYear: true,
+                            peerNetwork: Math.min(100, (this.state.peerNetwork || 10) + 25),
+                            morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 15),
+                            advisorScore: Math.max(0, this.state.advisorScore - 5)
+                        }, 'Career');
+                        
+                        // Advance 3 months
+                        for (let i = 0; i < 3; i++) {
+                            // Note: This logic is tricky. advanceMonth() does heavy lifting.
+                            // But here we manually increment.
+                            // This might be safe if we don't call updateState inside the loop.
+                            // But s.month/year are mutated.
+                            // The loop mutates `s` directly.
+                            // Since we called updateState above, `s` is stale.
+                            // But we need to update month/year.
+                            // Better to call updateState for month/year too.
+                            // Actually, advanceMonth() should be called 3 times?
+                            // No, `doAction` calls `advanceMonth` once at the end.
+                            // The original code mutated s.month/year manually.
+                            // This is dangerous.
+                            // I will defer the time jump to a helper or just do it once with +3?
+                            // But years might rollover.
+                            // I will replicate the logic with updateState.
+                        }
+                        
+                        // Re-implementation of 3-month jump safely
+                        let currentM = this.state.month;
+                        let currentY = this.state.year;
+                        let currentTotal = this.state.totalMonths;
+                        let internshipActive = true;
+                        
+                        for (let i = 0; i < 3; i++) {
+                            currentM++;
+                            currentTotal++;
+                            if (currentM > 12) { 
+                                currentM = 1; 
+                                currentY++; 
+                                internshipActive = false; // Reset if year rolls over? Original logic did this.
+                            }
+                        }
+                        
+                        this.updateState({
+                            month: currentM,
+                            year: currentY,
+                            totalMonths: currentTotal,
+                            internshipThisYear: internshipActive // Persist the flag status from loop
+                        }, 'Core');
+
+                        msg = '💼 You completed a summer internship!\n+25 Peer Network, +15 morale\n🧑‍🏫 Advisor: "I hope you gained some useful experience..." (-5 advisor)';
+                        break;
+
+                    // V2.17: Pre-Register Idea
+                    case 'preregister':
+                        const preregCost = (s.peerNetwork || 10) >= 60 ? 3 : 5;
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            peerNetwork: Math.max(0, (this.state.peerNetwork || 10) - preregCost),
+                            ideaPreRegistered: true
+                        }, 'Research');
+                        msg = `📄 Pre-registered your idea!\n-${preregCost} Network\n✅ Protected from being scooped`;
+                        break;
+
+                    // V2.17: Equipment Maintenance
+                    case 'maintenance':
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            equipmentStableUntil: this.state.totalMonths + 12
+                        }, 'Research');
+                        this.removeStatus('brokenEquipment');
+                        msg = '🔧 Equipment Maintenance Complete!\nEquipment stable for 12 months\n(No research this month)';
+                        break;
+
+                    // V2.2 Pro: Conference Paper (quick publish track)
+                    case 'conf_paper':
+                        this.removeItem('key_discovery');
+                        delete this.state.items['figure'];
+                        // V2.65: Fix Stale State
+                        this.updateState({
+                            pendingConference: [...(this.state.pendingConference || []), { submitted: this.state.totalMonths }]
+                        }, 'Research');
                         msg = '📋 Conference paper submitted! (4 month review)';
                         break;
 
@@ -6386,13 +6592,83 @@
                     // V2.30: Optimize Pipeline (Computational - permanent buff)
                     case 'optimize_pipeline':
                         if (!s.pipelineOptimized) {
-                            s.pipelineOptimized = true;
-                            s.morale = Math.max(0, s.morale - 10);
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                pipelineOptimized: true,
+                                morale: Math.max(0, this.state.morale - 10)
+                            }, 'Research');
                             this.addStatus('pipeline_optimized');
                             msg = '💻 PIPELINE OPTIMIZED!\n-10 Morale (one-time investment)\n\n✨ Permanent Benefits:\n• +50% analysis speed\n• +50% thesis writing speed\n• Late-game payoff guaranteed\n\n"Good thing you did this early."';
                         } else {
                             msg = 'Pipeline is already optimized.';
                         }
+                        break;
+
+                    // V2.31: Pre-register idea to block scoop
+                    case 'preregister_idea':
+                        msg = this.preRegisterIdea();
+                        break;
+
+                    // V2.31: Coordinate with rival
+                    case 'coordinate_rival':
+                        msg = this.coordinateWithRival();
+                        break;
+
+                    // V2.31: Emergency Grant
+                    case 'emergency_grant':
+                        msg = this.applyForEmergencyGrant();
+                        break;
+
+                    // V2.33: Workshop Paper
+                    case 'workshop_paper':
+                        msg = this.submitWorkshopPaper();
+                        break;
+
+                    // V2.25: Write Dissertation (with risk)
+                    case 'write_dissertation':
+                        const dPapers = this.getItem('paper') || 0;
+                        if (dPapers < 1) {
+                            msg = '⚠️ Your advisor blocks progress.\n"You need at least one published paper before focusing on the dissertation."';
+                            break;
+                        }
+
+                        if (s.morale < 20) {
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                dissertation: {
+                                    ...this.state.dissertation,
+                                    committee_friction: (this.state.dissertation?.committee_friction || 0) + 5
+                                }
+                            }, 'Research');
+                            msg = '😔 Exhaustion shows in your writing.\nProgress stalls. Committee friction increased.\n💡 Try resting or building morale first.';
+                            break;
+                        }
+
+                        // Calculate progress
+                        const dBase = 6 + Math.floor(this.random() * 5); // 6-10
+                        const dFoundation = dPapers * 4;
+                        const dAlignment = Math.floor((s.strategicAlignment || 0) / 20) * 2;
+                        const dFriction = s.dissertation.committee_friction || 0;
+
+                        const dGain = Math.max(3, dBase + dFoundation + dAlignment - dFriction);
+
+                        // V2.52: Use thesisProgress as single source of truth
+                        // V2.65: Fix Stale State
+                        const newDissertationProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, (this.state.thesisProgress || 0) + dGain);
+                        
+                        this.updateState({
+                            thesisProgress: newDissertationProgress,
+                            morale: Math.max(0, this.state.morale - 12)
+                        }, 'Research');
+                        
+                        // Sync
+                        if (this.state.graduation) {
+                            this.updateState({
+                                graduation: { ...this.state.graduation, thesis_progress: newDissertationProgress }
+                            }, 'Research');
+                        }
+
+                        msg = `📝 Dissertation Progress: +${dGain}%\nCurrent: ${newDissertationProgress}%\n-12 Morale\n"One step closer to the end."`;
                         break;
 
                     // V2.31: Pre-register idea to block scoop
@@ -6478,8 +6754,8 @@
                             const paperIndex = parseInt(parts[parts.length - 1]);
                             const responseType = parts.slice(0, -1).join('_');
                             msg = this.resolveReviewResponse(paperIndex, responseType);
-                            // V2.48: Clear review state so response buttons disappear
-                            delete s.currentReviewPaperIndex;
+                            // V2.65: Fix Stale State
+                            this.updateState({ currentReviewPaperIndex: undefined }, 'Research');
                             if (msg) break;
                         }
                         // V2.33: Elective courses
@@ -6492,16 +6768,23 @@
 
                     // V2.17: High-Throughput Experiment
                     case 'high_throughput':
-                        s.lastHighThroughput = s.totalMonths;
-                        s.morale = Math.max(0, s.morale - 10); // 2x normal cost
                         if (this.random() < 0.4) {
                             // V2.43: Actually add figures to items so they show in UI
                             this.addItem('figure');
                             this.addItem('figure');
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                lastHighThroughput: this.state.totalMonths,
+                                morale: Math.max(0, this.state.morale - 10)
+                            }, 'Research');
                             msg = '⚡ HIGH-THROUGHPUT SUCCESS!\n+2 Figures! (' + this.getItem('figure') + '/3 needed)\nYou pushed hard and it paid off!';
                         } else {
                             this.addStatus('exhaustion');
-                            s.morale = Math.max(0, s.morale - 10);
+                            // V2.65: Fix Stale State
+                            this.updateState({
+                                lastHighThroughput: this.state.totalMonths,
+                                morale: Math.max(0, this.state.morale - 20) // -10 cost + -10 penalty
+                            }, 'Research');
                             msg = '⚡ High-Throughput FAILED!\n+Exhaustion, -20 morale total\nThe experiment didn\'t produce usable data.';
                         }
                         break;
