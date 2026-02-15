@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.65</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.66</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -5820,6 +5820,23 @@
                 this.updateAdvisorTension(id);
 
                 switch (id) {
+                    // V2.20: Specialization Selection
+                    case 'choose_experimentalist':
+                        this.updateState({ specialization: 'experimentalist' }, 'Setup');
+                        document.getElementById('start-screen').style.display = 'none';
+                        msg = '🔬 EXPERIMENTALIST CHOSEN\nBonus: Figure creation is faster (0.7x attempts needed)';
+                        break;
+                    case 'choose_theoretician':
+                        this.updateState({ specialization: 'theoretician' }, 'Setup');
+                        document.getElementById('start-screen').style.display = 'none';
+                        msg = '📐 THEORETICIAN CHOSEN\nBonus: Automatically gain a new idea every year';
+                        break;
+                    case 'choose_computational':
+                        this.updateState({ specialization: 'computational' }, 'Setup');
+                        document.getElementById('start-screen').style.display = 'none';
+                        msg = '💻 COMPUTATIONALIST CHOSEN\nBonus: +50% Thesis writing speed';
+                        break;
+
                     // V2.37: Re-show event modal if hidden
                     case 'reshow_modal':
                         const lastEvent = document.getElementById('message-log')?.textContent || 'Event occurred';
@@ -5900,71 +5917,6 @@
                             this.updateState({
                                 consecutiveFailures: (this.state.consecutiveFailures || 0) + 1
                             }, 'Research');
-                            msg = this.pick(findFail);
-                        }
-                        break;
-
-                    case 'work_idea':
-                        const ideaSuccess = [
-                            '🎉 Initial Findings achieved! (+5 morale)',
-                            '🎉 The experiment worked - Initial Findings! (+5 morale)',
-                            '🎉 Promising results documented! (+5 morale)'
-                        ];
-                        // V2.5: Advisor feedback on ideas
-                        const ideaFail = [
-                            '🧑‍🏫 Advisor: "This approach needs more thought..."',
-                            '🧑‍🏫 Advisor: "Inconclusive. Try a different angle."',
-                            '🧑‍🏫 Advisor: "Not quite what I had in mind..."'
-                        ];
-                        // V2.58: Bad luck protection
-                        const ideaFailures = s.consecutiveFailures || 0;
-                        let ideaPityBonus = 0;
-                        if (ideaFailures >= 5) ideaPityBonus = 1.0;
-                        else if (ideaFailures >= 4) ideaPityBonus = 0.8;
-                        
-                        // V2.59: Boosted base success rate from 0.45 to 0.55
-                        if (this.random() < Math.min(1.0, 0.55 + ideaPityBonus)) {
-                            this.removeItem('idea');
-                            this.addItem('initial_findings');
-                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
-                            s.consecutiveFailures = 0; // Reset on success
-                            msg = '🧑‍🏫 Advisor: "This is promising! Keep going." (+5 morale)\n' + this.pick(ideaSuccess);
-                        } else {
-                            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
-                            msg = this.pick(ideaFail);
-                        }
-                        break;
-
-                    case 'work_findings':
-                        // V2.5: Advisor feedback on findings
-                        const findSuccess = [
-                            '🧑‍🏫 Advisor: "Excellent work! This is publishable." (+5 morale)',
-                            '🧑‍🏫 Advisor: "Great results! Write this up." (+5 morale)',
-                            '🧑‍🏫 Advisor: "Solid discovery! I\'m impressed." (+5 morale)'
-                        ];
-                        const findFail = [
-                            '🧑‍🏫 Advisor: "The findings aren\'t strong enough yet..."',
-                            '🧑‍🏫 Advisor: "More controls needed. Redo the experiment."',
-                            '🧑‍🏫 Advisor: "Reviewers would tear this apart..."'
-                        ];
-                        // V2.12: Renewed Perspective bonus (+10%)
-                        // V2.59: 60% base rate (boosted from 45%)
-                        const perspectiveBonus = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
-                        // V2.58: Bad luck protection
-                        const findFailures = s.consecutiveFailures || 0;
-                        let findPityBonus = 0;
-                        if (findFailures >= 5) findPityBonus = 1.0;
-                        else if (findFailures >= 4) findPityBonus = 0.8;
-
-                        if (this.random() < Math.min(1.0, 0.60 + perspectiveBonus + findPityBonus)) {
-                            this.removeItem('initial_findings');
-                            this.addItem('key_discovery');
-                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
-                            s.consecutiveFailures = 0; // Reset on success
-                            msg = this.pick(findSuccess);
-                            if (perspectiveBonus > 0) msg += '\n✨ Renewed perspective helped!';
-                        } else {
-                            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
                             msg = this.pick(findFail);
                         }
                         break;
