@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.63</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.64</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -1016,6 +1016,45 @@
                         <button class="action-btn save-btn" onclick="game.showHistory()" style="flex: 1; padding: 6px;">
                             <div class="action-name" style="font-size: 0.85rem;">📜 History</div>
                         </button>
+                    </div>
+
+                    <!-- V2.64: Debug / Advanced Stats Panel -->
+                    <div class="panel" id="debug-stats-panel" style="margin-top: 10px; border: 1px dashed rgba(99, 102, 241, 0.5);">
+                        <h3 style="font-size: 0.9rem; color: var(--accent-primary);">🔧 Debug / Advanced Stats</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.75rem; margin-top: 8px;">
+                            <!-- Row 1 -->
+                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <span style="color: var(--text-secondary);">Social Debt:</span>
+                                <span id="debug-social-debt" style="font-weight: 600;">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <span style="color: var(--text-secondary);">Collab Offered:</span>
+                                <span id="debug-collab-offered" style="font-weight: 600;">No</span>
+                            </div>
+                            <!-- Row 2 -->
+                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <span style="color: var(--text-secondary);">Risk Tolerance:</span>
+                                <span id="debug-risk-tolerance" style="font-weight: 600;">—</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <span style="color: var(--text-secondary);">Shield Active:</span>
+                                <span id="debug-shield" style="font-weight: 600;">No</span>
+                            </div>
+                            <!-- Row 3 -->
+                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <span style="color: var(--text-secondary);">Fresh Persp:</span>
+                                <span id="debug-fresh-persp" style="font-weight: 600;">—</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <span style="color: var(--text-secondary);">Renewed Persp:</span>
+                                <span id="debug-renewed-persp" style="font-weight: 600;">—</span>
+                            </div>
+                            <!-- Row 4 -->
+                            <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                                <span style="color: var(--text-secondary);">Equipment Stable:</span>
+                                <span id="debug-equip-stable" style="font-weight: 600;">—</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- End Tab: Lab -->
@@ -7055,6 +7094,66 @@
                         } else {
                             qualityEl.textContent = '🔧 Needs Work';
                             qualityEl.style.color = '#f87171';
+                        }
+                    }
+                }
+
+                // V2.64: Debug / Advanced Stats Panel
+                const debugPanel = document.getElementById('debug-stats-panel');
+                if (debugPanel) {
+                    const socialDebtEl = document.getElementById('debug-social-debt');
+                    if (socialDebtEl) socialDebtEl.textContent = s.socialDebt || 0;
+
+                    const collabEl = document.getElementById('debug-collab-offered');
+                    if (collabEl) {
+                        collabEl.textContent = s.collaborationOffered ? 'Yes' : 'No';
+                        collabEl.style.color = s.collaborationOffered ? '#4ade80' : '#6b7280';
+                    }
+
+                    const riskEl = document.getElementById('debug-risk-tolerance');
+                    if (riskEl && s.advisor) {
+                        riskEl.textContent = s.advisor.riskTolerance || '—';
+                    }
+
+                    const shieldEl = document.getElementById('debug-shield');
+                    if (shieldEl) {
+                        shieldEl.textContent = s.peerReviewShieldActive ? 'Yes' : 'No';
+                        shieldEl.style.color = s.peerReviewShieldActive ? '#4ade80' : '#6b7280';
+                    }
+
+                    const freshEl = document.getElementById('debug-fresh-persp');
+                    if (freshEl) {
+                        if (s.freshPerspectiveUntil && s.totalMonths < s.freshPerspectiveUntil) {
+                            const remaining = s.freshPerspectiveUntil - s.totalMonths;
+                            freshEl.textContent = remaining + 'mo';
+                            freshEl.style.color = '#4ade80';
+                        } else {
+                            freshEl.textContent = '—';
+                            freshEl.style.color = '#6b7280';
+                        }
+                    }
+
+                    const renewedEl = document.getElementById('debug-renewed-persp');
+                    if (renewedEl) {
+                        if (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) {
+                            const remaining = s.renewedPerspectiveUntil - s.totalMonths;
+                            renewedEl.textContent = remaining + 'mo';
+                            renewedEl.style.color = '#4ade80';
+                        } else {
+                            renewedEl.textContent = '—';
+                            renewedEl.style.color = '#6b7280';
+                        }
+                    }
+
+                    const equipEl = document.getElementById('debug-equip-stable');
+                    if (equipEl) {
+                        if (s.equipmentStabilizedUntil && s.totalMonths < s.equipmentStabilizedUntil) {
+                            const remaining = s.equipmentStabilizedUntil - s.totalMonths;
+                            equipEl.textContent = remaining + 'mo';
+                            equipEl.style.color = '#4ade80';
+                        } else {
+                            equipEl.textContent = '—';
+                            equipEl.style.color = '#6b7280';
                         }
                     }
                 }
