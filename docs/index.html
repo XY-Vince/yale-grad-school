@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.67</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.68</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -6566,11 +6566,6 @@
                         msg = this.coordinateWithRival();
                         break;
 
-                    // V2.31: Emergency Grant
-                    case 'emergency_grant':
-                        msg = this.applyForEmergencyGrant();
-                        break;
-
                     // V2.33: Workshop Paper
                     case 'workshop_paper':
                         msg = this.submitWorkshopPaper();
@@ -6623,64 +6618,7 @@
                         msg = `📝 Dissertation Progress: +${dGain}%\nCurrent: ${newDissertationProgress}%\n-12 Morale\n"One step closer to the end."`;
                         break;
 
-                    // V2.31: Pre-register idea to block scoop
-                    case 'preregister_idea':
-                        msg = this.preRegisterIdea();
-                        break;
 
-                    // V2.31: Coordinate with rival
-                    case 'coordinate_rival':
-                        msg = this.coordinateWithRival();
-                        break;
-
-                    // V2.31: Emergency Grant
-                    case 'emergency_grant':
-                        msg = this.applyForEmergencyGrant();
-                        break;
-
-                    // V2.33: Workshop Paper
-                    case 'workshop_paper':
-                        msg = this.submitWorkshopPaper();
-                        break;
-
-                    // V2.25: Write Dissertation (with risk)
-                    case 'write_dissertation':
-                        const dPapers = this.getItem('paper') || 0;
-                        if (dPapers < 1) {
-                            msg = '⚠️ Your advisor blocks progress.\n"You need at least one published paper before focusing on the dissertation."';
-                            break;
-                        }
-
-                        if (s.morale < 20) {
-                            s.dissertation.committee_friction += 5;
-                            msg = '😔 Exhaustion shows in your writing.\nProgress stalls. Committee friction increased.\n💡 Try resting or building morale first.';
-                            break;
-                        }
-
-                        // Calculate progress
-                        const dBase = 6 + Math.floor(this.random() * 5); // 6-10
-                        const dFoundation = dPapers * 4;
-                        const dAlignment = Math.floor((s.strategicAlignment || 0) / 20) * 2;
-                        const dFriction = s.dissertation.committee_friction || 0;
-
-                        const dGain = Math.max(3, dBase + dFoundation + dAlignment - dFriction);
-
-                        // V2.52: Use thesisProgress as single source of truth
-                        s.thesisProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, (s.thesisProgress || 0) + dGain);
-                        s.morale = Math.max(0, s.morale - 12);
-                        s.dissertation.draft_quality += dGain * 0.2;
-
-                        // Risk: 20% chance of revision request
-                        if (this.random() < 0.2) {
-                            s.dissertation.committee_friction += 3;
-                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.thesisProgress}%)\n-12 Morale\n\n⚠️ Your advisor requests structural revisions.\nCommittee friction increased.`;
-                        } else {
-                            msg = `📝 Dissertation Progress: +${dGain}%\n(Now at ${s.thesisProgress}%)\n-12 Morale\n\n"Good progress. Keep writing."`;
-                        }
-
-                        // Check for phase transition
-                        this.checkThesisPhaseTransition();
-                        break;
 
                     // V2.25: Defend Thesis (Now triggers interactive gauntlet)
                     case 'defend_thesis':
