@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.68</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.69</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -6449,60 +6449,6 @@
                             pendingConference: [...(this.state.pendingConference || []), { submitted: this.state.totalMonths }]
                         }, 'Research');
                         msg = '📋 Conference paper submitted! (4 month review)';
-                        break;
-
-                    // V2.13: MS-Out with timing-based exit profiles
-                    case 'ms_out':
-                        let exitProfile, exitTitle, exitNarrative;
-                        const yearsElapsed = s.year;
-                        const totalPubs = (this.getItem('paper') || 0) + (s.confPaperCount || 0);
-
-                        if (yearsElapsed <= 2) {
-                            exitTitle = '🚀 The Early Career Pivot';
-                            exitNarrative = 'You recognized early that academia wasn\'t for you. Smart move.';
-                            exitProfile = s.peerNetwork > 40 ? 'Tech Startup Founder' : 'Industry Associate';
-                        } else if (yearsElapsed <= 4) {
-                            exitTitle = '🔧 Deep Technical Specialist';
-                            exitNarrative = 'Your years of focused research made you a domain expert.';
-                            exitProfile = totalPubs >= 2 ? 'Senior Data Scientist' : 'R&D Engineer';
-                        } else {
-                            exitTitle = '🎖️ Veteran Problem-Solver';
-                            exitNarrative = 'Your persistence and resilience are your greatest assets.';
-                            exitProfile = s.peerNetwork > 70 ? 'Industry R&D Lead' : 'Principal Engineer';
-                        }
-
-                        const salaryBonus = yearsElapsed > 4 ? '+15% salary boost' : yearsElapsed > 2 ? '+10% salary boost' : '';
-                        this.endGame(true, 'ms_out', `${exitTitle}\n\n${exitNarrative}\n\nYou left with a Master's degree as: ${exitProfile}\n${salaryBonus}`);
-                        return;
-
-                    // V2.13: Summer Internship (3 months, big network/morale boost)
-                    case 'internship':
-                        s.internshipThisYear = true;
-                        s.peerNetwork = Math.min(100, (s.peerNetwork || 10) + 25);
-                        s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 15);
-                        s.advisorScore = Math.max(0, s.advisorScore - 5);
-                        // Advance 3 months
-                        for (let i = 0; i < 3; i++) {
-                            s.month++;
-                            s.totalMonths++;
-                            if (s.month > 12) { s.month = 1; s.year++; s.internshipThisYear = false; }
-                        }
-                        msg = '💼 You completed a summer internship!\n+25 Peer Network, +15 morale\n🧑‍🏫 Advisor: "I hope you gained some useful experience..." (-5 advisor)';
-                        break;
-
-                    // V2.17: Pre-Register Idea
-                    case 'preregister':
-                        const preregCost = (s.peerNetwork || 10) >= 60 ? 3 : 5;
-                        s.peerNetwork = Math.max(0, (s.peerNetwork || 10) - preregCost);
-                        s.ideaPreRegistered = true;
-                        msg = `📄 Pre-registered your idea!\n-${preregCost} Network\n✅ Protected from being scooped`;
-                        break;
-
-                    // V2.17: Equipment Maintenance
-                    case 'maintenance':
-                        s.equipmentStableUntil = s.totalMonths + 12;
-                        this.removeStatus('brokenEquipment');
-                        msg = '🔧 Equipment Maintenance Complete!\nEquipment stable for 12 months\n(No research this month)';
                         break;
 
                     // V2.24: Peer Review Shield
