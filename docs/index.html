@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.69</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.70</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -4758,25 +4758,40 @@
 
                 // Monthly morale decay - V2.4: Alignment reduces decay
                 let decay = 4;
-                if (this.hasStatus('exhaustion')) decay += 6;
-                if (this.hasStatus('unhappyAdvisor')) decay += 6;
-                if (this.hasStatus('burnout')) decay += 2; // V2.4: Burnout penalty
+                const decaySources = ['Base: 4'];
+
+                if (this.hasStatus('exhaustion')) { decay += 6; decaySources.push('Exhaustion +6'); }
+                if (this.hasStatus('unhappyAdvisor')) { decay += 6; decaySources.push('Unhappy Advisor +6'); }
+                if (this.hasStatus('burnout')) { decay += 2; decaySources.push('Burnout +2'); } // V2.4: Burnout penalty
+                
                 // V2.4: Strategic alignment reduces decay (1 point per 10 alignment - V2.18 update)
                 // V2.5: TA duty also causes morale decay
-                if (this.state.isTeaching) decay += 3;
+                if (this.state.isTeaching) { decay += 3; decaySources.push('TA Duty +3'); }
+                
                 const alignmentBonus = Math.floor((this.state.strategicAlignment || 0) / 10);
                 if (alignmentBonus > 0) {
                     this.appendMessage(`🛡️ Advisor alignment protects you. (-${alignmentBonus} decay)`);
+                    decaySources.push(`Alignment -${alignmentBonus}`);
                 }
+                
                 decay = Math.max(1, decay - alignmentBonus);
+                
                 // V2.11: New Lease on Life reduces decay by 50%
                 if (this.state.newLeaseUntil && this.state.totalMonths < this.state.newLeaseUntil) {
                     decay = Math.ceil(decay / 2);
+                    decaySources.push('New Lease (50% off)');
                 }
                 // V2.12: Light at the End of the Tunnel - 50% decay reduction with 3 journal papers
                 if ((this.getItem('paper') || 0) >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS) {
                     decay = Math.ceil(decay / 2);
+                    decaySources.push('Near Grad (50% off)');
                 }
+
+                // V2.70: Transparency Log - Show decay breakdown if elevated
+                if (decay > 4) {
+                    this.appendSystemEvent(`📉 Monthly Decay: -${decay} (${decaySources.join(', ')})`);
+                }
+
                 this.updateState({ morale: Math.max(0, this.state.morale - decay) }, 'Wellness');
 
                 // Apply pending conference effects AFTER decay (Bug #1 fix)
