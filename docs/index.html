@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.70</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.71</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -2933,16 +2933,22 @@
                     return `❌ Course not available until Year ${tier.minYear}.`;
                 }
 
-                // Deduct credits and acquire skill
-                s.credits = credits - skill.creditCost;
-                s.acquiredSkills = s.acquiredSkills || {};
-                s.acquiredSkills[courseId] = {
-                    acquiredMonth: s.totalMonths,
-                    active: true
+                // Deduct credits and acquire skill (immutable update)
+                const updatedAcquiredSkills = {
+                    ...(s.acquiredSkills || {}),
+                    [courseId]: {
+                        acquiredMonth: s.totalMonths,
+                        active: true
+                    }
                 };
-                s.morale = Math.max(0, s.morale - 5);
 
-                // Recalculate modifiers
+                this.updateState({
+                    credits: credits - skill.creditCost,
+                    acquiredSkills: updatedAcquiredSkills,
+                    morale: Math.max(0, s.morale - 5)
+                });
+
+                // Recalculate modifiers (this also needs to use updateState)
                 this.resolveSkillModifiers();
 
                 return `📚 COURSE COMPLETED: ${skill.name}!\n-${skill.creditCost} credits, -5 morale\n\n✨ Skill Acquired:\n${skill.description}\n\n"${tier.icon} ${tier.label} knowledge gained."`;
@@ -2954,7 +2960,7 @@
                 const skills = s.acquiredSkills || {};
 
                 // Reset modifiers
-                s.skillModifiers = {
+                const newModifiers = {
                     analysisSpeed: 0,
                     grantSuccess: 0,
                     equipmentFailure: 0,
@@ -2970,9 +2976,11 @@
                     if (!skill) return;
 
                     Object.entries(skill.effects).forEach(([effect, value]) => {
-                        s.skillModifiers[effect] = (s.skillModifiers[effect] || 0) + value;
+                        newModifiers[effect] = (newModifiers[effect] || 0) + value;
                     });
                 });
+
+                this.updateState({ skillModifiers: newModifiers });
             },
 
             // V2.33: Get skill modifier for a specific effect
@@ -2988,21 +2996,24 @@
 
                 // Soft cap: max 2 per year
                 if (workshopsThisYear >= 2) {
-                    s.morale = Math.max(0, s.morale - 3);
-                    s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 2);
+                    this.updateState({
+                        morale: Math.max(0, s.morale - 3),
+                        peerNetwork: Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 2)
+                    });
                     return `📋 Workshop Paper Submitted (Diminished Returns)\n-3 morale, +2 network\n\n⚠️ You've already submitted ${workshopsThisYear} this year.\nConsider focusing on journal submissions.`;
                 }
 
                 // Normal workshop submission
-                s.workshopsThisYear = workshopsThisYear + 1;
-                s.workshopPapersTotal = (s.workshopPapersTotal || 0) + 1;
-                s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 8);
-                s.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 5);
+                const newWorkshopsThisYear = workshopsThisYear + 1;
+                this.updateState({
+                    workshopsThisYear: newWorkshopsThisYear,
+                    workshopPapersTotal: (s.workshopPapersTotal || 0) + 1,
+                    morale: Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 8),
+                    peerNetwork: Math.min(GAME_CONSTANTS.MAX_NETWORK, (s.peerNetwork || 0) + 5),
+                    workshopJournalBoost: (s.workshopJournalBoost || 0) + 0.05
+                });
 
-                // Bonus: boost next journal acceptance
-                s.workshopJournalBoost = (s.workshopJournalBoost || 0) + 0.05;
-
-                return `📋 WORKSHOP PAPER ACCEPTED!\n+8 morale, +5 network\n\n✨ Bonus: +5% acceptance on next journal submission!\n(${2 - s.workshopsThisYear} workshops remaining this year)\n\n"Quick wins build momentum."`;
+                return `📋 WORKSHOP PAPER ACCEPTED!\n+8 morale, +5 network\n\n✨ Bonus: +5% acceptance on next journal submission!\n(${2 - newWorkshopsThisYear} workshops remaining this year)\n\n"Quick wins build momentum."`;
             },
 
             // V2.33: Get "Why Not?" explanation for action blocking
@@ -3087,9 +3098,11 @@
                     return 'You already have a pre-registered idea.';
                 }
 
-                s.ideaPreregistered = true;
-                s.preregisteredMonth = s.totalMonths;
-                s.morale = Math.max(0, s.morale - 5);
+                this.updateState({
+                    ideaPreregistered: true,
+                    preregisteredMonth: s.totalMonths,
+                    morale: Math.max(0, s.morale - 5)
+                });
 
                 return `📋 IDEA PRE-REGISTERED!\n-5 morale (documentation effort)\n\n✨ Benefits:\n• Next scoop attempt automatically blocked\n• +10% to paper acceptance\n• Expires in 12 months if unused\n\n"Timestamp established. Let them try to scoop you now."`;
             },
@@ -3120,18 +3133,30 @@
                 }
 
                 // Find the rival
-                const rival = (s.labmates || []).find(l => l.archetype === 'The_Rival' && l.active);
-                if (!rival) {
+                const rivalIndex = (s.labmates || []).findIndex(l => l.archetype === 'The_Rival' && l.active);
+                if (rivalIndex === -1) {
                     return 'No active rival in the lab.';
                 }
 
-                s.peerNetwork = Math.max(0, (s.peerNetwork || 0) - 20);
-                rival.progress = Math.max(0, rival.progress - 30);
-                rival.resentment = (rival.resentment || 0) + 15;
-                rival.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, rival.stress + 10);
+                const rival = s.labmates[rivalIndex];
+                const updatedRival = {
+                    ...rival,
+                    progress: Math.max(0, rival.progress - 30),
+                    resentment: (rival.resentment || 0) + 15,
+                    stress: Math.min(GAME_CONSTANTS.MAX_STRESS, rival.stress + 10)
+                };
+
+                // Create new labmates array with updated rival
+                const updatedLabmates = [...s.labmates];
+                updatedLabmates[rivalIndex] = updatedRival;
+
+                this.updateState({
+                    peerNetwork: Math.max(0, (s.peerNetwork || 0) - 20),
+                    labmates: updatedLabmates
+                });
 
                 // High resentment makes future collaboration impossible
-                if (rival.resentment >= 50) {
+                if (updatedRival.resentment >= 50) {
                     return `🤝 COORDINATION (but at a cost)!\n-20 network, -30% rival progress\n\n⚠️ ${rival.name}'s resentment is now high.\nFuture coordination may be impossible.\n"We agreed to share... for now."`;
                 }
 
@@ -3313,22 +3338,22 @@
                 if (!conf) return null;
 
                 let msg = '';
-
-                // Suspend lab penalties during conference
-                s.atConference = true;
+                let stateChanges = {
+                    atConference: true
+                };
 
                 switch (choiceId) {
                     // V2.53: POSTER - Damage Control / Stability (guaranteed safety)
                     case 'conf_poster':
                         this.spendFunding(conf.fundingCost);
-                        s.pendingConferenceEffects = {
+                        stateChanges.pendingConferenceEffects = {
                             networkGain: Math.floor(conf.networkGain * 0.3),
                             morale: 10,
                             stress: -20,
                             ideaChance: 0.10
                         };
-                        s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
-                        s.lastConferenceMonth = s.totalMonths;
+                        stateChanges.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+                        stateChanges.lastConferenceMonth = s.totalMonths;
                         msg = `🖼️ POSTER: Safe Progress\n\n+${Math.floor(conf.networkGain * 0.3)} network, +10 morale, -20 stress\n\n"No drama. Solid conversations. Safe progress."\n\n✓ Convert attendance into stability`;
                         // Idea chance handled in advanceMonth() after decay
                         break;
@@ -3336,8 +3361,8 @@
                     // V2.53: TALK - Reputation Gamble (high risk, high reward)
                     case 'conf_talk':
                         this.spendFunding(conf.fundingCost);
-                        s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
-                        s.lastConferenceMonth = s.totalMonths;
+                        stateChanges.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+                        stateChanges.lastConferenceMonth = s.totalMonths;
 
                         // V2.53: Success scales with alignment AND morale
                         const alignment = s.strategicAlignment || 0;
@@ -3346,7 +3371,7 @@
                         const talkSuccess = this.random() < talkSuccessChance;
 
                         if (talkSuccess) {
-                            s.pendingConferenceEffects = {
+                            stateChanges.pendingConferenceEffects = {
                                 networkGain: Math.floor(conf.networkGain * 1.5),
                                 morale: 20,
                                 strategicAlignment: 5,
@@ -3354,7 +3379,7 @@
                             };
                             msg = `🎤 TALK: Big Win!\n\n+${Math.floor(conf.networkGain * 1.5)} network, +20 morale, +5 reputation\n\n"Your talk was the highlight. People took notice."\n\n★ Trade safety for visibility — paid off!`;
                         } else {
-                            s.pendingConferenceEffects = {
+                            stateChanges.pendingConferenceEffects = {
                                 morale: -15,
                                 stress: 15,
                                 strategicAlignment: -3
@@ -3368,21 +3393,21 @@
                         this.spendFunding(conf.fundingCost);
                         const existingNetwork = s.peerNetwork || 0;
                         const networkBonus = Math.floor(conf.networkGain * (1 + existingNetwork * 0.01)); // Scales with existing network
-                        s.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
-                        s.lastConferenceMonth = s.totalMonths;
+                        stateChanges.conferencesThisYear = (s.conferencesThisYear || 0) + 1;
+                        stateChanges.lastConferenceMonth = s.totalMonths;
 
                         // V2.53: Future leverage - chance for collaboration offer or grant lead
                         let futureBonus = '';
                         const networkRoll = this.random();
                         if (networkRoll < 0.25) {
-                            s.collaborationOffered = true; // New state flag
+                            stateChanges.collaborationOffered = true; // New state flag
                             futureBonus = '\n\n🤝 COLLABORATION OFFERED: A professor wants to discuss a joint project!';
                         } else if (networkRoll < 0.40) {
-                            s.fundingMonths = (s.fundingMonths || 0) + 3; // Small grant lead
+                            stateChanges.fundingMonths = (s.fundingMonths || 0) + 3; // Small grant lead
                             futureBonus = '\n\n💰 GRANT LEAD: +3 funding months from a new connection!';
                         }
 
-                        s.pendingConferenceEffects = {
+                        stateChanges.pendingConferenceEffects = {
                             networkGain: networkBonus,
                             morale: 5,
                             stress: -15,
@@ -3397,8 +3422,9 @@
                         break;
                 }
 
-                s.activeConference = null;
-                s.atConference = false;
+                stateChanges.activeConference = null;
+                stateChanges.atConference = false;
+                this.updateState(stateChanges);
 
                 return msg;
             },
@@ -3574,50 +3600,58 @@
 
                 const paper = s.pendingPapers[paperIndex];
                 let msg = '';
+                let stateChanges = {};
+
+                // Create updated paper object (immutable update)
+                let updatedPaper = { ...paper };
 
                 switch (responseType) {
                     // V2.53: POLITE - Relationship Preservation (maximize goodwill)
                     case 'review_polite':
-                        paper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 2; // V2.53: Slower
-                        paper.bonusChance = (paper.bonusChance || 0) + 0.30; // V2.53: Higher acceptance
-                        paper.skepticismReduction = (paper.skepticismReduction || 0) + 0.1; // V2.53: Reduces future skepticism
-                        s.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 5); // V2.53: Good for relationships
-                        paper.feedbackAvailable = false;
+                        updatedPaper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 2;
+                        updatedPaper.bonusChance = (paper.bonusChance || 0) + 0.30;
+                        updatedPaper.skepticismReduction = (paper.skepticismReduction || 0) + 0.1;
+                        updatedPaper.feedbackAvailable = false;
+                        stateChanges.strategicAlignment = Math.min(100, (s.strategicAlignment || 0) + 5);
                         msg = `📝 POLITE: Maximize Goodwill\n\n+2 months review time\n+30% acceptance chance\n+5 advisor alignment\n\n"The diplomatic route. Relationships preserved."\n\n✓ Best for skeptical committees`;
                         break;
 
                     // V2.53: AGGRESSIVE - Force the Issue (faster, risky)
                     case 'review_aggressive':
-                        const moraleBonus = Math.max(0, (s.morale || 50) - 50) * 0.005; // V2.53: Scales with morale
-                        const successChance = 0.5 + moraleBonus; // 50% base + up to 25% from high morale
+                        const moraleBonus = Math.max(0, (s.morale || 50) - 50) * 0.005;
+                        const successChance = 0.5 + moraleBonus;
 
-                        paper.reviewMonthsRemaining = 0; // V2.53: Immediate resolution
-                        paper.feedbackAvailable = false;
+                        updatedPaper.reviewMonthsRemaining = 0;
+                        updatedPaper.feedbackAvailable = false;
 
                         if (this.random() < successChance) {
-                            paper.bonusChance = (paper.bonusChance || 0) + 0.20;
-                            s.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5); // V2.53: Confidence boost
+                            updatedPaper.bonusChance = (paper.bonusChance || 0) + 0.20;
+                            stateChanges.morale = Math.min(GAME_CONSTANTS.MAX_MORALE, s.morale + 5);
                             msg = `⚔️ AGGRESSIVE: They Backed Down!\n\n+20% acceptance, +5 morale\nImmediate resolution\n\n"You called their bluff. Reviewers relented."\n\n★ Force the issue — worked!`;
                         } else {
-                            paper.bonusChance = (paper.bonusChance || 0) - 0.15;
-                            s.morale = Math.max(0, s.morale - 15);
-                            s.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (s.stress || 0) + 10);
-                            s.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 5);
+                            updatedPaper.bonusChance = (paper.bonusChance || 0) - 0.15;
+                            stateChanges.morale = Math.max(0, s.morale - 15);
+                            stateChanges.stress = Math.min(GAME_CONSTANTS.MAX_STRESS, (s.stress || 0) + 10);
+                            stateChanges.strategicAlignment = Math.max(0, (s.strategicAlignment || 0) - 5);
                             msg = `⚔️ AGGRESSIVE: Backlash!\n\n-15% acceptance, -15 morale, +10 stress\n-5 advisor alignment\n\n"That escalated poorly."\n\n⚠️ Force the issue — backfired`;
                         }
                         break;
 
                     // V2.53: DELAY - Protection Mode (do nothing on purpose)
                     case 'review_delay':
-                        // V2.53: No penalties, just wait - state can change
-                        paper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 1;
-                        paper.feedbackAvailable = true; // V2.53: Keep available - can respond next turn
-                        // V2.53: Small stress relief from not having to decide
-                        s.stress = Math.max(0, (s.stress || 0) - 5);
+                        updatedPaper.reviewMonthsRemaining = (paper.reviewMonthsRemaining || 0) + 1;
+                        updatedPaper.feedbackAvailable = true;
+                        stateChanges.stress = Math.max(0, (s.stress || 0) - 5);
                         msg = `⏳ DELAY: Strategic Pause\n\n+1 month wait\n-5 stress (pressure released)\nFeedback still available\n\n"Not ready to commit. Wait for better conditions."\n\n⏸️ Do nothing on purpose — protection`;
                         break;
                 }
 
+                // Create new pendingPapers array with updated paper
+                const updatedPendingPapers = [...s.pendingPapers];
+                updatedPendingPapers[paperIndex] = updatedPaper;
+                stateChanges.pendingPapers = updatedPendingPapers;
+
+                this.updateState(stateChanges);
                 return msg;
             },
 
