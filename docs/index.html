@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.72</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.73</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -5422,9 +5422,20 @@
                     }
                 }
 
-                // Revision if rejected
+                // V2.62: Split revision actions based on review outcome
+                if (this.getItem('revision_required') > 0) {
+                    actions.push({ 
+                        id: 'revise_major', 
+                        name: '📝 Major Revision', 
+                        desc: 'Quick turnaround (2-3 mo), high accept chance' 
+                    });
+                }
                 if (this.getItem('rejected_paper') > 0) {
-                    actions.push({ id: 'revise', name: '✏️ Revise & Resubmit', desc: 'Address reviewer feedback' });
+                    actions.push({ 
+                        id: 'resubmit', 
+                        name: '🔄 Resubmit Paper', 
+                        desc: 'Standard turnaround (3-6 mo), standard accept' 
+                    });
                 }
 
                 // 6. THESIS: Write Thesis (after first publication)
