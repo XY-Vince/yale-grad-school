@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.71</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.72</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -5909,6 +5909,18 @@
                         break;
 
                     case 'work_idea':
+                        // V2.5: Advisor feedback on ideas
+                        const ideaSuccess = [
+                            '🎉 Initial Findings achieved! (+5 morale)',
+                            '🎉 The experiment worked - Initial Findings! (+5 morale)',
+                            '🎉 Promising results documented! (+5 morale)'
+                        ];
+                        const ideaFail = [
+                            '🧑‍🏫 Advisor: "This approach needs more thought..."',
+                            '🧑‍🏫 Advisor: "Inconclusive. Try a different angle."',
+                            '🧑‍🏫 Advisor: "Not quite what I had in mind..."'
+                        ];
+
                         // V2.58: Bad luck protection (pity timer)
                         const ideaFailures = s.consecutiveFailures || 0;
                         let ideaPityBonus = 0;
@@ -5943,6 +5955,18 @@
                         break;
 
                     case 'work_findings':
+                        // V2.5: Advisor feedback on findings
+                        const findSuccess = [
+                            '🧑‍🏫 Advisor: "Excellent work! This is publishable." (+5 morale)',
+                            '🧑‍🏫 Advisor: "Great results! Write this up." (+5 morale)',
+                            '🧑‍🏫 Advisor: "Solid discovery! I\'m impressed." (+5 morale)'
+                        ];
+                        const findFail = [
+                            '🧑‍🏫 Advisor: "The findings aren\'t strong enough yet..."',
+                            '🧑‍🏫 Advisor: "More controls needed. Redo the experiment."',
+                            '🧑‍🏫 Advisor: "Reviewers would tear this apart..."'
+                        ];
+
                         // V2.12: Renewed Perspective bonus (+10%)
                         const perspectiveBonus = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.1 : 0;
                         // V2.58: Bad luck protection (pity timer)
