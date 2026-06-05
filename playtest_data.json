@@ -1,0 +1,60 @@
+[
+  {
+    "run_number": 1,
+    "ending": "Dropout",
+    "total_months": 15,
+    "lowest_morale": 3,
+    "papers_published": 0,
+    "stuck_states": 0,
+    "specialization": "theoretician",
+    "notes": [
+      "\n                \n                    Months elapsed: 16\n                    Publications: 0 (0 Jour"
+    ]
+  },
+  {
+    "run_number": 2,
+    "ending": "Timeout",
+    "total_months": 135,
+    "lowest_morale": 14,
+    "papers_published": 0,
+    "stuck_states": 0,
+    "specialization": "computational",
+    "notes": []
+  },
+  {
+    "run_number": 3,
+    "ending": "Dropout",
+    "total_months": 15,
+    "lowest_morale": 1,
+    "papers_published": 0,
+    "stuck_states": 0,
+    "specialization": "experimentalist",
+    "notes": [
+      "\n                \n                    Months elapsed: 16\n                    Publications: 0 (0 Jour"
+    ]
+  },
+  {
+    "run_number": 4,
+    "ending": "Dropout",
+    "total_months": 13,
+    "lowest_morale": 22,
+    "papers_published": 0,
+    "stuck_states": 0,
+    "specialization": "theoretician",
+    "notes": [
+      "\n                \n                    Months elapsed: 14\n                    Publications: 0 (0 Jour"
+    ]
+  },
+  {
+    "run_number": 5,
+    "ending": "Dropout",
+    "total_months": 15,
+    "lowest_morale": 10,
+    "papers_published": 0,
+    "stuck_states": 0,
+    "specialization": "computational",
+    "notes": [
+      "\n                \n                    Months elapsed: 16\n                    Publications: 0 (0 Jour"
+    ]
+  }
+]

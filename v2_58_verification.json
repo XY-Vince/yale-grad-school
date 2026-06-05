@@ -1,0 +1,23 @@
+[
+  {
+    "run": 1,
+    "ending": "\ud83d\udc94 Game Over \ud83d\udc94",
+    "months": 15,
+    "papers": 0,
+    "lowest_morale": 5
+  },
+  {
+    "run": 2,
+    "ending": "\ud83d\udc94 Game Over \ud83d\udc94",
+    "months": 15,
+    "papers": 0,
+    "lowest_morale": 7
+  },
+  {
+    "run": 3,
+    "ending": "\ud83d\udc94 Game Over \ud83d\udc94",
+    "months": 15,
+    "papers": 0,
+    "lowest_morale": 8
+  }
+]
