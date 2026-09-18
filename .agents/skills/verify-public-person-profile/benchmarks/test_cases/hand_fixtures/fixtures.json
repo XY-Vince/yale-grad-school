@@ -1,0 +1,232 @@
+[
+  {
+    "fixture_id": "fixture_01_perfect_merge",
+    "description": "Two distinct entities with 3 mentions each, perfectly clustered by system",
+    "mentions": ["m1", "m2", "m3", "m4", "m5", "m6"],
+    "gold_clusters": [
+      ["m1", "m2", "m3"],
+      ["m4", "m5", "m6"]
+    ],
+    "system_clusters": [
+      ["m1", "m2", "m3"],
+      ["m4", "m5", "m6"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 1.0,
+      "b3_recall": 1.0,
+      "b3_f1": 1.0,
+      "pairwise_precision": 1.0,
+      "pairwise_recall": 1.0,
+      "pairwise_f1": 1.0,
+      "false_merge_count": 0,
+      "false_split_count": 0
+    }
+  },
+  {
+    "fixture_id": "fixture_02_all_singletons",
+    "description": "Overly conservative system leaving all mentions as singletons (extreme false split)",
+    "mentions": ["m1", "m2", "m3", "m4"],
+    "gold_clusters": [
+      ["m1", "m2", "m3", "m4"]
+    ],
+    "system_clusters": [
+      ["m1"],
+      ["m2"],
+      ["m3"],
+      ["m4"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 1.0,
+      "b3_recall": 0.25,
+      "b3_f1": 0.4,
+      "pairwise_precision": 0.0,
+      "pairwise_recall": 0.0,
+      "pairwise_f1": 0.0,
+      "false_merge_count": 0,
+      "false_split_count": 6
+    }
+  },
+  {
+    "fixture_id": "fixture_03_all_merged",
+    "description": "Catastrophic false merge where 2 distinct entities are grouped into a single cluster",
+    "mentions": ["m1", "m2", "m3", "m4"],
+    "gold_clusters": [
+      ["m1", "m2"],
+      ["m3", "m4"]
+    ],
+    "system_clusters": [
+      ["m1", "m2", "m3", "m4"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 0.5,
+      "b3_recall": 1.0,
+      "b3_f1": 0.6666666666666666,
+      "pairwise_precision": 0.3333333333333333,
+      "pairwise_recall": 1.0,
+      "pairwise_f1": 0.5,
+      "false_merge_count": 4,
+      "false_split_count": 0
+    }
+  },
+  {
+    "fixture_id": "fixture_04_partial_bridge",
+    "description": "Single mention m3 erroneously bridges across to entity 2",
+    "mentions": ["m1", "m2", "m3", "m4", "m5"],
+    "gold_clusters": [
+      ["m1", "m2", "m3"],
+      ["m4", "m5"]
+    ],
+    "system_clusters": [
+      ["m1", "m2"],
+      ["m3", "m4", "m5"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 0.7333333333333334,
+      "b3_recall": 0.7333333333333334,
+      "b3_f1": 0.7333333333333334,
+      "pairwise_precision": 0.5,
+      "pairwise_recall": 0.5,
+      "pairwise_f1": 0.5,
+      "false_merge_count": 2,
+      "false_split_count": 2
+    }
+  },
+  {
+    "fixture_id": "fixture_05_alias_chain",
+    "description": "System links Chinese name and pinyin but fails to connect English alias",
+    "mentions": ["m1", "m2", "m3"],
+    "gold_clusters": [
+      ["m1", "m2", "m3"]
+    ],
+    "system_clusters": [
+      ["m1", "m2"],
+      ["m3"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 1.0,
+      "b3_recall": 0.5555555555555556,
+      "b3_f1": 0.7142857142857143,
+      "pairwise_precision": 1.0,
+      "pairwise_recall": 0.3333333333333333,
+      "pairwise_f1": 0.5,
+      "false_merge_count": 0,
+      "false_split_count": 2
+    }
+  },
+  {
+    "fixture_id": "fixture_06_department_split",
+    "description": "Two individuals with identical names in different university departments correctly split",
+    "mentions": ["m1", "m2", "m3", "m4"],
+    "gold_clusters": [
+      ["m1", "m2"],
+      ["m3", "m4"]
+    ],
+    "system_clusters": [
+      ["m1", "m2"],
+      ["m3", "m4"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 1.0,
+      "b3_recall": 1.0,
+      "b3_f1": 1.0,
+      "pairwise_precision": 1.0,
+      "pairwise_recall": 1.0,
+      "pairwise_f1": 1.0,
+      "false_merge_count": 0,
+      "false_split_count": 0
+    }
+  },
+  {
+    "fixture_id": "fixture_07_co_occurring_namesakes",
+    "description": "Co-occurring namesakes where 1 mention is mistakenly absorbed into entity A",
+    "mentions": ["m1", "m2", "m3", "m4"],
+    "gold_clusters": [
+      ["m1", "m2"],
+      ["m3", "m4"]
+    ],
+    "system_clusters": [
+      ["m1", "m2", "m3"],
+      ["m4"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 0.6666666666666666,
+      "b3_recall": 0.75,
+      "b3_f1": 0.7058823529411764,
+      "pairwise_precision": 0.3333333333333333,
+      "pairwise_recall": 0.5,
+      "pairwise_f1": 0.4,
+      "false_merge_count": 2,
+      "false_split_count": 1
+    }
+  },
+  {
+    "fixture_id": "fixture_08_temporal_cross_border",
+    "description": "Individual moving across 3 countries and degrees correctly unified",
+    "mentions": ["m1", "m2", "m3"],
+    "gold_clusters": [
+      ["m1", "m2", "m3"]
+    ],
+    "system_clusters": [
+      ["m1", "m2", "m3"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 1.0,
+      "b3_recall": 1.0,
+      "b3_f1": 1.0,
+      "pairwise_precision": 1.0,
+      "pairwise_recall": 1.0,
+      "pairwise_f1": 1.0,
+      "false_merge_count": 0,
+      "false_split_count": 0
+    }
+  },
+  {
+    "fixture_id": "fixture_09_isolated_singleton",
+    "description": "Isolated single mention correctly kept separate while another entity is over-split",
+    "mentions": ["m1", "m2", "m3"],
+    "gold_clusters": [
+      ["m1", "m2"],
+      ["m3"]
+    ],
+    "system_clusters": [
+      ["m1"],
+      ["m2"],
+      ["m3"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 1.0,
+      "b3_recall": 0.6666666666666666,
+      "b3_f1": 0.8,
+      "pairwise_precision": 0.0,
+      "pairwise_recall": 0.0,
+      "pairwise_f1": 0.0,
+      "false_merge_count": 0,
+      "false_split_count": 1
+    }
+  },
+  {
+    "fixture_id": "fixture_10_complex_triplet_cross",
+    "description": "Three entities across 7 mentions with partial false merge and partial false split",
+    "mentions": ["m1", "m2", "m3", "m4", "m5", "m6", "m7"],
+    "gold_clusters": [
+      ["m1", "m2"],
+      ["m3", "m4", "m5"],
+      ["m6", "m7"]
+    ],
+    "system_clusters": [
+      ["m1", "m2", "m3"],
+      ["m4", "m5"],
+      ["m6", "m7"]
+    ],
+    "expected_metrics": {
+      "b3_precision": 0.8095238095238095,
+      "b3_recall": 0.8095238095238095,
+      "b3_f1": 0.8095238095238095,
+      "pairwise_precision": 0.6,
+      "pairwise_recall": 0.6,
+      "pairwise_f1": 0.6,
+      "false_merge_count": 2,
+      "false_split_count": 2
+    }
+  }
+]

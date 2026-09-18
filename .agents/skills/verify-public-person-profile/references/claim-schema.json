@@ -1,0 +1,950 @@
+{
+  "$defs": {
+    "AbstentionRecord": {
+      "properties": {
+        "gap_id": {
+          "title": "Gap Id",
+          "type": "string"
+        },
+        "target_name": {
+          "title": "Target Name",
+          "type": "string"
+        },
+        "query_executed": {
+          "title": "Query Executed",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "gap_id",
+        "target_name",
+        "query_executed",
+        "reason"
+      ],
+      "title": "AbstentionRecord",
+      "type": "object"
+    },
+    "AdjudicationStatus": {
+      "enum": [
+        "supported",
+        "contested",
+        "unresolved"
+      ],
+      "title": "AdjudicationStatus",
+      "type": "string"
+    },
+    "AliasRecord": {
+      "properties": {
+        "alias_value": {
+          "title": "Alias Value",
+          "type": "string"
+        },
+        "origin_type": {
+          "$ref": "#/$defs/OriginType"
+        },
+        "verification_status": {
+          "$ref": "#/$defs/VerificationStatus",
+          "default": "unverified"
+        },
+        "verification_source_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verification Source Id"
+        }
+      },
+      "required": [
+        "alias_value",
+        "origin_type"
+      ],
+      "title": "AliasRecord",
+      "type": "object"
+    },
+    "CandidateEntity": {
+      "properties": {
+        "candidate_entity_id": {
+          "title": "Candidate Entity Id",
+          "type": "string"
+        },
+        "proposed_cluster_id": {
+          "title": "Proposed Cluster Id",
+          "type": "string"
+        },
+        "human_confirmed_entity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Human Confirmed Entity Id"
+        },
+        "mention_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Mention Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "candidate_entity_id",
+        "proposed_cluster_id",
+        "mention_ids"
+      ],
+      "title": "CandidateEntity",
+      "type": "object"
+    },
+    "Claim": {
+      "properties": {
+        "claim_id": {
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "candidate_entity_id": {
+          "title": "Candidate Entity Id",
+          "type": "string"
+        },
+        "subject_mention_id": {
+          "title": "Subject Mention Id",
+          "type": "string"
+        },
+        "predicate": {
+          "title": "Predicate",
+          "type": "string"
+        },
+        "object_raw": {
+          "minLength": 1,
+          "title": "Object Raw",
+          "type": "string"
+        },
+        "object_norm_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Object Norm Id"
+        },
+        "polarity": {
+          "$ref": "#/$defs/FactPolarity",
+          "default": "affirmative"
+        },
+        "temporal_status": {
+          "$ref": "#/$defs/TemporalStatus",
+          "default": "unknown"
+        },
+        "adjudication_status": {
+          "$ref": "#/$defs/AdjudicationStatus",
+          "default": "unresolved"
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DateWithPrecision"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DateWithPrecision"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "as_of": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "As Of"
+        },
+        "extraction_confidence": {
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Extraction Confidence",
+          "type": "number"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "support_clauses": {
+          "items": {
+            "$ref": "#/$defs/ClaimEvidenceSupport"
+          },
+          "minItems": 1,
+          "title": "Support Clauses",
+          "type": "array"
+        }
+      },
+      "required": [
+        "claim_id",
+        "candidate_entity_id",
+        "subject_mention_id",
+        "predicate",
+        "object_raw",
+        "evidence_ids",
+        "support_clauses"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "ClaimEvidenceSupport": {
+      "properties": {
+        "evidence_id": {
+          "minLength": 1,
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "subject_mention_id": {
+          "minLength": 1,
+          "title": "Subject Mention Id",
+          "type": "string"
+        },
+        "clause_span_start": {
+          "minimum": 0,
+          "title": "Clause Span Start",
+          "type": "integer"
+        },
+        "clause_span_end": {
+          "exclusiveMinimum": 0,
+          "title": "Clause Span End",
+          "type": "integer"
+        },
+        "verbatim_clause": {
+          "minLength": 1,
+          "title": "Verbatim Clause",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "subject_mention_id",
+        "clause_span_start",
+        "clause_span_end",
+        "verbatim_clause"
+      ],
+      "title": "ClaimEvidenceSupport",
+      "type": "object"
+    },
+    "ClusterAssignment": {
+      "properties": {
+        "cluster_id": {
+          "title": "Cluster Id",
+          "type": "string"
+        },
+        "mention_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Mention Ids",
+          "type": "array"
+        },
+        "clustering_method": {
+          "$ref": "#/$defs/ClusteringMethod"
+        },
+        "threshold_used": {
+          "title": "Threshold Used",
+          "type": "number"
+        }
+      },
+      "required": [
+        "cluster_id",
+        "mention_ids",
+        "clustering_method",
+        "threshold_used"
+      ],
+      "title": "ClusterAssignment",
+      "type": "object"
+    },
+    "ClusteringMethod": {
+      "enum": [
+        "constrained_union_find",
+        "connected_components",
+        "hac"
+      ],
+      "title": "ClusteringMethod",
+      "type": "string"
+    },
+    "DatePrecision": {
+      "enum": [
+        "year",
+        "month",
+        "day"
+      ],
+      "title": "DatePrecision",
+      "type": "string"
+    },
+    "DateWithPrecision": {
+      "properties": {
+        "date_value": {
+          "format": "date",
+          "title": "Date Value",
+          "type": "string"
+        },
+        "precision": {
+          "$ref": "#/$defs/DatePrecision",
+          "default": "day"
+        }
+      },
+      "required": [
+        "date_value"
+      ],
+      "title": "DateWithPrecision",
+      "type": "object"
+    },
+    "Dossier": {
+      "properties": {
+        "dossier_id": {
+          "title": "Dossier Id",
+          "type": "string"
+        },
+        "candidate_entity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Candidate Entity Id"
+        },
+        "proposed_cluster_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proposed Cluster Id"
+        },
+        "statements": {
+          "items": {
+            "$ref": "#/$defs/DossierStatement"
+          },
+          "title": "Statements",
+          "type": "array"
+        },
+        "ambiguous_candidates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Ambiguous Candidates",
+          "type": "array"
+        },
+        "generated_at": {
+          "format": "date-time",
+          "title": "Generated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dossier_id",
+        "statements",
+        "generated_at"
+      ],
+      "title": "Dossier",
+      "type": "object"
+    },
+    "DossierStatement": {
+      "properties": {
+        "statement_id": {
+          "title": "Statement Id",
+          "type": "string"
+        },
+        "section": {
+          "title": "Section",
+          "type": "string"
+        },
+        "rendered_text": {
+          "title": "Rendered Text",
+          "type": "string"
+        },
+        "backed_claim_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Backed Claim Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "statement_id",
+        "section",
+        "rendered_text",
+        "backed_claim_ids"
+      ],
+      "title": "DossierStatement",
+      "type": "object"
+    },
+    "EntityMention": {
+      "properties": {
+        "mention_id": {
+          "title": "Mention Id",
+          "type": "string"
+        },
+        "raw_name_text": {
+          "minLength": 1,
+          "title": "Raw Name Text",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "context_snippet": {
+          "minLength": 1,
+          "title": "Context Snippet",
+          "type": "string"
+        },
+        "evidence_id": {
+          "minLength": 1,
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "mention_key": {
+          "minLength": 1,
+          "title": "Mention Key",
+          "type": "string"
+        },
+        "char_start": {
+          "minimum": 0,
+          "title": "Char Start",
+          "type": "integer"
+        },
+        "char_end": {
+          "exclusiveMinimum": 0,
+          "title": "Char End",
+          "type": "integer"
+        },
+        "inferred_affiliations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inferred Affiliations",
+          "type": "array"
+        },
+        "alias_hypotheses": {
+          "items": {
+            "$ref": "#/$defs/AliasRecord"
+          },
+          "title": "Alias Hypotheses",
+          "type": "array"
+        }
+      },
+      "required": [
+        "mention_id",
+        "raw_name_text",
+        "source_id",
+        "context_snippet",
+        "evidence_id",
+        "mention_key",
+        "char_start",
+        "char_end"
+      ],
+      "title": "EntityMention",
+      "type": "object"
+    },
+    "Evidence": {
+      "properties": {
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "verbatim_excerpt": {
+          "title": "Verbatim Excerpt",
+          "type": "string"
+        },
+        "locator": {
+          "$ref": "#/$defs/EvidenceLocator"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "source_quality_class": {
+          "$ref": "#/$defs/SourceQualityClass",
+          "default": "class_b"
+        },
+        "raw_payload_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Payload Sha256"
+        },
+        "char_start": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Char Start"
+        },
+        "char_end": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Char End"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "source_id",
+        "verbatim_excerpt",
+        "locator",
+        "retrieved_at"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "EvidenceLocator": {
+      "properties": {
+        "locator_type": {
+          "$ref": "#/$defs/LocatorType"
+        },
+        "selector_or_page": {
+          "title": "Selector Or Page",
+          "type": "string"
+        }
+      },
+      "required": [
+        "locator_type",
+        "selector_or_page"
+      ],
+      "title": "EvidenceLocator",
+      "type": "object"
+    },
+    "FactPolarity": {
+      "enum": [
+        "affirmative",
+        "negative"
+      ],
+      "title": "FactPolarity",
+      "type": "string"
+    },
+    "LocatorType": {
+      "enum": [
+        "css",
+        "pdf_bbox",
+        "jsonpath",
+        "search_snippet"
+      ],
+      "title": "LocatorType",
+      "type": "string"
+    },
+    "MachineRelation": {
+      "enum": [
+        "match",
+        "nonmatch",
+        "review"
+      ],
+      "title": "MachineRelation",
+      "type": "string"
+    },
+    "MatchDecision": {
+      "properties": {
+        "decision_id": {
+          "title": "Decision Id",
+          "type": "string"
+        },
+        "source_mention_id": {
+          "title": "Source Mention Id",
+          "type": "string"
+        },
+        "target_mention_id": {
+          "title": "Target Mention Id",
+          "type": "string"
+        },
+        "algorithm": {
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "match_probability": {
+          "title": "Match Probability",
+          "type": "number"
+        },
+        "machine_relation": {
+          "$ref": "#/$defs/MachineRelation"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decision_id",
+        "source_mention_id",
+        "target_mention_id",
+        "algorithm",
+        "match_probability",
+        "machine_relation",
+        "explanation"
+      ],
+      "title": "MatchDecision",
+      "type": "object"
+    },
+    "OriginType": {
+      "enum": [
+        "source_stated",
+        "generated_hypothesis"
+      ],
+      "title": "OriginType",
+      "type": "string"
+    },
+    "RunManifest": {
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "run_outcome": {
+          "$ref": "#/$defs/RunOutcome",
+          "default": "completed"
+        },
+        "run_fingerprint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Fingerprint"
+        },
+        "tool_version": {
+          "title": "Tool Version",
+          "type": "string"
+        },
+        "model_name": {
+          "title": "Model Name",
+          "type": "string"
+        },
+        "query_budget": {
+          "title": "Query Budget",
+          "type": "integer"
+        },
+        "queries_executed": {
+          "title": "Queries Executed",
+          "type": "integer"
+        },
+        "pages_fetched": {
+          "title": "Pages Fetched",
+          "type": "integer"
+        },
+        "crawl_errors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Crawl Errors",
+          "type": "array"
+        },
+        "abstention_records": {
+          "items": {
+            "$ref": "#/$defs/AbstentionRecord"
+          },
+          "title": "Abstention Records",
+          "type": "array"
+        },
+        "execution_time_seconds": {
+          "title": "Execution Time Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "run_id",
+        "tool_version",
+        "model_name",
+        "query_budget",
+        "queries_executed",
+        "pages_fetched",
+        "execution_time_seconds"
+      ],
+      "title": "RunManifest",
+      "type": "object"
+    },
+    "RunOutcome": {
+      "enum": [
+        "completed",
+        "insufficient_evidence",
+        "collection_failed",
+        "budget_exhausted",
+        "contradictory_evidence",
+        "ambiguous_identity",
+        "failed"
+      ],
+      "title": "RunOutcome",
+      "type": "string"
+    },
+    "SourceQualityClass": {
+      "enum": [
+        "class_a",
+        "class_b",
+        "class_c"
+      ],
+      "title": "SourceQualityClass",
+      "type": "string"
+    },
+    "SourceSnapshot": {
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "canonical_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canonical Url"
+        },
+        "publisher": {
+          "title": "Publisher",
+          "type": "string"
+        },
+        "published_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Published At"
+        },
+        "updated_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Updated At"
+        },
+        "current_as_of": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current As Of"
+        },
+        "content_sha256": {
+          "title": "Content Sha256",
+          "type": "string"
+        },
+        "warc_record_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Warc Record Id"
+        },
+        "http_status": {
+          "default": 200,
+          "title": "Http Status",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source_id",
+        "url",
+        "publisher",
+        "content_sha256"
+      ],
+      "title": "SourceSnapshot",
+      "type": "object"
+    },
+    "TemporalStatus": {
+      "enum": [
+        "current",
+        "former",
+        "unknown"
+      ],
+      "title": "TemporalStatus",
+      "type": "string"
+    },
+    "VerificationStatus": {
+      "enum": [
+        "unverified",
+        "verified",
+        "rejected"
+      ],
+      "title": "VerificationStatus",
+      "type": "string"
+    }
+  },
+  "description": "Unified schema bundle for public person intelligence and verification.",
+  "properties": {
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceSnapshot"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "mentions": {
+      "items": {
+        "$ref": "#/$defs/EntityMention"
+      },
+      "title": "Mentions",
+      "type": "array"
+    },
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/CandidateEntity"
+      },
+      "title": "Candidates",
+      "type": "array"
+    },
+    "matches": {
+      "items": {
+        "$ref": "#/$defs/MatchDecision"
+      },
+      "title": "Matches",
+      "type": "array"
+    },
+    "clusters": {
+      "items": {
+        "$ref": "#/$defs/ClusterAssignment"
+      },
+      "title": "Clusters",
+      "type": "array"
+    },
+    "claims": {
+      "items": {
+        "$ref": "#/$defs/Claim"
+      },
+      "title": "Claims",
+      "type": "array"
+    },
+    "dossier": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Dossier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "manifest": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunManifest"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "title": "VerifyPublicPersonProfileBundleSchema",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

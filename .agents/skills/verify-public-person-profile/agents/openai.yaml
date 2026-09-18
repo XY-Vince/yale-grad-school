@@ -1,0 +1,12 @@
+interface:
+  display_name: "Verify Public Person Profile"
+  short_description: "Evidence-grounded public person profiling and verification."
+  default_prompt: "Verify Public Person Profile: investigate [Target Name] public record."
+  version: "1.0.0"
+parameters:
+  model: "gpt-4o"
+  temperature: 0.0
+tools:
+  - run_profile
+  - validate_dossier
+  - score_candidates
