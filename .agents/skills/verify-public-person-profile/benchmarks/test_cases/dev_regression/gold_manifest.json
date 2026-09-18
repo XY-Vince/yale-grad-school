@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "active_version": "v2",
+  "unversioned_alias_policy": "rejected_by_evaluator",
+  "versions": {
+    "v1": {
+      "file": "cases_gold_v1.json",
+      "sha256": "902f3337d990ab81a639b5bac4a5866eabde2cbcedfe3a2874b39eece50392f9",
+      "status": "frozen_historical",
+      "historical_mean_total_score": 97.96,
+      "historical_all_gates_pass_rate": 0.8,
+      "historical_total_false_merges": 0,
+      "historical_record": "benchmarks/reports/dev_regression_v1_historical.md"
+    },
+    "v2": {
+      "file": "cases_gold_v2.json",
+      "sha256": "3a49b56f9564757e77490b5338722a93423c4a9d2b5cf1f7c7c632d2c593225a",
+      "status": "active_reviewed",
+      "change_from_v1": "Added Jacqueline Mann graduated_from University of Michigan after independent review of the frozen source corpus.",
+      "review_evidence": "benchmarks/test_cases/dev_regression/frozen_corpus.warc",
+      "review_evidence_locator": "line 25"
+    }
+  }
+}

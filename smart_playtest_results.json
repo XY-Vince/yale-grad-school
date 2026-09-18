@@ -2,116 +2,25 @@
   "metadata": {
     "version": "V2.59.2",
     "test_type": "Smart Playtest - Competent Human Simulation",
-    "timestamp": "2026-02-14T00:06:36.638416",
-    "total_runs": 5,
+    "timestamp": "2026-07-27T22:57:32.055508",
+    "total_runs": 0,
     "timeout_minutes": 5
   },
   "global_stats": {
     "win_rate_percent": 0.0,
-    "median_duration_months": 134,
-    "avg_papers": 6.6,
-    "avg_lowest_morale": 23.6,
-    "outcome_distribution": {
-      "Timeout": 5
-    }
+    "median_duration_months": 0.0,
+    "avg_papers": 0.0,
+    "avg_lowest_morale": 0.0,
+    "outcome_distribution": {}
   },
-  "specialization_performance": {
-    "theoretician": {
-      "runs": 2,
-      "wins": 0,
-      "win_rate": 0.0,
-      "avg_duration": 135.5
-    },
-    "computational": {
-      "runs": 2,
-      "wins": 0,
-      "win_rate": 0.0,
-      "avg_duration": 133
-    },
-    "experimentalist": {
-      "runs": 1,
-      "wins": 0,
-      "win_rate": 0.0,
-      "avg_duration": 133
-    }
-  },
-  "per_run_data": [
-    {
-      "run_number": 1,
-      "months_survived": 134,
-      "end_reason": "Timeout",
-      "papers_published": 7,
-      "thesis_progress": 100,
-      "lowest_morale": 22,
-      "final_morale": 33,
-      "exhaustion_count": 3,
-      "advisor_tension": 15,
-      "specialization": "theoretician",
-      "notes": []
-    },
-    {
-      "run_number": 2,
-      "months_survived": 134,
-      "end_reason": "Timeout",
-      "papers_published": 6,
-      "thesis_progress": 100,
-      "lowest_morale": 25,
-      "final_morale": 38,
-      "exhaustion_count": 2,
-      "advisor_tension": 15,
-      "specialization": "computational",
-      "notes": []
-    },
-    {
-      "run_number": 3,
-      "months_survived": 133,
-      "end_reason": "Timeout",
-      "papers_published": 9,
-      "thesis_progress": 100,
-      "lowest_morale": 28,
-      "final_morale": 39,
-      "exhaustion_count": 1,
-      "advisor_tension": 15,
-      "specialization": "experimentalist",
-      "notes": []
-    },
-    {
-      "run_number": 4,
-      "months_survived": 137,
-      "end_reason": "Timeout",
-      "papers_published": 2,
-      "thesis_progress": 0,
-      "lowest_morale": 21,
-      "final_morale": 41,
-      "exhaustion_count": 1,
-      "advisor_tension": 25,
-      "specialization": "theoretician",
-      "notes": []
-    },
-    {
-      "run_number": 5,
-      "months_survived": 132,
-      "end_reason": "Timeout",
-      "papers_published": 9,
-      "thesis_progress": 100,
-      "lowest_morale": 22,
-      "final_morale": 41,
-      "exhaustion_count": 0,
-      "advisor_tension": 15,
-      "specialization": "computational",
-      "notes": []
-    }
-  ],
+  "specialization_performance": {},
+  "per_run_data": [],
   "balance_analysis": {
-    "pacing": "TOO_SLOW",
-    "difficulty": "TOO_HARD",
+    "pacing": "",
+    "difficulty": "",
     "issues": [
-      "Average duration 134.0mo exceeds target (60-75)",
-      "PhD win rate 0.0% is below target (30-70%)"
+      "No valid runs completed"
     ],
-    "recommendations": [
-      "Consider reducing research time requirements",
-      "Consider reducing difficulty or adding recovery options"
-    ]
+    "recommendations": []
   }
 }

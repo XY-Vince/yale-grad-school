@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 import asyncio
 from playwright.async_api import async_playwright
 import json
@@ -9,7 +10,7 @@ async def verify_defense_modal():
         browser = await p.chromium.launch(headless=False)
         page = await browser.new_page(viewport={'width': 1400, 'height': 900})
 
-        url = 'file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html'
+        url = f'file://{Path(__file__).resolve().parent}/docs/index.html'
         print(f"📂 Loading game from: {url}")
         await page.goto(url)
         await page.wait_for_load_state('domcontentloaded')
@@ -146,7 +147,7 @@ async def verify_defense_modal():
 
         print(json.dumps(modal_content, indent=2))
 
-        screenshot_path = '/Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/defense_modal_verification.png'
+        screenshot_path = f'{Path(__file__).resolve().parent}/defense_modal_verification.png'
         print(f"\n📸 Taking screenshot: {screenshot_path}")
         await page.screenshot(path=screenshot_path, full_page=False)
         print("✅ Screenshot saved!")

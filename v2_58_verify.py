@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 """Quick V2.58 balance verification - runs 3 fast playtests"""
 import asyncio
 import json
@@ -13,7 +14,7 @@ async def quick_test():
         for run in range(1, 4):
             page = await browser.new_page(viewport={'width': 1280, 'height': 800})
 
-            await page.goto('file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html')
+            await page.goto(f'file://{Path(__file__).resolve().parent}/docs/index.html')
             await page.wait_for_selector('#start-screen', timeout=10000)
 
             version = await page.text_content('#version-display') or "Unknown"
@@ -111,7 +112,7 @@ async def quick_test():
                     const morale = parseInt(document.getElementById('morale-bar')?.style.width || '50');
                     if (morale < 25) {
                         for (const b of btns) {
-                            if (b.textContent.includes('Break') || b.textContent.includes('Time Off')) {
+                            if (b.textContent.includes('Break') || b.textContent.includes('Time Of')) {
                                 b.click();
                                 return 'morale-action';
                             }

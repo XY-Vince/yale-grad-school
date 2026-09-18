@@ -1,3 +1,4 @@
+from pathlib import Path
 """
 Focused debug to track what happens with exhaustion and morale recovery.
 """
@@ -10,7 +11,7 @@ async def debug_exhaustion():
         page = await browser.new_page()
 
         print("Loading game...")
-        await page.goto("file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html")
+        await page.goto(f'file://{Path(__file__).resolve().parent}/docs/index.html')
         await asyncio.sleep(2)
 
         # Start game
@@ -23,16 +24,13 @@ async def debug_exhaustion():
         await page.wait_for_selector("#game-screen", timeout=5000)
         await asyncio.sleep(1)
 
-        # Get morale from progress bar width
-        def get_morale():
-            return page.evaluate("""() => {
-                const bar = document.getElementById('morale-bar');
+        # Get morale from game state directly
+        async def get_morale():
+            return await page.evaluate("""() => {
                 const status = document.getElementById('morale-status');
                 const statuses = document.getElementById('statuses');
-                let morale = 50;
-                if (bar) {
-                    morale = parseInt(bar.style.width) || 50;
-                }
+                let morale = window.game && window.game.state ? window.game.state.morale : 50;
+
                 let statusList = [];
                 if (statuses) {
                     statuses.querySelectorAll('.status-badge, .item-badge').forEach(b => {
@@ -41,7 +39,7 @@ async def debug_exhaustion():
                 }
                 return {
                     morale: morale,
-                    status: status.textContent || '',
+                    status: status ? status.textContent : '',
                     statuses: statusList
                 };
             }""")

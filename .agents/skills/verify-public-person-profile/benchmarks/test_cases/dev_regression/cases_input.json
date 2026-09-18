@@ -1,0 +1,120 @@
+[
+  {
+    "case_id": "vaishali_panwar",
+    "target_name": "Vaishali Panwar",
+    "known_hints": [
+      "Yale School of Medicine",
+      "Microbial Pathogenesis",
+      "Mothes Lab"
+    ],
+    "aliases": [
+      "Vaishali Panwar"
+    ]
+  },
+  {
+    "case_id": "jacqueline_mann",
+    "target_name": "Jacqueline Mann",
+    "known_hints": [
+      "Yale School of Medicine",
+      "Internal Medicine",
+      "University of Michigan"
+    ],
+    "aliases": [
+      "Jacqueline E. Mann"
+    ]
+  },
+  {
+    "case_id": "xin_zhou",
+    "target_name": "Xin Zhou",
+    "known_hints": [
+      "Yale School of Public Health",
+      "Biostatistics"
+    ],
+    "aliases": [
+      "周昕"
+    ]
+  },
+  {
+    "case_id": "yang_qirong",
+    "target_name": "杨启荣",
+    "known_hints": [
+      "易思汇",
+      "一切从柬",
+      "留学生"
+    ],
+    "aliases": [
+      "Qirong Yang",
+      "Chi-Rong Yang"
+    ]
+  },
+  {
+    "case_id": "donna_cheng",
+    "target_name": "Donna Cheng",
+    "known_hints": [
+      "New Haven",
+      "NHV",
+      "Real Estate",
+      "Coldwell Banker"
+    ],
+    "aliases": [
+      "Donna Cheng"
+    ]
+  },
+  {
+    "case_id": "li_jiawen",
+    "target_name": "李嘉文",
+    "known_hints": [
+      "北京一零一中",
+      "耶鲁大学",
+      "游泳",
+      "CSCAA"
+    ],
+    "aliases": [
+      "Kavin Li",
+      "Jiawen Li"
+    ]
+  },
+  {
+    "case_id": "fixture_01_dnl_ldn",
+    "target_name": "David N. Liam",
+    "known_hints": [
+      "Computer Science",
+      "Stanford"
+    ],
+    "aliases": [
+      "Liam, D. N.",
+      "D. Liam"
+    ]
+  },
+  {
+    "case_id": "fixture_02_sparse_liam",
+    "target_name": "Liam",
+    "known_hints": [
+      "Male",
+      "Born 1995"
+    ],
+    "aliases": []
+  },
+  {
+    "case_id": "fixture_03_roster_duplication_sina",
+    "target_name": "Sina Ovali",
+    "known_hints": [
+      "Engineering Society",
+      "Annual Roster"
+    ],
+    "aliases": [
+      "Sina Ovali"
+    ]
+  },
+  {
+    "case_id": "fixture_04_snippet_attribution_katniss",
+    "target_name": "Katniss Ni",
+    "known_hints": [
+      "Software Engineer",
+      "San Francisco"
+    ],
+    "aliases": [
+      "Katniss Ni"
+    ]
+  }
+]

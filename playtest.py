@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 import asyncio
 import json
 from playwright.async_api import async_playwright
@@ -12,7 +13,6 @@ class RunMetrics:
     total_months: int
     lowest_morale: int
     papers_published: int
-    stuck_states: int
     specialization: str
     notes: List[str]
 
@@ -21,7 +21,7 @@ class GradQuestPlaytester:
         self.results: List[RunMetrics] = []
     
     async def play_game(self, run_number: int) -> RunMetrics:
-        m = RunMetrics(run_number, "Unknown", 0, 100, 0, 0, "", [])
+        m = RunMetrics(run_number, "Unknown", 0, 100, 0, "", [])
         specs = ['experimentalist', 'theoretician', 'computational']
         m.specialization = specs[run_number % 3]
         
@@ -29,7 +29,7 @@ class GradQuestPlaytester:
             browser = await p.chromium.launch(headless=True)
             page = await browser.new_page(viewport={'width': 1280, 'height': 800})
             
-            await page.goto('file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html')
+            await page.goto(f'file://{Path(__file__).resolve().parent}/docs/index.html')
             await page.wait_for_selector('#start-screen', timeout=10000)
             
             await page.click(f'#spec-{m.specialization}')
@@ -83,7 +83,7 @@ class GradQuestPlaytester:
                             if (b.textContent.includes('Medical Leave')) { b.click(); return; }
                         }
                         for (const b of btns) {
-                            if (b.textContent.includes('Time Off')) { b.click(); return; }
+                            if (b.textContent.includes('Time Of')) { b.click(); return; }
                         }
                         for (const b of btns) {
                             if (b.textContent.includes('Break')) { b.click(); return; }
@@ -156,14 +156,13 @@ class GradQuestPlaytester:
         lines = ["# GradQuest Playtest Report", f"\nRuns: {len(self.results)}", "=" * 60]
         
         endings = {}
-        months, morale, papers, stuck = [], [], [], []
+        months, morale, papers = [], [], []
         
         for r in self.results:
             endings[r.ending] = endings.get(r.ending, 0) + 1
             months.append(r.total_months)
             morale.append(r.lowest_morale)
             papers.append(r.papers_published)
-            stuck.append(r.stuck_states)
         
         lines.append("\n## Endings")
         for e, c in sorted(endings.items(), key=lambda x: -x[1]):
@@ -172,7 +171,6 @@ class GradQuestPlaytester:
         lines.append(f"\n## Time: avg={sum(months)/len(months):.1f}mo, range={min(months)}-{max(months)}, median={sorted(months)[len(months)//2]}")
         lines.append(f"## Morale: avg_lowest={sum(morale)/len(morale):.1f}, min={min(morale)}")
         lines.append(f"## Papers: avg={sum(papers)/len(papers):.1f}, max={max(papers)}")
-        lines.append(f"## Stuck States: {sum(stuck)}")
         
         lines.append("\n## Details")
         for r in self.results:
@@ -200,9 +198,6 @@ class GradQuestPlaytester:
             else:
                 lines.append(f"- ✅ Balanced (PhD {rate:.0f}%)")
         
-        if sum(stuck) > 0:
-            lines.append(f"- ⚠️ {sum(stuck)} stuck states")
-        
         timeouts = len([r for r in self.results if r.ending == 'Timeout'])
         if timeouts > 0:
             lines.append(f"- ⚠️ {timeouts} timeouts")
@@ -215,9 +210,9 @@ async def main():
     r = t.report()
     print("\n" + r)
     
-    with open('/Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/playtest_report.md', 'w') as f:
+    with open(f'{Path(__file__).resolve().parent}/playtest_report.md', 'w') as f:
         f.write(r)
-    with open('/Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/playtest_data.json', 'w') as f:
+    with open(f'{Path(__file__).resolve().parent}/playtest_data.json', 'w') as f:
         json.dump([asdict(x) for x in t.results], f, indent=2)
     print("\n✓ Saved to playtest_report.md and playtest_data.json")
 

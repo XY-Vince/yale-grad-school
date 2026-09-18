@@ -1,0 +1,950 @@
+[
+  {
+    "case_id": "vaishali_panwar",
+    "target_name": "Vaishali Panwar",
+    "mentions": [
+      {
+        "mention_id": "MEN-VAISHALI_PANWAR-01",
+        "raw_name_text": "Vaishali Panwar",
+        "source_id": "SRC-VAISHALI_PANWAR-01",
+        "evidence_id": "EV-VAISHALI_PANWAR-01",
+        "context_snippet": "Vaishali Panwar is affiliated with Yale School of Medicine Microbial Pathogenesis Mothes Lab",
+        "char_start": 0,
+        "char_end": 15,
+        "mention_key": "8f581c2c68a5a322",
+        "inferred_affiliations": [
+          "yale school of medicine",
+          "microbial pathogenesis",
+          "mothes lab"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Vaishali Panwar",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-VAISHALI_PANWAR-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-VAISHALI_PANWAR-02",
+        "raw_name_text": "Vaishali Panwar",
+        "source_id": "SRC-VAISHALI_PANWAR-02",
+        "evidence_id": "EV-VAISHALI_PANWAR-02",
+        "context_snippet": "Vaishali Panwar record from public index Yale School of Medicine Microbial Pathogenesis Mothes Lab",
+        "char_start": 0,
+        "char_end": 15,
+        "mention_key": "6484f840e7bed78b",
+        "inferred_affiliations": [
+          "yale school of medicine",
+          "microbial pathogenesis",
+          "mothes lab"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Vaishali Panwar",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-VAISHALI_PANWAR-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-VAISHALI_PANWAR-NEG-01",
+        "raw_name_text": "Vaishali Panwar",
+        "source_id": "SRC-VAISHALI_PANWAR-NEG-01",
+        "evidence_id": "EV-VAISHALI_PANWAR-NEG-01",
+        "context_snippet": "Vaishali Panwar working in Performing Arts / Kathak Dance: Canadian Kathak dancer, not biomedical researcher",
+        "char_start": 0,
+        "char_end": 15,
+        "mention_key": "d6addb17890d2c94",
+        "inferred_affiliations": [
+          "performing arts / kathak dance",
+          "canadian kathak dancer, not biomedical researcher"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Vaishali Panwar",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-VAISHALI_PANWAR-NEG-01"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-VAISHALI_PANWAR-01",
+        "MEN-VAISHALI_PANWAR-02"
+      ],
+      [
+        "MEN-VAISHALI_PANWAR-NEG-01"
+      ]
+    ]
+  },
+  {
+    "case_id": "jacqueline_mann",
+    "target_name": "Jacqueline Mann",
+    "mentions": [
+      {
+        "mention_id": "MEN-JACQUELINE_MANN-01",
+        "raw_name_text": "Jacqueline Mann",
+        "source_id": "SRC-JACQUELINE_MANN-01",
+        "evidence_id": "EV-JACQUELINE_MANN-01",
+        "context_snippet": "Jacqueline Mann is affiliated with Yale School of Medicine Internal Medicine University of Michigan",
+        "char_start": 0,
+        "char_end": 15,
+        "mention_key": "c4c3d8fbc95e696e",
+        "inferred_affiliations": [
+          "yale school of medicine",
+          "internal medicine",
+          "university of michigan"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Jacqueline Mann",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-JACQUELINE_MANN-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-JACQUELINE_MANN-02",
+        "raw_name_text": "Jacqueline Mann",
+        "source_id": "SRC-JACQUELINE_MANN-02",
+        "evidence_id": "EV-JACQUELINE_MANN-02",
+        "context_snippet": "Jacqueline Mann record from public index Yale School of Medicine Internal Medicine University of Michigan",
+        "char_start": 0,
+        "char_end": 15,
+        "mention_key": "6cf5b38c03004f33",
+        "inferred_affiliations": [
+          "yale school of medicine",
+          "internal medicine",
+          "university of michigan"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Jacqueline Mann",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-JACQUELINE_MANN-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-JACQUELINE_MANN-NEG-01",
+        "raw_name_text": "Jacqueline Mann",
+        "source_id": "SRC-JACQUELINE_MANN-NEG-01",
+        "evidence_id": "EV-JACQUELINE_MANN-NEG-01",
+        "context_snippet": "Jacqueline Mann working in Clinical Counselling: Counsellor in Victoria BC",
+        "char_start": 0,
+        "char_end": 15,
+        "mention_key": "36caac1e464c5a85",
+        "inferred_affiliations": [
+          "clinical counselling",
+          "counsellor in victoria bc"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Jacqueline Mann",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-JACQUELINE_MANN-NEG-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-JACQUELINE_MANN-NEG-02",
+        "raw_name_text": "Jacqueline Mann",
+        "source_id": "SRC-JACQUELINE_MANN-NEG-02",
+        "evidence_id": "EV-JACQUELINE_MANN-NEG-02",
+        "context_snippet": "Jacqueline Mann working in Library Science: Librarian at DePaul University",
+        "char_start": 0,
+        "char_end": 15,
+        "mention_key": "fc7005564a8ae5ad",
+        "inferred_affiliations": [
+          "library science",
+          "librarian at depaul university"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Jacqueline Mann",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-JACQUELINE_MANN-NEG-02"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-JACQUELINE_MANN-01",
+        "MEN-JACQUELINE_MANN-02"
+      ],
+      [
+        "MEN-JACQUELINE_MANN-NEG-01"
+      ],
+      [
+        "MEN-JACQUELINE_MANN-NEG-02"
+      ]
+    ]
+  },
+  {
+    "case_id": "xin_zhou",
+    "target_name": "Xin Zhou",
+    "mentions": [
+      {
+        "mention_id": "MEN-XIN_ZHOU-01",
+        "raw_name_text": "Xin Zhou",
+        "source_id": "SRC-XIN_ZHOU-01",
+        "evidence_id": "EV-XIN_ZHOU-01",
+        "context_snippet": "Xin Zhou is affiliated with Yale School of Public Health Biostatistics",
+        "char_start": 0,
+        "char_end": 8,
+        "mention_key": "bb9b43fc4c7ecb03",
+        "inferred_affiliations": [
+          "yale school of public health",
+          "biostatistics"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Xin Zhou",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-XIN_ZHOU-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-XIN_ZHOU-02",
+        "raw_name_text": "Xin Zhou",
+        "source_id": "SRC-XIN_ZHOU-02",
+        "evidence_id": "EV-XIN_ZHOU-02",
+        "context_snippet": "Xin Zhou record from public index Yale School of Public Health Biostatistics",
+        "char_start": 0,
+        "char_end": 8,
+        "mention_key": "1be75a424a6d4610",
+        "inferred_affiliations": [
+          "yale school of public health",
+          "biostatistics"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Xin Zhou",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-XIN_ZHOU-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-XIN_ZHOU-NEG-01",
+        "raw_name_text": "Xin Zhou",
+        "source_id": "SRC-XIN_ZHOU-NEG-01",
+        "evidence_id": "EV-XIN_ZHOU-NEG-01",
+        "context_snippet": "Xin Zhou working in Health Communication: Associate Research Scientist at Yale SOM AIDS Program",
+        "char_start": 0,
+        "char_end": 8,
+        "mention_key": "800a6c0915f19d1a",
+        "inferred_affiliations": [
+          "health communication",
+          "associate research scientist at yale som aids program"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Xin Zhou",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-XIN_ZHOU-NEG-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-XIN_ZHOU-NEG-02",
+        "raw_name_text": "Xin Zhou",
+        "source_id": "SRC-XIN_ZHOU-NEG-02",
+        "evidence_id": "EV-XIN_ZHOU-NEG-02",
+        "context_snippet": "Xin Zhou working in Chemical Biology: Assistant Professor at Harvard Medical School / Dana-Farber",
+        "char_start": 0,
+        "char_end": 8,
+        "mention_key": "86d5a221a79ef936",
+        "inferred_affiliations": [
+          "chemical biology",
+          "assistant professor at harvard medical school / dana-farber"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Xin Zhou",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-XIN_ZHOU-NEG-02"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-XIN_ZHOU-01",
+        "MEN-XIN_ZHOU-02"
+      ],
+      [
+        "MEN-XIN_ZHOU-NEG-01"
+      ],
+      [
+        "MEN-XIN_ZHOU-NEG-02"
+      ]
+    ]
+  },
+  {
+    "case_id": "yang_qirong",
+    "target_name": "杨启荣",
+    "mentions": [
+      {
+        "mention_id": "MEN-YANG_QIRONG-01",
+        "raw_name_text": "杨启荣",
+        "source_id": "SRC-YANG_QIRONG-01",
+        "evidence_id": "EV-YANG_QIRONG-01",
+        "context_snippet": "杨启荣 is affiliated with 易思汇 一切从柬 留学生",
+        "char_start": 0,
+        "char_end": 3,
+        "mention_key": "a8d52db661f4e17d",
+        "inferred_affiliations": [
+          "易思汇",
+          "一切从柬",
+          "留学生"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "杨启荣",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-YANG_QIRONG-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-YANG_QIRONG-02",
+        "raw_name_text": "杨启荣",
+        "source_id": "SRC-YANG_QIRONG-02",
+        "evidence_id": "EV-YANG_QIRONG-02",
+        "context_snippet": "杨启荣 record from public index 易思汇 一切从柬 留学生",
+        "char_start": 0,
+        "char_end": 3,
+        "mention_key": "886e713cc1b4f5ec",
+        "inferred_affiliations": [
+          "易思汇",
+          "一切从柬",
+          "留学生"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "杨启荣",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-YANG_QIRONG-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-YANG_QIRONG-NEG-01",
+        "raw_name_text": "杨启荣",
+        "source_id": "SRC-YANG_QIRONG-NEG-01",
+        "evidence_id": "EV-YANG_QIRONG-NEG-01",
+        "context_snippet": "杨启荣 working in Culinary Arts: State banquet Huaiyang cuisine master chef",
+        "char_start": 0,
+        "char_end": 3,
+        "mention_key": "0ccfa5738b199b3f",
+        "inferred_affiliations": [
+          "culinary arts",
+          "state banquet huaiyang cuisine master chef"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "杨启荣",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-YANG_QIRONG-NEG-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-YANG_QIRONG-NEG-02",
+        "raw_name_text": "杨启荣",
+        "source_id": "SRC-YANG_QIRONG-NEG-02",
+        "evidence_id": "EV-YANG_QIRONG-NEG-02",
+        "context_snippet": "杨启荣 working in Hong Kong Television: Fictional character in 1977 RTV drama",
+        "char_start": 0,
+        "char_end": 3,
+        "mention_key": "546e60db1107fdfc",
+        "inferred_affiliations": [
+          "hong kong television",
+          "fictional character in 1977 rtv drama"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "杨启荣",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-YANG_QIRONG-NEG-02"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-YANG_QIRONG-01",
+        "MEN-YANG_QIRONG-02"
+      ],
+      [
+        "MEN-YANG_QIRONG-NEG-01"
+      ],
+      [
+        "MEN-YANG_QIRONG-NEG-02"
+      ]
+    ]
+  },
+  {
+    "case_id": "donna_cheng",
+    "target_name": "Donna Cheng",
+    "mentions": [
+      {
+        "mention_id": "MEN-DONNA_CHENG-01",
+        "raw_name_text": "Donna Cheng",
+        "source_id": "SRC-DONNA_CHENG-01",
+        "evidence_id": "EV-DONNA_CHENG-01",
+        "context_snippet": "Donna Cheng is affiliated with New Haven NHV Real Estate Coldwell Banker",
+        "char_start": 0,
+        "char_end": 11,
+        "mention_key": "339848dbfc6d4796",
+        "inferred_affiliations": [
+          "new haven",
+          "nhv",
+          "real estate",
+          "coldwell banker"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Donna Cheng",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-DONNA_CHENG-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-DONNA_CHENG-02",
+        "raw_name_text": "Donna Cheng",
+        "source_id": "SRC-DONNA_CHENG-02",
+        "evidence_id": "EV-DONNA_CHENG-02",
+        "context_snippet": "Donna Cheng record from public index New Haven NHV Real Estate Coldwell Banker",
+        "char_start": 0,
+        "char_end": 11,
+        "mention_key": "6c1c7a7493c4f154",
+        "inferred_affiliations": [
+          "new haven",
+          "nhv",
+          "real estate",
+          "coldwell banker"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Donna Cheng",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-DONNA_CHENG-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-DONNA_CHENG-NEG-01",
+        "raw_name_text": "Donna Windish",
+        "source_id": "SRC-DONNA_CHENG-NEG-01",
+        "evidence_id": "EV-DONNA_CHENG-NEG-01",
+        "context_snippet": "Donna Windish working in Medicine: Yale Internal Medicine Associate Professor",
+        "char_start": 0,
+        "char_end": 13,
+        "mention_key": "c56270e64929c38b",
+        "inferred_affiliations": [
+          "medicine",
+          "yale internal medicine associate professor"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Donna Windish",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-DONNA_CHENG-NEG-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-DONNA_CHENG-NEG-02",
+        "raw_name_text": "Donna-Ann Thomas",
+        "source_id": "SRC-DONNA_CHENG-NEG-02",
+        "evidence_id": "EV-DONNA_CHENG-NEG-02",
+        "context_snippet": "Donna-Ann Thomas working in Anesthesiology: Yale Division Chief of Pain Medicine",
+        "char_start": 0,
+        "char_end": 16,
+        "mention_key": "828f190a9db8d426",
+        "inferred_affiliations": [
+          "anesthesiology",
+          "yale division chief of pain medicine"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Donna-Ann Thomas",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-DONNA_CHENG-NEG-02"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-DONNA_CHENG-01",
+        "MEN-DONNA_CHENG-02"
+      ],
+      [
+        "MEN-DONNA_CHENG-NEG-01"
+      ],
+      [
+        "MEN-DONNA_CHENG-NEG-02"
+      ]
+    ]
+  },
+  {
+    "case_id": "li_jiawen",
+    "target_name": "李嘉文",
+    "mentions": [
+      {
+        "mention_id": "MEN-LI_JIAWEN-01",
+        "raw_name_text": "李嘉文",
+        "source_id": "SRC-LI_JIAWEN-01",
+        "evidence_id": "EV-LI_JIAWEN-01",
+        "context_snippet": "李嘉文 is affiliated with 北京一零一中 耶鲁大学 游泳 CSCAA",
+        "char_start": 0,
+        "char_end": 3,
+        "mention_key": "56b9781ee844fa8d",
+        "inferred_affiliations": [
+          "北京一零一中",
+          "耶鲁大学",
+          "游泳",
+          "cscaa"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "李嘉文",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-LI_JIAWEN-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-LI_JIAWEN-02",
+        "raw_name_text": "李嘉文",
+        "source_id": "SRC-LI_JIAWEN-02",
+        "evidence_id": "EV-LI_JIAWEN-02",
+        "context_snippet": "李嘉文 record from public index 北京一零一中 耶鲁大学 游泳 CSCAA",
+        "char_start": 0,
+        "char_end": 3,
+        "mention_key": "243aaa4b74f9ce0d",
+        "inferred_affiliations": [
+          "北京一零一中",
+          "耶鲁大学",
+          "游泳",
+          "cscaa"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "李嘉文",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-LI_JIAWEN-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-LI_JIAWEN-NEG-01",
+        "raw_name_text": "Jessey Li",
+        "source_id": "SRC-LI_JIAWEN-NEG-01",
+        "evidence_id": "EV-LI_JIAWEN-NEG-01",
+        "context_snippet": "Jessey Li working in Athletics: Yale Women's Swimming captain, different athlete on same team",
+        "char_start": 0,
+        "char_end": 9,
+        "mention_key": "8631675bad61b95a",
+        "inferred_affiliations": [
+          "athletics",
+          "yale women's swimming captain, different athlete on same team"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Jessey Li",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-LI_JIAWEN-NEG-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-LI_JIAWEN-NEG-02",
+        "raw_name_text": "Kavin Li",
+        "source_id": "SRC-LI_JIAWEN-NEG-02",
+        "evidence_id": "EV-LI_JIAWEN-NEG-02",
+        "context_snippet": "Kavin Li working in Engineering: Project engineer at Ruisong Electronic Technology",
+        "char_start": 0,
+        "char_end": 8,
+        "mention_key": "a050c5ef54e3cb4c",
+        "inferred_affiliations": [
+          "engineering",
+          "project engineer at ruisong electronic technology"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Kavin Li",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-LI_JIAWEN-NEG-02"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-LI_JIAWEN-01",
+        "MEN-LI_JIAWEN-02"
+      ],
+      [
+        "MEN-LI_JIAWEN-NEG-01"
+      ],
+      [
+        "MEN-LI_JIAWEN-NEG-02"
+      ]
+    ]
+  },
+  {
+    "case_id": "fixture_01_dnl_ldn",
+    "target_name": "David N. Liam",
+    "mentions": [
+      {
+        "mention_id": "MEN-FIXTURE_01_DNL_LDN-01",
+        "raw_name_text": "David N. Liam",
+        "source_id": "SRC-FIXTURE_01_DNL_LDN-01",
+        "evidence_id": "EV-FIXTURE_01_DNL_LDN-01",
+        "context_snippet": "David N. Liam is affiliated with Computer Science Stanford",
+        "char_start": 0,
+        "char_end": 13,
+        "mention_key": "77883ab2226eb288",
+        "inferred_affiliations": [
+          "computer science",
+          "stanford"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "David N. Liam",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_01_DNL_LDN-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-FIXTURE_01_DNL_LDN-02",
+        "raw_name_text": "David N. Liam",
+        "source_id": "SRC-FIXTURE_01_DNL_LDN-02",
+        "evidence_id": "EV-FIXTURE_01_DNL_LDN-02",
+        "context_snippet": "David N. Liam record from public index Computer Science Stanford",
+        "char_start": 0,
+        "char_end": 13,
+        "mention_key": "35f8507fb1a95757",
+        "inferred_affiliations": [
+          "computer science",
+          "stanford"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "David N. Liam",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_01_DNL_LDN-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-FIXTURE_01_DNL_LDN-NEG-01",
+        "raw_name_text": "Liam D. Noel",
+        "source_id": "SRC-FIXTURE_01_DNL_LDN-NEG-01",
+        "evidence_id": "EV-FIXTURE_01_DNL_LDN-NEG-01",
+        "context_snippet": "Liam D. Noel working in Law: Permuted abbreviation representing distinct person",
+        "char_start": 0,
+        "char_end": 12,
+        "mention_key": "72d1ddbf10bc74a8",
+        "inferred_affiliations": [
+          "law",
+          "permuted abbreviation representing distinct person"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Liam D. Noel",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_01_DNL_LDN-NEG-01"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-FIXTURE_01_DNL_LDN-01",
+        "MEN-FIXTURE_01_DNL_LDN-02"
+      ],
+      [
+        "MEN-FIXTURE_01_DNL_LDN-NEG-01"
+      ]
+    ]
+  },
+  {
+    "case_id": "fixture_02_sparse_liam",
+    "target_name": "Liam",
+    "mentions": [
+      {
+        "mention_id": "MEN-FIXTURE_02_SPARSE_LIAM-01",
+        "raw_name_text": "Liam",
+        "source_id": "SRC-FIXTURE_02_SPARSE_LIAM-01",
+        "evidence_id": "EV-FIXTURE_02_SPARSE_LIAM-01",
+        "context_snippet": "Liam is affiliated with Male Born 1995",
+        "char_start": 0,
+        "char_end": 4,
+        "mention_key": "2b903d989622236e",
+        "inferred_affiliations": [
+          "male",
+          "born 1995"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Liam",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_02_SPARSE_LIAM-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-FIXTURE_02_SPARSE_LIAM-NEG-01",
+        "raw_name_text": "Liam Smith",
+        "source_id": "SRC-FIXTURE_02_SPARSE_LIAM-NEG-01",
+        "evidence_id": "EV-FIXTURE_02_SPARSE_LIAM-NEG-01",
+        "context_snippet": "Liam Smith working in General: Unsubstantiated candidate merge",
+        "char_start": 0,
+        "char_end": 10,
+        "mention_key": "405abe6346d3d530",
+        "inferred_affiliations": [
+          "general",
+          "unsubstantiated candidate merge"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Liam Smith",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_02_SPARSE_LIAM-NEG-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-FIXTURE_02_SPARSE_LIAM-NEG-02",
+        "raw_name_text": "Liam Johnson",
+        "source_id": "SRC-FIXTURE_02_SPARSE_LIAM-NEG-02",
+        "evidence_id": "EV-FIXTURE_02_SPARSE_LIAM-NEG-02",
+        "context_snippet": "Liam Johnson working in General: Unsubstantiated candidate merge",
+        "char_start": 0,
+        "char_end": 12,
+        "mention_key": "735b97c8d5081ac1",
+        "inferred_affiliations": [
+          "general",
+          "unsubstantiated candidate merge"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Liam Johnson",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_02_SPARSE_LIAM-NEG-02"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-FIXTURE_02_SPARSE_LIAM-NEG-01"
+      ],
+      [
+        "MEN-FIXTURE_02_SPARSE_LIAM-NEG-02"
+      ]
+    ]
+  },
+  {
+    "case_id": "fixture_03_roster_duplication_sina",
+    "target_name": "Sina Ovali",
+    "mentions": [
+      {
+        "mention_id": "MEN-FIXTURE_03_ROSTER_DUPLICATION_SINA-01",
+        "raw_name_text": "Sina Ovali",
+        "source_id": "SRC-FIXTURE_03_ROSTER_DUPLICATION_SINA-01",
+        "evidence_id": "EV-FIXTURE_03_ROSTER_DUPLICATION_SINA-01",
+        "context_snippet": "Sina Ovali is affiliated with Engineering Society Annual Roster",
+        "char_start": 0,
+        "char_end": 10,
+        "mention_key": "49e52c95a0cfbffa",
+        "inferred_affiliations": [
+          "engineering society",
+          "annual roster"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Sina Ovali",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_03_ROSTER_DUPLICATION_SINA-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-FIXTURE_03_ROSTER_DUPLICATION_SINA-02",
+        "raw_name_text": "Sina Ovali",
+        "source_id": "SRC-FIXTURE_03_ROSTER_DUPLICATION_SINA-02",
+        "evidence_id": "EV-FIXTURE_03_ROSTER_DUPLICATION_SINA-02",
+        "context_snippet": "Sina Ovali record from public index Engineering Society Annual Roster",
+        "char_start": 0,
+        "char_end": 10,
+        "mention_key": "0c3dba2602b51d28",
+        "inferred_affiliations": [
+          "engineering society",
+          "annual roster"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Sina Ovali",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_03_ROSTER_DUPLICATION_SINA-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-FIXTURE_03_ROSTER_DUPLICATION_SINA-NEG-01",
+        "raw_name_text": "Sina Ovali Duplicate Line",
+        "source_id": "SRC-FIXTURE_03_ROSTER_DUPLICATION_SINA-NEG-01",
+        "evidence_id": "EV-FIXTURE_03_ROSTER_DUPLICATION_SINA-NEG-01",
+        "context_snippet": "Sina Ovali Duplicate Line working in Roster Glitch: Duplicated entry on page 14 of same PDF",
+        "char_start": 0,
+        "char_end": 25,
+        "mention_key": "9c05a6e1193a34f2",
+        "inferred_affiliations": [
+          "roster glitch",
+          "duplicated entry on page 14 of same pdf"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Sina Ovali Duplicate Line",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_03_ROSTER_DUPLICATION_SINA-NEG-01"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-FIXTURE_03_ROSTER_DUPLICATION_SINA-01",
+        "MEN-FIXTURE_03_ROSTER_DUPLICATION_SINA-02"
+      ],
+      [
+        "MEN-FIXTURE_03_ROSTER_DUPLICATION_SINA-NEG-01"
+      ]
+    ]
+  },
+  {
+    "case_id": "fixture_04_snippet_attribution_katniss",
+    "target_name": "Katniss Ni",
+    "mentions": [
+      {
+        "mention_id": "MEN-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-01",
+        "raw_name_text": "Katniss Ni",
+        "source_id": "SRC-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-01",
+        "evidence_id": "EV-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-01",
+        "context_snippet": "Katniss Ni is affiliated with Software Engineer San Francisco",
+        "char_start": 0,
+        "char_end": 10,
+        "mention_key": "5d8944baadaf7cf7",
+        "inferred_affiliations": [
+          "software engineer",
+          "san francisco"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Katniss Ni",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-01"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-02",
+        "raw_name_text": "Katniss Ni",
+        "source_id": "SRC-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-02",
+        "evidence_id": "EV-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-02",
+        "context_snippet": "Katniss Ni record from public index Software Engineer San Francisco",
+        "char_start": 0,
+        "char_end": 10,
+        "mention_key": "111167222961d85a",
+        "inferred_affiliations": [
+          "software engineer",
+          "san francisco"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Katniss Ni",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-02"
+          }
+        ]
+      },
+      {
+        "mention_id": "MEN-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-NEG-01",
+        "raw_name_text": "Third-Party Connection",
+        "source_id": "SRC-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-NEG-01",
+        "evidence_id": "EV-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-NEG-01",
+        "context_snippet": "Third-Party Connection working in LinkedIn Snippet Recommendation: Third-party recommended colleague in search snippet",
+        "char_start": 0,
+        "char_end": 22,
+        "mention_key": "4206fa3596917303",
+        "inferred_affiliations": [
+          "linkedin snippet recommendation",
+          "third-party recommended colleague in search snippet"
+        ],
+        "alias_hypotheses": [
+          {
+            "alias_value": "Third-Party Connection",
+            "origin_type": "source_stated",
+            "verification_status": "verified",
+            "verification_source_id": "SRC-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-NEG-01"
+          }
+        ]
+      }
+    ],
+    "gold_clusters": [
+      [
+        "MEN-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-01",
+        "MEN-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-02"
+      ],
+      [
+        "MEN-FIXTURE_04_SNIPPET_ATTRIBUTION_KATNISS-NEG-01"
+      ]
+    ]
+  }
+]

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 """
 smart_playtest.py - Competent Human Player Simulation for V2.59.2 Balance Testing
 
@@ -77,7 +78,7 @@ class SmartPlaytester:
             page = await browser.new_page(viewport={'width': 1280, 'height': 800})
             
             # Load game
-            await page.goto('file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html')
+            await page.goto(f'file://{Path(__file__).resolve().parent}/docs/index.html')
             await page.wait_for_selector('#start-screen', timeout=10000)
             
             # Select specialization and start
@@ -314,7 +315,7 @@ class SmartPlaytester:
         # Priority 1: Survival - Check morale thresholds
         morale_threshold = 45 if exhausted else 35
         if morale < morale_threshold:
-            return await self._click_action(page, ['Break', 'Time Off', 'Medical Leave'])
+            return await self._click_action(page, ['Break', 'Time Of', 'Medical Leave'])
         
         # Priority 1.5: Quals - If not passed (level < 3) and time is passing (Month > 6)
         # Assuming we want to pass by Month 13.
@@ -653,14 +654,14 @@ async def main():
     # Generate and save JSON report
     report = tester.generate_report()
     
-    output_file = '/Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/smart_playtest_results.json'
+    output_file = f'{Path(__file__).resolve().parent}/smart_playtest_results.json'
     with open(output_file, 'w') as f:
         json.dump(report, f, indent=2)
     
     print(f"\n✅ Full report saved to: {output_file}")
     
     # Also save a summary markdown file
-    md_file = '/Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/smart_playtest_summary.md'
+    md_file = f'{Path(__file__).resolve().parent}/smart_playtest_summary.md'
     with open(md_file, 'w') as f:
         f.write(f"# Smart Playtest Results - V2.59.2\n\n")
         f.write(f"**Date:** {report['metadata']['timestamp']}\n\n")

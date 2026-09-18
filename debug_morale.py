@@ -1,3 +1,4 @@
+from pathlib import Path
 """
 Debug script to track morale changes turn by turn using Playwright.
 Uses direct DOM access instead of game object.
@@ -13,7 +14,7 @@ async def debug_morale():
         print("=" * 100)
         print("Loading game from docs/index.html")
         print("=" * 100)
-        await page.goto("file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html")
+        await page.goto(f'file://{Path(__file__).resolve().parent}/docs/index.html')
 
         # Wait for page to load
         await asyncio.sleep(2)
@@ -47,20 +48,12 @@ async def debug_morale():
                 const buffsEl = document.getElementById('active-buffs');
                 const statusesEl = document.getElementById('statuses');
 
-                // Extract morale from bar width
+                // Extract morale and stress from game state
                 let morale = 50;
-                if (moraleBar) {
-                    const width = moraleBar.style.width;
-                    morale = parseInt(width) || 50;
-                }
-
-                // Parse stress from state
                 let stress = 0;
-                if (stressState) {
-                    const text = stressState.textContent;
-                    if (text.includes('Normal')) stress = 30;
-                    else if (text.includes('Stressed')) stress = 70;
-                    else if (text.includes('Exhausted')) stress = 110;
+                if (window.game && window.game.state) {
+                    morale = window.game.state.morale || 50;
+                    stress = window.game.state.stress || 0;
                 }
 
                 // Parse advisor

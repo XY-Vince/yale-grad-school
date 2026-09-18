@@ -760,7 +760,7 @@
     <div class="container">
         <header class="header">
             <h1>🎓 GradQuest <span id="version-display"
-                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.73</span>
+                    style="font-size: 0.5em; color: var(--text-secondary); font-weight: normal;">V2.59.2</span>
                 <span id="mode-label"
                     style="font-size: 0.4em; color: var(--primary); font-weight: normal; display: block;">🎯 Focused
                     Mode: Core Progression</span>
@@ -968,8 +968,8 @@
                                 style="height: 100%; width: 0%; background: var(--accent-success); border-radius: 6px; transition: width 0.3s ease;">
                             </div>
                         </div>
-                        <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 8px;">
-                            Hybrid Path: 2 Conf = 1 Journal
+                        <div id="hybrid-guidance" style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 8px;">
+                            Hybrid Path: 2 journal + 2 conference papers
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                             <span style="font-size: 0.85rem;">Thesis</span>
@@ -991,8 +991,8 @@
                                 <span id="dissertation-quality-value" style="font-size: 0.8rem; font-weight: 600;">—</span>
                             </div>
                             <div style="font-size: 0.65rem; color: var(--text-secondary);">
-                                Draft: <span id="draft-quality">0</span> | 
-                                Revisions: <span id="revision-load">0</span> | 
+                                Draft: <span id="draft-quality">0</span> |
+                                Revisions: <span id="revision-load">0</span> |
                                 Friction: <span id="committee-friction">0</span>
                             </div>
                         </div>
@@ -1270,6 +1270,7 @@
     </div>
 
     <script>
+        const GAME_VERSION = '2.59.2';
         // ===========================================
         // V3.0 Phase 0: GRADUATION CONTRACT
         // Centralized win condition logic - single source of truth
@@ -1277,28 +1278,28 @@
         const GRADUATION_CONTRACT = {
             // Check if defense is unlocked (can attempt defense)
             defenseUnlocked: (state) => {
-                const journalPapers = state.papers?.filter(p => p.type === 'journal').length || 0;
-                const confPapers = state.papers?.filter(p => p.type === 'conference').length || 0;
+                const journalPapers = state.items?.paper || 0;
+                const confPapers = state.confPaperCount || 0;
                 const thesisComplete = (state.thesisProgress || 0) >= 100;
-                
+
                 // Standard: 3 journal papers OR Hybrid: 2 journal + 2 conference
                 const portfolioEligible = journalPapers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS || (journalPapers >= GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID && confPapers >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID);
-                
+
                 return thesisComplete && portfolioEligible && state.qualsPassed;
             },
-            
+
             // Check portfolio eligibility only
             isPortfolioEligible: (state) => {
-                const journalPapers = state.papers?.filter(p => p.type === 'journal').length || 0;
-                const confPapers = state.papers?.filter(p => p.type === 'conference').length || 0;
+                const journalPapers = state.items?.paper || 0;
+                const confPapers = state.confPaperCount || 0;
                 return journalPapers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS || (journalPapers >= GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID && confPapers >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID);
             },
-            
+
             // Get detailed contract status for UI
             getContractStatus: (state) => {
-                const journalPapers = state.papers?.filter(p => p.type === 'journal').length || 0;
-                const confPapers = state.papers?.filter(p => p.type === 'conference').length || 0;
-                
+                const journalPapers = state.items?.paper || 0;
+                const confPapers = state.confPaperCount || 0;
+
                 return {
                     thesisComplete: (state.thesisProgress || 0) >= GAME_CONSTANTS.MAX_THESIS_PROGRESS,
                     thesisProgress: state.thesisProgress || 0,
@@ -1318,7 +1319,7 @@
         const STATE_CLASSIFICATION = {
             primary: {
                 thesisProgress: { owner: 'ProgressionEngine', actions: ['writeThesis'] },
-                papers: { owner: 'InventoryManager', actions: ['submitPaper', 'acceptPaper'] },
+                'items.paper': { owner: 'InventoryManager', actions: ['submitPaper', 'acceptPaper'] },
                 strategicAlignment: { owner: 'SocialEngine', actions: ['pitchSession', 'conference'] }
             },
             secondary: {
@@ -1338,37 +1339,37 @@
             REQUIRED_CONF_PAPERS_FOR_HYBRID: 2,
             MIN_JOURNAL_PAPERS_FOR_HYBRID: 2,
             MAX_THESIS_PROGRESS: 100,
-            
+
             // Stats Limits
             MAX_MORALE: 100,
-            MAX_STRESS: 120,
+            MAX_STRESS: 100,
             MAX_NETWORK: 100,
             MAX_ALIGNMENT: 100,
-            
+
             // Morale Thresholds
             MIN_MORALE_FOR_CRITICAL: 15,
             MIN_MORALE_FOR_WARNING: 30,
-            
+
             // Timing
             MONTHS_PER_YEAR: 12,
             QUALS_YEAR: 2,
             QUALS_MONTH: 9,
             QUALS_PREP_REQUIRED: 3,
-            
+
             // Paper Review
             MIN_PAPER_WAIT_MONTHS: 3,
             MAX_PAPER_WAIT_MONTHS: 6,
             REVISION_WAIT_MONTHS: 2,
             MAX_REVISION_WAIT_MONTHS: 3,
-            
+
             // Conference
             MAX_CONFERENCES_PER_YEAR: 2,
             CONFERENCE_COOLDOWN_MONTHS: 2,
-            
+
             // Defense
             DEFENSE_TURNS: 3,
             BASE_COMMITTEE_APPROVAL: 45,
-            
+
             // Items
             MAX_FIGURES: 3,
             MAX_IDEAS: 5,
@@ -1389,9 +1390,9 @@
                 this.shownThisTurn = 0;
             }
 
-            // Priority weights: Emergency > Major > Minor
+            // Priority weights: Emergency > Major > Minor > Silent
             priorityWeight(event) {
-                const weights = { Emergency: 100, Major: 50, Minor: 10 };
+                const weights = { Emergency: 100, Major: 50, Minor: 10, Silent: 1 };
                 return weights[event.priority] || 0;
             }
 
@@ -1407,14 +1408,17 @@
                 this.eventQueue.push(event);
                 console.log(`[EventResolver] Enqueued: ${event.id} (${event.priority})`);
 
-                // Enforce max queue size (50), drop oldest Minor
+                // Enforce max queue size (50), drop oldest Silent/Minor
                 if (this.eventQueue.length > 50) {
+                    const oldestSilentIndex = this.eventQueue.findIndex(e => e.priority === 'Silent');
                     const oldestMinorIndex = this.eventQueue.findIndex(e => e.priority === 'Minor');
-                    if (oldestMinorIndex !== -1) {
-                        const dropped = this.eventQueue.splice(oldestMinorIndex, 1)[0];
+                    const dropIndex = oldestSilentIndex !== -1 ? oldestSilentIndex : oldestMinorIndex;
+
+                    if (dropIndex !== -1) {
+                        const dropped = this.eventQueue.splice(dropIndex, 1)[0];
                         console.log(`[EventResolver] Queue overflow - dropped: ${dropped.id}`);
                     } else {
-                        // If no Minor events, drop oldest (FIFO fallback)
+                        // If no Silent/Minor events, drop oldest (FIFO fallback)
                         this.eventQueue.shift();
                     }
                 }
@@ -1448,9 +1452,13 @@
                             nextQueue.push(event); // Defer
                         }
                     } else {
-                        // Minor: Silent log
-                        this.logSilent(event);
-                        this.processedThisTick.add(event.id);
+                        // Minor or Silent: Log silently
+                        if (this.shownThisTurn > 0 || this.game.waitingForAcknowledge) {
+                            nextQueue.push(event); // Defer until modal is cleared
+                        } else {
+                            this.logSilent(event);
+                            this.processedThisTick.add(event.id);
+                        }
                     }
                 }
 
@@ -1462,7 +1470,7 @@
             }
 
             canShowModal() {
-                return this.shownThisTurn < this.maxModalsPerTurn;
+                return this.shownThisTurn < this.maxModalsPerTurn && !this.game.waitingForAcknowledge;
             }
 
             // Render modal (replaces showMessage)
@@ -1483,7 +1491,7 @@
                 // Update log UI
                 const el = document.getElementById('message-log');
                 const prevEl = document.getElementById('message-log-prev');
-                
+
                 // Shift current to previous
                 const currentText = el.textContent.trim();
                 if (prevEl && currentText && currentText !== 'Your PhD journey begins...' && currentText !== '-') {
@@ -1501,62 +1509,21 @@
 
                 // Log to history
                 if (this.game.state && this.game.state.eventLog) {
-                    this.game.state.eventLog.push({ 
-                        month: this.game.state.totalMonths, 
-                        text: cleanMsg, 
-                        modal: true 
+                    this.game.state.eventLog.push({
+                        month: this.game.state.totalMonths,
+                        text: cleanMsg,
+                        modal: true
                     });
                 }
-                
+
                 console.log(`[EventResolver] Processing: ${event.id} (Owner: ${event.owner}, Priority: ${event.priority})`);
             }
 
             // Silent log (replaces appendMessage/appendSystemEvent)
             logSilent(event) {
-                // Sanitization
-                const SUPPRESS_PATTERNS = [
-                    /\(Remember to study\)/gi,
-                    /Response actions will appear[^.]*/gi,
-                    /Go to Actions to[^.]*/gi,
-                    /👉[^\n]*/g
-                ];
-                let cleanMsg = event.message;
-                for (const pattern of SUPPRESS_PATTERNS) {
-                    cleanMsg = cleanMsg.replace(pattern, '').trim();
-                }
-                cleanMsg = cleanMsg.replace(/\s+/g, ' ').trim();
-
-                // Typewriter effect logic
-                const el = document.getElementById('message-log');
-                // Note: We don't clear typeTimer here as it belongs to Game, 
-                // but we should probably manage it if we want full encapsulation.
-                // For now, access via game instance if possible, or just manipulate DOM.
-                // Legacy appendMessage cleared this.typeTimer. 
-                // We'll access game.typeTimer if it exists, or just accept potential overlap for now 
-                // (Task 6 will remove legacy, maybe we should move timer here later).
-                // Actually, let's access game.typeTimer
-                if (this.game.typeTimer) clearInterval(this.game.typeTimer);
-
-                const current = el.textContent.trim();
-                const separator = current ? '\n' : '';
-
-                el.textContent = current + separator;
-                let i = 0;
-                this.game.typeTimer = setInterval(() => {
-                    el.textContent = current + separator + cleanMsg.slice(0, ++i);
-                    if (i >= cleanMsg.length) clearInterval(this.game.typeTimer);
-                }, 15);
-
-                // Log to history
-                if (this.game.state && this.game.state.eventLog) {
-                    this.game.state.eventLog.push({ 
-                        month: this.game.state.totalMonths, 
-                        text: cleanMsg, 
-                        modal: false 
-                    });
-                }
-
+                if (!event.message) return;
                 console.log(`[EventResolver] Logging silent: ${event.id} (${event.priority})`);
+                this.game._renderLogMessage(event.message);
             }
         }
 
@@ -1905,7 +1872,7 @@
                 const g = this.state.graduation;
                 const t = g.thesis_progress;
 
-                if (t >= 100 && g.papers_published >= g.papers_required) return 'DEFENSE_READY';
+                if (t >= 100 && GRADUATION_CONTRACT.isPortfolioEligible(this.state) && this.state.qualsPassed) return 'DEFENSE_READY';
                 if (t >= 75) return 'DRAFT_REVIEW';
                 if (t >= 25) return 'OUTLINE_APPROVED';
                 return 'PLANNING';
@@ -1943,11 +1910,9 @@
             syncGraduationState() {
                 const s = this.state;
                 const journalPapers = this.getItem('paper') || 0;
-                const confEquivalent = Math.floor((s.confPaperCount || 0) / 2);
-                const totalEquivalent = journalPapers + confEquivalent;
 
-                s.graduation.papers_published = totalEquivalent;
-                s.graduation.defense_unlocked = totalEquivalent >= s.graduation.papers_required;
+                s.graduation.papers_published = journalPapers;
+                s.graduation.defense_unlocked = GRADUATION_CONTRACT.isPortfolioEligible(s);
 
                 // V2.23: Paper-backed thesis cap (papers limit thesis velocity)
                 const paperCap = Math.min(journalPapers * 25, 100);
@@ -1966,6 +1931,59 @@
                 }
             },
 
+            getPortfolioProgressPercent() {
+                const s = this.state || {};
+                const journalPapers = this.getItem('paper') || 0;
+                const confPapers = s.confPaperCount || 0;
+                const goldProgress = Math.min(journalPapers / GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS, 1);
+                const hybridProgress = Math.min(
+                    (Math.min(journalPapers, GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID) +
+                        Math.min(confPapers, GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID)) /
+                    (GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID + GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID),
+                    1
+                );
+                return Math.max(goldProgress, hybridProgress) * 100;
+            },
+
+            getHybridGuidance() {
+                const s = this.state || {};
+                const journalPapers = this.getItem('paper') || 0;
+                const confPapers = s.confPaperCount || 0;
+                const missingHybridJournals = Math.max(0, GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID - journalPapers);
+                const missingHybridConfs = Math.max(0, GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID - confPapers);
+
+                if (journalPapers >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS) {
+                    return { text: `Gold portfolio ready: ${journalPapers}/3 journal papers.`, level: 'ready' };
+                }
+                if (journalPapers >= GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID && confPapers >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID) {
+                    return { text: `Hybrid portfolio ready: ${journalPapers}J + ${confPapers}C. Finish thesis and prepare defense.`, level: 'ready' };
+                }
+                if (confPapers >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID && journalPapers < GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID) {
+                    return {
+                        text: `Hybrid still needs ${missingHybridJournals} more journal paper${missingHybridJournals > 1 ? 's' : ''}. Conference papers alone cannot unlock defense.`,
+                        level: 'warning'
+                    };
+                }
+                if (journalPapers >= GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID && confPapers < GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID) {
+                    return {
+                        text: `Hybrid needs ${missingHybridConfs} more conference paper${missingHybridConfs > 1 ? 's' : ''}, or 3 total journal papers.`,
+                        level: 'info'
+                    };
+                }
+                return {
+                    text: `Defense portfolio: 3 journal papers, or 2 journal + 2 conference papers. Current: ${journalPapers}J + ${confPapers}C.`,
+                    level: 'info'
+                };
+            },
+
+            getConferencePaperDesc() {
+                const guidance = this.getHybridGuidance();
+                if (guidance.level === 'warning') {
+                    return `⚠️ Good for network, but ${guidance.text}`;
+                }
+                return 'Quick publish (4mo, +network)';
+            },
+
             // V2.23/V2.32: Update Graduation Progress Card UI with phase display and roadmap
             updateGraduationCard() {
                 const g = this.state.graduation;
@@ -1978,7 +1996,7 @@
                 // Text updates
                 const papersEl = document.getElementById('papers-progress');
                 const thesisEl = document.getElementById('thesis-progress');
-                if (papersEl) papersEl.textContent = `${g.papers_published} / ${g.papers_required}`;
+                if (papersEl) papersEl.textContent = `${this.getItem('paper') || 0}J + ${this.state.confPaperCount || 0}C`;
                 if (thesisEl) {
                     // V2.51: Use thesisProgress as single source of truth
                     const displayProgress = this.state.thesisProgress || g.thesis_progress || 0;
@@ -1989,7 +2007,7 @@
                 // Bars
                 const papersBar = document.getElementById('papers-bar');
                 const thesisBar = document.getElementById('thesis-bar');
-                if (papersBar) papersBar.style.width = `${Math.min(100, (g.papers_published / g.papers_required) * 100)}%`;
+                if (papersBar) papersBar.style.width = `${this.getPortfolioProgressPercent()}%`;
                 // V2.51: Use thesisProgress as single source
                 const barProgress = this.state.thesisProgress || g.thesis_progress || 0;
                 if (thesisBar) thesisBar.style.width = `${barProgress}%`;
@@ -2008,6 +2026,17 @@
                         defenseEl.style.opacity = '0.85';
                     }
                     defenseEl.title = `Efficiency: +${roadmap.efficiency}%/action`;
+                }
+
+                const hybridEl = document.getElementById('hybrid-guidance');
+                if (hybridEl) {
+                    const guidance = this.getHybridGuidance();
+                    hybridEl.textContent = guidance.text;
+                    hybridEl.style.color = guidance.level === 'warning'
+                        ? '#fbbf24'
+                        : guidance.level === 'ready'
+                            ? '#4ade80'
+                            : 'var(--text-secondary)';
                 }
             },
 
@@ -2680,8 +2709,9 @@
                 const g = s.graduation || {};
                 const progress = g.thesis_progress || 0;
                 const papers = this.getItem('paper') || 0;
-                const confPapers = Math.floor((s.confPaperCount || 0) / 2);
-                const totalPapers = papers + confPapers;
+                const confPapers = s.confPaperCount || 0;
+                const totalPapers = papers + Math.floor(confPapers / 2);
+                const contract = GRADUATION_CONTRACT.getContractStatus(s);
 
                 // Calculate thesis efficiency
                 const baseProgress = 12;
@@ -2692,13 +2722,17 @@
 
                 let phase, requirements, nextAction;
 
-                if (progress >= 100) {
+                if (progress >= 100 && contract.defenseUnlocked) {
                     phase = { num: 4, name: 'Ready to Defend', icon: '🎓' };
                     requirements = 'All requirements met!';
                     nextAction = 'Schedule your defense.';
+                } else if (progress >= 100) {
+                    phase = { num: 4, name: 'Portfolio Gap', icon: '🔒' };
+                    requirements = this.getHybridGuidance().text;
+                    nextAction = papers < GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID ? 'Expand conference work or submit journal papers.' : 'Complete remaining portfolio requirements.';
                 } else if (progress >= 75) {
                     phase = { num: 3, name: 'Defense Prep', icon: '📖' };
-                    requirements = `Requires 2+ papers (you have ${totalPapers})`;
+                    requirements = `Defense needs 3J, or 2J+2C. Current: ${papers}J+${confPapers}C.`;
                     nextAction = 'Polish draft, prepare defense.';
                 } else if (progress >= 25) {
                     phase = { num: 2, name: 'Data Synthesis', icon: '📝' };
@@ -3911,15 +3945,15 @@
             // ===========================================
             updateState(changes, stateOwner = 'Unknown') {
                 // V3.0 Phase 0: Validate state mutations
-                const primaryStats = Object.keys(changes).filter(key => 
+                const primaryStats = Object.keys(changes).filter(key =>
                     STATE_CLASSIFICATION.primary.hasOwnProperty(key)
                 );
-                
+
                 // Warn if multiple primary stats mutated (architectural violation)
                 if (primaryStats.length > 1) {
                     console.warn(`[STATE WARNING] ${stateOwner} mutated ${primaryStats.length} primary stats:`, primaryStats);
                 }
-                
+
                 // V2.55: Log state owner for debugging
                 if (Object.keys(changes).length <= 3) {
                     console.log(`[STATE] Owner: ${stateOwner}`, changes);
@@ -4039,13 +4073,23 @@
                 return '🙂 Happy';
             },
 
+            // Helper: Get months until the September Year 2 qualifying exam.
+            getMonthsUntilQuals(s) {
+                const target = ((GAME_CONSTANTS.QUALS_YEAR - 1) * GAME_CONSTANTS.MONTHS_PER_YEAR) + GAME_CONSTANTS.QUALS_MONTH;
+                const current = (((s.year || 1) - 1) * GAME_CONSTANTS.MONTHS_PER_YEAR) + (s.month || 1);
+                return target - current;
+            },
+
             // Helper: Get quals warning state
             getQualsWarning(s) {
-                const monthsToQuals = (GAME_CONSTANTS.QUALS_YEAR * GAME_CONSTANTS.MONTHS_PER_YEAR + GAME_CONSTANTS.QUALS_MONTH) - s.totalMonths;
-                if (s.year === 2 && s.month >= 6 && monthsToQuals <= 3) {
-                    return { text: '🚨 <b>IMMINENT!</b>', color: '#f87171', border: '#f87171' };
-                } else if (s.year === 2) {
-                    return { text: '⚠️ This year', color: '#fbbf24', border: '#fbbf24' };
+                const monthsToQuals = this.getMonthsUntilQuals(s);
+                const prepLevel = s.qualifyLevel || 0;
+                if (monthsToQuals <= 3 && monthsToQuals >= 0 && prepLevel < GAME_CONSTANTS.QUALS_PREP_REQUIRED) {
+                    return { text: `🚨 <b>${monthsToQuals}mo left</b>`, color: '#f87171', border: '#f87171' };
+                } else if (monthsToQuals <= 6 && monthsToQuals >= 0 && prepLevel < GAME_CONSTANTS.QUALS_PREP_REQUIRED) {
+                    return { text: `⚠️ ${monthsToQuals}mo left`, color: '#fbbf24', border: '#fbbf24' };
+                } else if (monthsToQuals <= 12 && monthsToQuals >= 0) {
+                    return { text: `📌 ${monthsToQuals}mo until quals`, color: '#60a5fa', border: '#60a5fa' };
                 }
                 return { text: '', color: '', border: '' };
             },
@@ -4166,10 +4210,9 @@
 
             // V2.19: Get Quals countdown for banner
             getQualsCountdown(s) {
-                const qualsMonth = GAME_CONSTANTS.QUALS_YEAR * GAME_CONSTANTS.MONTHS_PER_YEAR + GAME_CONSTANTS.QUALS_MONTH; // September Year 2
-                const monthsUntil = qualsMonth - s.totalMonths;
+                const monthsUntil = this.getMonthsUntilQuals(s);
                 if (monthsUntil <= 0) return null;
-                if (monthsUntil > 12) return null; // Don't show until Year 1 Sept
+                if (monthsUntil > 12) return null; // Don't show until 12 months out
 
                 let color = '#94a3b8'; // neutral gray
                 if (monthsUntil <= 3) color = '#f87171'; // red
@@ -4180,6 +4223,60 @@
                     color: color,
                     text: monthsUntil === 1 ? '1 month until Quals!' : `${monthsUntil} months until Quals`
                 };
+            },
+
+            getQualsAction(s = this.state) {
+                if (!s || s.qualsPassed) return null;
+
+                const prepLevel = s.qualifyLevel || 0;
+                const monthsUntil = this.getMonthsUntilQuals(s);
+                const missing = Math.max(0, GAME_CONSTANTS.QUALS_PREP_REQUIRED - prepLevel);
+
+                if (s.qualsFailedOnce && s.qualsDelayMonth) {
+                    const monthsToRetake = s.qualsDelayMonth - s.totalMonths;
+                    return {
+                        id: 'quals',
+                        name: '🆘 RETAKE PREP',
+                        desc: `${monthsToRetake}mo until retake. Prep ${prepLevel}/3. This is mandatory.`
+                    };
+                }
+
+                if (monthsUntil <= 3 && monthsUntil >= 0 && missing > 0) {
+                    return {
+                        id: 'quals',
+                        name: '🚨 MANDATORY: Study for Quals',
+                        desc: `${monthsUntil}mo left. Need ${missing} more prep session${missing > 1 ? 's' : ''}.`
+                    };
+                }
+
+                if (monthsUntil <= 6 && monthsUntil >= 0 && missing > 0) {
+                    return {
+                        id: 'quals',
+                        name: '⚠️ Study for Quals',
+                        desc: `${monthsUntil}mo left. Prep ${prepLevel}/3. Do not postpone this.`
+                    };
+                }
+
+                if (monthsUntil <= 12 && monthsUntil >= 0) {
+                    return {
+                        id: 'quals',
+                        name: '📌 Study for Quals',
+                        desc: `First hard deadline in ${monthsUntil}mo. Prep ${prepLevel}/3.`
+                    };
+                }
+
+                return {
+                    id: 'quals',
+                    name: '📚 Study for Quals',
+                    desc: `Prep level: ${prepLevel}/3 (need 3 to pass)`
+                };
+            },
+
+            shouldPinQualsAction(s = this.state) {
+                if (!s || s.qualsPassed) return false;
+                const prepLevel = s.qualifyLevel || 0;
+                const monthsUntil = this.getMonthsUntilQuals(s);
+                return monthsUntil <= 12 && monthsUntil >= 0 && prepLevel < GAME_CONSTANTS.QUALS_PREP_REQUIRED;
             },
 
             // V2.19: Get game mode label
@@ -4478,7 +4575,7 @@
                 const rival = this.state.labmates.find(l => l.archetype === 'The_Rival');
 
                 this.initDOM(); // Initialize DOM cache
-                this.showMessage(`🎓 Welcome to your PhD program!\n\n${spec.name}: ${spec.desc}\n\n✨ Bonus: ${spec.accelerator.desc}\n\n${this.state.advisor.emoji} Your advisor: ${this.state.advisor.name}\n${advisorDesc}\n\n🧪 Your labmates:\n${senior?.emoji} ${senior?.name} (Senior, about to graduate)\n${rival?.emoji} ${rival?.name} (Rival, similar research area)\n\nYour goal: publish 3 papers and defend your thesis.`);
+                this.showMessage(`🎓 Welcome to your PhD program!\n\n${spec.name}: ${spec.desc}\n\n✨ Bonus: ${spec.accelerator.desc}\n\n${this.state.advisor.emoji} Your advisor: ${this.state.advisor.name}\n${advisorDesc}\n\n🧪 Your labmates:\n${senior?.emoji} ${senior?.name} (Senior, about to graduate)\n${rival?.emoji} ${rival?.name} (Rival, similar research area)\n\nFirst hard deadline: qualifying exam in September Year 2.\n\nYour goal: publish 3 journal papers, or 2 journal + 2 conference papers, then defend your thesis.`);
                 this.dom.startScreen.style.display = 'none';
                 this.dom.gameScreen.style.display = 'block';
                 // V2.59.1 Fix: Resolve initial welcome message immediately
@@ -4498,10 +4595,48 @@
                 const saveData = {
                     ...this.state,
                     statuses: Array.from(this.state.statuses),
-                    version: '2.57'
+                    version: GAME_VERSION
                 };
                 localStorage.setItem('gradquest_save', JSON.stringify(saveData));
                 this.showSaveToast(); // V2.32: Toast instead of alert
+            },
+
+            // V2.60: Migrate Save Data
+            migrateSave(data) {
+                if (!data.version || data.version === '2.57') {
+                    // Normalize stress cap limit
+                    if (data.stress > 100) data.stress = 100;
+
+                    // Map legacy fields
+                    if (data.funding !== undefined && data.fundingMonths === undefined) {
+                        data.fundingMonths = data.funding;
+                    }
+                    delete data.funding;
+
+                    // Initialize statuses array before using it
+                    data.statuses = Array.isArray(data.statuses) ? data.statuses : [];
+
+                    if (data.teachingLoad !== undefined) {
+                        if (data.teachingLoad) data.statuses.push('teaching_load');
+                        delete data.teachingLoad;
+                    }
+
+                    // Rename statuses if any
+                    const idx = data.statuses.indexOf('teachingLoad');
+                    if (idx > -1) data.statuses[idx] = 'teaching_load';
+
+                    // Migrate papers safely
+                    if (data.papers && Array.isArray(data.papers)) {
+                        data.items = data.items || {};
+                        data.items.paper = data.papers.filter(p => p.type === 'journal').length;
+                        data.confPaperCount = data.papers.filter(p => p.type === 'conference').length;
+                        delete data.papers;
+                    }
+                }
+
+                // Update to current version
+                data.version = GAME_VERSION;
+                return data;
             },
 
             // Load game
@@ -4511,7 +4646,8 @@
                     alert('No saved game found!');
                     return;
                 }
-                const saveData = JSON.parse(data);
+                let saveData = JSON.parse(data);
+                saveData = this.migrateSave(saveData);
                 this.state = {
                     ...saveData,
                     statuses: new Set(saveData.statuses)
@@ -4578,14 +4714,15 @@
                     return;
                 }
                 if (confirm('Load saved game? Current progress will be lost.')) {
-                    const saveData = JSON.parse(data);
+                    let saveData = JSON.parse(data);
+                    saveData = this.migrateSave(saveData);
                     this.state = {
                         ...saveData,
                         statuses: new Set(saveData.statuses)
                     };
                     // V2.59.1 Fix: Ensure EventResolver exists on load
                     if (!this.eventResolver) this.eventResolver = new EventResolver(this);
-                    
+
                     this.updateUI();
                     this.showMessage('📂 Game loaded!');
                     this.eventResolver.resolveTick(this.state);
@@ -4663,8 +4800,22 @@
                 this.updateUI(); // Refresh actions only when all messages read
             },
 
-            // Append message
+            // Append message (routes to EventResolver)
             appendMessage(msg) {
+                if (this.eventResolver) {
+                    this.eventResolver.enqueue({
+                        id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        owner: 'System',
+                        priority: 'Silent',
+                        message: msg
+                    });
+                } else {
+                    this._renderLogMessage(msg);
+                }
+            },
+
+            // Actually render the log message to DOM
+            _renderLogMessage(msg) {
                 // V2.57: Log sanitization - remove instructional clutter
                 const SUPPRESS_PATTERNS = [
                     /\(Remember to study\)/gi,
@@ -4797,19 +4948,19 @@
                 if (this.hasStatus('exhaustion')) { decay += 6; decaySources.push('Exhaustion +6'); }
                 if (this.hasStatus('unhappyAdvisor')) { decay += 6; decaySources.push('Unhappy Advisor +6'); }
                 if (this.hasStatus('burnout')) { decay += 2; decaySources.push('Burnout +2'); } // V2.4: Burnout penalty
-                
+
                 // V2.4: Strategic alignment reduces decay (1 point per 10 alignment - V2.18 update)
                 // V2.5: TA duty also causes morale decay
                 if (this.state.isTeaching) { decay += 3; decaySources.push('TA Duty +3'); }
-                
+
                 const alignmentBonus = Math.floor((this.state.strategicAlignment || 0) / 10);
                 if (alignmentBonus > 0) {
                     this.appendMessage(`🛡️ Advisor alignment protects you. (-${alignmentBonus} decay)`);
                     decaySources.push(`Alignment -${alignmentBonus}`);
                 }
-                
+
                 decay = Math.max(1, decay - alignmentBonus);
-                
+
                 // V2.11: New Lease on Life reduces decay by 50%
                 if (this.state.newLeaseUntil && this.state.totalMonths < this.state.newLeaseUntil) {
                     decay = Math.ceil(decay / 2);
@@ -4832,7 +4983,7 @@
                 if (this.state.pendingConferenceEffects) {
                     const effects = this.state.pendingConferenceEffects;
                     const changes = {};
-                    
+
                     if (effects.networkGain) {
                         changes.peerNetwork = Math.min(GAME_CONSTANTS.MAX_NETWORK, (this.state.peerNetwork || 0) + effects.networkGain);
                     }
@@ -4857,15 +5008,15 @@
                             changes.strategicAlignment = Math.max(0, (this.state.strategicAlignment || 0) + effects.strategicAlignment);
                         }
                     }
-                    
+
                     this.updateState(changes, 'Conference');
-                    
+
                     // Handle idea chance
                     if (effects.ideaChance && this.random() < effects.ideaChance) {
                         this.addItem('idea');
                         this.appendMessage('💡 A conference discussion sparked an idea!');
                     }
-                    
+
                     this.state.pendingConferenceEffects = null;
                 }
 
@@ -4965,20 +5116,20 @@
                             // V2.62: Quality-based review resolution
                             if (wait >= maxWait || this.random() < 0.3) {
                                 s.pendingPapers.splice(i, 1);
-                                
+
                                 // V2.62: Dynamic acceptance rate based on paper quality
                                 // Formula: 0.3 + (quality / 200) = 30% to 80% acceptance
                                 const paperQuality = paper.quality || 50;  // Default 50 if legacy paper
                                 const baseAcceptRate = isRevision ? 0.7 : (0.3 + (paperQuality / 200));
                                 const acceptRate = Math.min(0.8, baseAcceptRate);  // Cap at 80%
-                                
+
                                 // V2.62: Split rejection vs revision clearly
                                 // Acceptance: acceptRate
                                 // Major Revision: 25% chance (of remaining)
                                 // Rejection: 25% chance (of remaining)
                                 const revisionThreshold = acceptRate + (isRevision ? 0 : 0.25);
                                 const roll = this.random();
-                                
+
                                 if (roll < acceptRate) {
                                     // ACCEPTED
                                     this.addItem('paper');
@@ -5366,6 +5517,8 @@
             getCriticalPathActions() {
                 const s = this.state;
                 const actions = [];
+                const journalPapers = this.getItem('paper') || 0;
+                const defenseStatus = this.evaluateDefenseCriteria();
 
                 // V2.46: Conference Actions at TOP (when active) - ONE CHOICE per conference
                 if (s.activeConference) {
@@ -5376,36 +5529,25 @@
                     actions.push({ id: 'conf_network', name: '🤝 Conference - Network', desc: `${conf.name}: Maximize connections, no spotlight` });
                 }
 
-                // 1. IDEATION: Read Papers (always available to generate ideas)
-                actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Generate new idea (40% chance)' });
-
-                // 2. IDEATION → EXECUTION: Work on Idea
-                if (this.getItem('idea') > 0) {
-                    actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: `→ Preliminary Findings (${this.getItem('idea')} ideas)` });
+                let qualsActionAdded = false;
+                const pinnedQualsAction = this.getQualsAction(s);
+                if (pinnedQualsAction && this.shouldPinQualsAction(s)) {
+                    actions.push(pinnedQualsAction);
+                    qualsActionAdded = true;
                 }
 
-                // 3. EXECUTION → VALIDATION: Develop Findings
-                if (this.getItem('initial_findings') > 0) {
-                    actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: `→ Key Discovery (${this.getItem('initial_findings')} findings)` });
-                }
-
-                // 4. VALIDATION: Create Figures
-                if (this.getItem('key_discovery') > 0) {
-                    const figures = this.getItem('figure') || 0;
-                    if (this.hasStatus('brokenEquipment')) {
-                        actions.push({ id: 'work_figures_blocked', name: '📊 Validate Discovery', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
+                if (defenseStatus.allowed) {
+                    if (!s.defensePrepared) {
+                        actions.push({ id: 'prepare_defense', name: '🎓 Prepare Defense', desc: `${defenseStatus.label} (×${defenseStatus.skepticismMultiplier} skepticism)` });
                     } else {
-                        actions.push({ id: 'work_figures', name: '📊 Validate Discovery', desc: `Create figures (${figures}/3 needed)` });
+                        actions.push({ id: 'thesis', name: '⚔️ Defend Thesis!', desc: `Ready! ${defenseStatus.label}` });
                     }
+                    actions.push({ id: 'break', name: '☕ Take a Break', desc: 'Rest before the big day' });
+                    return actions;
                 }
+                let thesisActionAdded = false;
 
-                // 5. DISSEMINATION: Submit Paper (when ready) - both paths are valid for graduation
-                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= GAME_CONSTANTS.MAX_FIGURES) {
-                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (3mo, +network)' });
-                    actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (3-6mo)' });
-                }
-
-                // Show pending papers status (read-only info)
+                // 1. REVIEW: resolve feedback before starting more work.
                 if (s.pendingPapers && s.pendingPapers.length > 0) {
                     const awaitingFeedback = s.pendingPapers.filter(p => p.feedbackAvailable).length;
 
@@ -5422,30 +5564,71 @@
                     }
                 }
 
-                // V2.62: Split revision actions based on review outcome
+                // 2. REVISION: turn reviewer outcomes back into journal progress.
                 if (this.getItem('revision_required') > 0) {
-                    actions.push({ 
-                        id: 'revise_major', 
-                        name: '📝 Major Revision', 
-                        desc: 'Quick turnaround (2-3 mo), high accept chance' 
+                    actions.push({
+                        id: 'revise_major',
+                        name: '📝 Major Revision',
+                        desc: 'Quick turnaround (2-3 mo), high accept chance'
                     });
                 }
                 if (this.getItem('rejected_paper') > 0) {
-                    actions.push({ 
-                        id: 'resubmit', 
-                        name: '🔄 Resubmit Paper', 
-                        desc: 'Standard turnaround (3-6 mo), standard accept' 
+                    actions.push({
+                        id: 'resubmit',
+                        name: '🔄 Resubmit Paper',
+                        desc: 'Standard turnaround (3-6 mo), standard accept'
                     });
                 }
 
+                // 3. THESIS FOCUS: once the portfolio is enough, stop opening new paper loops.
+                if (GRADUATION_CONTRACT.isPortfolioEligible(s) && journalPapers >= 1 && (s.thesisProgress || 0) < 100 && s.qualsPassed) {
+                    actions.push({ id: 'write_thesis', name: '📖 Write Thesis', desc: `Portfolio ready. Thesis progress: ${s.thesisProgress || 0}%` });
+                    thesisActionAdded = true;
+                }
+
+                // 4. DISSEMINATION: submit as soon as the current project is ready.
+                if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= GAME_CONSTANTS.MAX_FIGURES) {
+                    actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (required for defense)' });
+                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: this.getConferencePaperDesc() });
+                }
+
+                if ((s.confPaperCount || 0) >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID &&
+                    journalPapers < GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID &&
+                    (s.pendingPapers || []).length < 2) {
+                    actions.push({
+                        id: 'expand_conf_journal',
+                        name: '📝 Expand Conf → Journal',
+                        desc: `Convert conference work into journal review (${journalPapers}/2 journals for hybrid)`
+                    });
+                }
+
+                // 5. VALIDATION: create figures for a publishable discovery.
+                if (this.getItem('key_discovery') > 0 && this.getItem('figure') < GAME_CONSTANTS.MAX_FIGURES) {
+                    const figures = this.getItem('figure') || 0;
+                    if (this.hasStatus('brokenEquipment')) {
+                        actions.push({ id: 'work_figures_blocked', name: '📊 Validate Discovery', desc: '⚠️ BLOCKED - Equipment broken!', disabled: true });
+                    } else {
+                        actions.push({ id: 'work_figures', name: '📊 Validate Discovery', desc: `Create figures (${figures}/3 needed)` });
+                    }
+                }
+
+                // 6. EXECUTION: develop intermediate research outputs.
+                if (this.getItem('initial_findings') > 0) {
+                    actions.push({ id: 'work_findings', name: '🔬 Develop Findings', desc: `→ Key Discovery (${this.getItem('initial_findings')} findings)` });
+                }
+                if (this.getItem('idea') > 0) {
+                    actions.push({ id: 'work_idea', name: '💡 Work on Idea', desc: `→ Preliminary Findings (${this.getItem('idea')} ideas)` });
+                }
+
+                // 7. IDEATION: always available, but no longer outranks concrete next steps.
+                actions.push({ id: 'read', name: '📚 Read Papers', desc: 'Generate new idea (40% chance)' });
+
                 // 6. THESIS: Write Thesis (after first publication)
-                const journalPapers = this.getItem('paper') || 0;
-                if (journalPapers >= 1 && (s.thesisProgress || 0) < 100) {
+                if (!thesisActionAdded && journalPapers >= 1 && (s.thesisProgress || 0) < 100) {
                     actions.push({ id: 'write_thesis', name: '📖 Write Thesis', desc: `Progress: ${s.thesisProgress || 0}%` });
                 }
 
                 // 7. ENDGAME: Defense
-                const defenseStatus = this.evaluateDefenseCriteria();
                 if (defenseStatus.allowed) {
                     if (!s.defensePrepared) {
                         actions.push({ id: 'prepare_defense', name: '🎓 Prepare Defense', desc: `${defenseStatus.label} (×${defenseStatus.skepticismMultiplier} skepticism)` });
@@ -5472,14 +5655,13 @@
                 }
 
                 // 💰 Emergency Grant - only when funding collapsed AND teaching load active
-                if ((s.funding || 0) <= 0 && this.hasStatus('teachingLoad')) {
+                if ((s.fundingMonths || 0) <= 0 && this.hasStatus('teaching_load')) {
                     actions.push({ id: 'emergency_grant', name: '💰 Emergency Grant', desc: '⚠️ ESCAPE: +12mo funding (permanent penalty)' });
                 }
 
                 // Quals (critical - keeps if needed)
-                if (!s.qualsPassed && s.year >= 1) {
-                    const prepLevel = s.qualifyLevel || 0;
-                    actions.push({ id: 'quals', name: '📚 Study for Quals', desc: `Prep level: ${prepLevel}/3 (need 3 to pass)` });
+                if (!qualsActionAdded && !s.qualsPassed && s.year >= 1) {
+                    actions.push(this.getQualsAction(s));
                 }
 
                 // TIME: Always last
@@ -5524,18 +5706,18 @@
                 // V2.62: Split revision actions based on review outcome
                 if (this.getItem('revision_required') > 0) {
                     // V2.62: Major Revision - quick turnaround, higher acceptance
-                    actions.push({ 
-                        id: 'revise_major', 
-                        name: '📝 Major Revision', 
-                        desc: 'Quick turnaround (2-3 mo), high accept chance' 
+                    actions.push({
+                        id: 'revise_major',
+                        name: '📝 Major Revision',
+                        desc: 'Quick turnaround (2-3 mo), high accept chance'
                     });
                 }
                 if (this.getItem('rejected_paper') > 0) {
                     // V2.62: Standard resubmit - normal process
-                    actions.push({ 
-                        id: 'resubmit', 
-                        name: '🔄 Resubmit Paper', 
-                        desc: 'Standard turnaround (3-6 mo), standard accept' 
+                    actions.push({
+                        id: 'resubmit',
+                        name: '🔄 Resubmit Paper',
+                        desc: 'Standard turnaround (3-6 mo), standard accept'
                     });
                 }
                 // V2.41: Flexible defense criteria
@@ -5605,8 +5787,19 @@
 
                 // V2.2 Pro: Conference paper submission (if has figures but want quick publish)
                 if (this.getItem('key_discovery') > 0 && this.getItem('figure') >= GAME_CONSTANTS.MAX_FIGURES) {
-                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: 'Quick publish (3mo, +network)' });
+                    actions.push({ id: 'conf_paper', name: '📋 Conference Paper', desc: this.getConferencePaperDesc() });
                     actions.push({ id: 'write_paper', name: '📝 Journal Paper', desc: 'Submit for review (3-6mo)' });
+                }
+
+                if ((s.confPaperCount || 0) >= GAME_CONSTANTS.REQUIRED_CONF_PAPERS_FOR_HYBRID &&
+                    journalPapers < GAME_CONSTANTS.MIN_JOURNAL_PAPERS_FOR_HYBRID &&
+                    (s.pendingPapers || []).length < 2) {
+                    actions.push({
+                        id: 'expand_conf_journal',
+                        name: '📝 Expand Conf → Journal',
+                        desc: `Convert conference work into journal review (${journalPapers}/2 journals for hybrid)`,
+                        telemetry: 'publishing'
+                    });
                 }
 
                 // V2.2 Pro: Show pending conference papers
@@ -5629,27 +5822,9 @@
                     const hasStudyGroup = (s.peerNetwork || 0) >= 50;
                     const effectiveNeeded = hasStudyGroup && preps < 3 ? Math.max(0, needed - 1) : needed;
 
-                    let qualsDesc = 'Study for exam';
-                    let qualsName = '📖 Prep for Quals';
-
-                    // V2.9: Retake urgency
-                    if (s.qualsFailedOnce && s.qualsDelayMonth) {
-                        const monthsToRetake = s.qualsDelayMonth - s.totalMonths;
-                        if (monthsToRetake > 0) {
-                            qualsName = '🆘 RETAKE PREP';
-                            qualsDesc = `${monthsToRetake}mo until retake! Level: ${preps}/3`;
-                        }
-                    }
-                    // V2.3: Urgency warnings for first attempt
-                    else if (s.year === 2 && effectiveNeeded > 0) {
-                        const monthsLeft = 9 - s.month;
-                        if (monthsLeft <= 3 && monthsLeft > 0) {
-                            qualsName = '⚠️📖 URGENT: Quals Prep';
-                            qualsDesc = `${monthsLeft}mo left! Need ${effectiveNeeded} more session${effectiveNeeded > 1 ? 's' : ''}`;
-                        }
-                    } else if (preps > 0) {
-                        qualsDesc = `Progress: ${preps}/3 sessions`;
-                    }
+                    const qualsAction = this.getQualsAction(s);
+                    let qualsDesc = qualsAction.desc;
+                    let qualsName = qualsAction.name;
                     if (hasStudyGroup && preps < 3) {
                         qualsDesc += ' (+1 from Study Group)';
                     }
@@ -5940,7 +6115,7 @@
 
                         // V2.12: Renewed Perspective bonus (+20%)
                         const ideaPerspective = (s.renewedPerspectiveUntil && s.totalMonths < s.renewedPerspectiveUntil) ? 0.2 : 0;
-                        
+
                         if (this.random() < Math.min(1.0, 0.4 + ideaPerspective + ideaPityBonus)) {
                             this.removeItem('idea');
                             this.addItem('initial_findings');
@@ -6029,12 +6204,12 @@
                         let figPityBonus = 0;
                         if (figFailures >= 5) figPityBonus = 1.0; // Guarantee success
                         else if (figFailures >= 4) figPityBonus = 0.8;
-                        
+
                         const figSuccessRate = Math.min(1.0, 0.75 + figBonus + figPerspective + figPityBonus);
-                        
+
                         if (this.random() < figSuccessRate) {
                             this.addItem('figure');
-                            
+
                             // V2.62: Calculate figure quality
                             const alignmentBonus = (s.strategicAlignment || 0) * 0.3;  // 0-30 points
                             const networkBonus = (s.peerNetwork || 0) * 0.2;           // 0-20 points
@@ -6094,21 +6269,21 @@
                         this.removeItem('key_discovery');
                         // V2.1: Clear ALL figures (can't reuse for next paper)
                         delete this.state.items['figure'];
-                        
+
                         // V2.62: Snapshot figure quality into paper, then reset
                         const paperQuality = s.figureQuality || 50;  // Default 50 if no figures
-                        
+
                         // V2.65: Fix Stale State
                         this.updateState({
-                            pendingPapers: [...(this.state.pendingPapers || []), { 
-                                submitted: this.state.totalMonths, 
+                            pendingPapers: [...(this.state.pendingPapers || []), {
+                                submitted: this.state.totalMonths,
                                 type: 'new',
                                 quality: paperQuality
                             }],
                             figureQuality: 0,
                             figuresCreatedCount: 0
                         }, 'Research');
-                        
+
                         msg = '📮 Paper submitted! (Quality: ' + paperQuality + '/100)\nNow we wait for the reviewers...';
                         break;
 
@@ -6130,11 +6305,11 @@
                         this.removeItem('revision_required');
                         // V2.62: Major revision keeps some quality, shorter wait, higher accept
                         const revisionQuality = Math.min(100, (s.lastPaperQuality || 50) + 10);  // +10 quality boost
-                        
+
                         // V2.65: Fix Stale State
                         this.updateState({
-                            pendingPapers: [...(this.state.pendingPapers || []), { 
-                                submitted: this.state.totalMonths, 
+                            pendingPapers: [...(this.state.pendingPapers || []), {
+                                submitted: this.state.totalMonths,
                                 type: 'revision',
                                 quality: revisionQuality
                             }]
@@ -6147,11 +6322,11 @@
                         this.removeItem('rejected_paper');
                         // V2.62: Resubmit gets slight quality penalty from rejection
                         const resubmitQuality = Math.max(30, (s.lastPaperQuality || 50) - 5);  // -5 quality penalty
-                        
+
                         // V2.65: Fix Stale State
                         this.updateState({
-                            pendingPapers: [...(this.state.pendingPapers || []), { 
-                                submitted: this.state.totalMonths, 
+                            pendingPapers: [...(this.state.pendingPapers || []), {
+                                submitted: this.state.totalMonths,
                                 type: 'new',
                                 quality: resubmitQuality
                             }],
@@ -6221,10 +6396,10 @@
 
                     // V2.45 Group C: Emergency Grant (funding collapse escape hatch)
                     case 'emergency_grant':
-                        this.removeStatus('teachingLoad');
+                        this.removeStatus('teaching_load');
                         // V2.65: Fix Stale State
                         this.updateState({
-                            funding: (this.state.funding || 0) + 12,
+                            fundingMonths: (this.state.fundingMonths || 0) + 12,
                             highScrutiny: true,
                             grantPenalty: (this.state.grantPenalty || 0) + 0.2, // -20% future grant success
                             baseSkepticism: (this.state.baseSkepticism || 0) + 1 // +1 committee skepticism
@@ -6344,13 +6519,13 @@
                         }
 
                         const newProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, currentProgress + progressGain);
-                        
+
                         // V2.65: Fix Stale State - batch all updates
                         const thesisUpdates = {
                             thesisProgress: newProgress,
                             morale: Math.max(0, this.state.morale - moraleCost)
                         };
-                        
+
                         // V2.50: Sync with graduation panel
                         if (s.graduation) {
                             s.graduation.thesis_progress = newProgress;
@@ -6361,7 +6536,7 @@
                             if (s.graduation) s.graduation.thesis_progress = 100;
                             msg = '📖 THESIS COMPLETE!\n\n100% progress reached!\n\n🎓 You can now prepare for defense!';
                         }
-                        
+
                         this.updateState(thesisUpdates, 'Academic');
                         break;
 
@@ -6404,7 +6579,7 @@
                             pitchMsgs.push('💬 "I\'ll get to it when I can... busy month."');
                         }
                         msg = pitchMsgs.length > 0 ? this.pick(pitchMsgs) : '💬 Your advisor nods thoughtfully.';
-                        
+
                         // V2.65: Fix Stale State
                         this.updateState({
                             strategicAlignment: (this.state.strategicAlignment || 0) + alignmentGain,
@@ -6422,6 +6597,20 @@
                             pendingConference: [...(this.state.pendingConference || []), { submitted: this.state.totalMonths }]
                         }, 'Research');
                         msg = '📋 Conference paper submitted! (4 month review)';
+                        break;
+
+                    case 'expand_conf_journal':
+                        const expandedQuality = Math.min(85, 62 + Math.floor((s.peerNetwork || 0) / 8) + Math.min(8, (s.confPaperCount || 0) * 2));
+                        this.updateState({
+                            pendingPapers: [...(this.state.pendingPapers || []), {
+                                submitted: this.state.totalMonths,
+                                type: 'conference_extension',
+                                quality: expandedQuality
+                            }],
+                            morale: Math.max(0, this.state.morale - 8),
+                            strategicAlignment: Math.min(GAME_CONSTANTS.MAX_ALIGNMENT, (this.state.strategicAlignment || 0) + 2)
+                        }, 'Research');
+                        msg = `📝 Conference work expanded into a journal submission!\n\nQuality: ${expandedQuality}/100\n-8 morale, +2 alignment\n\nHybrid defense still requires 2 accepted journal papers.`;
                         break;
 
                     // V2.13: MS-Out with timing-based exit profiles
@@ -6457,7 +6646,7 @@
                             morale: Math.min(GAME_CONSTANTS.MAX_MORALE, this.state.morale + 15),
                             advisorScore: Math.max(0, this.state.advisorScore - 5)
                         }, 'Career');
-                        
+
                         // Advance 3 months
                         for (let i = 0; i < 3; i++) {
                             // Note: This logic is tricky. advanceMonth() does heavy lifting.
@@ -6476,23 +6665,23 @@
                             // But years might rollover.
                             // I will replicate the logic with updateState.
                         }
-                        
+
                         // Re-implementation of 3-month jump safely
                         let currentM = this.state.month;
                         let currentY = this.state.year;
                         let currentTotal = this.state.totalMonths;
                         let internshipActive = true;
-                        
+
                         for (let i = 0; i < 3; i++) {
                             currentM++;
                             currentTotal++;
-                            if (currentM > 12) { 
-                                currentM = 1; 
-                                currentY++; 
+                            if (currentM > 12) {
+                                currentM = 1;
+                                currentY++;
                                 internshipActive = false; // Reset if year rolls over? Original logic did this.
                             }
                         }
-                        
+
                         this.updateState({
                             month: currentM,
                             year: currentY,
@@ -6632,12 +6821,12 @@
                         // V2.52: Use thesisProgress as single source of truth
                         // V2.65: Fix Stale State
                         const newDissertationProgress = Math.min(GAME_CONSTANTS.MAX_THESIS_PROGRESS, (this.state.thesisProgress || 0) + dGain);
-                        
+
                         this.updateState({
                             thesisProgress: newDissertationProgress,
                             morale: Math.max(0, this.state.morale - 12)
                         }, 'Research');
-                        
+
                         // Sync
                         if (this.state.graduation) {
                             this.updateState({
@@ -6734,40 +6923,32 @@
                 let breakdown = [];
                 let allowed = false;
 
-                // V2.47: HARD GATE - Thesis must be 100% complete
-                if (thesisProgress < 100) {
+                // V2.60: Route defense logic exclusively through GRADUATION_CONTRACT
+                if (!GRADUATION_CONTRACT.defenseUnlocked(this.state)) {
                     return {
                         allowed: false,
                         skepticismMultiplier: 0,
-                        label: `Thesis: ${thesisProgress}%`,
-                        breakdown: [`Thesis progress: ${thesisProgress}/100% required`]
+                        label: 'Not Ready',
+                        breakdown: ['Does not meet graduation contract requirements']
                     };
                 }
 
-                // V2.43: Three clear defense paths (only checked after thesis complete)
+                allowed = true;
+
+                // Determine base skepticism purely for flavor and difficulty based on the contract
                 if (journals >= GAME_CONSTANTS.REQUIRED_JOURNAL_PAPERS) {
-                    allowed = true;
                     baseSkepticism = 1.0;
                     label = 'Gold Standard';
                     breakdown.push('Gold Standard Portfolio (×1.0)');
-                } else if (journals >= 2 && conferences >= 2) {
-                    allowed = true;
+                } else {
                     baseSkepticism = 1.25;
                     label = 'Hybrid Portfolio';
                     breakdown.push('Hybrid Portfolio (+25%)');
-                } else if (journals >= 2 && morale >= 80) {
-                    allowed = true;
-                    baseSkepticism = 1.5;
-                    label = 'Early Gamble';
-                    breakdown.push('Early Defense (+50%)');
-                }
-
-                if (!allowed) {
-                    return { allowed: false, skepticismMultiplier: 0, label: 'Need Papers', breakdown: ['Need 3J, or 2J+2C, or 2J+80M'] };
                 }
 
                 // V2.43: Modifiers
                 let finalSkepticism = baseSkepticism;
+                const strain = this.getDefenseStrain(this.state);
 
                 // Low advisor alignment increases skepticism
                 if (alignment < 40) {
@@ -6781,6 +6962,9 @@
                     breakdown.push('Strong Network (-10%)');
                 }
 
+                finalSkepticism *= strain.skepticismMultiplier;
+                breakdown.push(...strain.breakdown);
+
                 // Clamp
                 finalSkepticism = Math.min(Math.max(finalSkepticism, 0.75), 2.0);
 
@@ -6791,6 +6975,70 @@
                     label: label,
                     breakdown: breakdown
                 };
+            },
+
+            getDefenseStrain(state = this.state) {
+                const morale = state.morale || 0;
+                const stress = state.stress || 0;
+                const lowMoraleMonths = state.telemetry?.moraleLowMonths || 0;
+                const statuses = state.statuses;
+                const hasStateStatus = (id) => {
+                    if (!statuses) return false;
+                    if (statuses.has) return statuses.has(id);
+                    if (Array.isArray(statuses)) return statuses.includes(id);
+                    return false;
+                };
+
+                const strain = {
+                    skepticismMultiplier: 1,
+                    thesisPenalty: 0,
+                    presentationPenalty: 0,
+                    committeePenalty: 0,
+                    breakdown: []
+                };
+
+                if (morale < GAME_CONSTANTS.MIN_MORALE_FOR_WARNING) {
+                    const penalty = Math.min(12, (GAME_CONSTANTS.MIN_MORALE_FOR_WARNING - morale) * 0.35);
+                    strain.skepticismMultiplier *= 1.12;
+                    strain.presentationPenalty += penalty;
+                    strain.committeePenalty += Math.min(6, penalty * 0.5);
+                    strain.breakdown.push('Low Morale (+12%, weaker presentation)');
+                }
+
+                if (stress >= 50) {
+                    const penalty = Math.min(14, (stress - 45) * 0.22);
+                    strain.skepticismMultiplier *= stress >= 80 ? 1.15 : 1.08;
+                    strain.thesisPenalty += Math.min(8, penalty * 0.5);
+                    strain.presentationPenalty += penalty;
+                    strain.committeePenalty += Math.min(8, penalty * 0.45);
+                    strain.breakdown.push(stress >= 80 ? 'Critical Stress (+15%)' : 'High Stress (+8%)');
+                }
+
+                if (lowMoraleMonths >= 4) {
+                    const penalty = Math.min(10, lowMoraleMonths * 0.7);
+                    strain.skepticismMultiplier *= 1.08;
+                    strain.presentationPenalty += penalty;
+                    strain.committeePenalty += Math.min(8, penalty * 0.6);
+                    strain.breakdown.push('Chronic Low Morale (+8%)');
+                }
+
+                if (hasStateStatus('exhaustion')) {
+                    strain.skepticismMultiplier *= 1.08;
+                    strain.thesisPenalty += 4;
+                    strain.presentationPenalty += 6;
+                    strain.breakdown.push('Exhaustion (+8%)');
+                }
+
+                if (hasStateStatus('burnout')) {
+                    strain.skepticismMultiplier *= 1.12;
+                    strain.thesisPenalty += 6;
+                    strain.presentationPenalty += 8;
+                    strain.committeePenalty += 6;
+                    strain.breakdown.push('Burnout (+12%)');
+                }
+
+                strain.skepticismMultiplier = Number(strain.skepticismMultiplier.toFixed(2));
+                return strain;
             },
 
             // V2.40: Start Defense Gauntlet
@@ -6821,11 +7069,12 @@
                 const alignment = this.state.strategicAlignment || 0;
                 const network = this.state.peerNetwork || 0;
                 const teaching = this.state.teachingExperience || 0;
+                const strain = this.getDefenseStrain(this.state);
 
                 // 2. Base calculations (Base 20 + stat contributions)
-                const thesisBase = 20 + (papers * 8) + (confPapers * 3) + (figureQuality * 0.3);
-                const presentationBase = 20 + (morale / 10) + (teaching * 0.5) + (network / 5);
-                const committeeBase = 20 + (alignment / 3) + (network / 4);
+                const thesisBase = 20 + (papers * 8) + (confPapers * 3) + (figureQuality * 0.3) - strain.thesisPenalty;
+                const presentationBase = 20 + (morale / 10) + (teaching * 0.5) + (network / 5) - strain.presentationPenalty;
+                const committeeBase = 20 + (alignment / 3) + (network / 4) - strain.committeePenalty;
 
                 // 3. Calculate start values (clamp 15-60)
                 const thesisStart = Math.max(15, Math.min(60, thesisBase / skepticism));
@@ -6881,9 +7130,8 @@
                 // V2.52: Show defense info directly in defense modal, not as queued message
                 // Defense modal shows immediately, info goes to event log
                 const msg = `🎓 THESIS DEFENSE BEGINS!\n\nCommittee Skepticism: ×${skepticism.toFixed(2)}\n• ${breakdownText}\n\nStarting Approval: ${startApproval}%`;
-                if (this.state && this.state.eventLog) {
-                    this.state.eventLog.push({ month: this.state.totalMonths, text: msg, modal: false });
-                }
+                this.appendMessage(msg);
+                if (this.eventResolver) this.eventResolver.resolveTick(this.state);
 
                 // Show defense modal after acknowledging
                 document.getElementById('defense-modal').classList.add('active');
@@ -7271,7 +7519,7 @@
                 // V2.60: Dissertation Quality Display (surfaced hidden metric)
                 const dissQualityRow = document.getElementById('dissertation-quality-row');
                 if (dissQualityRow && s.dissertation) {
-                    const hasThesisProgress = s.thesisProgress > 0 || s.papers >= 2;
+                    const hasThesisProgress = s.thesisProgress > 0 || this.getItem('paper') >= 2;
                     if (hasThesisProgress) {
                         dissQualityRow.style.display = 'block';
                         const draftQuality = Math.round(s.dissertation.draft_quality || 0);
@@ -7380,12 +7628,12 @@
                 if (figureQualityPanel) {
                     const figureCount = s.figuresCreatedCount || 0;
                     const avgQuality = s.figureQuality || 0;
-                    
+
                     if (figureCount > 0) {
                         figureQualityPanel.style.display = 'block';
                         document.getElementById('figure-quality-value').textContent = avgQuality + '/100';
                         document.getElementById('figure-quality-bar').style.width = avgQuality + '%';
-                        
+
                         const descEl = document.getElementById('figure-quality-desc');
                         if (avgQuality >= 80) {
                             descEl.textContent = '⭐ Exceptional quality figures - excellent acceptance odds!';
@@ -7476,7 +7724,7 @@
     </script>
 
     <!-- GoatCounter Analytics -->
-    <script data-goatcounter="https://wangxiangyu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <script data-goatcounter="https://wangxiangyu.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 
 </html>

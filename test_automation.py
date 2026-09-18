@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 """Quick test of GradQuest automation"""
 
 import asyncio
@@ -10,7 +11,7 @@ async def test():
         page = await browser.new_page(viewport={'width': 1280, 'height': 800})
         
         print("Loading game...")
-        await page.goto('file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html')
+        await page.goto(f'file://{Path(__file__).resolve().parent}/docs/index.html')
         
         print("Waiting for start screen...")
         await page.wait_for_selector('#start-screen', timeout=10000)

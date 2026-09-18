@@ -1,0 +1,454 @@
+[
+  {
+    "fixture_id": "real_01_faculty_yale",
+    "category": "real_web",
+    "target_name": "Xin Zhou",
+    "text": "Xin Zhou, PhD, is Assistant Professor of Biostatistics at Yale School of Public Health. His research focuses on high-dimensional statistics and genomics.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Assistant Professor of Biostatistics",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Yale School of Public Health",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "real_02_postdoc_medicine",
+    "category": "real_web",
+    "target_name": "Vaishali Panwar",
+    "text": "Dr. Vaishali Panwar is a Postdoctoral Associate in Microbial Pathogenesis at Yale School of Medicine working in the Mothes Lab.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Postdoctoral Associate",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Yale School of Medicine",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "member_of",
+        "object_raw": "Mothes Lab",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "pair_01a_affirmative",
+    "category": "minimal_contrast",
+    "target_name": "Alice Smith",
+    "text": "Dr. Alice Smith is currently Dean at Yale University.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Dean",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Yale University",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "pair_01b_negated",
+    "category": "minimal_contrast",
+    "target_name": "Alice Smith",
+    "text": "Dr. Alice Smith is not Dean at Yale University.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Dean",
+        "polarity": "negative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "pair_02a_former",
+    "category": "minimal_contrast",
+    "target_name": "Bob Chen",
+    "text": "Bob Chen previously was Director at Stanford University until 2021.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Director",
+        "polarity": "affirmative",
+        "temporal_status": "former"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Stanford University",
+        "polarity": "affirmative",
+        "temporal_status": "former"
+      }
+    ]
+  },
+  {
+    "fixture_id": "pair_02b_current",
+    "category": "minimal_contrast",
+    "target_name": "Bob Chen",
+    "text": "Bob Chen currently serves as Director at Stanford University.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Director",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Stanford University",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "pair_03a_chinese_current",
+    "category": "minimal_contrast",
+    "target_name": "李嘉文",
+    "text": "李嘉文现任耶鲁大学游泳队队长，荣获全美优秀学者运动员荣誉。",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "游泳队队长",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "耶鲁大学",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "pair_03b_chinese_former",
+    "category": "minimal_contrast",
+    "target_name": "李嘉文",
+    "text": "李嘉文曾任耶鲁大学游泳队队长，已离任毕业。",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "游泳队队长",
+        "polarity": "affirmative",
+        "temporal_status": "former"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "耶鲁大学",
+        "polarity": "affirmative",
+        "temporal_status": "former"
+      }
+    ]
+  },
+  {
+    "fixture_id": "pair_04a_subject_reversal",
+    "category": "minimal_contrast",
+    "target_name": "Alice Example",
+    "text": "Alice Example interviewed Dean Bob regarding upcoming curriculum changes at Yale University.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "pair_04b_subject_dean",
+    "category": "minimal_contrast",
+    "target_name": "Bob Example",
+    "text": "Dean Bob Example appointed new staff members at Yale University yesterday.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Dean",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Yale University",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "noise_01_weather",
+    "category": "noise",
+    "target_name": "Alice Smith",
+    "text": "The weather is sunny in New Haven today with clear skies and temperature around 68 degrees Fahrenheit.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "noise_02_tos_navigation",
+    "category": "noise",
+    "target_name": "Bob Chen",
+    "text": "Terms of Service: By continuing to browse this site you consent to all cookie settings and privacy policy stipulations. All rights reserved.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "noise_03_economy_news",
+    "category": "noise",
+    "target_name": "Xin Zhou",
+    "text": "Breaking news: Global stock markets posted modest gains following quarterly earnings reports from leading technology companies.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "distractor_01_other_person_sentence",
+    "category": "distractor",
+    "target_name": "Alice Example",
+    "text": "Bob is Dean of Yale School of Medicine. Alice Example attended the ceremony as a guest.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "distractor_02_quotation_frame",
+    "category": "distractor",
+    "target_name": "Alice Example",
+    "text": "Alice Example said that Bob is Dean of Yale.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "distractor_03_appositive_frame",
+    "category": "distractor",
+    "target_name": "Alice Example",
+    "text": "Alice Example met Bob, the former Dean of Harvard.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "variant_01_discipline_and_role",
+    "category": "linguistic_variant",
+    "target_name": "Alice Example",
+    "text": "Alice Example, Professor of Molecular Biology and Director at Stanford University, published new research.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Professor of Molecular Biology",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "holds_position",
+        "object_raw": "Director",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Stanford University",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "variant_02_conjoined_discipline",
+    "category": "linguistic_variant",
+    "target_name": "Alice Example",
+    "text": "Alice Example is Professor of Molecular and Cellular Biology at Stanford University.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Professor of Molecular and Cellular Biology",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Stanford University",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "variant_03_three_conjoined_subjects",
+    "category": "linguistic_variant",
+    "target_name": "Alice Example",
+    "text": "Alice Example, Bob Chen, and Charlie Wang are Professors at Stanford University.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Professor",
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "equivalence_set": ["Professors"]
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Stanford University",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "variant_04_director_of_center",
+    "category": "linguistic_variant",
+    "target_name": "Alice Example",
+    "text": "Alice Example, Professor of Biology and Director of the Center at Stanford University, attended the event.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Professor of Biology",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "holds_position",
+        "object_raw": "Director of the Center",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Stanford University",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "variant_05_hyphen_accent_coordinated_subjects",
+    "category": "linguistic_variant",
+    "target_name": "Anne-Marie Smith",
+    "text": "Anne-Marie Smith, Bob Jones, and José Lee are Professors at Stanford University.",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Professor",
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "equivalence_set": ["Professors"]
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Stanford University",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "variant_06_unentailed_action_negative",
+    "category": "linguistic_variant",
+    "target_name": "Alice Smith",
+    "text": "Alice Smith criticized the Nobel Prize and visited Stanford University.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "variant_07_chinese_short_alias_compound_negative",
+    "category": "linguistic_variant",
+    "target_name": "周昕",
+    "text": "周昕报道北大荒集团发布年报，随后参加北大西洋公约组织会议。",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "variant_08_chinese_short_alias_positive",
+    "category": "linguistic_variant",
+    "target_name": "周昕",
+    "text": "周昕毕业于北京大学，现任清华大学教授。",
+    "gold_claims": [
+      {
+        "predicate": "graduated_from",
+        "object_raw": "北京大学",
+        "polarity": "affirmative",
+        "temporal_status": "unknown"
+      },
+      {
+        "predicate": "holds_position",
+        "object_raw": "教授",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "清华大学",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "variant_09_prefix_collision_negative",
+    "category": "distractor",
+    "target_name": "Alice Smith",
+    "text": "Alice Smith met Alice Smithson. She was awarded Nobel Prize.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "variant_10_gpe_anaphora_positive",
+    "category": "linguistic_variant",
+    "target_name": "Alice Smith",
+    "text": "Alice Smith moved to New Haven. She was awarded Nobel Prize.",
+    "gold_claims": [
+      {
+        "predicate": "awarded_honor",
+        "object_raw": "Nobel Prize",
+        "polarity": "affirmative",
+        "temporal_status": "former"
+      }
+    ]
+  },
+  {
+    "fixture_id": "variant_11_chinese_open_predicates_positive",
+    "category": "linguistic_variant",
+    "target_name": "周昕",
+    "text": "周昕倡导改革，并现任清华大学教授。",
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "教授",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "清华大学",
+        "polarity": "affirmative",
+        "temporal_status": "current"
+      }
+    ]
+  },
+  {
+    "fixture_id": "variant_12_cross_cultural_pronoun_negative",
+    "category": "distractor",
+    "target_name": "David Jones",
+    "text": "David Jones met Xin Zhou. He was awarded Nobel Prize.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "variant_13_gpe_award_person_negative",
+    "category": "distractor",
+    "target_name": "Alice Smith",
+    "text": "Alice Smith visited Barbara Jones. She was awarded Nobel Prize.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "variant_14_honorific_surname_negative",
+    "category": "distractor",
+    "target_name": "Xin Zhou",
+    "text": "Xin Zhou met Ming Zhou. Dr. Zhou was awarded Nobel Prize.",
+    "gold_claims": []
+  },
+  {
+    "fixture_id": "variant_15_chinese_maximal_span_negative",
+    "category": "distractor",
+    "target_name": "周昕",
+    "text": "周昕怡批评政策，随后荣获 Nobel Prize。",
+    "gold_claims": []
+  }
+]

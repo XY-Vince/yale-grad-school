@@ -1,0 +1,117 @@
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://medicine.yale.edu/profile/vaishali-panwar
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 299
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 219
+
+<html><body>Dr. Vaishali Panwar is a Postdoctoral Associate at Yale School of Medicine in the Department of Microbial Pathogenesis. She is an active member of the Mothes Lab conducting biomedical research.</body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://medicine.yale.edu/profile/jacqueline-mann
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 292
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 212
+
+<html><body>Dr. Jacqueline Mann is a Postdoctoral Associate in Internal Medicine at Yale School of Medicine. She received her PhD in Molecular and Cellular Pathology from the University of Michigan.</body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://ysph.yale.edu/profile/xin-zhou
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 194
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 114
+
+<html><body>Dr. Xin Zhou is an Assistant Professor of Biostatistics at Yale School of Public Health.</body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://news.sina.com.cn/c/yang-qirong
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 271
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 191
+
+<html><body>杨启荣，易思汇留学生群体与赴美中转背景亲历者，著有出版物《这里没有岁月静好》，真实记录留学生赴美中转背景经历。</body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://coldwellbanker.com/agent/donna-cheng
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 216
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 136
+
+<html><body>Donna Cheng is a licensed Real Estate Agent affiliated with Coldwell Banker Realty based in Greater New Haven.</body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://yalebulldogs.com/roster/li-jiawen
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 233
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 153
+
+<html><body>李嘉文毕业于北京一零一中，现为耶鲁大学游泳队，荣获 CSCAA Individual Scholar All-America Team 荣誉。</body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://cs.stanford.edu/people/david-n-liam
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 192
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 112
+
+<html><body>David N. Liam is a researcher in Computer Science affiliated with Stanford University.</body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://engineering.org/roster/sina-ovali
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 177
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 98
+
+<html><body>Sina Ovali is an active member of the Engineering Society annual roster.</body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Target-URI: https://linkedin.com/in/katniss-ni
+WARC-Date: 2026-09-05T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 180
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 100
+
+<html><body>Katniss Ni currently serves as a Software Engineer based in San Francisco.</body></html>
+

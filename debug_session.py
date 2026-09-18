@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 """Quick debug session to inspect game state"""
 import asyncio
 from playwright.async_api import async_playwright
@@ -9,7 +10,7 @@ async def debug_session():
         page = await browser.new_page(viewport={'width': 1280, 'height': 800})
 
         print("Navigating to game...")
-        await page.goto('file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html')
+        await page.goto(f'file://{Path(__file__).resolve().parent}/docs/index.html')
         await page.wait_for_selector('#start-screen', timeout=10000)
 
         version = await page.text_content('#version-display')

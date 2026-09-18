@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 """
 Simple verification script for V2.59.2 Defense Gauntlet
 Tests the 3-track defense system by checking HTML elements directly
@@ -12,7 +13,7 @@ async def verify_defense_modal():
         browser = await p.chromium.launch(headless=False)
         page = await browser.new_page(viewport={'width': 1400, 'height': 900})
 
-        url = 'file:///Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/docs/index.html'
+        url = f'file://{Path(__file__).resolve().parent}/docs/index.html'
         print(f"📂 Loading game from: {url}")
         await page.goto(url)
         await page.wait_for_load_state('domcontentloaded')
@@ -151,12 +152,10 @@ async def verify_defense_modal():
                 print(f"  Weighted Total: {meter_values['weighted_total']}% (need 65%)")
 
         # Take screenshot
-        screenshot_path = '/Users/guozhenghui/Desktop/WXY/ComBio/GradQuest/defense_modal_verification_simple.png'
+        screenshot_path = f'{Path(__file__).resolve().parent}/defense_modal_verification_simple.png'
         print(f"\n📸 Taking screenshot: {screenshot_path}")
         await page.screenshot(path=screenshot_path, full_page=False)
         print("✅ Screenshot saved!")
-
-        await browser.close()
 
         # Count visible elements
         visible_count = 0
@@ -164,6 +163,8 @@ async def verify_defense_modal():
             el = await page.query_selector(selector)
             if el and await el.is_visible():
                 visible_count += 1
+
+        await browser.close()
 
         return {
             'elements': results,

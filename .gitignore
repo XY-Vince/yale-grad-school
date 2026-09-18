@@ -16,3 +16,19 @@ strategic revision plan.md
 *.swp
 *.bak
 *~
+
+# Python
+__pycache__/
+*.py[cod]
+*.class
+.pytest_cache/
+
+# Skill and runner artifacts
+runs/
+scratch/
+.agents/skills/verify-public-person-profile/runs/
+.agents/skills/verify-public-person-profile/scratch/
+
+# Binaries and archives
+gh.zip
+gh_*/

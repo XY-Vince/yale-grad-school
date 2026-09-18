@@ -1,0 +1,553 @@
+[
+  {
+    "case_id": "vaishali_panwar",
+    "target_name": "Vaishali Panwar",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "03fbd5f1ebbd0a9f"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Postdoctoral Associate",
+        "equivalence_set": [
+          "Postdoctoral Associate",
+          "Postdoc",
+          "Postdoctoral Researcher"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Vaishali Panwar"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Yale School of Medicine",
+        "equivalence_set": [
+          "Yale School of Medicine",
+          "Yale University",
+          "Department of Microbial Pathogenesis"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Vaishali Panwar"
+      },
+      {
+        "predicate": "member_of",
+        "object_raw": "Mothes Lab",
+        "equivalence_set": [
+          "Mothes Lab",
+          "Walther Mothes Laboratory"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Vaishali Panwar"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "Vaishali Panwar",
+        "domain": "Performing Arts / Kathak Dance",
+        "reason": "Canadian Kathak dancer, not biomedical researcher"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "Vaishali Panwar",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      }
+    ]
+  },
+  {
+    "case_id": "jacqueline_mann",
+    "target_name": "Jacqueline Mann",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "851f7d4c30eb14b9"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Postdoctoral Associate",
+        "equivalence_set": [
+          "Postdoctoral Associate",
+          "Postdoc"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Jacqueline Mann"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Yale School of Medicine",
+        "equivalence_set": [
+          "Yale School of Medicine",
+          "Department of Internal Medicine"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Jacqueline Mann"
+      },
+      {
+        "predicate": "received_degree",
+        "object_raw": "PhD in Molecular and Cellular Pathology",
+        "equivalence_set": [
+          "PhD in Molecular and Cellular Pathology",
+          "Doctor of Philosophy",
+          "University of Michigan PhD"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "unknown",
+        "subject": "Jacqueline Mann"
+      },
+      {
+        "predicate": "graduated_from",
+        "object_raw": "University of Michigan",
+        "equivalence_set": [
+          "University of Michigan",
+          "UMich",
+          "University of Michigan, Ann Arbor"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "unknown",
+        "subject": "Jacqueline Mann"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "Jacqueline Mann",
+        "domain": "Clinical Counselling",
+        "reason": "Counsellor in Victoria BC"
+      },
+      {
+        "name": "Jacqueline Mann",
+        "domain": "Library Science",
+        "reason": "Librarian at DePaul University"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "Jacqueline E. Mann",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      }
+    ]
+  },
+  {
+    "case_id": "xin_zhou",
+    "target_name": "Xin Zhou",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "a60df163e58aa369"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Assistant Professor of Biostatistics",
+        "equivalence_set": [
+          "Assistant Professor of Biostatistics",
+          "Assistant Professor"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Xin Zhou"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Yale School of Public Health",
+        "equivalence_set": [
+          "Yale School of Public Health",
+          "YSPH",
+          "Yale University"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Xin Zhou"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "Xin Zhou",
+        "domain": "Health Communication",
+        "reason": "Associate Research Scientist at Yale SOM AIDS Program"
+      },
+      {
+        "name": "Xin Zhou",
+        "domain": "Chemical Biology",
+        "reason": "Assistant Professor at Harvard Medical School / Dana-Farber"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "周昕",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      }
+    ]
+  },
+  {
+    "case_id": "yang_qirong",
+    "target_name": "杨启荣",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "dc694ef7696bca22"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "authored_publication",
+        "object_raw": "这里没有岁月静好",
+        "equivalence_set": [
+          "这里没有岁月静好",
+          "Beyond Encounters",
+          "这里没有岁月静好-留学生为什么爱折腾"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "unknown",
+        "subject": "杨启荣"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "留学生群体与赴美中转背景",
+        "equivalence_set": [
+          "留学生群体与赴美中转背景",
+          "易思汇作者群",
+          "赴美柬埔寨中转服务语境"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "unknown",
+        "subject": "杨启荣"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "杨启荣",
+        "domain": "Culinary Arts",
+        "reason": "State banquet Huaiyang cuisine master chef"
+      },
+      {
+        "name": "杨启荣",
+        "domain": "Hong Kong Television",
+        "reason": "Fictional character in 1977 RTV drama"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "Qirong Yang",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      },
+      {
+        "alias_value": "Chi-Rong Yang",
+        "origin_type": "generated_hypothesis",
+        "verification_status": "unverified"
+      }
+    ]
+  },
+  {
+    "case_id": "donna_cheng",
+    "target_name": "Donna Cheng",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "580bb9f17b033a50"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Real Estate Agent",
+        "equivalence_set": [
+          "Real Estate Agent",
+          "Realtor",
+          "Licensed Real Estate Professional"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Donna Cheng"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Coldwell Banker Realty",
+        "equivalence_set": [
+          "Coldwell Banker Realty",
+          "Coldwell Banker"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Donna Cheng"
+      },
+      {
+        "predicate": "based_in",
+        "object_raw": "Greater New Haven",
+        "equivalence_set": [
+          "Greater New Haven",
+          "New Haven County",
+          "NHV",
+          "Woodbridge"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Donna Cheng"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "Donna Windish",
+        "domain": "Medicine",
+        "reason": "Yale Internal Medicine Associate Professor"
+      },
+      {
+        "name": "Donna-Ann Thomas",
+        "domain": "Anesthesiology",
+        "reason": "Yale Division Chief of Pain Medicine"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "Donna Cheng",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      }
+    ]
+  },
+  {
+    "case_id": "li_jiawen",
+    "target_name": "李嘉文",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "8a0c63f0c6edd7ec"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "graduated_from",
+        "object_raw": "Beijing 101 Middle School",
+        "equivalence_set": [
+          "Beijing 101 Middle School",
+          "北京一零一中"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "unknown",
+        "subject": "李嘉文"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Yale University Men's Swimming and Diving",
+        "equivalence_set": [
+          "Yale University Men's Swimming and Diving",
+          "Yale Bulldogs",
+          "Yale College",
+          "耶鲁大学",
+          "耶鲁大学游泳队"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "unknown",
+        "subject": "李嘉文"
+      },
+      {
+        "predicate": "awarded_honor",
+        "object_raw": "CSCAA Individual Scholar All-America Team",
+        "equivalence_set": [
+          "CSCAA Individual Scholar All-America Team",
+          "全美优秀学者运动员",
+          "ISF Gymnasiade Champion"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "unknown",
+        "subject": "李嘉文"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "Jessey Li",
+        "domain": "Athletics",
+        "reason": "Yale Women's Swimming captain, different athlete on same team"
+      },
+      {
+        "name": "Kavin Li",
+        "domain": "Engineering",
+        "reason": "Project engineer at Ruisong Electronic Technology"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "Kavin Li",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      },
+      {
+        "alias_value": "Jiawen Li",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      }
+    ]
+  },
+  {
+    "case_id": "fixture_01_dnl_ldn",
+    "target_name": "David N. Liam",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "d3db75d607474835"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "researcher",
+        "equivalence_set": [
+          "researcher",
+          "Researcher",
+          "CS Researcher"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "David N. Liam"
+      },
+      {
+        "predicate": "affiliated_with",
+        "object_raw": "Stanford University",
+        "equivalence_set": [
+          "Stanford University",
+          "Stanford CS"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "David N. Liam"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "Liam D. Noel",
+        "domain": "Law",
+        "reason": "Permuted abbreviation representing distinct person"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "Liam, D. N.",
+        "origin_type": "generated_hypothesis",
+        "verification_status": "unverified"
+      },
+      {
+        "alias_value": "D. Liam",
+        "origin_type": "generated_hypothesis",
+        "verification_status": "unverified"
+      }
+    ]
+  },
+  {
+    "case_id": "fixture_02_sparse_liam",
+    "target_name": "Liam",
+    "expected_outcome": "insufficient_evidence",
+    "gold_clusters": [],
+    "gold_claims": [],
+    "hard_negatives": [
+      {
+        "name": "Liam Smith",
+        "domain": "General",
+        "reason": "Unsubstantiated candidate merge"
+      },
+      {
+        "name": "Liam Johnson",
+        "domain": "General",
+        "reason": "Unsubstantiated candidate merge"
+      }
+    ],
+    "gold_aliases": []
+  },
+  {
+    "case_id": "fixture_03_roster_duplication_sina",
+    "target_name": "Sina Ovali",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "a138e0840b853b90"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "member_of",
+        "object_raw": "Engineering Society",
+        "equivalence_set": [
+          "Engineering Society"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Sina Ovali"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "Sina Ovali Duplicate Line",
+        "domain": "Roster Glitch",
+        "reason": "Duplicated entry on page 14 of same PDF"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "Sina Ovali",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      }
+    ]
+  },
+  {
+    "case_id": "fixture_04_snippet_attribution_katniss",
+    "target_name": "Katniss Ni",
+    "expected_outcome": "completed",
+    "gold_clusters": [
+      [
+        "0916e858c9f71e70"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "predicate": "holds_position",
+        "object_raw": "Software Engineer",
+        "equivalence_set": [
+          "Software Engineer",
+          "SWE"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Katniss Ni"
+      },
+      {
+        "predicate": "based_in",
+        "object_raw": "San Francisco",
+        "equivalence_set": [
+          "San Francisco",
+          "SF",
+          "Bay Area"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "subject": "Katniss Ni"
+      }
+    ],
+    "hard_negatives": [
+      {
+        "name": "Third-Party Connection",
+        "domain": "LinkedIn Snippet Recommendation",
+        "reason": "Third-party recommended colleague in search snippet"
+      }
+    ],
+    "gold_aliases": [
+      {
+        "alias_value": "Katniss Ni",
+        "origin_type": "source_stated",
+        "verification_status": "verified"
+      }
+    ]
+  }
+]
