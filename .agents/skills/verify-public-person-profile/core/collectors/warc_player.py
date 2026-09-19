@@ -6,6 +6,7 @@ Provides deterministic offline replay, inverted index search, and SHA-256 verifi
 
 import gzip
 import hashlib
+import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from .base import BaseCollector
@@ -21,15 +22,66 @@ class WarcRecord:
 
 
 class WarcPlayerCollector(BaseCollector):
-    def __init__(self, warc_file_or_index: Path, query_budget: int = 20):
+    def __init__(
+        self,
+        warc_file_or_index: Path,
+        query_budget: int = 20,
+        query_index_path: Optional[Path] = None,
+    ):
         self.warc_path = warc_file_or_index
         self.query_budget = query_budget
         self.records: Dict[str, WarcRecord] = {}
         self.records_by_id: Dict[str, WarcRecord] = {}
+        self.query_index: Optional[Dict[str, List[str]]] = None
         self.queries_executed = 0
         self.pages_fetched = 0
         self.errors: List[str] = []
         self._load_warc()
+        sidecar_path = query_index_path or self.warc_path.with_name("query_index.jsonl")
+        if sidecar_path.exists():
+            self._load_query_index(sidecar_path)
+
+    @staticmethod
+    def _normalize_query(query: str) -> str:
+        return " ".join(query.casefold().split())
+
+    def _load_query_index(self, query_index_path: Path) -> None:
+        loaded: Dict[str, List[str]] = {}
+        for line_number, raw_line in enumerate(
+            query_index_path.read_text(encoding="utf-8").splitlines(),
+            1,
+        ):
+            if not raw_line.strip():
+                continue
+            try:
+                entry = json.loads(raw_line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    f"Malformed query index JSON at {query_index_path}:{line_number}"
+                ) from exc
+            query = entry.get("query") if isinstance(entry, dict) else None
+            urls = entry.get("urls") if isinstance(entry, dict) else None
+            if not isinstance(query, str) or not query.strip() or not isinstance(urls, list):
+                raise ValueError(
+                    f"Invalid query index entry at {query_index_path}:{line_number}"
+                )
+            if not all(isinstance(url, str) and url for url in urls):
+                raise ValueError(
+                    f"Invalid query index URL list at {query_index_path}:{line_number}"
+                )
+            normalized_query = self._normalize_query(query)
+            if normalized_query in loaded:
+                raise ValueError(
+                    f"Duplicate query index key at {query_index_path}:{line_number}: {query!r}"
+                )
+            missing_urls = [url for url in urls if url not in self.records]
+            if missing_urls:
+                raise ValueError(
+                    f"Query index references URLs absent from WARC at "
+                    f"{query_index_path}:{line_number}: {missing_urls}"
+                )
+            loaded[normalized_query] = list(urls)
+        self.query_index = loaded
 
     def _load_warc(self):
         if not self.warc_path.exists():
@@ -147,6 +199,18 @@ class WarcPlayerCollector(BaseCollector):
             self.errors.append(f"Query budget exhausted ({self.query_budget})")
             return []
         self.queries_executed += 1
+
+        if self.query_index is not None:
+            indexed_urls = self.query_index.get(self._normalize_query(query), [])
+            return [
+                {
+                    "title": uri,
+                    "url": uri,
+                    "snippet": self.records[uri].payload[:250].replace("\n", " ").strip(),
+                }
+                for uri in indexed_urls[:max_results]
+            ]
+
         q_tokens = [t.lower() for t in query.split() if t.strip()]
 
         scored_results = []
