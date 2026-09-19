@@ -42,6 +42,7 @@ from models.schemas import (
     SourceQualityClass,
     SourceSnapshot,
     TemporalStatus,
+    TargetPrior,
 )
 
 
@@ -185,25 +186,164 @@ def compute_bundle_fingerprint(bundle_dir: Path) -> str:
 
 
 
+def compute_candidate_prior_affinity(
+    candidate: CandidateEntity,
+    mentions: List[EntityMention],
+    evidence_list: List[Evidence],
+    candidate_claims: List[Claim],
+    prior: Optional[TargetPrior],
+) -> float:
+    """
+    Computes semantic affinity score in [0.0, 1.0] between a candidate entity cluster
+    and the user-specified TargetPrior.
+    Checks:
+    1. Inferred affiliations & verbatim text matches against known_affiliations.
+    2. Educational degree matches against known_education.
+    3. Temporal anchor matches against temporal_anchors.
+    4. Domain matches against known_domains.
+    5. Exact/token matches against raw_hints.
+    6. Alias matches against known_aliases.
+    """
+    if not prior or prior.is_empty():
+        return 0.0
+
+    cand_m_ids = set(candidate.mention_ids)
+    cand_mentions = [m for m in mentions if m.mention_id in cand_m_ids]
+    cand_ev_ids = {m.evidence_id for m in cand_mentions}
+    cand_evidence = [e for e in evidence_list if e.evidence_id in cand_ev_ids]
+
+    texts = []
+    for m in cand_mentions:
+        texts.append(m.raw_name_text)
+        texts.append(m.context_snippet)
+        texts.extend(m.inferred_affiliations)
+    for ev in cand_evidence:
+        texts.append(ev.verbatim_excerpt)
+    for c in candidate_claims:
+        texts.append(c.object_raw)
+        texts.append(c.predicate)
+
+    combined_text = " ".join(texts).lower()
+
+    score = 0.0
+    max_possible = 0.0
+
+    # 1. Affiliation matches (Weight: 2.0)
+    if prior.known_affiliations:
+        max_possible += 2.0
+        aff_hit = False
+        AFFILIATION_SYNONYMS = {
+            "umich": ["university of michigan", "michigan", "umich"],
+            "uc berkeley": ["berkeley", "university of california berkeley", "uc berkeley", "cal"],
+            "umd": ["university of maryland", "umd"],
+            "cmu": ["carnegie mellon", "cmu"],
+            "mit": ["massachusetts institute of technology", "mit"],
+            "uiuc": ["university of illinois", "uiuc"],
+            "upenn": ["university of pennsylvania", "upenn", "penn"],
+            "nyu": ["new york university", "nyu"],
+            "pku": ["peking university", "pku", "beida", "北京大学"],
+        }
+        for aff in prior.known_affiliations:
+            aff_norm = aff.lower().strip()
+            synonyms = AFFILIATION_SYNONYMS.get(aff_norm, [aff_norm])
+            if any(
+                syn in combined_text
+                or any(syn in inf.lower() for m in cand_mentions for inf in m.inferred_affiliations)
+                for syn in synonyms
+            ):
+                aff_hit = True
+                break
+        if aff_hit:
+            score += 2.0
+
+    # 2. Education matches (Weight: 1.5)
+    if prior.known_education:
+        max_possible += 1.5
+        edu_hit = False
+        for edu in prior.known_education:
+            if re.search(rf"\b{re.escape(edu.lower())}\b", combined_text):
+                edu_hit = True
+                break
+        if edu_hit:
+            score += 1.5
+
+    # 3. Temporal anchors (Weight: 1.0)
+    if prior.temporal_anchors:
+        max_possible += 1.0
+        temp_hit = False
+        for temp in prior.temporal_anchors:
+            if re.search(rf"\b{re.escape(temp.lower())}\b", combined_text):
+                temp_hit = True
+                break
+        if temp_hit:
+            score += 1.0
+
+    # 4. Domains (Weight: 1.0)
+    if prior.known_domains:
+        max_possible += 1.0
+        dom_hit = False
+        for dom in prior.known_domains:
+            if dom.lower() in combined_text:
+                dom_hit = True
+                break
+        if dom_hit:
+            score += 1.0
+
+    # 5. Raw hints tokens / phrases (Weight: 1.5)
+    if prior.raw_hints:
+        max_possible += 1.5
+        raw_hit = False
+        for h in prior.raw_hints:
+            h_low = h.lower().strip()
+            if h_low and h_low in combined_text:
+                raw_hit = True
+                break
+            h_toks = [t for t in re.split(r"\W+", h_low) if len(t) >= 2 and t not in {"from", "at", "in", "and", "the"}]
+            if h_toks and all(t in combined_text for t in h_toks):
+                raw_hit = True
+                break
+        if raw_hit:
+            score += 1.5
+
+    # 6. Known aliases (Weight: 2.0)
+    if prior.known_aliases:
+        max_possible += 2.0
+        alias_hit = False
+        for alias in prior.known_aliases:
+            a_low = alias.lower().strip()
+            if a_low and any(a_low == m.raw_name_text.lower().strip() for m in cand_mentions):
+                alias_hit = True
+                break
+        if alias_hit:
+            score += 2.0
+
+    if max_possible == 0.0:
+        return 0.0
+
+    return min(1.0, score / max_possible)
+
+
 def determine_state_outcome(
     has_structural_error: bool = False,
-    crawl_errors: List[str] = None,
+    crawl_errors: Optional[List[str]] = None,
     pages_fetched: int = 0,
-    candidates: List[CandidateEntity] = None,
-    claims: List[Claim] = None,
+    candidates: Optional[List[CandidateEntity]] = None,
+    claims: Optional[List[Claim]] = None,
     search_has_results: bool = True,
     budget_exhausted: bool = False,
     is_ambiguous: bool = False,
     decisions: Optional[List[MatchDecision]] = None,
     mentions: Optional[List[EntityMention]] = None,
+    evidence_list: Optional[List[Evidence]] = None,
+    target_prior: Optional[TargetPrior] = None,
 ) -> Tuple[RunOutcome, Optional[str], List[str]]:
     """
-    Deterministic State Machine Decision (S1 - S7).
+    Deterministic State Machine Decision (S1 - S7) with V5 TargetPrior Disambiguation.
     Single authoritative decision source. Enforces:
-    1. Review edges across candidate clusters must NEVER accompany COMPLETED.
-    2. Cannot-Link or multiple substantiated candidates require AMBIGUOUS_IDENTITY.
+    1. Review edges across candidate clusters must NEVER accompany COMPLETED unless resolved by Prior.
+    2. Cannot-Link or multiple substantiated candidates require AMBIGUOUS_IDENTITY unless resolved by Prior.
     3. Contradictions are evaluated strictly per candidate_entity_id with temporal overlap.
-    4. Candidate scoring is based on distinct sources and claims to resist UI mention spam.
+    4. Prior affinity selects among valid candidate clusters without hallucinating claims.
     Returns (outcome, primary_candidate_id, ambiguous_candidates).
     """
     crawl_errors = crawl_errors or []
@@ -260,10 +400,6 @@ def determine_state_outcome(
             elif dec.machine_relation == MachineRelation.NONMATCH or "cannot-link" in dec.explanation.lower():
                 has_cannot_link_edge = True
 
-    # Invariant: Review edges must NEVER accompany COMPLETED!
-    if has_review_edge:
-        return RunOutcome.AMBIGUOUS_IDENTITY, None, [c.candidate_entity_id for c in candidates]
-
     m2source: Dict[str, str] = {}
     if mentions:
         for m in mentions:
@@ -281,11 +417,43 @@ def determine_state_outcome(
             if len(c_claims) > 0 or source_count >= 2:
                 substantiated_cands.append(cand.candidate_entity_id)
 
-        # Invariant: Cannot-Link across substantiated candidates requires AMBIGUOUS_IDENTITY
-        if has_cannot_link_edge and len(substantiated_cands) >= 2:
+        # --- V5 TargetPrior Vertical Disambiguation ---
+        has_active_prior = bool(target_prior and not target_prior.is_empty())
+        if has_active_prior:
+            prior_scores = []
+            for cand in candidates:
+                c_claims = [c for c in claims if c.candidate_entity_id == cand.candidate_entity_id]
+                aff = compute_candidate_prior_affinity(
+                    candidate=cand,
+                    mentions=mentions or [],
+                    evidence_list=evidence_list or [],
+                    candidate_claims=c_claims,
+                    prior=target_prior,
+                )
+                cand_sources = {m2source.get(m_id) for m_id in cand.mention_ids if m2source.get(m_id)}
+                source_count = len(cand_sources) if cand_sources else len(cand.mention_ids)
+                prior_scores.append((aff, len(c_claims), source_count, cand.candidate_entity_id))
+
+            prior_scores.sort(key=lambda x: (-x[0], -x[1], -x[2]))
+            top_aff, top_claims, top_sources, top_id = prior_scores[0]
+            second_aff = prior_scores[1][0] if len(prior_scores) > 1 else 0.0
+
+            # Disambiguation Criterion:
+            # Solid prior affinity (>= 0.35) and clear margin over runner-up (>= 0.20)
+            # Grounded in real evidence (claims or sources)
+            if top_aff >= 0.35 and (top_aff - second_aff) >= 0.20 and (top_claims > 0 or top_sources >= 1):
+                other_cand_ids = [c.candidate_entity_id for c in candidates if c.candidate_entity_id != top_id]
+                return RunOutcome.COMPLETED, top_id, other_cand_ids
+
+        # Invariant: Review edges must NEVER accompany COMPLETED when no prior resolves them!
+        if has_review_edge:
             return RunOutcome.AMBIGUOUS_IDENTITY, None, [c.candidate_entity_id for c in candidates]
 
-        if is_ambiguous:
+        # Invariant: Cannot-Link across distinct candidate entities requires AMBIGUOUS_IDENTITY without resolving prior
+        if has_cannot_link_edge:
+            return RunOutcome.AMBIGUOUS_IDENTITY, None, [c.candidate_entity_id for c in candidates]
+
+        if is_ambiguous or len(substantiated_cands) >= 2:
             return RunOutcome.AMBIGUOUS_IDENTITY, None, [c.candidate_entity_id for c in candidates]
 
         cand_scores.sort(key=lambda x: -x[0])
@@ -358,8 +526,15 @@ def run_pipeline(
     offline_corpus: Optional[Path] = None,
     query_budget: int = 20,
     aliases: Optional[List[str]] = None,
+    target_prior: Optional[TargetPrior] = None,
+    enable_target_prior: bool = False,
 ) -> Path:
     start_time = time.time()
+    if enable_target_prior:
+        if target_prior is None:
+            target_prior = TargetPrior.from_hints_and_aliases(target_name, hints=hints, aliases=aliases)
+    else:
+        target_prior = None
     query_sig = f"{target_name}:{query_budget}:{sorted(hints)}:{sorted(aliases or [])}"
     run_id = f"RUN-{hashlib.sha256(query_sig.encode('utf-8')).hexdigest()[:12]}"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -476,7 +651,10 @@ def run_pipeline(
             orgs = extract_organizations(ev.verbatim_excerpt)
             for m in mentions:
                 m.inferred_affiliations = list(orgs)
-            mentions_list.extend(mentions)
+                if any(existing.mention_id == m.mention_id for existing in mentions_list):
+                    dup_seed = f"{m.mention_id}:{ev.evidence_id}"
+                    m.mention_id = f"MEN-{hashlib.sha256(dup_seed.encode('utf-8')).hexdigest()[:12]}"
+                mentions_list.append(m)
 
     # Phase 2: Entity Resolution and Clustering (Constrained Union-Find)
     evidence_text_by_id = {ev.evidence_id: ev.verbatim_excerpt for ev in evidence_list}
@@ -522,6 +700,8 @@ def run_pipeline(
         is_ambiguous=False,
         decisions=matches,
         mentions=mentions_list,
+        evidence_list=evidence_list,
+        target_prior=target_prior,
     )
 
     abstention_records: List[AbstentionRecord] = []
@@ -592,11 +772,29 @@ def run_pipeline(
         claims=all_claims,
     )
 
+    prior_scores_dict = None
+    if enable_target_prior and target_prior and candidates:
+        prior_scores_dict = {}
+        for cand in candidates:
+            c_claims = [c for c in all_claims if c.candidate_entity_id == cand.candidate_entity_id]
+            aff = compute_candidate_prior_affinity(
+                candidate=cand,
+                mentions=mentions_list,
+                evidence_list=evidence_list,
+                candidate_claims=c_claims,
+                prior=target_prior,
+            )
+            prior_scores_dict[cand.candidate_entity_id] = round(aff, 4)
+
     manifest = RunManifest(
         run_id=run_id,
         run_outcome=outcome,
         run_fingerprint=run_fingerprint,
         abstention_records=abstention_records,
+        target_prior=target_prior,
+        enable_target_prior=enable_target_prior,
+        prior_affinity_scores=prior_scores_dict,
+        prior_thresholds={"min_affinity": 0.35, "min_margin": 0.20} if enable_target_prior else None,
         tool_version="verify-public-person-profile/1.0.0",
         model_name="deterministic_pipeline",
         query_budget=query_budget,
@@ -655,6 +853,7 @@ def main():
     parser.add_argument("--output", "--output-dir", dest="output", type=Path, default=Path("runs/test_run"), help="Output directory.")
     parser.add_argument("--offline-corpus", type=Path, default=None, help="Path to offline WARC archive.")
     parser.add_argument("--query-budget", type=int, default=15, help="Maximum search query budget.")
+    parser.add_argument("--enable-target-prior", action="store_true", default=False, help="Enable experimental V5-alpha TargetPrior downstream disambiguation.")
     args = parser.parse_args()
 
     out = run_pipeline(
@@ -664,6 +863,7 @@ def main():
         output_dir=args.output,
         offline_corpus=args.offline_corpus,
         query_budget=args.query_budget,
+        enable_target_prior=args.enable_target_prior,
     )
     print(f"Profile bundle successfully generated at: {out}")
 
