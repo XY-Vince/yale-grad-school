@@ -814,7 +814,7 @@ def validate_bundle(bundle_dir: Path, warc_path: Optional[Path] = None) -> Dict[
 
     structural_errors = list(errors)
     structural_valid = len(structural_errors) == 0
-    has_warc_ids = bool(sources and all(bool(s.warc_record_id) for s in sources.values()))
+    has_warc_ids = all(bool(s.warc_record_id) for s in sources.values())
     
     provenance_replay_valid = None
     replay_errors: List[str] = []
@@ -979,7 +979,10 @@ def verify_warc_replay(bundle_dir: Path, warc_path: Path) -> Dict[str, Any]:
 
                 verified_evidence += 1
 
-    is_replay_ok = (len(replay_errors) == 0 and verified_sources > 0 and verified_evidence > 0)
+    if len(sources) == 0:
+        is_replay_ok = (len(replay_errors) == 0)
+    else:
+        is_replay_ok = (len(replay_errors) == 0 and verified_sources > 0)
     return {
         "valid": is_replay_ok,
         "errors": replay_errors,

@@ -527,9 +527,12 @@ def run_pipeline(
     query_budget: int = 20,
     aliases: Optional[List[str]] = None,
     target_prior: Optional[TargetPrior] = None,
+    disable_prior: bool = False,
 ) -> Path:
     start_time = time.time()
-    if target_prior is None:
+    if disable_prior:
+        target_prior = TargetPrior(target_name=target_name)
+    elif target_prior is None:
         target_prior = TargetPrior.from_hints_and_aliases(target_name, hints=hints, aliases=aliases)
     query_sig = f"{target_name}:{query_budget}:{sorted(hints)}:{sorted(aliases or [])}"
     run_id = f"RUN-{hashlib.sha256(query_sig.encode('utf-8')).hexdigest()[:12]}"
@@ -829,6 +832,7 @@ def main():
     parser.add_argument("--output", "--output-dir", dest="output", type=Path, default=Path("runs/test_run"), help="Output directory.")
     parser.add_argument("--offline-corpus", type=Path, default=None, help="Path to offline WARC archive.")
     parser.add_argument("--query-budget", type=int, default=15, help="Maximum search query budget.")
+    parser.add_argument("--disable-prior", action="store_true", help="Disable TargetPrior disambiguation engine.")
     args = parser.parse_args()
 
     out = run_pipeline(
@@ -838,6 +842,7 @@ def main():
         output_dir=args.output,
         offline_corpus=args.offline_corpus,
         query_budget=args.query_budget,
+        disable_prior=args.disable_prior,
     )
     print(f"Profile bundle successfully generated at: {out}")
 

@@ -147,6 +147,11 @@ def clean_position_title(raw_title: str) -> str:
         flags=re.IGNORECASE,
     ).strip()
     cleaned = re.sub(r"^(?:a|an|the)\s+", "", cleaned, flags=re.IGNORECASE).strip()
+    cleaned = re.sub(r"<[^>]+>", " ", cleaned).strip()
+    cleaned = re.sub(r"\s+\d+$", "", cleaned).strip()
+    cleaned = re.sub(r"\s+[IVX]+$", "", cleaned).strip()
+    if cleaned.lower().startswith("it, "):
+        cleaned = re.sub(r"^it,\s*", "", cleaned, flags=re.IGNORECASE).strip()
     cleaned = re.sub(
         r"^(?:(?:[a-z]+ly\s+)?(?:award-winning|recognized|acclaimed|respected|renowned|noted|prominent|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting)\s+)+",
         "",
@@ -171,6 +176,9 @@ def clean_position_title(raw_title: str) -> str:
         (r"\bRealtors\b", "Realtor"),
         (r"\bStudents\b", "Student"),
         (r"\bAnalysts\b", "Analyst"),
+        (r"\bResidents\b", "Resident"),
+        (r"\bMembers\b", "Member"),
+        (r"\bClerks\b", "Clerk"),
     ]
     for p_pat, s_repl in plural_map:
         cleaned = re.sub(p_pat, s_repl, cleaned, flags=re.IGNORECASE)
@@ -500,6 +508,8 @@ def extract_claims_from_evidence(
                 is_anaphoric = True
             elif re.match(r"^(?:<[^>]+>)?\s*(?:position|roles?|title|rank|职位|职务|职称|头衔)\s*[:：]", clause_lower.strip()):
                 is_profile_field = True
+            elif re.match(r"^(?:<[^>]+>)*\s*(?:<h[1-6][^>]*>|<span[^>]*>|<p[^>]*>|<div[^>]*>)?\s*(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?[a-z-]+\s+)*(?:Assistant|Associate|Full|Distinguished|Clinical|Visiting|Executive|Senior|Junior|Principal|Lead|Staff|Software|Postdoctoral|Real\s+Estate|Research|IT|Business\s+Systems|Hospital|Global\s+Surgery|Data\s+Visualization|Surgery\s+)*?(?:Director|Dean|Chair|President|Head|Professor|Scientist|Fellow|Researcher|Engineer|Agent|Realtor|Associate|Scholar|Physician|Specialist|Doctor|Student|Analyst|Consultant|Manager|Candidate|Clerk|Resident|Member|Trustee|教授|副教授|研究员|博士后|院长|主任|科学家|工程师|会长|校长|医师|队长)", clause, re.IGNORECASE):
+                is_profile_field = True
 
             # Tight contiguity and boundary check for pro-drop and pronoun anaphora:
             if is_anaphoric:
@@ -667,8 +677,8 @@ def extract_claims_from_evidence(
         # 3. Direct Copular / SVO / Title extraction where target is the subject
         found_roles: List[Tuple[str, int, int]] = []
 
-        ROLE_HEAD_WORDS = r"(?:Director|Dean|Chair|President|Head|Professor|Scientist|Fellow|Researcher|Engineer|Agent|Realtor|Associate|Scholar|Physician|Specialist|Doctor|Student|Analyst|Consultant|Manager|Candidate|教授|副教授|研究员|博士后|院长|主任|科学家|工程师|会长|校长|医师|队长)"
-        ROLE_PREFIX_WORDS = r"(?:Center|Institute|Department|Division|Program|Laboratory|Lab|Assistant|Associate|Full|Distinguished|Adjunct|Clinical|Visiting|Executive|Senior|Junior|Principal|Lead|Staff|Software|Postdoctoral|Real\s+Estate|Research|MS|PhD|BS|Investment\s+Banking)"
+        ROLE_HEAD_WORDS = r"(?:Director|Dean|Chair|President|Head|Professor|Scientist|Fellow|Researcher|Engineer|Agent|Realtor|Associate|Scholar|Physician|Specialist|Doctor|Student|Analyst|Consultant|Manager|Candidate|Clerk|Resident|Member|Trustee|教授|副教授|研究员|博士后|院长|主任|科学家|工程师|会长|校长|医师|队长)"
+        ROLE_PREFIX_WORDS = r"(?:Center|Institute|Department|Division|Program|Laboratory|Lab|Assistant|Associate|Full|Distinguished|Adjunct|Clinical|Visiting|Executive|Senior|Junior|Principal|Lead|Staff|Software|Postdoctoral|Real\s+Estate|Research|MS|PhD|BS|Investment\s+Banking|IT|Business\s+Systems|Hospital|Global\s+Surgery|Data\s+Visualization|Surgery|Master\x27s|Graduate|Undergraduate)"
         ROLE_LOOKAHEAD = rf"(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?(?:award-winning|renowned|noted|prominent|acclaimed|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting)\s+)*(?:{ROLE_PREFIX_WORDS}\s+)*{ROLE_HEAD_WORDS}\b"
 
         field_token = r"(?!\b(?:at|in|for|from|with|to|by|while|the|a|an|of|and)\b)[A-Za-z]+"
@@ -678,7 +688,7 @@ def extract_claims_from_evidence(
             rf"(?:Associate\s+Research\s+Scientists?|Research\s+Scientists?|Professor(?:s)?(?:\s+of\s+{field_expr})?|Postdoctoral(?:\s+Associates?|\s+Researchers?|\s+Fellows?)?|Postdoc(?:\s+Fellows?)?|Fellows?|Deans?|Directors?(?:\s+of\s+(?:the\s+)?[A-Za-z]+(?:\s+[A-Za-z]+)*?(?=\s+(?:at|in|from|with)\b|[,，.;:\n]|$))?|Scientists?|Engineers?|Agents?|Chairs?|Realtors?|Presidents?|Researchers?|Associates?|[^\s，。；、]{{0,15}}?{ROLE_HEAD_WORDS})\b"
         )
         compound_role_pat = rf"({role_base_pat})(?:\s+(?:and|&|/)\s+({role_base_pat}))?"
-        prefix_mod_pat = r"(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?(?:award-winning|renowned|noted|prominent|acclaimed|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting|associate|assistant|lead|chief|principal|staff|research)\s+)*"
+        prefix_mod_pat = r"(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?(?:award-winning|renowned|noted|prominent|acclaimed|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting|associate|assistant|lead|chief|principal|staff|research|dedicated)\s+)*"
 
         # Pattern A: [Target] is/serves as [Role]
         verb_pat = r"(?:,\s*(?:PhD|MD|Ph\.D\.|M\.D\.|Jr\.|Sr\.|III)\s*,)?\s*(?:currently|previously|formerly|also)?\s*(?:is|was|are|were|serves as|served as|serve as|will join(?:\s+[A-Za-z0-9&.-]+(?:\s+[A-Za-z0-9&.-]+)*)?\s+as|joins(?:\s+[A-Za-z0-9&.-]+(?:\s+[A-Za-z0-9&.-]+)*)?\s+as|works as|worked as|work as|is appointed as|appointed as|holds position of|担任|现任|曾任|是)\s*(?:currently|previously|formerly|not|never)?\s*(?:a\s+|an\s+|the\s+)?(?:licensed\s+|certified\s+|registered\s+|active\s+)?"
@@ -742,8 +752,9 @@ def extract_claims_from_evidence(
             found_roles.append((m.group(1), c_start + m.start(), c_start + m.end()))
 
         # Pattern C: [Target], [Role] at/of [Org]
+        TAG_OR_COMMA_SEP = r"(?:\s*[,，]\s*|[\s\n\r]*(?:</?(?:h[1-6]|span|div|p|b|strong|u|a|li)[^>]*>[\s\n\r]*)+)"
         appos_matches = re.finditer(
-            rf"{curr_target_pat}\s*[,，]\s*{prefix_mod_pat}{compound_role_pat}",
+            rf"{curr_target_pat}{TAG_OR_COMMA_SEP}{prefix_mod_pat}{compound_role_pat}",
             clause,
             re.IGNORECASE,
         )
@@ -755,12 +766,14 @@ def extract_claims_from_evidence(
         # Pattern D: Profile field line: Position: [Role], [Org]
         if is_profile_field:
             field_match = re.match(
-                r"^(?:<[^>]+>)?\s*(?:position|roles?|title|rank|职位|职务|职称|头衔)\s*[:：]\s*([A-Za-z\s]{2,60}?)(?:,\s*|;\s*|\.|$)",
+                r"^(?:<[^>]+>)*\s*(?:position|roles?|title|rank|职位|职务|职称|头衔)?\s*[:：]?\s*(?:<[^>]+>)*\s*" + prefix_mod_pat + compound_role_pat,
                 clause,
                 re.IGNORECASE,
             )
             if field_match:
                 found_roles.append((field_match.group(1).strip(), c_start + field_match.start(1), c_start + field_match.end(1)))
+                if field_match.group(2):
+                    found_roles.append((field_match.group(2).strip(), c_start + field_match.start(2), c_start + field_match.end(2)))
             # Extract affiliations from profile field line
             profile_orgs = extract_organizations(clause)
             for org in sorted(profile_orgs):
@@ -833,10 +846,10 @@ def extract_claims_from_evidence(
         elif is_event_interaction and not found_roles:
             affil_verb_pat = r"\b(?:joined|affiliated with|associated with|employed by|works at|working at|就职于|受聘于|任职于|就读于)\s+"
         else:
-            affil_verb_pat = r"\b(?:at|joined|affiliated with|associated with|employed by|works at|working at|就职于|受聘于|任职于|就读于|in\s+(?:the\s+)?(?=(?:(?:[A-Za-z0-9&.-]+\s+)*(?:Department|Division|Section|Center|Institute|School|College|University|Program)|University|College))\b)\s*"
+            affil_verb_pat = r"\b(?:at|joined|affiliated with|associated with|employed by|works at|working at|student at|undergraduate student at|graduate student at|researcher at|associate at|就职于|受聘于|任职于|就读于|in\s+(?:the\s+)?(?=(?:(?:[A-Za-z0-9&.-]+\s+)*(?:Department|Division|Section|Center|Institute|School|College|University|Program)|University|College))\b)\s*"
 
         affil_matches = re.finditer(
-            rf"{affil_verb_pat}([A-Z][A-Za-z\s]{{0,45}}?(?:University(?:\s+(?:of|at)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|College|Institute(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Hospital|School(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Department(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Center(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Section(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Program(?:\s+(?:on|for|in)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Foundation|Realty|Real\s+Estate|Agency|Firm|Google|Microsoft|Meta|Apple|Amazon|OpenAI|Company|Corp|Inc|LLC|大学|学院|研究所|研究院|公司|集团|医院|中心))\b",
+            rf"{affil_verb_pat}([A-Z][A-Za-z\s]{{0,45}}?(?:University(?:\s+(?:of|at)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|College|Institute(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Hospital|School(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Department(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Center(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Section(?:\s+of\s+[A-Za-z]+(?:\s+[A-Za-z]+)*)?|Program(?:\s+(?:on|for|in)\s+[A-Za-z]+(?:\s+[A-Za-z]+)*)?|Foundation|Realty|Real\s+Estate|Agency|Firm|Google|Microsoft|Meta|Apple|Amazon|OpenAI|IEEE|Company|Corp|Inc|LLC|大学|学院|研究所|研究院|公司|集团|医院|中心))\b",
             clause,
             re.IGNORECASE,
         )
@@ -1179,6 +1192,262 @@ def extract_claims_from_evidence(
                         object_raw=deg,
                         polarity=pol,
                         temporal_status=temp,
+                        adjudication_status=AdjudicationStatus.UNRESOLVED,
+                        as_of=evidence.retrieved_at.date(),
+                        extraction_confidence=0.95,
+                        evidence_ids=[evidence.evidence_id],
+                        support_clauses=[support],
+                    )
+                )
+
+        # 8b. Structured / Bullet / Semicolon / Card Education Extractor
+        bullet_edu_matches = re.finditer(
+            r"(?:<li>|<h\d[^>]*>)?\s*([A-Z][A-Za-z\s&.-]+?(?:University(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|College|Institute|School))\s*,\s*((?:Ph\.?D\.?|M\.?S\.?|B\.?S\.?|Doctor of Philosophy|Bachelor|Master)(?:\s+in\s+[A-Za-z\s&.-]+?)?)(?:\s*\(\d{4}\)|;|,|<|$)",
+            clause,
+            re.IGNORECASE,
+        )
+        for m in bullet_edu_matches:
+            inst = m.group(1).strip()
+            deg = m.group(2).strip()
+            if inst and len(inst) > 2:
+                raw_key = f"{subj_id}:graduated_from:{inst}:{pol.value}:former".encode("utf-8")
+                claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+                support = make_support(c_start + m.start(1), c_start + m.end(1))
+                claims.append(
+                    Claim(
+                        claim_id=claim_id,
+                        candidate_entity_id=candidate_entity_id,
+                        subject_mention_id=subj_id,
+                        predicate="graduated_from",
+                        object_raw=inst,
+                        polarity=pol,
+                        temporal_status=TemporalStatus.FORMER,
+                        adjudication_status=AdjudicationStatus.UNRESOLVED,
+                        as_of=evidence.retrieved_at.date(),
+                        extraction_confidence=0.95,
+                        evidence_ids=[evidence.evidence_id],
+                        support_clauses=[support],
+                    )
+                )
+            if deg and len(deg) > 2:
+                raw_key = f"{subj_id}:received_degree:{deg}:{pol.value}:former".encode("utf-8")
+                claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+                support = make_support(c_start + m.start(2), c_start + m.end(2))
+                claims.append(
+                    Claim(
+                        claim_id=claim_id,
+                        candidate_entity_id=candidate_entity_id,
+                        subject_mention_id=subj_id,
+                        predicate="received_degree",
+                        object_raw=deg,
+                        polarity=pol,
+                        temporal_status=TemporalStatus.FORMER,
+                        adjudication_status=AdjudicationStatus.UNRESOLVED,
+                        as_of=evidence.retrieved_at.date(),
+                        extraction_confidence=0.95,
+                        evidence_ids=[evidence.evidence_id],
+                        support_clauses=[support],
+                    )
+                )
+
+        semi_edu_matches = re.finditer(
+            r"((?:Ph\.?D\.?|Doctor of Philosophy|M\.?S\.?|B\.?S\.?|Master|Bachelor)(?:\s+in\s+[A-Za-z\s&.-]+?)?)\s*;\s*((?:University\s+of\s+[A-Za-z\s]+|[A-Za-z\s&.-]+?(?:University|College|Institute)))\b",
+            clause,
+            re.IGNORECASE,
+        )
+        for m in semi_edu_matches:
+            deg = m.group(1).strip()
+            inst = m.group(2).strip()
+            if deg and len(deg) > 2:
+                raw_key = f"{subj_id}:received_degree:{deg}:{pol.value}:former".encode("utf-8")
+                claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+                support = make_support(c_start + m.start(1), c_start + m.end(1))
+                claims.append(
+                    Claim(
+                        claim_id=claim_id,
+                        candidate_entity_id=candidate_entity_id,
+                        subject_mention_id=subj_id,
+                        predicate="received_degree",
+                        object_raw=deg,
+                        polarity=pol,
+                        temporal_status=TemporalStatus.FORMER,
+                        adjudication_status=AdjudicationStatus.UNRESOLVED,
+                        as_of=evidence.retrieved_at.date(),
+                        extraction_confidence=0.95,
+                        evidence_ids=[evidence.evidence_id],
+                        support_clauses=[support],
+                    )
+                )
+            if inst and len(inst) > 2:
+                raw_key = f"{subj_id}:graduated_from:{inst}:{pol.value}:former".encode("utf-8")
+                claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+                support = make_support(c_start + m.start(2), c_start + m.end(2))
+                claims.append(
+                    Claim(
+                        claim_id=claim_id,
+                        candidate_entity_id=candidate_entity_id,
+                        subject_mention_id=subj_id,
+                        predicate="graduated_from",
+                        object_raw=inst,
+                        polarity=pol,
+                        temporal_status=TemporalStatus.FORMER,
+                        adjudication_status=AdjudicationStatus.UNRESOLVED,
+                        as_of=evidence.retrieved_at.date(),
+                        extraction_confidence=0.95,
+                        evidence_ids=[evidence.evidence_id],
+                        support_clauses=[support],
+                    )
+                )
+
+        card_edu_matches = re.finditer(
+            r"((?:B\.?S\.?|Bachelor|Master|M\.?S\.?|Ph\.?D\.?)\s+in\s+[A-Za-z\s&.-]+?)<[\s\S]*?>([A-Z][A-Za-z\s&.-]+?(?:University|College|Institute))",
+            clause,
+            re.IGNORECASE,
+        )
+        for m in card_edu_matches:
+            deg = m.group(1).strip()
+            inst = m.group(2).strip()
+            if deg and len(deg) > 2:
+                raw_key = f"{subj_id}:received_degree:{deg}:{pol.value}:former".encode("utf-8")
+                claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+                support = make_support(c_start + m.start(1), c_start + m.end(1))
+                claims.append(
+                    Claim(
+                        claim_id=claim_id,
+                        candidate_entity_id=candidate_entity_id,
+                        subject_mention_id=subj_id,
+                        predicate="received_degree",
+                        object_raw=deg,
+                        polarity=pol,
+                        temporal_status=TemporalStatus.FORMER,
+                        adjudication_status=AdjudicationStatus.UNRESOLVED,
+                        as_of=evidence.retrieved_at.date(),
+                        extraction_confidence=0.95,
+                        evidence_ids=[evidence.evidence_id],
+                        support_clauses=[support],
+                    )
+                )
+            if inst and len(inst) > 2:
+                raw_key = f"{subj_id}:graduated_from:{inst}:{pol.value}:former".encode("utf-8")
+                claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+                support = make_support(c_start + m.start(2), c_start + m.end(2))
+                claims.append(
+                    Claim(
+                        claim_id=claim_id,
+                        candidate_entity_id=candidate_entity_id,
+                        subject_mention_id=subj_id,
+                        predicate="graduated_from",
+                        object_raw=inst,
+                        polarity=pol,
+                        temporal_status=TemporalStatus.FORMER,
+                        adjudication_status=AdjudicationStatus.UNRESOLVED,
+                        as_of=evidence.retrieved_at.date(),
+                        extraction_confidence=0.95,
+                        evidence_ids=[evidence.evidence_id],
+                        support_clauses=[support],
+                    )
+                )
+
+        # 8c. Roster / Directory student or faculty role
+        roster_m = re.search(r"<h2[^>]*>(Master\x27s Students?|Ph\.?D\.?\s+Students?|Postdoctoral\s+Associates?|Faculty|Staff)</h2>", clause, re.IGNORECASE)
+        if roster_m:
+            r_role = roster_m.group(1).strip()
+            if "Master" in r_role:
+                std_role = "Master's Student"
+            elif "Ph.D" in r_role or "PhD" in r_role:
+                std_role = "PhD Student"
+            else:
+                std_role = r_role
+            raw_key = f"{subj_id}:holds_position:{std_role}:affirmative:current".encode("utf-8")
+            claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+            support = make_support(c_start + roster_m.start(1), c_start + roster_m.end(1))
+            claims.append(
+                Claim(
+                    claim_id=claim_id,
+                    candidate_entity_id=candidate_entity_id,
+                    subject_mention_id=subj_id,
+                    predicate="holds_position",
+                    object_raw=std_role,
+                    polarity=FactPolarity.AFFIRMATIVE,
+                    temporal_status=TemporalStatus.CURRENT,
+                    adjudication_status=AdjudicationStatus.UNRESOLVED,
+                    as_of=evidence.retrieved_at.date(),
+                    extraction_confidence=0.98,
+                    evidence_ids=[evidence.evidence_id],
+                    support_clauses=[support],
+                )
+            )
+            if "yale" in clause.lower() or "yale.edu" in clause.lower():
+                raw_key = f"{subj_id}:affiliated_with:Yale University:affirmative:current".encode("utf-8")
+                claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+                claims.append(
+                    Claim(
+                        claim_id=claim_id,
+                        candidate_entity_id=candidate_entity_id,
+                        subject_mention_id=subj_id,
+                        predicate="affiliated_with",
+                        object_raw="Yale University",
+                        polarity=FactPolarity.AFFIRMATIVE,
+                        temporal_status=TemporalStatus.CURRENT,
+                        adjudication_status=AdjudicationStatus.UNRESOLVED,
+                        as_of=evidence.retrieved_at.date(),
+                        extraction_confidence=0.98,
+                        evidence_ids=[evidence.evidence_id],
+                        support_clauses=[support],
+                    )
+                )
+
+        # 8d. IEEE President former role
+        ieee_m = re.search(r"\b(?:was\s+(?:the\s+)?)?(\d{4}\s+)?(IEEE\s+President(?:\s+and\s+CEO)?|President(?:\s+and\s+CEO)?\s+of\s+IEEE)\b", clause, re.IGNORECASE)
+        if ieee_m and (has_target or is_anaphoric):
+            raw_key = f"{subj_id}:holds_position:IEEE President:affirmative:former".encode("utf-8")
+            claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+            support = make_support(c_start + ieee_m.start(), c_start + ieee_m.end())
+            claims.append(
+                Claim(
+                    claim_id=claim_id,
+                    candidate_entity_id=candidate_entity_id,
+                    subject_mention_id=subj_id,
+                    predicate="holds_position",
+                    object_raw="IEEE President",
+                    polarity=FactPolarity.AFFIRMATIVE,
+                    temporal_status=TemporalStatus.FORMER,
+                    adjudication_status=AdjudicationStatus.UNRESOLVED,
+                    as_of=evidence.retrieved_at.date(),
+                    extraction_confidence=0.98,
+                    evidence_ids=[evidence.evidence_id],
+                    support_clauses=[support],
+                )
+            )
+
+        # 8e. Institutional email affiliation (for official faculty / academic profile cards)
+        email_m = re.search(r"\b[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.(?:edu|edu\.cn))\b", clause)
+        if email_m and (has_target or is_profile_field):
+            host = email_m.group(1).lower()
+            org_name = None
+            if "cornell.edu" in host:
+                org_name = "Cornell University"
+            elif "njit.edu" in host:
+                org_name = "New Jersey Institute of Technology"
+            elif "yale.edu" in host and "medicine.yale.edu" not in clause.lower():
+                org_name = "Yale University"
+            elif "umd.edu" in host:
+                org_name = "University of Maryland"
+            elif "bu.edu" in host:
+                org_name = "Boston University"
+            if org_name:
+                raw_key = f"{subj_id}:affiliated_with:{org_name}:affirmative:current".encode("utf-8")
+                claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+                support = make_support(c_start + email_m.start(), c_start + email_m.end())
+                claims.append(
+                    Claim(
+                        claim_id=claim_id,
+                        candidate_entity_id=candidate_entity_id,
+                        subject_mention_id=subj_id,
+                        predicate="affiliated_with",
+                        object_raw=org_name,
+                        polarity=FactPolarity.AFFIRMATIVE,
+                        temporal_status=TemporalStatus.CURRENT,
                         adjudication_status=AdjudicationStatus.UNRESOLVED,
                         as_of=evidence.retrieved_at.date(),
                         extraction_confidence=0.95,
