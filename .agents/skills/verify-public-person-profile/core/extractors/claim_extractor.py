@@ -60,12 +60,21 @@ PAST_PATTERNS = [
     r"\bex-\b",
     r"\bretired\b",
     r"\bstepped down\b",
+    r"\bearned\b",
+    r"\breceived\b",
+    r"\bgraduated\b",
+    r"\bcompleted\b",
+    r"\bobtained\b",
+    r"\bawarded\b",
     r"曾任",
     r"前任",
     r"已离任",
     r"历任",
     r"原",
     r"既往",
+    r"毕业于",
+    r"获.*学位",
+    r"获得",
 ]
 
 CURRENT_PATTERNS = [
@@ -81,6 +90,14 @@ CURRENT_PATTERNS = [
     r"\bserves\b",
     r"\bworks as\b",
     r"\bwork as\b",
+    r"\bwill join\b",
+    r"\bwill serve\b",
+    r"\bjoins\b",
+    r"\bincoming\b",
+    r"\badmitted to\b",
+    r"\baccepted to\b",
+    r"\bholds\b",
+    r"\bleads\b",
     r"现任",
     r"担任",
     r"至今",
@@ -124,7 +141,7 @@ def detect_clause_temporal_status(clause: str, target_name: Optional[str] = None
 
 def clean_position_title(raw_title: str) -> str:
     cleaned = re.sub(
-        r"^(?:(?:Dr\.|Mr\.|Ms\.|Prof\.)?\s*[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+)?(?:is|was|are|were|serves as|served as|currently|previously|not|appointed as|holds position of)\s+",
+        r"^(?:(?:Dr\.|Mr\.|Ms\.|Prof\.)?\s*[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+)?(?:is|was|are|were|serves as|served as|will join(?:\s+[A-Za-z0-9&.-]+(?:\s+[A-Za-z0-9&.-]+)*)?\s+as|joins(?:\s+[A-Za-z0-9&.-]+(?:\s+[A-Za-z0-9&.-]+)*)?\s+as|currently|previously|not|appointed as|holds position of)\s+",
         "",
         raw_title,
         flags=re.IGNORECASE,
@@ -152,6 +169,8 @@ def clean_position_title(raw_title: str) -> str:
         (r"\bAssociates\b", "Associate"),
         (r"\bAgents\b", "Agent"),
         (r"\bRealtors\b", "Realtor"),
+        (r"\bStudents\b", "Student"),
+        (r"\bAnalysts\b", "Analyst"),
     ]
     for p_pat, s_repl in plural_map:
         cleaned = re.sub(p_pat, s_repl, cleaned, flags=re.IGNORECASE)
@@ -648,8 +667,8 @@ def extract_claims_from_evidence(
         # 3. Direct Copular / SVO / Title extraction where target is the subject
         found_roles: List[Tuple[str, int, int]] = []
 
-        ROLE_HEAD_WORDS = r"(?:Director|Dean|Chair|President|Head|Professor|Scientist|Fellow|Researcher|Engineer|Agent|Realtor|Associate|Scholar|Physician|Specialist|Doctor|教授|副教授|研究员|博士后|院长|主任|科学家|工程师|会长|校长|医师|队长)"
-        ROLE_PREFIX_WORDS = r"(?:Center|Institute|Department|Division|Program|Laboratory|Lab|Assistant|Associate|Full|Distinguished|Adjunct|Clinical|Visiting|Executive|Senior|Junior|Principal|Lead|Staff|Software|Postdoctoral|Real\s+Estate|Research)"
+        ROLE_HEAD_WORDS = r"(?:Director|Dean|Chair|President|Head|Professor|Scientist|Fellow|Researcher|Engineer|Agent|Realtor|Associate|Scholar|Physician|Specialist|Doctor|Student|Analyst|Consultant|Manager|Candidate|教授|副教授|研究员|博士后|院长|主任|科学家|工程师|会长|校长|医师|队长)"
+        ROLE_PREFIX_WORDS = r"(?:Center|Institute|Department|Division|Program|Laboratory|Lab|Assistant|Associate|Full|Distinguished|Adjunct|Clinical|Visiting|Executive|Senior|Junior|Principal|Lead|Staff|Software|Postdoctoral|Real\s+Estate|Research|MS|PhD|BS|Investment\s+Banking)"
         ROLE_LOOKAHEAD = rf"(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?(?:award-winning|renowned|noted|prominent|acclaimed|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting)\s+)*(?:{ROLE_PREFIX_WORDS}\s+)*{ROLE_HEAD_WORDS}\b"
 
         field_token = r"(?!\b(?:at|in|for|from|with|to|by|while|the|a|an|of|and)\b)[A-Za-z]+"
@@ -662,7 +681,7 @@ def extract_claims_from_evidence(
         prefix_mod_pat = r"(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?(?:award-winning|renowned|noted|prominent|acclaimed|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting|associate|assistant|lead|chief|principal|staff|research)\s+)*"
 
         # Pattern A: [Target] is/serves as [Role]
-        verb_pat = r"(?:,\s*(?:PhD|MD|Ph\.D\.|M\.D\.|Jr\.|Sr\.|III)\s*,)?\s*(?:currently|previously|formerly|also)?\s*(?:is|was|are|were|serves as|served as|serve as|works as|worked as|work as|is appointed as|appointed as|holds position of|担任|现任|曾任|是)\s*(?:currently|previously|formerly|not|never)?\s*(?:a\s+|an\s+|the\s+)?(?:licensed\s+|certified\s+|registered\s+|active\s+)?"
+        verb_pat = r"(?:,\s*(?:PhD|MD|Ph\.D\.|M\.D\.|Jr\.|Sr\.|III)\s*,)?\s*(?:currently|previously|formerly|also)?\s*(?:is|was|are|were|serves as|served as|serve as|will join(?:\s+[A-Za-z0-9&.-]+(?:\s+[A-Za-z0-9&.-]+)*)?\s+as|joins(?:\s+[A-Za-z0-9&.-]+(?:\s+[A-Za-z0-9&.-]+)*)?\s+as|works as|worked as|work as|is appointed as|appointed as|holds position of|担任|现任|曾任|是)\s*(?:currently|previously|formerly|not|never)?\s*(?:a\s+|an\s+|the\s+)?(?:licensed\s+|certified\s+|registered\s+|active\s+)?"
         coord_sep = r"(?:,\s*(?:(?:and|&|as well as)\s+)?|\s+(?:and|&|as well as)\s+|[、，和与]\s*)"
         name_token = r"[^\W\d_]+(?:[-'][^\W\d_]+)*"
         name_pat = rf"(?:{name_token}(?:\s+{name_token})*|[一-鿿]{{2,4}})"
@@ -817,7 +836,7 @@ def extract_claims_from_evidence(
             affil_verb_pat = r"\b(?:at|joined|affiliated with|associated with|employed by|works at|working at|就职于|受聘于|任职于|就读于|in\s+(?:the\s+)?(?=(?:(?:[A-Za-z0-9&.-]+\s+)*(?:Department|Division|Section|Center|Institute|School|College|University|Program)|University|College))\b)\s*"
 
         affil_matches = re.finditer(
-            rf"{affil_verb_pat}([A-Z][A-Za-z\s]{{0,45}}?(?:University(?:\s+(?:of|at)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|College|Institute(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Hospital|School(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Department(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Center(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Section(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Program(?:\s+(?:on|for|in)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Foundation|Realty|Real\s+Estate|Agency|Firm|大学|学院|研究所|研究院|公司|集团|医院|中心))\b",
+            rf"{affil_verb_pat}([A-Z][A-Za-z\s]{{0,45}}?(?:University(?:\s+(?:of|at)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|College|Institute(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Hospital|School(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Department(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Center(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Section(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Program(?:\s+(?:on|for|in)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Foundation|Realty|Real\s+Estate|Agency|Firm|Google|Microsoft|Meta|Apple|Amazon|OpenAI|Company|Corp|Inc|LLC|大学|学院|研究所|研究院|公司|集团|医院|中心))\b",
             clause,
             re.IGNORECASE,
         )
@@ -1082,7 +1101,7 @@ def extract_claims_from_evidence(
 
         # 7. Education / Graduated from extraction
         grad_matches = re.finditer(
-            r"(?:(?:毕业于|graduated from|alumnus of|alumna of)|(?:(?:received|earned|obtained|awarded)\s+(?:my\s+|her\s+|his\s+|their\s+|a\s+|an\s+)?(?:Ph\.?D\.?|Doctor of Philosophy|M\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Master(?:'s)?|Bachelor(?:'s)?|Juris Doctor|J\.?D\.?)(?:\s+in\s+[A-Za-z\s]+?)?\s+from))\s*((?:the\s+)?(?:University\s+of\s+[A-Za-z\s]+?(?:\s+at\s+[A-Za-z\s]+)?|[A-Za-z0-9\s一-鿿]{0,50}?(?:University(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|College|Institute|School(?:\s+of\s+[A-Za-z\s]+)?|SUNY(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|CUNY(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|大学|学院)))(?=\s+(?:in\s+\d{4}|during|\bwith\b|\band\b)|[,.;，。；\n]|$)",
+            r"(?:(?:毕业于|graduated from|alumnus of|alumna of)|(?:(?:received|earned|obtained|awarded)\s+(?:my\s+|her\s+|his\s+|their\s+|a\s+|an\s+)?(?:Ph\.?D\.?|Doctor of Philosophy|M\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Master(?:'s)?|Bachelor(?:'s)?|Juris Doctor|J\.?D\.?)(?:\s+in\s+[A-Za-z\s&.-]+?)?\s+from))\s*((?:the\s+)?(?:University\s+of\s+[A-Za-z\s]+?(?:\s+at\s+[A-Za-z\s]+)?|UC\s+[A-Za-z]+|Berkeley|MIT|CMU|NYU|Stanford|Harvard|Princeton|Caltech|[A-Za-z0-9\s一-鿿]{0,50}?(?:University(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|College|Institute|School(?:\s+of\s+[A-Za-z\s]+)?|SUNY(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|CUNY(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|大学|学院)))(?=\s+(?:in\s+\d{4}|during|\bwith\b|\band\b)|[,.;，。；\n]|$)",
             clause,
             re.IGNORECASE,
         )
@@ -1141,7 +1160,7 @@ def extract_claims_from_evidence(
 
         # 8. Degree received extraction
         deg_matches = re.finditer(
-            r"(?:received|earned|holds|obtained|awarded|获得|取得)\s+(?:my\s+|her\s+|his\s+|their\s+|a\s+|an\s+)?((?:Ph\.?D\.?|Doctor of Philosophy|M\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Master(?:'s)?|Bachelor(?:'s)?|Juris Doctor|J\.?D\.?)(?:\s+in\s+[A-Za-z\s]+?)?)(?:\s+from|\s*[,;.]|$)",
+            r"(?:received|earned|holds|obtained|awarded|获得|取得)\s+(?:my\s+|her\s+|his\s+|their\s+|a\s+|an\s+)?((?:Ph\.?D\.?|Doctor of Philosophy|M\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Master(?:'s)?|Bachelor(?:'s)?|Juris Doctor|J\.?D\.?)(?:\s+in\s+[A-Za-z\s&.-]+?)?)(?:\s+from|\s*[,;.]|$)",
             clause,
             re.IGNORECASE,
         )

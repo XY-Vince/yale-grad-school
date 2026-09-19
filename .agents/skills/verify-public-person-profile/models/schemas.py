@@ -4,6 +4,7 @@ Single source of truth for the entire public person profiling and verification p
 """
 
 import calendar
+import re
 from datetime import date, datetime
 from enum import Enum
 from typing import List, Literal, Optional, Tuple
@@ -326,6 +327,101 @@ class AbstentionRecord(BaseModel):
     observed_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class TargetPrior(BaseModel):
+    """
+    Structured Target Prior specification for downstream disambiguation.
+    Captures known affiliations, education, domains, temporal anchors, and aliases.
+    Strictly used for ranking and resolving candidate clusters; cannot fabricate claims.
+    """
+    target_name: str
+    known_affiliations: List[str] = Field(default_factory=list)
+    known_education: List[str] = Field(default_factory=list)
+    known_domains: List[str] = Field(default_factory=list)
+    temporal_anchors: List[str] = Field(default_factory=list)
+    known_aliases: List[str] = Field(default_factory=list)
+    raw_hints: List[str] = Field(default_factory=list)
+
+    def is_empty(self) -> bool:
+        return not (
+            self.known_affiliations
+            or self.known_education
+            or self.known_domains
+            or self.temporal_anchors
+            or self.known_aliases
+            or self.raw_hints
+        )
+
+    @classmethod
+    def from_hints_and_aliases(
+        cls,
+        target_name: str,
+        hints: Optional[List[str]] = None,
+        aliases: Optional[List[str]] = None,
+    ) -> "TargetPrior":
+        hints = [h.strip() for h in (hints or []) if h and h.strip()]
+        aliases = [a.strip() for a in (aliases or []) if a and a.strip()]
+
+        affiliations = set()
+        education = set()
+        domains = set()
+        temporal = set()
+
+        deg_pats = [
+            (r"\b(BS|BA|B\.S\.|B\.A\.|Bachelor(?:\s+of\s+[A-Za-z]+)?)\b", "Bachelor"),
+            (r"\b(MS|MA|M\.S\.|M\.A\.|Master(?:\s+of\s+[A-Za-z]+)?)\b", "Master"),
+            (r"\b(PhD|Ph\.D\.|Doctor(?:\s+of\s+[A-Za-z]+)?)\b", "Doctorate"),
+            (r"\b(MBBS|M\.B\.B\.S\.|MD|M\.D\.)\b", "Medical"),
+        ]
+        inst_pats = [
+            r"\b(?:from|at|in)\s+([A-Z][A-Za-z0-9&.-]*(?:\s+[A-Z][A-Za-z0-9&.-]*){0,4})",
+            r"\b(UMich|UC Berkeley|Berkeley|Yale|Cornell|Harvard|Stanford|Northwestern|Tsinghua|Fudan|MIT|CMU|NYU|Duke|UIUC|Peking University|PKU|University of Maryland|UMD)\b",
+        ]
+        temp_pats = [
+            r"\b(20\d\d)\b",
+            r"\b(Fall\s+20\d\d|Spring\s+20\d\d|Winter\s+20\d\d|Summer\s+20\d\d)\b",
+            r"\b(incoming|prospective|graduate|alumni)\b",
+        ]
+        domain_list = [
+            "Biomedical Engineering",
+            "BME",
+            "Computer Science",
+            "CS",
+            "Biostatistics",
+            "Finance",
+            "Chemistry",
+            "Real Estate",
+            "Global Surgery",
+            "Public Health",
+        ]
+
+        for h in hints:
+            for pat, _ in deg_pats:
+                for m in re.finditer(pat, h, re.IGNORECASE):
+                    education.add(m.group(0).strip())
+            for pat in inst_pats:
+                for m in re.finditer(pat, h, re.IGNORECASE):
+                    inst = m.group(1) if m.lastindex else m.group(0)
+                    inst_clean = inst.strip()
+                    if inst_clean.lower() not in {"bs", "ms", "phd", "ba", "ma", "from", "at", "in"}:
+                        affiliations.add(inst_clean)
+            for pat in temp_pats:
+                for m in re.finditer(pat, h, re.IGNORECASE):
+                    temporal.add(m.group(0).strip())
+            for dom in domain_list:
+                if re.search(rf"\b{re.escape(dom)}\b", h, re.IGNORECASE):
+                    domains.add(dom)
+
+        return cls(
+            target_name=target_name,
+            known_affiliations=sorted(affiliations),
+            known_education=sorted(education),
+            known_domains=sorted(domains),
+            temporal_anchors=sorted(temporal),
+            known_aliases=sorted(set(aliases)),
+            raw_hints=list(hints),
+        )
+
+
 class RunManifest(BaseModel):
     run_id: str
     run_outcome: RunOutcome = RunOutcome.COMPLETED
@@ -337,6 +433,7 @@ class RunManifest(BaseModel):
     pages_fetched: int
     crawl_errors: List[str] = Field(default_factory=list)
     abstention_records: List[AbstentionRecord] = Field(default_factory=list)
+    target_prior: Optional[TargetPrior] = None
     execution_time_seconds: float
 
 
@@ -351,3 +448,4 @@ class RootBundle(BaseModel):
     claims: List[Claim] = Field(default_factory=list)
     dossier: Optional[Dossier] = None
     manifest: Optional[RunManifest] = None
+    target_prior: Optional[TargetPrior] = None

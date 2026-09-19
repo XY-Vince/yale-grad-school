@@ -707,7 +707,6 @@ def resolve_mentions(
                         same_src
                         or (match_type == "verified_alias")
                         or bool(shared_orgs)
-                        or (bool(shared_doms) and sim >= match_threshold)
                     )
 
                 COLLEGIATE_UNITS_MAP = {
