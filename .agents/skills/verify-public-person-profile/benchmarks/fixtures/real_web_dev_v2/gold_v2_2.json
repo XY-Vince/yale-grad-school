@@ -1,0 +1,1935 @@
+[
+  {
+    "case_id": "DEV-001",
+    "target_name": "Xin Zhou",
+    "target_gold_entity_id": "ENT-DEV-001-1",
+    "expected_outcome": "ambiguous_identity",
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "is_fact_bearing": true,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-001-1",
+        "canonical_name": "Xin Zhou (Cornell)",
+        "aliases": []
+      },
+      {
+        "gold_entity_id": "ENT-DEV-001-2",
+        "canonical_name": "Xin Zhou (St. Jude)",
+        "aliases": []
+      }
+    ],
+    "gold_mentions": [
+      {
+        "gold_mention_id": "GMEN-DEV-001-C01",
+        "gold_entity_id": "ENT-DEV-001-1",
+        "source_content_sha256": "c7ae8926031095a0e38cb9f304a9609ab160bad689f0980fd1411884d0bdbb8a",
+        "char_start": 450,
+        "char_end": 458,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-C02",
+        "gold_entity_id": "ENT-DEV-001-1",
+        "source_content_sha256": "c7ae8926031095a0e38cb9f304a9609ab160bad689f0980fd1411884d0bdbb8a",
+        "char_start": 526,
+        "char_end": 534,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-C03",
+        "gold_entity_id": "ENT-DEV-001-1",
+        "source_content_sha256": "c7ae8926031095a0e38cb9f304a9609ab160bad689f0980fd1411884d0bdbb8a",
+        "char_start": 890,
+        "char_end": 898,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-C04",
+        "gold_entity_id": "ENT-DEV-001-1",
+        "source_content_sha256": "c7ae8926031095a0e38cb9f304a9609ab160bad689f0980fd1411884d0bdbb8a",
+        "char_start": 50327,
+        "char_end": 50335,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-C05",
+        "gold_entity_id": "ENT-DEV-001-1",
+        "source_content_sha256": "c7ae8926031095a0e38cb9f304a9609ab160bad689f0980fd1411884d0bdbb8a",
+        "char_start": 50624,
+        "char_end": 50632,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S01",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 682,
+        "char_end": 690,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S02",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 750,
+        "char_end": 758,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S03",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 11158,
+        "char_end": 11166,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S04",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 11221,
+        "char_end": 11229,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S05",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 11803,
+        "char_end": 11811,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S06",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 101742,
+        "char_end": 101750,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S07",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 105138,
+        "char_end": 105146,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S08",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 113842,
+        "char_end": 113850,
+        "verbatim_text": "Xin Zhou"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-001-S09",
+        "gold_entity_id": "ENT-DEV-001-2",
+        "source_content_sha256": "d91e8456cae1680189471f3b987ae2debeed909fbc05c47e774ede3ff615e94a",
+        "char_start": 118024,
+        "char_end": 118032,
+        "verbatim_text": "Xin Zhou"
+      }
+    ],
+    "gold_clusters": [
+      [
+        "GMEN-DEV-001-C01",
+        "GMEN-DEV-001-C02",
+        "GMEN-DEV-001-C03",
+        "GMEN-DEV-001-C04",
+        "GMEN-DEV-001-C05"
+      ],
+      [
+        "GMEN-DEV-001-S01",
+        "GMEN-DEV-001-S02",
+        "GMEN-DEV-001-S03",
+        "GMEN-DEV-001-S04",
+        "GMEN-DEV-001-S05",
+        "GMEN-DEV-001-S06",
+        "GMEN-DEV-001-S07",
+        "GMEN-DEV-001-S08",
+        "GMEN-DEV-001-S09"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "claim_id": "GCLM-DEV-001-01",
+        "subject_gold_entity_id": "ENT-DEV-001-1",
+        "predicate": "holds_position",
+        "object_raw": "Professor",
+        "equivalence_set": [
+          "Professor of Mathematics"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://math.cornell.edu/xin-zhou",
+            "source_content_sha256": "c7ae8926031095a0e38cb9f304a9609ab160bad689f0980fd1411884d0bdbb8a",
+            "char_start": 50351,
+            "char_end": 50369,
+            "verbatim_text": "<h2>Professor</h2>",
+            "subject_anchor": "Xin Zhou",
+            "relation_anchor": "Professor",
+            "object_anchor": "Professor",
+            "dom_container": "div.person--full"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-001-02",
+        "subject_gold_entity_id": "ENT-DEV-001-1",
+        "predicate": "affiliated_with",
+        "object_raw": "Cornell University",
+        "equivalence_set": [
+          "Cornell"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://math.cornell.edu/xin-zhou",
+            "source_content_sha256": "c7ae8926031095a0e38cb9f304a9609ab160bad689f0980fd1411884d0bdbb8a",
+            "char_start": 40060,
+            "char_end": 40133,
+            "verbatim_text": "<a href=\"https://cornell.edu\" title=\"Cornell University\" class=\"cu-logo\">",
+            "subject_anchor": "Xin Zhou",
+            "relation_anchor": "cu-logo",
+            "object_anchor": "Cornell University",
+            "dom_container": "header#header"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-001-03",
+        "subject_gold_entity_id": "ENT-DEV-001-1",
+        "predicate": "received_degree",
+        "object_raw": "Ph.D. in mathematics",
+        "equivalence_set": [
+          "PhD",
+          "Doctor of Philosophy"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "former",
+        "supports": [
+          {
+            "source_url": "https://math.cornell.edu/xin-zhou",
+            "source_content_sha256": "c7ae8926031095a0e38cb9f304a9609ab160bad689f0980fd1411884d0bdbb8a",
+            "char_start": 50872,
+            "char_end": 50920,
+            "verbatim_text": "Stanford University, Ph.D. in mathematics (2013)",
+            "subject_anchor": "Xin Zhou",
+            "relation_anchor": "Ph.D.",
+            "object_anchor": "Ph.D. in mathematics",
+            "dom_container": "div.person--full__contact"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "DEV-002",
+    "target_name": "Sarah Luckart",
+    "target_gold_entity_id": "ENT-DEV-002-1",
+    "expected_outcome": "completed",
+    "expected_outcome_name_only": "completed",
+    "expected_outcome_hinted": "completed",
+    "is_fact_bearing": true,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-002-1",
+        "canonical_name": "Sarah Luckart",
+        "aliases": []
+      }
+    ],
+    "gold_mentions": [
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y01",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 489,
+        "char_end": 502,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y02",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 956,
+        "char_end": 969,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y03",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 1125,
+        "char_end": 1138,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y04",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 1624,
+        "char_end": 1637,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y05",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 1690,
+        "char_end": 1703,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y06",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 9932,
+        "char_end": 9945,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y07",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 162697,
+        "char_end": 162710,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y08",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 162914,
+        "char_end": 162927,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y09",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 277353,
+        "char_end": 277366,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y10",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 278126,
+        "char_end": 278139,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y11",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 278202,
+        "char_end": 278215,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y12",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 278920,
+        "char_end": 278933,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y13",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 279962,
+        "char_end": 279975,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y14",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 280181,
+        "char_end": 280194,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y15",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 281899,
+        "char_end": 281912,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y16",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 281949,
+        "char_end": 281962,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-Y17",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+        "char_start": 282648,
+        "char_end": 282661,
+        "verbatim_text": "Sarah Luckart"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-002-R01",
+        "gold_entity_id": "ENT-DEV-002-1",
+        "source_content_sha256": "c8302eaee37465315785fe4027ce92a57c38da730567afb4e3eec9684cd9e9d4",
+        "char_start": 57170,
+        "char_end": 57183,
+        "verbatim_text": "Sarah Luckart"
+      }
+    ],
+    "gold_clusters": [
+      [
+        "GMEN-DEV-002-Y01",
+        "GMEN-DEV-002-Y02",
+        "GMEN-DEV-002-Y03",
+        "GMEN-DEV-002-Y04",
+        "GMEN-DEV-002-Y05",
+        "GMEN-DEV-002-Y06",
+        "GMEN-DEV-002-Y07",
+        "GMEN-DEV-002-Y08",
+        "GMEN-DEV-002-Y09",
+        "GMEN-DEV-002-Y10",
+        "GMEN-DEV-002-Y11",
+        "GMEN-DEV-002-Y12",
+        "GMEN-DEV-002-Y13",
+        "GMEN-DEV-002-Y14",
+        "GMEN-DEV-002-Y15",
+        "GMEN-DEV-002-Y16",
+        "GMEN-DEV-002-Y17",
+        "GMEN-DEV-002-R01"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "claim_id": "GCLM-DEV-002-01",
+        "subject_gold_entity_id": "ENT-DEV-002-1",
+        "predicate": "holds_position",
+        "object_raw": "Business Systems Analyst",
+        "equivalence_set": [
+          "IT, Business Systems Analyst 2"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://medicine.yale.edu/profile/sarah-luckart/",
+            "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+            "char_start": 1125,
+            "char_end": 1175,
+            "verbatim_text": "Sarah Luckart is an IT, Business Systems Analyst 2",
+            "subject_anchor": "Sarah Luckart",
+            "relation_anchor": "is an",
+            "object_anchor": "IT, Business Systems Analyst 2",
+            "dom_container": "div.profile-header"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-002-02",
+        "subject_gold_entity_id": "ENT-DEV-002-1",
+        "predicate": "affiliated_with",
+        "object_raw": "Yale School of Medicine",
+        "equivalence_set": [
+          "Yale University",
+          "Yale"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://medicine.yale.edu/profile/sarah-luckart/",
+            "source_content_sha256": "f694b2ed488e0fc721e42321188ba056582ef07e0b8976d9284fdf56ca88b222",
+            "char_start": 482,
+            "char_end": 536,
+            "verbatim_text": "<title>Sarah Luckart | Yale School of Medicine</title>",
+            "subject_anchor": "Sarah Luckart",
+            "relation_anchor": "|",
+            "object_anchor": "Yale School of Medicine",
+            "dom_container": "head"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-002-03",
+        "subject_gold_entity_id": "ENT-DEV-002-1",
+        "predicate": "holds_position",
+        "object_raw": "Clerk of the Corporation",
+        "equivalence_set": [
+          "Clerk"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://resnetinc.org/student-technology-conference/board-of-directors/",
+            "source_content_sha256": "c8302eaee37465315785fe4027ce92a57c38da730567afb4e3eec9684cd9e9d4",
+            "char_start": 57170,
+            "char_end": 57214,
+            "verbatim_text": "Sarah Luckart, Clerk of the Corporation</h3>",
+            "subject_anchor": "Sarah Luckart",
+            "relation_anchor": ",",
+            "object_anchor": "Clerk of the Corporation",
+            "dom_container": "div.elementor-widget-container"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "DEV-003",
+    "target_name": "Yao Sun",
+    "target_gold_entity_id": "ENT-DEV-003-1",
+    "expected_outcome": "ambiguous_identity",
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "is_fact_bearing": true,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-003-1",
+        "canonical_name": "Yao Sun (NJIT)",
+        "aliases": []
+      },
+      {
+        "gold_entity_id": "ENT-DEV-003-2",
+        "canonical_name": "Yao Sun (UCSF)",
+        "aliases": []
+      }
+    ],
+    "gold_mentions": [
+      {
+        "gold_mention_id": "GMEN-DEV-003-N01",
+        "gold_entity_id": "ENT-DEV-003-1",
+        "source_content_sha256": "f5ca09466881a53f795355c7d320fff533fbe7b30dae523f5356a1fdc07d176d",
+        "char_start": 587,
+        "char_end": 594,
+        "verbatim_text": "Yao Sun"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-003-N02",
+        "gold_entity_id": "ENT-DEV-003-1",
+        "source_content_sha256": "f5ca09466881a53f795355c7d320fff533fbe7b30dae523f5356a1fdc07d176d",
+        "char_start": 34040,
+        "char_end": 34047,
+        "verbatim_text": "Yao Sun"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-003-U01",
+        "gold_entity_id": "ENT-DEV-003-2",
+        "source_content_sha256": "d8b01f306f44ef4e31ae6fe79b80cb6141f12a82a4865dd16108e4c246389acf",
+        "char_start": 165,
+        "char_end": 172,
+        "verbatim_text": "Yao Sun"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-003-U02",
+        "gold_entity_id": "ENT-DEV-003-2",
+        "source_content_sha256": "d8b01f306f44ef4e31ae6fe79b80cb6141f12a82a4865dd16108e4c246389acf",
+        "char_start": 2813,
+        "char_end": 2820,
+        "verbatim_text": "Yao Sun"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-003-U03",
+        "gold_entity_id": "ENT-DEV-003-2",
+        "source_content_sha256": "d8b01f306f44ef4e31ae6fe79b80cb6141f12a82a4865dd16108e4c246389acf",
+        "char_start": 3058,
+        "char_end": 3065,
+        "verbatim_text": "Yao Sun"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-003-U04",
+        "gold_entity_id": "ENT-DEV-003-2",
+        "source_content_sha256": "d8b01f306f44ef4e31ae6fe79b80cb6141f12a82a4865dd16108e4c246389acf",
+        "char_start": 3127,
+        "char_end": 3134,
+        "verbatim_text": "Yao Sun"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-003-U05",
+        "gold_entity_id": "ENT-DEV-003-2",
+        "source_content_sha256": "d8b01f306f44ef4e31ae6fe79b80cb6141f12a82a4865dd16108e4c246389acf",
+        "char_start": 3394,
+        "char_end": 3401,
+        "verbatim_text": "Yao Sun"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-003-U06",
+        "gold_entity_id": "ENT-DEV-003-2",
+        "source_content_sha256": "d8b01f306f44ef4e31ae6fe79b80cb6141f12a82a4865dd16108e4c246389acf",
+        "char_start": 18947,
+        "char_end": 18954,
+        "verbatim_text": "Yao Sun"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-003-U07",
+        "gold_entity_id": "ENT-DEV-003-2",
+        "source_content_sha256": "d8b01f306f44ef4e31ae6fe79b80cb6141f12a82a4865dd16108e4c246389acf",
+        "char_start": 20086,
+        "char_end": 20093,
+        "verbatim_text": "Yao Sun"
+      }
+    ],
+    "gold_clusters": [
+      [
+        "GMEN-DEV-003-N01",
+        "GMEN-DEV-003-N02"
+      ],
+      [
+        "GMEN-DEV-003-U01",
+        "GMEN-DEV-003-U02",
+        "GMEN-DEV-003-U03",
+        "GMEN-DEV-003-U04",
+        "GMEN-DEV-003-U05",
+        "GMEN-DEV-003-U06",
+        "GMEN-DEV-003-U07"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "claim_id": "GCLM-DEV-003-01",
+        "subject_gold_entity_id": "ENT-DEV-003-1",
+        "predicate": "holds_position",
+        "object_raw": "Assistant Professor",
+        "equivalence_set": [
+          "Assistant Professor, Department of Humanities and Social Sciences"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://people.njit.edu/profile/ys86",
+            "source_content_sha256": "f5ca09466881a53f795355c7d320fff533fbe7b30dae523f5356a1fdc07d176d",
+            "char_start": 34140,
+            "char_end": 34206,
+            "verbatim_text": "Assistant Professor, Department of Humanities and  Social Sciences",
+            "subject_anchor": "Yao Sun",
+            "relation_anchor": "Assistant Professor",
+            "object_anchor": "Assistant Professor",
+            "dom_container": "div.profile-content"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-003-02",
+        "subject_gold_entity_id": "ENT-DEV-003-1",
+        "predicate": "affiliated_with",
+        "object_raw": "New Jersey Institute of Technology",
+        "equivalence_set": [
+          "NJIT"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://people.njit.edu/profile/ys86",
+            "source_content_sha256": "f5ca09466881a53f795355c7d320fff533fbe7b30dae523f5356a1fdc07d176d",
+            "char_start": 51544,
+            "char_end": 51609,
+            "verbatim_text": "<img src=\"/themes/custom/njit2/images/logo-plain.svg\" alt=\"NJIT\">",
+            "subject_anchor": "Yao Sun",
+            "relation_anchor": "logo",
+            "object_anchor": "NJIT",
+            "dom_container": "header#header"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "DEV-004",
+    "target_name": "Rohini Dutta",
+    "target_gold_entity_id": "ENT-DEV-004-1",
+    "expected_outcome": "completed",
+    "expected_outcome_name_only": "completed",
+    "expected_outcome_hinted": "completed",
+    "is_fact_bearing": true,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-004-1",
+        "canonical_name": "Rohini Dutta",
+        "aliases": []
+      }
+    ],
+    "gold_mentions": [
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y01",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 489,
+        "char_end": 501,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y02",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 955,
+        "char_end": 967,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y03",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 1123,
+        "char_end": 1135,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y04",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 1575,
+        "char_end": 1587,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y05",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 1640,
+        "char_end": 1652,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y06",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 9892,
+        "char_end": 9904,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y07",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 162865,
+        "char_end": 162877,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y08",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 163081,
+        "char_end": 163093,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y09",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 283554,
+        "char_end": 283566,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y10",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 284325,
+        "char_end": 284337,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y11",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 284400,
+        "char_end": 284412,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y12",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 285129,
+        "char_end": 285141,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y13",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 286522,
+        "char_end": 286534,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y14",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 286740,
+        "char_end": 286752,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y15",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 290695,
+        "char_end": 290707,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y16",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 290744,
+        "char_end": 290756,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-Y17",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+        "char_start": 291454,
+        "char_end": 291466,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B01",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 347,
+        "char_end": 359,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B02",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 441,
+        "char_end": 453,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B03",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 1070,
+        "char_end": 1082,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B04",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 1167,
+        "char_end": 1179,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B05",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 1970,
+        "char_end": 1982,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B06",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 2466,
+        "char_end": 2478,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B07",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 2849,
+        "char_end": 2861,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B08",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 2947,
+        "char_end": 2959,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B09",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 4116,
+        "char_end": 4128,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B10",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 4408,
+        "char_end": 4420,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B11",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 5271,
+        "char_end": 5283,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B12",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 5597,
+        "char_end": 5609,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B13",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 5891,
+        "char_end": 5903,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B14",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 33149,
+        "char_end": 33161,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B15",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 64638,
+        "char_end": 64650,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B16",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 66424,
+        "char_end": 66436,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B17",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 67616,
+        "char_end": 67628,
+        "verbatim_text": "Rohini Dutta"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-004-B18",
+        "gold_entity_id": "ENT-DEV-004-1",
+        "source_content_sha256": "d06ee18c533f21e7523804056916eb6a0c7789c03405222d9972c0637deaf223",
+        "char_start": 98793,
+        "char_end": 98805,
+        "verbatim_text": "Rohini Dutta"
+      }
+    ],
+    "gold_clusters": [
+      [
+        "GMEN-DEV-004-Y01",
+        "GMEN-DEV-004-Y02",
+        "GMEN-DEV-004-Y03",
+        "GMEN-DEV-004-Y04",
+        "GMEN-DEV-004-Y05",
+        "GMEN-DEV-004-Y06",
+        "GMEN-DEV-004-Y07",
+        "GMEN-DEV-004-Y08",
+        "GMEN-DEV-004-Y09",
+        "GMEN-DEV-004-Y10",
+        "GMEN-DEV-004-Y11",
+        "GMEN-DEV-004-Y12",
+        "GMEN-DEV-004-Y13",
+        "GMEN-DEV-004-Y14",
+        "GMEN-DEV-004-Y15",
+        "GMEN-DEV-004-Y16",
+        "GMEN-DEV-004-Y17",
+        "GMEN-DEV-004-B01",
+        "GMEN-DEV-004-B02",
+        "GMEN-DEV-004-B03",
+        "GMEN-DEV-004-B04",
+        "GMEN-DEV-004-B05",
+        "GMEN-DEV-004-B06",
+        "GMEN-DEV-004-B07",
+        "GMEN-DEV-004-B08",
+        "GMEN-DEV-004-B09",
+        "GMEN-DEV-004-B10",
+        "GMEN-DEV-004-B11",
+        "GMEN-DEV-004-B12",
+        "GMEN-DEV-004-B13",
+        "GMEN-DEV-004-B14",
+        "GMEN-DEV-004-B15",
+        "GMEN-DEV-004-B16",
+        "GMEN-DEV-004-B17",
+        "GMEN-DEV-004-B18"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "claim_id": "GCLM-DEV-004-01",
+        "subject_gold_entity_id": "ENT-DEV-004-1",
+        "predicate": "holds_position",
+        "object_raw": "Hospital Resident",
+        "equivalence_set": [
+          "Resident"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://medicine.yale.edu/profile/rohini-dutta/",
+            "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+            "char_start": 1123,
+            "char_end": 1185,
+            "verbatim_text": "Rohini Dutta is a Hospital Resident at Yale School of Medicine",
+            "subject_anchor": "Rohini Dutta",
+            "relation_anchor": "is a",
+            "object_anchor": "Hospital Resident",
+            "dom_container": "div.profile-header"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-004-02",
+        "subject_gold_entity_id": "ENT-DEV-004-1",
+        "predicate": "affiliated_with",
+        "object_raw": "Yale School of Medicine",
+        "equivalence_set": [
+          "Yale University",
+          "Yale"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://medicine.yale.edu/profile/rohini-dutta/",
+            "source_content_sha256": "7595f4bf4b6760b00fbd2ec5c102de5d4f830a1c42e738b201b373102a0f0c11",
+            "char_start": 482,
+            "char_end": 535,
+            "verbatim_text": "<title>Rohini Dutta | Yale School of Medicine</title>",
+            "subject_anchor": "Rohini Dutta",
+            "relation_anchor": "|",
+            "object_anchor": "Yale School of Medicine",
+            "dom_container": "head"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "DEV-005",
+    "target_name": "段世泽",
+    "target_gold_entity_id": "ENT-DEV-005-1",
+    "expected_outcome": "insufficient_evidence",
+    "expected_outcome_name_only": "insufficient_evidence",
+    "expected_outcome_hinted": "insufficient_evidence",
+    "is_fact_bearing": false,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-005-1",
+        "canonical_name": "段世泽",
+        "aliases": [
+          "Shize Duan"
+        ]
+      }
+    ],
+    "gold_mentions": [],
+    "gold_clusters": [],
+    "gold_claims": []
+  },
+  {
+    "case_id": "DEV-006",
+    "target_name": "Ray Liu",
+    "target_gold_entity_id": "ENT-DEV-006-1",
+    "expected_outcome": "ambiguous_identity",
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "is_fact_bearing": true,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-006-1",
+        "canonical_name": "K. J. Ray Liu (UMD)",
+        "aliases": [
+          "K. J. Ray Liu"
+        ]
+      },
+      {
+        "gold_entity_id": "ENT-DEV-006-2",
+        "canonical_name": "Ray Liu (Boston Public Library)",
+        "aliases": []
+      }
+    ],
+    "gold_mentions": [
+      {
+        "gold_mention_id": "GMEN-DEV-006-L01",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 658,
+        "char_end": 665,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L02",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 2044,
+        "char_end": 2051,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L03",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 7809,
+        "char_end": 7816,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L04",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 26460,
+        "char_end": 26467,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L05",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 40113,
+        "char_end": 40120,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L06",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 40181,
+        "char_end": 40188,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L07",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 43074,
+        "char_end": 43081,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L08",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 48915,
+        "char_end": 48922,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L09",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 118591,
+        "char_end": 118598,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L10",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 118939,
+        "char_end": 118946,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L11",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 121282,
+        "char_end": 121289,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L12",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 121672,
+        "char_end": 121679,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L13",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 124829,
+        "char_end": 124836,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L14",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 125285,
+        "char_end": 125292,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L15",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 128315,
+        "char_end": 128322,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L16",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 128691,
+        "char_end": 128698,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L17",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 135819,
+        "char_end": 135826,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L18",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 136096,
+        "char_end": 136103,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L19",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 137244,
+        "char_end": 137251,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L20",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 137602,
+        "char_end": 137609,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L21",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 149629,
+        "char_end": 149636,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L22",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 150031,
+        "char_end": 150038,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L23",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 151367,
+        "char_end": 151374,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L24",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 151865,
+        "char_end": 151872,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L25",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 153204,
+        "char_end": 153211,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L26",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 153590,
+        "char_end": 153597,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L27",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 154843,
+        "char_end": 154850,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L28",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 155296,
+        "char_end": 155303,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L29",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 156617,
+        "char_end": 156624,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L30",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 157015,
+        "char_end": 157022,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L31",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 158366,
+        "char_end": 158373,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L32",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 158746,
+        "char_end": 158753,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L33",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 186402,
+        "char_end": 186409,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L34",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 186737,
+        "char_end": 186744,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L35",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 208606,
+        "char_end": 208613,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L36",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 209272,
+        "char_end": 209279,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L37",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 218188,
+        "char_end": 218195,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L38",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 218722,
+        "char_end": 218729,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L39",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 237103,
+        "char_end": 237110,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L40",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 237400,
+        "char_end": 237407,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L41",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 239790,
+        "char_end": 239797,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L42",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 240042,
+        "char_end": 240049,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L43",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 290646,
+        "char_end": 290653,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-L44",
+        "gold_entity_id": "ENT-DEV-006-1",
+        "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+        "char_start": 295928,
+        "char_end": 295935,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-B01",
+        "gold_entity_id": "ENT-DEV-006-2",
+        "source_content_sha256": "31649e166e7ba04e136b4e6eba0647e715d04b276bf4407630059a8511615cf1",
+        "char_start": 62282,
+        "char_end": 62289,
+        "verbatim_text": "Ray Liu"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-006-B02",
+        "gold_entity_id": "ENT-DEV-006-2",
+        "source_content_sha256": "31649e166e7ba04e136b4e6eba0647e715d04b276bf4407630059a8511615cf1",
+        "char_start": 73922,
+        "char_end": 73929,
+        "verbatim_text": "Ray Liu"
+      }
+    ],
+    "gold_clusters": [
+      [
+        "GMEN-DEV-006-L01",
+        "GMEN-DEV-006-L02",
+        "GMEN-DEV-006-L03",
+        "GMEN-DEV-006-L04",
+        "GMEN-DEV-006-L05",
+        "GMEN-DEV-006-L06",
+        "GMEN-DEV-006-L07",
+        "GMEN-DEV-006-L08",
+        "GMEN-DEV-006-L09",
+        "GMEN-DEV-006-L10",
+        "GMEN-DEV-006-L11",
+        "GMEN-DEV-006-L12",
+        "GMEN-DEV-006-L13",
+        "GMEN-DEV-006-L14",
+        "GMEN-DEV-006-L15",
+        "GMEN-DEV-006-L16",
+        "GMEN-DEV-006-L17",
+        "GMEN-DEV-006-L18",
+        "GMEN-DEV-006-L19",
+        "GMEN-DEV-006-L20",
+        "GMEN-DEV-006-L21",
+        "GMEN-DEV-006-L22",
+        "GMEN-DEV-006-L23",
+        "GMEN-DEV-006-L24",
+        "GMEN-DEV-006-L25",
+        "GMEN-DEV-006-L26",
+        "GMEN-DEV-006-L27",
+        "GMEN-DEV-006-L28",
+        "GMEN-DEV-006-L29",
+        "GMEN-DEV-006-L30",
+        "GMEN-DEV-006-L31",
+        "GMEN-DEV-006-L32",
+        "GMEN-DEV-006-L33",
+        "GMEN-DEV-006-L34",
+        "GMEN-DEV-006-L35",
+        "GMEN-DEV-006-L36",
+        "GMEN-DEV-006-L37",
+        "GMEN-DEV-006-L38",
+        "GMEN-DEV-006-L39",
+        "GMEN-DEV-006-L40",
+        "GMEN-DEV-006-L41",
+        "GMEN-DEV-006-L42",
+        "GMEN-DEV-006-L43",
+        "GMEN-DEV-006-L44"
+      ],
+      [
+        "GMEN-DEV-006-B01",
+        "GMEN-DEV-006-B02"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "claim_id": "GCLM-DEV-006-01",
+        "subject_gold_entity_id": "ENT-DEV-006-1",
+        "predicate": "holds_position",
+        "object_raw": "Distinguished University Professor",
+        "equivalence_set": [
+          "Professor"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "former",
+        "supports": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/K._J._Ray_Liu",
+            "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+            "char_start": 51980,
+            "char_end": 52250,
+            "verbatim_text": "Liu was the Distinguished University Professor at the <a rel=\"mw:WikiLink\" href=\"https://en.wikipedia.org/wiki/University_of_Maryland,_College_Park\" title=\"University of Maryland, College Park\" id=\"mwFQ\">University of Maryland, College Park</a>, where he retired in 2021",
+            "subject_anchor": "Liu",
+            "relation_anchor": "was the",
+            "object_anchor": "Distinguished University Professor",
+            "dom_container": "div.mw-parser-output"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-006-02",
+        "subject_gold_entity_id": "ENT-DEV-006-1",
+        "predicate": "affiliated_with",
+        "object_raw": "University of Maryland",
+        "equivalence_set": [
+          "UMD",
+          "University of Maryland, College Park"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "former",
+        "supports": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/K._J._Ray_Liu",
+            "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+            "char_start": 2712,
+            "char_end": 2756,
+            "verbatim_text": "University of Maryland, College Park faculty",
+            "subject_anchor": "Liu",
+            "relation_anchor": "faculty",
+            "object_anchor": "University of Maryland, College Park",
+            "dom_container": "div#mw-normal-catlinks"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-006-03",
+        "subject_gold_entity_id": "ENT-DEV-006-1",
+        "predicate": "holds_position",
+        "object_raw": "IEEE President",
+        "equivalence_set": [
+          "President and CEO of IEEE"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "former",
+        "supports": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/K._J._Ray_Liu",
+            "source_content_sha256": "192116f94a3dafb16744f2e09bf08767b38d184fda4e81400280eb3b96a5c4e8",
+            "char_start": 64251,
+            "char_end": 64291,
+            "verbatim_text": "Liu was the 2022 IEEE President and CEO.",
+            "subject_anchor": "Liu",
+            "relation_anchor": "was the",
+            "object_anchor": "2022 IEEE President and CEO",
+            "dom_container": "div.mw-parser-output"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "DEV-007",
+    "target_name": "Logan Chen",
+    "target_gold_entity_id": "ENT-DEV-007-1",
+    "expected_outcome": "insufficient_evidence",
+    "expected_outcome_name_only": "insufficient_evidence",
+    "expected_outcome_hinted": "insufficient_evidence",
+    "is_fact_bearing": false,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-007-1",
+        "canonical_name": "Logan Chen",
+        "aliases": [
+          "陈彦达"
+        ]
+      }
+    ],
+    "gold_mentions": [],
+    "gold_clusters": [],
+    "gold_claims": []
+  },
+  {
+    "case_id": "DEV-008",
+    "target_name": "Adeline Miao",
+    "target_gold_entity_id": "ENT-DEV-008-1",
+    "expected_outcome": "insufficient_evidence",
+    "expected_outcome_name_only": "insufficient_evidence",
+    "expected_outcome_hinted": "insufficient_evidence",
+    "is_fact_bearing": false,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-008-1",
+        "canonical_name": "Adeline Miao",
+        "aliases": []
+      }
+    ],
+    "gold_mentions": [],
+    "gold_clusters": [],
+    "gold_claims": []
+  },
+  {
+    "case_id": "DEV-009",
+    "target_name": "Yining Zhang",
+    "target_gold_entity_id": "ENT-DEV-009-1",
+    "expected_outcome": "ambiguous_identity",
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "is_fact_bearing": true,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-009-1",
+        "canonical_name": "Yining Zhang (Yale)",
+        "aliases": []
+      },
+      {
+        "gold_entity_id": "ENT-DEV-009-2",
+        "canonical_name": "Yining Zhang (arXiv Researcher)",
+        "aliases": []
+      }
+    ],
+    "gold_mentions": [
+      {
+        "gold_mention_id": "GMEN-DEV-009-Y01",
+        "gold_entity_id": "ENT-DEV-009-1",
+        "source_content_sha256": "04293565586f29ea1c29dc4a3659432af23f8f778b1d15fd5df3af94c8d7ebfa",
+        "char_start": 259220,
+        "char_end": 259232,
+        "verbatim_text": "Yining Zhang"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-009-A01",
+        "gold_entity_id": "ENT-DEV-009-2",
+        "source_content_sha256": "2338f2561bfac3eccfeb3561907022565b24c542e3f1dbdf3605c84c01fc531d",
+        "char_start": 11050,
+        "char_end": 11062,
+        "verbatim_text": "Yining Zhang"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-009-A02",
+        "gold_entity_id": "ENT-DEV-009-2",
+        "source_content_sha256": "2338f2561bfac3eccfeb3561907022565b24c542e3f1dbdf3605c84c01fc531d",
+        "char_start": 11964,
+        "char_end": 11976,
+        "verbatim_text": "Yining Zhang"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-009-A03",
+        "gold_entity_id": "ENT-DEV-009-2",
+        "source_content_sha256": "2338f2561bfac3eccfeb3561907022565b24c542e3f1dbdf3605c84c01fc531d",
+        "char_start": 16001,
+        "char_end": 16013,
+        "verbatim_text": "Yining Zhang"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-009-A04",
+        "gold_entity_id": "ENT-DEV-009-2",
+        "source_content_sha256": "2338f2561bfac3eccfeb3561907022565b24c542e3f1dbdf3605c84c01fc531d",
+        "char_start": 16544,
+        "char_end": 16556,
+        "verbatim_text": "Yining Zhang"
+      }
+    ],
+    "gold_clusters": [
+      [
+        "GMEN-DEV-009-Y01"
+      ],
+      [
+        "GMEN-DEV-009-A01",
+        "GMEN-DEV-009-A02",
+        "GMEN-DEV-009-A03",
+        "GMEN-DEV-009-A04"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "claim_id": "GCLM-DEV-009-01",
+        "subject_gold_entity_id": "ENT-DEV-009-1",
+        "predicate": "holds_position",
+        "object_raw": "Master's Student",
+        "equivalence_set": [
+          "Graduate Student"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://engineering.yale.edu/academic-study/departments/computer-science/people",
+            "source_content_sha256": "04293565586f29ea1c29dc4a3659432af23f8f778b1d15fd5df3af94c8d7ebfa",
+            "char_start": 244868,
+            "char_end": 244894,
+            "verbatim_text": "<h2>Master's Students</h2>",
+            "subject_anchor": "Yining Zhang",
+            "relation_anchor": "section_header",
+            "object_anchor": "Master's Students",
+            "dom_container": "section.people-group"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-009-02",
+        "subject_gold_entity_id": "ENT-DEV-009-1",
+        "predicate": "affiliated_with",
+        "object_raw": "Yale University",
+        "equivalence_set": [
+          "Yale"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://engineering.yale.edu/academic-study/departments/computer-science/people",
+            "source_content_sha256": "04293565586f29ea1c29dc4a3659432af23f8f778b1d15fd5df3af94c8d7ebfa",
+            "char_start": 284441,
+            "char_end": 284495,
+            "verbatim_text": "Copyright © 2026 Yale University. All rights reserved.",
+            "subject_anchor": "Yining Zhang",
+            "relation_anchor": "footer_copyright",
+            "object_anchor": "Yale University",
+            "dom_container": "footer#footer"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "DEV-010",
+    "target_name": "Albert Zhao",
+    "target_gold_entity_id": "ENT-DEV-010-1",
+    "expected_outcome": "ambiguous_identity",
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "is_fact_bearing": true,
+    "annotation_type": "curator_annotation",
+    "gold_entities": [
+      {
+        "gold_entity_id": "ENT-DEV-010-1",
+        "canonical_name": "Albert Zhao (Boston University)",
+        "aliases": []
+      },
+      {
+        "gold_entity_id": "ENT-DEV-010-2",
+        "canonical_name": "Albert Zhao (AWS)",
+        "aliases": [
+          "Albertozhao"
+        ]
+      }
+    ],
+    "gold_mentions": [
+      {
+        "gold_mention_id": "GMEN-DEV-010-P01",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 1416,
+        "char_end": 1427,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-P02",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 1474,
+        "char_end": 1485,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-P03",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 1720,
+        "char_end": 1731,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-P04",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 3148,
+        "char_end": 3159,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-P05",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 4119,
+        "char_end": 4130,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-P06",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 5655,
+        "char_end": 5666,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-P07",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 25602,
+        "char_end": 25613,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-P08",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 44012,
+        "char_end": 44023,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-P09",
+        "gold_entity_id": "ENT-DEV-010-1",
+        "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+        "char_start": 44131,
+        "char_end": 44142,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-G01",
+        "gold_entity_id": "ENT-DEV-010-2",
+        "source_content_sha256": "76d9f21f064ad02496b49df27164047ca0ee3f0ec7505a56590b811543ac661b",
+        "char_start": 18177,
+        "char_end": 18188,
+        "verbatim_text": "Albert Zhao"
+      },
+      {
+        "gold_mention_id": "GMEN-DEV-010-G02",
+        "gold_entity_id": "ENT-DEV-010-2",
+        "source_content_sha256": "76d9f21f064ad02496b49df27164047ca0ee3f0ec7505a56590b811543ac661b",
+        "char_start": 154010,
+        "char_end": 154021,
+        "verbatim_text": "Albert Zhao"
+      }
+    ],
+    "gold_clusters": [
+      [
+        "GMEN-DEV-010-P01",
+        "GMEN-DEV-010-P02",
+        "GMEN-DEV-010-P03",
+        "GMEN-DEV-010-P04",
+        "GMEN-DEV-010-P05",
+        "GMEN-DEV-010-P06",
+        "GMEN-DEV-010-P07",
+        "GMEN-DEV-010-P08",
+        "GMEN-DEV-010-P09"
+      ],
+      [
+        "GMEN-DEV-010-G01",
+        "GMEN-DEV-010-G02"
+      ]
+    ],
+    "gold_claims": [
+      {
+        "claim_id": "GCLM-DEV-010-01",
+        "subject_gold_entity_id": "ENT-DEV-010-1",
+        "predicate": "affiliated_with",
+        "object_raw": "Boston University",
+        "equivalence_set": [
+          "BU"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "current",
+        "supports": [
+          {
+            "source_url": "https://albert-zhao.com/",
+            "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+            "char_start": 25637,
+            "char_end": 25716,
+            "verbatim_text": "currently a 4th year undergraduate student at Boston University (Class of 2025)",
+            "subject_anchor": "Albert Zhao",
+            "relation_anchor": "undergraduate student at",
+            "object_anchor": "Boston University",
+            "dom_container": "div#about"
+          }
+        ]
+      },
+      {
+        "claim_id": "GCLM-DEV-010-02",
+        "subject_gold_entity_id": "ENT-DEV-010-1",
+        "predicate": "received_degree",
+        "object_raw": "BS in Computer Engineering",
+        "equivalence_set": [
+          "B.S. in Computer Engineering",
+          "Computer Engineering"
+        ],
+        "polarity": "affirmative",
+        "temporal_status": "former",
+        "supports": [
+          {
+            "source_url": "https://albert-zhao.com/",
+            "source_content_sha256": "64efa7667957920b437bda3e987f889826e37c7bf844d6d57c12485c13538afe",
+            "char_start": 35122,
+            "char_end": 35176,
+            "verbatim_text": "<h5 class=card-title>B.S. in Computer Engineering</h5>",
+            "subject_anchor": "Albert Zhao",
+            "relation_anchor": "card-title",
+            "object_anchor": "B.S. in Computer Engineering",
+            "dom_container": "div#education"
+          }
+        ]
+      }
+    ]
+  }
+]

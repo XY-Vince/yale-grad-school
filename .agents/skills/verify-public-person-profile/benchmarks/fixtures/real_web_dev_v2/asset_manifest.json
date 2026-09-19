@@ -1,26 +1,30 @@
 {
   "capture_failures.jsonl": {
-    "sha256": "2f1b99b841b190877779f0cc1763a31ff69f95c5cc5dec6abd6d03c4ebc6e357",
-    "bytes": 854
+    "bytes": 854,
+    "sha256": "2f1b99b841b190877779f0cc1763a31ff69f95c5cc5dec6abd6d03c4ebc6e357"
   },
   "capture_manifest.jsonl": {
-    "sha256": "2a418e0b1fd220b6a41bc62853ccfb95516cb6d266cb265ffde7bec57caabbd0",
-    "bytes": 5868
+    "bytes": 5868,
+    "sha256": "2a418e0b1fd220b6a41bc62853ccfb95516cb6d266cb265ffde7bec57caabbd0"
   },
   "corpus.warc": {
-    "sha256": "f67066a877a8f51877f941c78f1142c006154c4c7fd6fdd02389dee6e188671a",
-    "bytes": 2643747
+    "bytes": 2643747,
+    "sha256": "f67066a877a8f51877f941c78f1142c006154c4c7fd6fdd02389dee6e188671a"
   },
   "gold_v2_1.json": {
-    "sha256": "c0dce5b7368ed2930e8b681eae3c9580786ce4e4ee21999060b3dd90b2e920fd",
-    "bytes": 64829
+    "bytes": 64829,
+    "sha256": "c0dce5b7368ed2930e8b681eae3c9580786ce4e4ee21999060b3dd90b2e920fd"
+  },
+  "gold_v2_2.json": {
+    "bytes": 68060,
+    "sha256": "438c16f254c9d3b3c4e348d15a3689b8308e95828c043079d64d82c9d052c1fd"
   },
   "manifest.json": {
-    "sha256": "f169050dec800924eefe687de6485caa78e01a99c8f34a190ee9585483d6a437",
-    "bytes": 3303
+    "bytes": 3303,
+    "sha256": "f169050dec800924eefe687de6485caa78e01a99c8f34a190ee9585483d6a437"
   },
   "query_index.jsonl": {
-    "sha256": "d6c2cd1da2bdc53b2d444b6bf401868ad934c3431d85ba7520dd97e42c71843b",
-    "bytes": 1598
+    "bytes": 1598,
+    "sha256": "d6c2cd1da2bdc53b2d444b6bf401868ad934c3431d85ba7520dd97e42c71843b"
   }
 }
