@@ -66,9 +66,19 @@ PAIR_COMPARISON_FILES = [
     "sources.jsonl",
     "evidence.jsonl",
     "mentions.jsonl",
-    "candidates.jsonl",
-    "clusters.jsonl",
 ]
+
+REAL_WEB_DEV_V2_REQUIRED_ASSETS = frozenset(
+    {
+        "capture_failures.jsonl",
+        "capture_manifest.jsonl",
+        "corpus.warc",
+        "gold_v2_1.json",
+        "gold_v2_2.json",
+        "manifest.json",
+        "query_index.jsonl",
+    }
+)
 
 
 @dataclass
@@ -181,6 +191,12 @@ def parse_warc_records(warc_path: Path) -> Dict[str, WarcRecord]:
             uri = warc_headers.get("warc-target-uri", "")
             sha = hashlib.sha256(html_payload).hexdigest()
             text = html_payload.decode("utf-8", errors="replace")
+            if sha in records:
+                prior_uri = records[sha].target_uri
+                raise ValueError(
+                    "FAIL-CLOSED: duplicate payload SHA in WARC response records: "
+                    f"{sha} ({prior_uri!r}, {uri!r})"
+                )
             records[sha] = WarcRecord(
                 target_uri=uri,
                 html_payload=html_payload,
@@ -243,7 +259,11 @@ def verify_gold_warc_integrity(gold_suite: GoldSuite, warc_path: Path):
         raise ValueError(msg)
 
 
-def verify_asset_manifest(manifest_path: Path, fixtures_dir: Path) -> Tuple[bool, List[str]]:
+def verify_asset_manifest(
+    manifest_path: Path,
+    fixtures_dir: Path,
+    required_assets: Optional[Set[str]] = None,
+) -> Tuple[bool, List[str]]:
     """
     Evaluator V2.4 Asset Manifest Gate:
     Recomputes byte sizes and SHA-256 hashes for all declared assets in asset_manifest.json.
@@ -256,8 +276,30 @@ def verify_asset_manifest(manifest_path: Path, fixtures_dir: Path) -> Tuple[bool
     except Exception as e:
         return False, [f"Malformed asset_manifest.json: {e}"]
 
+    if not isinstance(manifest, dict) or not manifest:
+        return False, ["Asset manifest must be a non-empty JSON object"]
+
     errors = []
+    declared_assets = set(manifest)
+    expected_assets = set(required_assets or declared_assets)
+
+    for fname in sorted(expected_assets - declared_assets):
+        errors.append(f"Missing required manifest declaration: {fname}")
+    for fname in sorted(declared_assets - expected_assets):
+        errors.append(f"Unexpected manifest declaration outside required asset contract: {fname}")
+
+    actual_assets = {
+        path.name
+        for path in fixtures_dir.iterdir()
+        if path.is_file() and path.name != manifest_path.name and not path.name.startswith(".")
+    }
+    for fname in sorted(actual_assets - declared_assets):
+        errors.append(f"Unlisted asset file: {fname}")
+
     for fname, meta in manifest.items():
+        if not isinstance(meta, dict):
+            errors.append(f"Malformed manifest metadata for {fname}: expected object")
+            continue
         fpath = fixtures_dir / fname
         if not fpath.exists():
             errors.append(f"Missing declared asset file: {fname}")
@@ -330,6 +372,9 @@ def verify_paired_input_identity(group_a_dir: Path, group_b_dir: Path, case_id: 
         fa = bundle_a / fname
         fb = bundle_b / fname
         if not fa.exists() and not fb.exists():
+            mismatches.append(
+                f"Case {case_id} required paired input missing from both runs: {fname}"
+            )
             continue
         if not fa.exists() or not fb.exists():
             mismatches.append(f"Case {case_id} file existence mismatch for {fname}: A exists={fa.exists()}, B exists={fb.exists()}")
@@ -1263,7 +1308,11 @@ def main():
     asset_manifest_passed = True
     asset_manifest_errors = []
     if asset_manifest_path:
-        asset_manifest_passed, asset_manifest_errors = verify_asset_manifest(asset_manifest_path, asset_manifest_path.parent)
+        asset_manifest_passed, asset_manifest_errors = verify_asset_manifest(
+            asset_manifest_path,
+            asset_manifest_path.parent,
+            required_assets=set(REAL_WEB_DEV_V2_REQUIRED_ASSETS),
+        )
         print(f"Asset Manifest Verification ({asset_manifest_path.name}): {'PASS' if asset_manifest_passed else 'FAIL'}")
         if not asset_manifest_passed:
             print("Asset errors:", asset_manifest_errors)
