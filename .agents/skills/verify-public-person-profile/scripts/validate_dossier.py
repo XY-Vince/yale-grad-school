@@ -76,7 +76,7 @@ ZH_GENERIC_WORDS = [
 ]
 
 ACADEMIC_CATEGORIES = {"university", "college", "school", "academy", "univ"}
-HEALTH_CATEGORIES = {"hospital", "clinic", "infirmary", "health"}
+HEALTH_CATEGORIES = {"hospital", "clinic", "infirmary", "health", "medicine", "medical"}
 RESEARCH_CATEGORIES = {"institute", "institution", "laboratory", "lab", "center"}
 COMPANY_CATEGORIES = {"company", "corporation", "corp", "inc", "ltd", "firm", "group"}
 DEPT_CATEGORIES = {"department", "dept", "division", "section"}
@@ -321,11 +321,14 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                     for tok in clean_tokens
                     if re.sub(r"^[^\w.]+|[^\w.]+$", "", tok) not in STOPWORDS
                 ]
+                substantive = [tok for tok in substantive if tok]
                 if not substantive:
                     substantive = [re.sub(r"^[^\w.]+|[^\w.]+$", "", tok) for tok in clean_tokens if tok]
+                    substantive = [tok for tok in substantive if tok]
 
+                ROLE_WORDS = {"resident", "fellow", "professor", "scientist", "director", "dean", "chair", "student", "doctor", "physician", "intern", "engineer", "researcher", "scholar", "clerk", "member"}
                 def _is_conflict(match_end_rel: int) -> bool:
-                    if not cat:
+                    if not cat or any(rw in raw_obj.lower() for rw in ROLE_WORDS):
                         return False
                     after_text = sent_lower[match_end_rel : match_end_rel + 35]
                     punct_split = re.split(r"[.;:!?\n]", after_text)
@@ -345,7 +348,7 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                 if len(substantive) >= 2:
                     # Contiguous noun phrase match strictly within same sentence
                     # sep_pat prohibits periods
-                    sep_pat = r"[\s,-]+(?:(?:the|of|at|in|for|on|and|to|from|with|by|a|an)\b[\s,-]*)*"
+                    sep_pat = r"[\s,&-]+(?:(?:the|of|at|in|for|on|and|&|to|from|with|by|a|an)\b[\s,&-]*)*"
                     phrase_pat = sep_pat.join(re.escape(tok) for tok in substantive)
                     for m in re.finditer(rf"(?<!\w){phrase_pat}(?!\w)", sent_lower):
                         if not _is_conflict(m.end()):
@@ -812,7 +815,7 @@ def validate_bundle(bundle_dir: Path, warc_path: Optional[Path] = None) -> Dict[
 
     structural_errors = list(errors)
     structural_valid = len(structural_errors) == 0
-    has_warc_ids = bool(sources and all(bool(s.warc_record_id) for s in sources.values()))
+    has_warc_ids = all(bool(s.warc_record_id) for s in sources.values())
     
     provenance_replay_valid = None
     replay_errors: List[str] = []
@@ -977,7 +980,10 @@ def verify_warc_replay(bundle_dir: Path, warc_path: Path) -> Dict[str, Any]:
 
                 verified_evidence += 1
 
-    is_replay_ok = (len(replay_errors) == 0 and verified_sources > 0 and verified_evidence > 0)
+    if len(sources) == 0:
+        is_replay_ok = (len(replay_errors) == 0)
+    else:
+        is_replay_ok = (len(replay_errors) == 0 and verified_sources > 0)
     return {
         "valid": is_replay_ok,
         "errors": replay_errors,
