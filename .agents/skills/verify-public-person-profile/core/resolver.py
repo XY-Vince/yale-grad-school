@@ -8,6 +8,7 @@ with guaranteed mathematical order-independence.
 
 import re
 from typing import Any, Dict, List, Set, Tuple, Optional
+from urllib.parse import urlsplit
 from models.schemas import (
     ClusterAssignment,
     ClusteringMethod,
@@ -64,7 +65,8 @@ DOMAIN_SIGNATURES = {
         "anchor", "fictional character", "character in"
     },
     "real_estate": {
-        "real estate", "realtor", "coldwell", "broker", "property", "housing"
+        "real estate", "realtor", "coldwell", "broker", "real property",
+        "property management", "housing"
     },
     "athletics": {
         "athletics", "swimming", "diver", "cscaa", "sports", "coach", "tournament", "olympic"
@@ -183,6 +185,15 @@ PINYIN_MAP = {
 TITLE_PREFIXES = r"^(?:(?:Assistant|Associate|Full|Distinguished|Adjunct|Clinical|Visiting|Executive|Senior|Junior|Principal|Lead|Staff|Postdoctoral)?\s+)?(?:Professor|Associate|Fellow|Scientist|Dean|Director|Chair|President|Researcher|Developer)\s+(?:of|in)\s+[A-Za-z\s]+?\s+(?:at|in)\s+"
 CAMPUS_EXCEPTIONS = {"chapel hill", "albany", "austin", "berkeley", "los angeles", "san diego", "davis", "irvine", "boulder", "ann arbor"}
 
+IDENTITY_ANCHOR_GENERIC_TOKENS = {
+    "and", "at", "center", "college", "department", "for", "hospital",
+    "institute", "medicine", "of", "public", "school", "the", "university",
+}
+PROFILE_HOST_GENERIC_LABELS = {
+    "ac", "com", "cs", "edu", "engineering", "faculty", "gov", "medicine",
+    "net", "org", "people", "person", "profile", "profiles", "www",
+}
+
 
 def clean_org_token(token: str) -> str:
     token = re.sub(r"[,;:\.]+$", "", token.strip())
@@ -228,9 +239,104 @@ def extract_domains(text: str, exclude_tokens: Optional[Set[str]] = None) -> Set
         lower_text = " ".join(words)
     domains = set()
     for dom, kws in DOMAIN_SIGNATURES.items():
-        if any(kw in lower_text for kw in kws):
+        if any(
+            kw in lower_text
+            if any("\u4e00" <= char <= "\u9fff" for char in kw)
+            else bool(
+                re.search(
+                    rf"(?<![a-z0-9]){re.escape(kw)}(?![a-z0-9])",
+                    lower_text,
+                )
+            )
+            for kw in kws
+        ):
             domains.add(dom)
     return domains
+
+
+def normalize_identity_anchor(value: str) -> str:
+    """Normalizes organization anchors without depending on their original capitalization."""
+    normalized = re.sub(r"[^a-z0-9\u4e00-\u9fff]+", " ", (value or "").lower())
+    return " ".join(normalized.split())
+
+
+def mention_organization_anchors(mention: EntityMention) -> Set[str]:
+    """Combines extractor output with already-normalized inferred affiliations."""
+    raw_anchors = set(mention.inferred_affiliations)
+    raw_anchors.update(extract_organizations(mention.context_snippet))
+    return {
+        normalized
+        for value in raw_anchors
+        if (normalized := normalize_identity_anchor(value))
+    }
+
+
+def organizations_share_identity_anchor(orgs1: Set[str], orgs2: Set[str]) -> bool:
+    """Requires a shared distinctive organization phrase, allowing punctuation variants."""
+    for org1 in orgs1:
+        tokens1 = {t for t in org1.split() if t not in IDENTITY_ANCHOR_GENERIC_TOKENS}
+        if not tokens1:
+            continue
+        for org2 in orgs2:
+            tokens2 = {t for t in org2.split() if t not in IDENTITY_ANCHOR_GENERIC_TOKENS}
+            if not tokens2:
+                continue
+            if org1 == org2:
+                return True
+            if len(tokens1.intersection(tokens2)) >= 2 and (
+                tokens1.issubset(tokens2) or tokens2.issubset(tokens1)
+            ):
+                return True
+    return False
+
+
+def trusted_profile_host_tokens(container: Optional[Dict[str, Any]], full_name: str) -> Set[str]:
+    """Returns distinctive hostname labels only for a trusted, name-bound person profile."""
+    if not isinstance(container, dict) or not full_name:
+        return set()
+
+    source_quality = container.get("source_quality_class")
+    url = str(container.get("url", ""))
+    if not source_quality and url:
+        from core.extractors.content_locator import classify_source_quality
+        source_quality = classify_source_quality(url)
+    if source_quality not in (SourceQualityClass.CLASS_A, SourceQualityClass.CLASS_B):
+        return set()
+
+    normalized_name = normalize_identity_anchor(full_name)
+    h1_name = normalize_identity_anchor(str(container.get("h1_text", "")))
+    jsonld_names = {
+        normalize_identity_anchor(str(name))
+        for name in container.get("jsonld_person_names", [])
+    }
+    name_bound = (
+        normalized_name == h1_name
+        or normalized_name in jsonld_names
+        or any(
+            re.search(rf"(?:^|\s){re.escape(normalized_name)}(?:\s|$)", value)
+            for value in {h1_name, *jsonld_names}
+            if value
+        )
+    )
+    profile_semantics = bool(container.get("has_bio")) or any(
+        part in url.lower() for part in ("/profile/", "/people/", "/faculty/", "/person/")
+    )
+    if not name_bound or not profile_semantics:
+        return set()
+
+    hostname = (urlsplit(url).hostname or "").lower()
+    return {
+        label
+        for label in hostname.split(".")
+        if len(label) >= 3 and label not in PROFILE_HOST_GENERIC_LABELS
+    }
+
+
+def profile_host_matches_organizations(host_tokens: Set[str], organizations: Set[str]) -> bool:
+    for token in host_tokens:
+        if any(token in organization.split() for organization in organizations):
+            return True
+    return False
 
 
 class ConstrainedUnionFind:
@@ -276,7 +382,12 @@ class ConstrainedUnionFind:
         return True
 
 
-def detect_cannot_link(m1: Any, m2: Any) -> bool:
+def detect_cannot_link(
+    m1: Any,
+    m2: Any,
+    *,
+    verified_identity_continuity: bool = False,
+) -> bool:
     """Detects mutually exclusive affiliations, institutions, or domains."""
     if m1.source_id == m2.source_id and m1.source_id != "SRC-FIXTURE":
         return False
@@ -327,7 +438,7 @@ def detect_cannot_link(m1: Any, m2: Any) -> bool:
     units2 = {u for phrase, u in COLLEGIATE_UNITS.items() if phrase in raw2.lower()}
     has_joint = any(cue in raw1.lower() or cue in raw2.lower() for cue in JOINT_APPOINTMENT_CUES)
     if units1 and units2 and not units1.intersection(units2):
-        if not has_joint:
+        if not has_joint and not verified_identity_continuity:
             return True
 
     # 1. Structural organization conflict check
@@ -384,7 +495,11 @@ def detect_cannot_link(m1: Any, m2: Any) -> bool:
             has_acad2 = any(p in raw2.lower() for p in ACADEMIC_PROFESSIONS)
             has_neg_conflict = (has_neg1 and has_acad2) or (has_neg2 and has_acad1)
 
-            if is_sequential_career and not has_domain_conflict and not has_neg_conflict:
+            if (
+                (is_sequential_career or verified_identity_continuity)
+                and (not has_domain_conflict or verified_identity_continuity)
+                and not has_neg_conflict
+            ):
                 # Sequential career migration across institutions - not a cannot-link
                 pass
             else:
@@ -397,7 +512,13 @@ def detect_cannot_link(m1: Any, m2: Any) -> bool:
     doms2 = extract_domains(raw2, exclude_tokens=name_tokens)
     for d1 in doms1:
         for d2 in doms2:
-            if (d1, d2) in INCOMPATIBLE_DOMAIN_PAIRS or (d2, d1) in INCOMPATIBLE_DOMAIN_PAIRS:
+            if (
+                not verified_identity_continuity
+                and (
+                    (d1, d2) in INCOMPATIBLE_DOMAIN_PAIRS
+                    or (d2, d1) in INCOMPATIBLE_DOMAIN_PAIRS
+                )
+            ):
                 return True
 
     # 3. Cross-profession incompatibility
@@ -584,6 +705,57 @@ def resolve_mentions(
         for sname, fnames in s_map.items():
             active_source_names.setdefault(s_id, {}).setdefault(sname.lower(), set()).update({fn.lower() for fn in fnames})
 
+    source_org_anchors: Dict[str, Set[str]] = {}
+    source_full_names: Dict[str, Set[str]] = {}
+    for mention in sorted_mentions:
+        source_org_anchors.setdefault(mention.source_id, set()).update(
+            mention_organization_anchors(mention)
+        )
+        name_tokens = [
+            token.rstrip(".,").lower()
+            for token in mention.raw_name_text.split()
+            if token.lower().rstrip(".,") not in HONORIFICS
+        ]
+        if len(name_tokens) >= 2:
+            source_full_names.setdefault(mention.source_id, set()).add(" ".join(name_tokens))
+
+    # A bridge is source-level because one snippet may state current employment while
+    # another carries the historical affiliation that independently corroborates identity.
+    strong_identity_bridge_names: Dict[Tuple[str, str], Set[str]] = {}
+    confirmed_source_names: Dict[str, Set[str]] = {}
+    source_ids = sorted(source_full_names)
+    for source_index, source_id_1 in enumerate(source_ids):
+        for source_id_2 in source_ids[source_index + 1:]:
+            common_names = source_full_names[source_id_1].intersection(
+                source_full_names[source_id_2]
+            )
+            if not common_names:
+                continue
+            organizations_1 = source_org_anchors.get(source_id_1, set())
+            organizations_2 = source_org_anchors.get(source_id_2, set())
+            for full_name in common_names:
+                container_1 = (
+                    source_profile_containers.get(source_id_1)
+                    if source_profile_containers
+                    else None
+                )
+                container_2 = (
+                    source_profile_containers.get(source_id_2)
+                    if source_profile_containers
+                    else None
+                )
+                host_tokens_1 = trusted_profile_host_tokens(container_1, full_name)
+                host_tokens_2 = trusted_profile_host_tokens(container_2, full_name)
+                has_shared_organization = organizations_share_identity_anchor(
+                    organizations_1,
+                    organizations_2,
+                )
+                if (host_tokens_1 or host_tokens_2) and has_shared_organization:
+                    source_pair = (source_id_1, source_id_2)
+                    strong_identity_bridge_names.setdefault(source_pair, set()).add(full_name)
+                    confirmed_source_names.setdefault(source_id_1, set()).add(full_name)
+                    confirmed_source_names.setdefault(source_id_2, set()).add(full_name)
+
     edges = []
 
     for i in range(n):
@@ -598,17 +770,13 @@ def resolve_mentions(
                 rel = MachineRelation.NONMATCH
                 expl = f"Low similarity ({sim:.2f})"
             else:
-                is_cannot_link = detect_cannot_link(m1, m2)
                 raw1 = m1.context_snippet + " " + " ".join(m1.inferred_affiliations)
                 raw2 = m2.context_snippet + " " + " ".join(m2.inferred_affiliations)
                 name1_toks = set(m1.raw_name_text.lower().split())
                 name2_toks = set(m2.raw_name_text.lower().split())
-                orgs1 = extract_organizations(raw1) - name1_toks
-                orgs2 = extract_organizations(raw2) - name2_toks
-                shared_orgs = {
-                    o1 for o1 in orgs1 for o2 in orgs2
-                    if (o1 in o2 or o2 in o1) and o1.lower() not in GENERIC_ORGS and o2.lower() not in GENERIC_ORGS
-                }
+                orgs1 = mention_organization_anchors(m1)
+                orgs2 = mention_organization_anchors(m2)
+                shared_orgs = organizations_share_identity_anchor(orgs1, orgs2)
                 doms1 = extract_domains(raw1, exclude_tokens=name1_toks | name2_toks)
                 doms2 = extract_domains(raw2, exclude_tokens=name1_toks | name2_toks)
                 shared_doms = doms1.intersection(doms2)
@@ -619,6 +787,74 @@ def resolve_mentions(
                 )
 
                 same_src = (m1.source_id == m2.source_id and m1.source_id != "SRC-FIXTURE")
+                full_name_match = (
+                    match_type in {"exact", "token_exact"}
+                    and len(m1.raw_name_text.split()) >= 2
+                    and len(m2.raw_name_text.split()) >= 2
+                )
+                source_pair = tuple(sorted((m1.source_id, m2.source_id)))
+                bridge_names = strong_identity_bridge_names.get(source_pair, set())
+                normalized_pair_names = []
+                for mention in (m1, m2):
+                    tokens = [
+                        token.rstrip(".,").lower()
+                        for token in mention.raw_name_text.split()
+                        if token.lower().rstrip(".,") not in HONORIFICS
+                    ]
+                    normalized_pair_names.append(" ".join(tokens))
+
+                verified_identity_continuity = False
+                for bridge_name in bridge_names:
+                    surname = bridge_name.split()[-1]
+                    if not all(
+                        name == bridge_name or name == surname
+                        for name in normalized_pair_names
+                    ):
+                        continue
+                    source_is_unambiguous = True
+                    if surname in normalized_pair_names:
+                        for source_id in (m1.source_id, m2.source_id):
+                            same_surname_names = active_source_names.get(source_id, {}).get(
+                                surname, set()
+                            )
+                            normalized_candidates = []
+                            for candidate_name in same_surname_names:
+                                candidate_tokens = [
+                                    token.rstrip(".,")
+                                    for token in candidate_name.split()
+                                    if token.rstrip(".,") not in HONORIFICS
+                                ]
+                                if len(candidate_tokens) >= 2:
+                                    normalized_candidates.append(" ".join(candidate_tokens))
+                            if any(
+                                candidate_name != bridge_name
+                                for candidate_name in normalized_candidates
+                            ):
+                                source_is_unambiguous = False
+                                break
+                    if source_is_unambiguous:
+                        verified_identity_continuity = True
+                        break
+
+                is_cannot_link = detect_cannot_link(
+                    m1,
+                    m2,
+                    verified_identity_continuity=verified_identity_continuity,
+                )
+                profile_bridge = False
+                if not same_src and full_name_match and source_profile_containers:
+                    container1 = source_profile_containers.get(m1.source_id)
+                    container2 = source_profile_containers.get(m2.source_id)
+                    host_tokens1 = trusted_profile_host_tokens(container1, m1.raw_name_text)
+                    host_tokens2 = trusted_profile_host_tokens(container2, m2.raw_name_text)
+                    profile_bridge = bool(
+                        (host_tokens1 or host_tokens2)
+                        and (
+                            shared_orgs
+                            or profile_host_matches_organizations(host_tokens1, orgs2)
+                            or profile_host_matches_organizations(host_tokens2, orgs1)
+                        )
+                    )
 
                 if is_surname_honorific:
                     # Identify surname and candidate full name
@@ -641,7 +877,15 @@ def resolve_mentions(
                     competing_full_names = set()
                     for raw_n in all_detected_same_surname:
                         norm_n = " ".join(raw_n.lower().split())
-                        non_hon_toks = [t for t in norm_n.split() if t.rstrip(".,") not in HONORIFICS]
+                        raw_tokens = [t.rstrip(".,") for t in norm_n.split()]
+                        honorific_positions = [
+                            index
+                            for index, token in enumerate(raw_tokens)
+                            if token in HONORIFICS
+                        ]
+                        if honorific_positions:
+                            raw_tokens = raw_tokens[honorific_positions[-1] + 1:]
+                        non_hon_toks = [t for t in raw_tokens if t not in HONORIFICS]
                         if len(non_hon_toks) < 2:
                             continue
                         clean_n = " ".join(non_hon_toks)
@@ -691,6 +935,12 @@ def resolve_mentions(
                                 else:
                                     is_local_antecedent = False
 
+                    is_source_identity_confirmed = (
+                        same_src
+                        and cand_full_name
+                        in confirmed_source_names.get(m1.source_id, set())
+                    )
+
                     # Conservative policy: Surname honorifics strictly default to REVIEW unless
                     # verified alias, target-bound profile container, or immediate local antecedent is present
                     has_corroboration = (
@@ -699,6 +949,7 @@ def resolve_mentions(
                         and (
                             is_target_bound_container
                             or is_local_antecedent
+                            or is_source_identity_confirmed
                             or (match_type == "verified_alias")
                         )
                     )
@@ -706,7 +957,8 @@ def resolve_mentions(
                     has_corroboration = (
                         same_src
                         or (match_type == "verified_alias")
-                        or bool(shared_orgs)
+                        or shared_orgs
+                        or profile_bridge
                     )
 
                 COLLEGIATE_UNITS_MAP = {
@@ -769,7 +1021,8 @@ def resolve_mentions(
                         expl = "Surname-only honorific requires single-subject profile container or unambiguous local antecedent; routed to review to prevent false merges"
                 elif sim >= match_threshold and has_corroboration:
                     rel = MachineRelation.MATCH
-                    expl = f"High token overlap ({sim:.2f}) with corroborating evidence (org/domain/source)"
+                    corroboration_kind = "trusted profile bridge" if profile_bridge else "org/domain/source"
+                    expl = f"High token overlap ({sim:.2f}) with corroborating evidence ({corroboration_kind})"
                 else:
                     rel = MachineRelation.REVIEW
                     expl = f"Candidate name match ({sim:.2f}) without sufficient corroborating evidence; requires review"
