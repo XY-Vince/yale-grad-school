@@ -23,10 +23,12 @@ from benchmarks.tools.evaluator_v2_4 import (
     PAIR_COMPARISON_FILES,
     REAL_WEB_DEV_V2_REQUIRED_ASSETS,
     aggregate_suite_v2_4,
+    classify_evaluation_decision,
     compute_bundle_tree_hash,
     compute_case_funnel,
     evaluate_bundle_v2_4,
     parse_warc_records,
+    render_markdown_report,
     verify_asset_manifest,
     verify_gold_warc_integrity,
     verify_paired_input_identity,
@@ -393,6 +395,36 @@ def test_false_splits_gate_blocks_release():
 
     suite_lenient = aggregate_suite_v2_4([res], expected_case_ids=["C-1"], max_false_splits=2)
     assert suite_lenient["gates"]["false_splits_gate"]
+
+
+def test_development_pass_cannot_be_reported_as_release_ready():
+    """A seen development suite may advance to blind evaluation, never directly to release."""
+    assert classify_evaluation_decision(True, "development") == "ready_for_blind_evaluation"
+    assert classify_evaluation_decision(False, "development") == "blocked"
+
+    report = render_markdown_report(
+        {
+            "evaluation_role": "development",
+            "evaluation_decision": "ready_for_blind_evaluation",
+            "all_gates_passed": True,
+            "provenance": {},
+            "gates": {},
+            "suite_funnel": {},
+            "diagnostic_metrics": {},
+            "case_details": [],
+        }
+    )
+    assert "进入全新预注册盲测" in report
+    assert "满足发布与合流标准" not in report
+
+
+def test_blind_pass_requires_independent_release_review():
+    """Passing a preregistered blind suite is eligibility for review, not an automatic release claim."""
+    assert classify_evaluation_decision(True, "blind_release") == "eligible_for_release_review"
+    assert classify_evaluation_decision(False, "blind_release") == "blocked"
+
+    with pytest.raises(ValueError, match="evaluation role"):
+        classify_evaluation_decision(True, "unknown")
 
 
 def test_six_level_funnel_first_failure_attribution():
