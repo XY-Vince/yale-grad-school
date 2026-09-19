@@ -204,6 +204,33 @@ def locate_evidence_slices(
         if any(pat.search(content) for pat in name_patterns):
             add_evidence(m.start(0), m.end(0), 'meta[name="description"]')
 
+    # Strategy 1c: An authoritative profile title can bind the canonical
+    # person name to an explicitly named institution in one compact slice.
+    if eff_quality in {SourceQualityClass.CLASS_A, SourceQualityClass.CLASS_B}:
+        title_pattern = re.compile(r"<title\b[^>]*>(?P<title>.*?)</title>", re.IGNORECASE | re.DOTALL)
+        for title_match in title_pattern.finditer(html_text):
+            title_text = re.sub(r"<[^>]+>", " ", title_match.group("title"))
+            title_text = re.sub(r"\s+", " ", title_text).strip()
+            parts = [part.strip() for part in re.split(r"\s*[|]\s*", title_text, maxsplit=1)]
+            if len(parts) != 2:
+                continue
+            target_norm = " ".join(target_name.casefold().split())
+            left_norm = " ".join(parts[0].casefold().split())
+            institution = parts[1]
+            if left_norm != target_norm:
+                continue
+            if not re.search(
+                r"\b(?:University|College|School|Institute|Academy|Hospital|Medicine)\b",
+                institution,
+                re.IGNORECASE,
+            ):
+                continue
+            add_evidence(
+                title_match.start(),
+                title_match.end(),
+                "document-context:profile-title",
+            )
+
     # Strategy 2: Academic Profile Heading & Biography Container
     # Look for <h1-h3> containing target name followed by biography / roles section (skipping modal/dialog headings)
     heading_pat = re.compile(r'<h[1-3]([^>]*)>(.*?)</h[1-3]>', re.DOTALL | re.IGNORECASE)
@@ -290,6 +317,55 @@ def locate_evidence_slices(
             if p_end != -1 and p_end < ae_idx:
                 ae_idx = p_end + 4
             add_evidence(as_idx, ae_idx, "section#about p")
+
+            # Keep education cards as a separate exact slice. Subject binding
+            # happens later through a same-source document-context contract.
+            education_start = re.search(
+                r'<section\b[^>]*\bid\s*=\s*["\']?education["\']?[^>]*>',
+                html_text[am.end(): min(len(html_text), am.end() + 25000)],
+                re.IGNORECASE,
+            )
+            if education_start:
+                section_start = am.end() + education_start.start()
+                section_region = html_text[section_start: min(len(html_text), section_start + 12000)]
+                card_match = re.search(
+                    r'(?P<card><small\b[^>]*>[^<]*(?:19|20)\d{2}[^<]*</small>'
+                    r'[\s\S]{0,1800}?<h5\b[^>]*class\s*=\s*["\']?[^>]*card-title[^>]*>'
+                    r'[\s\S]*?</h5>[\s\S]{0,1200}?<h6\b[^>]*>[\s\S]*?</h6>)',
+                    section_region,
+                    re.IGNORECASE,
+                )
+                if card_match:
+                    card_start = section_start + card_match.start("card")
+                    card_end = section_start + card_match.end("card")
+                    add_evidence(
+                        card_start,
+                        card_end,
+                        "document-context:personal-education-card",
+                    )
+
+    # Strategy 2e: On an encyclopedic biography page, retain a narrowly
+    # bounded leadership paragraph that refers to the page subject by surname.
+    target_tokens = target_name.strip().split()
+    if (
+        ("wikipedia.org" in url or "mw-parser-output" in html_text)
+        and len(target_tokens) >= 2
+        and any(pat.search(re.sub(r"<[^>]+>", " ", match.group(2))) for match in heading_pat.finditer(html_text) for pat in name_patterns)
+    ):
+        surname = target_tokens[-1]
+        leadership_pattern = re.compile(
+            rf'<p\b[^>]*>\s*(?:<[^>]+>\s*)*{re.escape(surname)}\s+'
+            r'(?:was|served\s+as|became)\s+(?:the\s+)?(?:\d{4}\s+)?'
+            r'(?:(?!</p>)[\s\S])*?\b(?:President|Chair|Chairman|Chairwoman|CEO)\b'
+            r'(?:(?!</p>)[\s\S])*?</p>',
+            re.IGNORECASE,
+        )
+        for leadership_match in leadership_pattern.finditer(html_text):
+            add_evidence(
+                leadership_match.start(),
+                leadership_match.end(),
+                "document-context:encyclopedic-leadership",
+            )
 
     # Strategy 3: Pinned Item / Repository / Work Descriptions (e.g. GitHub, portfolio)
     pinned_pat = re.compile(

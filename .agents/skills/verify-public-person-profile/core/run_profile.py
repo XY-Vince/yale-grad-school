@@ -127,7 +127,10 @@ def check_temporal_overlap(c1: Claim, c2: Claim) -> bool:
 
 from core.collectors.live_search import LiveSearchCollector
 from core.collectors.warc_player import WarcPlayerCollector
-from core.extractors.claim_extractor import extract_claims_from_evidence
+from core.extractors.claim_extractor import (
+    extract_claims_from_evidence,
+    extract_document_context_claims,
+)
 from core.extractors.content_locator import classify_source_quality, locate_evidence_slices
 from core.extractors.mention_extractor import extract_mentions_and_aliases
 from core.render_dossier import render_dossier_markdown
@@ -489,6 +492,12 @@ def route_and_extract_claims(
         for m_id in cand.mention_ids:
             mention_to_cand[m_id] = cand
 
+    source_subject_context: Dict[str, List[Tuple[EntityMention, CandidateEntity]]] = {}
+    for mention in mentions_list:
+        candidate = mention_to_cand.get(mention.mention_id)
+        if candidate is not None:
+            source_subject_context.setdefault(mention.source_id, []).append((mention, candidate))
+
     all_claims: List[Claim] = []
     seen_claim_keys = set()
 
@@ -518,6 +527,37 @@ def route_and_extract_claims(
     for ev in evidence_list:
         ev_mentions = [m for m in mentions_list if m.evidence_id == ev.evidence_id]
         if not ev_mentions:
+            if not ev.locator.selector_or_page.startswith("document-context:"):
+                continue
+            same_source_context = source_subject_context.get(ev.source_id, [])
+            candidate_ids = {
+                candidate.candidate_entity_id for _, candidate in same_source_context
+            }
+            if len(candidate_ids) != 1:
+                continue
+            target_norm = " ".join((default_target_name or "").casefold().split())
+            exact_subjects = [
+                (mention, candidate)
+                for mention, candidate in same_source_context
+                if " ".join(mention.raw_name_text.casefold().split()) == target_norm
+            ]
+            if not exact_subjects:
+                continue
+            subject_mention, subject_candidate = sorted(
+                exact_subjects,
+                key=lambda item: (item[0].evidence_id, item[0].char_start, item[0].mention_id),
+            )[0]
+            context_claims = extract_document_context_claims(
+                evidence=ev,
+                candidate_entity_id=subject_candidate.candidate_entity_id,
+                subject_mention=subject_mention,
+                target_name=default_target_name or subject_mention.raw_name_text,
+            )
+            for claim in context_claims:
+                claim_key = semantic_claim_key(claim)
+                if claim_key not in seen_claim_keys:
+                    seen_claim_keys.add(claim_key)
+                    all_claims.append(claim)
             continue
 
         cand_id_map = {
@@ -665,6 +705,8 @@ def run_pipeline(
         evidence_list.extend(page_evs)
 
         for ev in page_evs:
+            if ev.locator.selector_or_page.startswith("document-context:"):
+                continue
             mentions = extract_mentions_and_aliases(
                 source_id=src_id,
                 raw_text=ev.verbatim_excerpt,
