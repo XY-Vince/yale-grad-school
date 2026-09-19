@@ -131,7 +131,7 @@ def detect_clause_temporal_status(clause: str, target_name: Optional[str] = None
         ):
             return TemporalStatus.CURRENT
         if re.search(
-            rf"{t_pat}\s*[,，]\s*(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?[a-z-]+\s+)*(?:Dean|Professor|Director|President|Chair|Scientist|Fellow|Researcher)",
+            rf"{t_pat}\s*[,，]\s*(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?[a-z-]+\s+)*(?:Dean|Professor|Director|President|Chair|Scientist|Fellow|Researcher|Engineer|Analyst|Manager|Clerk|Resident|Member|Trustee)",
             clause,
             re.IGNORECASE,
         ):
@@ -729,9 +729,18 @@ def extract_claims_from_evidence(
 
         field_token = r"(?!\b(?:at|in|for|from|with|to|by|while|the|a|an|of|and)\b)[A-Za-z]+"
         field_expr = rf"{field_token}(?:\s+(?:and\s+(?!{ROLE_LOOKAHEAD}))?{field_token})*"
+        role_of_suffix = (
+            r"\s+of\s+(?:the\s+)?[A-Za-z]+(?:\s+[A-Za-z]+)*?"
+            r"(?=\s+(?:at|in|from|with)\b|[,，.;:<\n]|$)"
+        )
+        governance_role_pat = (
+            rf"(?:Clerks?(?:{role_of_suffix})?|"
+            rf"Members?(?:\s+at\s+Large|{role_of_suffix})?|"
+            rf"Trustees?(?:{role_of_suffix})?)"
+        )
         role_base_pat = (
             rf"(?:{ROLE_PREFIX_WORDS}\s+)*"
-            rf"(?:Associate\s+Research\s+Scientists?|Research\s+Scientists?|Professor(?:s)?(?:\s+of\s+{field_expr})?|Postdoctoral(?:\s+Associates?|\s+Researchers?|\s+Fellows?)?|Postdoc(?:\s+Fellows?)?|Fellows?|Deans?|Directors?(?:\s+of\s+(?:the\s+)?[A-Za-z]+(?:\s+[A-Za-z]+)*?(?=\s+(?:at|in|from|with)\b|[,，.;:\n]|$))?|Scientists?|Engineers?|Agents?|Chairs?|Realtors?|Presidents?|Researchers?|Associates?|[^\s，。；、]{{0,15}}?{ROLE_HEAD_WORDS})\b"
+            rf"(?:Associate\s+Research\s+Scientists?|Research\s+Scientists?|Professor(?:s)?(?:\s+of\s+{field_expr})?|Postdoctoral(?:\s+Associates?|\s+Researchers?|\s+Fellows?)?|Postdoc(?:\s+Fellows?)?|Fellows?|{governance_role_pat}|Deans?|Directors?(?:{role_of_suffix})?|Scientists?|Engineers?|Agents?|Chairs?|Realtors?|Presidents?|Researchers?|Associates?|[^\s，。；、]{{0,15}}?{ROLE_HEAD_WORDS})\b"
         )
         compound_role_pat = rf"({role_base_pat})(?:\s+(?:and|&|/)\s+({role_base_pat}))?"
         prefix_mod_pat = r"(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?(?:award-winning|renowned|noted|prominent|acclaimed|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting|associate|assistant|lead|chief|principal|staff|research|dedicated)\s+)*"

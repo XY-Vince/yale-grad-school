@@ -490,6 +490,31 @@ def route_and_extract_claims(
             mention_to_cand[m_id] = cand
 
     all_claims: List[Claim] = []
+    seen_claim_keys = set()
+
+    def semantic_claim_key(claim: Claim) -> Tuple[object, ...]:
+        normalized_object = re.sub(
+            r"\s+",
+            " ",
+            unicodedata.normalize("NFKC", claim.object_raw).casefold(),
+        ).strip()
+
+        def date_key(value: Optional[DateWithPrecision]) -> Optional[Tuple[str, str]]:
+            if value is None:
+                return None
+            return str(value.date_value), value.precision.value
+
+        return (
+            claim.candidate_entity_id,
+            claim.predicate,
+            normalized_object,
+            claim.object_norm_id,
+            claim.polarity.value,
+            claim.temporal_status.value,
+            date_key(claim.valid_from),
+            date_key(claim.valid_to),
+        )
+
     for ev in evidence_list:
         ev_mentions = [m for m in mentions_list if m.evidence_id == ev.evidence_id]
         if not ev_mentions:
@@ -509,9 +534,8 @@ def route_and_extract_claims(
             mention_to_cand_id=cand_id_map,
         )
 
-        seen_claim_keys = set()
         for c in ev_claims:
-            ck = (c.candidate_entity_id, c.predicate, c.object_raw.lower().strip())
+            ck = semantic_claim_key(c)
             if ck not in seen_claim_keys:
                 seen_claim_keys.add(ck)
                 all_claims.append(c)
