@@ -321,8 +321,10 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                     for tok in clean_tokens
                     if re.sub(r"^[^\w.]+|[^\w.]+$", "", tok) not in STOPWORDS
                 ]
+                substantive = [tok for tok in substantive if tok]
                 if not substantive:
                     substantive = [re.sub(r"^[^\w.]+|[^\w.]+$", "", tok) for tok in clean_tokens if tok]
+                    substantive = [tok for tok in substantive if tok]
 
                 def _is_conflict(match_end_rel: int) -> bool:
                     if not cat:
@@ -345,7 +347,7 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                 if len(substantive) >= 2:
                     # Contiguous noun phrase match strictly within same sentence
                     # sep_pat prohibits periods
-                    sep_pat = r"[\s,-]+(?:(?:the|of|at|in|for|on|and|to|from|with|by|a|an)\b[\s,-]*)*"
+                    sep_pat = r"[\s,&-]+(?:(?:the|of|at|in|for|on|and|&|to|from|with|by|a|an)\b[\s,&-]*)*"
                     phrase_pat = sep_pat.join(re.escape(tok) for tok in substantive)
                     for m in re.finditer(rf"(?<!\w){phrase_pat}(?!\w)", sent_lower):
                         if not _is_conflict(m.end()):

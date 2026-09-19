@@ -203,3 +203,12 @@ def test_zero_hallucination_invariant(ray_liu_warc, tmp_path):
     for c in claims:
         assert "Nobel" not in c["object_raw"], "Fictitious hint must not be fabricated into claims!"
         assert "MIT" not in c["object_raw"], "Fictitious hint must not be fabricated into claims!"
+
+
+def test_find_object_in_text_with_ampersand():
+    """Unit test: find_object_in_text correctly validates compound degrees and departments with ampersand (&)."""
+    from scripts.validate_dossier import find_object_in_text
+    text = "Ray Liu earned his BS in Electrical Engineering & Computer Sciences from UC Berkeley in 2018."
+    obj = "BS in Electrical Engineering & Computer Sciences"
+    res = find_object_in_text(obj, text)
+    assert res is not None, "find_object_in_text must match objects containing ampersands (&)!"
