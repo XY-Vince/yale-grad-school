@@ -1101,7 +1101,7 @@ def extract_claims_from_evidence(
 
         # 7. Education / Graduated from extraction
         grad_matches = re.finditer(
-            r"(?:(?:毕业于|graduated from|alumnus of|alumna of)|(?:(?:received|earned|obtained|awarded)\s+(?:my\s+|her\s+|his\s+|their\s+|a\s+|an\s+)?(?:Ph\.?D\.?|Doctor of Philosophy|M\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Master(?:'s)?|Bachelor(?:'s)?|Juris Doctor|J\.?D\.?)(?:\s+in\s+[A-Za-z\s&.-]+?)?\s+from))\s*((?:the\s+)?(?:University\s+of\s+[A-Za-z\s]+?(?:\s+at\s+[A-Za-z\s]+)?|UC\s+[A-Za-z]+|Berkeley|MIT|CMU|NYU|Stanford|Harvard|Princeton|Caltech|[A-Za-z0-9\s一-鿿]{0,50}?(?:University(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|College|Institute|School(?:\s+of\s+[A-Za-z\s]+)?|SUNY(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|CUNY(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|大学|学院)))(?=\s+(?:in\s+\d{4}|during|\bwith\b|\band\b)|[,.;，。；\n]|$)",
+            r"(?:(?:毕业于|graduated from|alumnus of|alumna of)|(?:(?:received|earned|obtained|awarded|graduated with)\s+(?:my\s+|her\s+|his\s+|their\s+|a\s+|an\s+)?(?:Ph\.?D\.?|Doctor of Philosophy|M\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Master(?:'s)?|Bachelor(?:'s)?|Juris Doctor|J\.?D\.?)(?:\s+in\s+[A-Za-z\s&.-]+?)?\s+from))\s*((?:the\s+)?(?:University\s+of\s+[A-Za-z\s]+?(?:\s+at\s+[A-Za-z\s]+)?|UC\s+[A-Za-z]+|Berkeley|MIT|CMU|NYU|Stanford|Harvard|Princeton|Caltech|[A-Za-z0-9\s一-鿿]{0,50}?(?:University(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|College|Institute|School(?:\s+of\s+[A-Za-z\s]+)?|SUNY(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|CUNY(?:\s+(?:of|at)\s+[A-Za-z\s]+)?|大学|学院)))(?=\s+(?:in\s+\d{4}|during|\bwith\b|\band\b)|[,.;，。；\n]|$)",
             clause,
             re.IGNORECASE,
         )
@@ -1160,7 +1160,7 @@ def extract_claims_from_evidence(
 
         # 8. Degree received extraction
         deg_matches = re.finditer(
-            r"(?:received|earned|holds|obtained|awarded|获得|取得)\s+(?:my\s+|her\s+|his\s+|their\s+|a\s+|an\s+)?((?:Ph\.?D\.?|Doctor of Philosophy|M\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Master(?:'s)?|Bachelor(?:'s)?|Juris Doctor|J\.?D\.?)(?:\s+in\s+[A-Za-z\s&.-]+?)?)(?:\s+from|\s*[,;.]|$)",
+            r"(?:received|earned|holds|obtained|awarded|graduated with|获得|取得)\s+(?:my\s+|her\s+|his\s+|their\s+|a\s+|an\s+)?((?:Ph\.?D\.?|Doctor of Philosophy|M\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Master(?:'s)?|Bachelor(?:'s)?|Juris Doctor|J\.?D\.?)(?:\s+in\s+[A-Za-z\s&.-]+?)?)(?:\s+from|\s*[,;.]|$)",
             clause,
             re.IGNORECASE,
         )

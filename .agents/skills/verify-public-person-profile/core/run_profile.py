@@ -232,11 +232,24 @@ def compute_candidate_prior_affinity(
     if prior.known_affiliations:
         max_possible += 2.0
         aff_hit = False
+        AFFILIATION_SYNONYMS = {
+            "umich": ["university of michigan", "michigan", "umich"],
+            "uc berkeley": ["berkeley", "university of california berkeley", "uc berkeley", "cal"],
+            "umd": ["university of maryland", "umd"],
+            "cmu": ["carnegie mellon", "cmu"],
+            "mit": ["massachusetts institute of technology", "mit"],
+            "uiuc": ["university of illinois", "uiuc"],
+            "upenn": ["university of pennsylvania", "upenn", "penn"],
+            "nyu": ["new york university", "nyu"],
+            "pku": ["peking university", "pku", "beida", "北京大学"],
+        }
         for aff in prior.known_affiliations:
             aff_norm = aff.lower().strip()
-            if aff_norm and (
-                aff_norm in combined_text
-                or any(aff_norm in inf.lower() for m in cand_mentions for inf in m.inferred_affiliations)
+            synonyms = AFFILIATION_SYNONYMS.get(aff_norm, [aff_norm])
+            if any(
+                syn in combined_text
+                or any(syn in inf.lower() for m in cand_mentions for inf in m.inferred_affiliations)
+                for syn in synonyms
             ):
                 aff_hit = True
                 break
