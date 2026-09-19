@@ -1,0 +1,4 @@
+{"case_id": "DEV-005", "uri": "https://ai.tsinghua.edu.cn/people/duan-shize", "attempted_at": "2026-09-19T02:54:58.438427+00:00", "reason": "Connection timed out (no public route)", "error_type": "timeout"}
+{"case_id": "DEV-005", "uri": "http://nenu.edu.cn/faculty/duan-shize", "attempted_at": "2026-09-19T02:54:58.440098+00:00", "reason": "DNS resolution failed [Errno 8] nodename nor servname provided", "error_type": "dns_failure"}
+{"case_id": "DEV-007", "uri": "https://www.linkedin.com/in/loganchen", "attempted_at": "2026-09-19T02:54:58.440137+00:00", "reason": "HTTP Error 999: Request blocked by anti-bot policy", "error_type": "anti_bot_999"}
+{"case_id": "DEV-008", "uri": "https://commencement.umich.edu/archive/2024-program", "attempted_at": "2026-09-19T02:54:58.440192+00:00", "reason": "HTTP Error 403: Forbidden", "error_type": "http_403"}
