@@ -20,12 +20,16 @@ import pytest
 from pydantic import ValidationError
 
 from benchmarks.tools.evaluator_v2_4 import (
+    PAIR_COMPARISON_FILES,
+    REAL_WEB_DEV_V2_REQUIRED_ASSETS,
     aggregate_suite_v2_4,
     compute_bundle_tree_hash,
     compute_case_funnel,
     evaluate_bundle_v2_4,
+    parse_warc_records,
     verify_asset_manifest,
     verify_gold_warc_integrity,
+    verify_paired_input_identity,
 )
 from models.gold_schema_v2 import GoldCase, GoldClaim, GoldClaimSupport, GoldSuite
 
@@ -158,6 +162,122 @@ def test_asset_manifest_verification_detects_tampering():
         ok, errors = verify_asset_manifest(manifest_path, td)
         assert not ok
         assert any("SHA-256 mismatch" in e for e in errors)
+
+
+def test_asset_manifest_rejects_missing_declaration_and_unlisted_asset():
+    """The manifest must cover the complete preregistered asset set, not only entries it declares."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        td = Path(tmpdir)
+        declared = td / "declared.txt"
+        unlisted = td / "unlisted.txt"
+        declared.write_text("declared", encoding="utf-8")
+        unlisted.write_text("unlisted", encoding="utf-8")
+
+        manifest_path = td / "asset_manifest.json"
+        manifest_path.write_text(
+            json.dumps(
+                {
+                    "declared.txt": {
+                        "sha256": hashlib.sha256(declared.read_bytes()).hexdigest(),
+                        "bytes": len(declared.read_bytes()),
+                    }
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        ok, errors = verify_asset_manifest(
+            manifest_path,
+            td,
+            required_assets={"declared.txt", "required-but-omitted.txt"},
+        )
+        assert not ok
+        assert any("Missing required manifest declaration" in e for e in errors)
+        assert any("Unlisted asset file" in e for e in errors)
+
+
+def test_real_fixture_required_asset_contract_is_explicit():
+    """The real-web fixture contract remains explicit and cannot shrink with the manifest itself."""
+    assert REAL_WEB_DEV_V2_REQUIRED_ASSETS == {
+        "capture_failures.jsonl",
+        "capture_manifest.jsonl",
+        "corpus.warc",
+        "gold_v2_1.json",
+        "gold_v2_2.json",
+        "manifest.json",
+        "query_index.jsonl",
+    }
+
+
+def test_warc_parser_rejects_duplicate_payload_sha_records():
+    """Two response records with the same payload SHA must not silently overwrite one another."""
+    body = b"<html><body>same payload</body></html>"
+
+    def record(uri: str) -> bytes:
+        http_payload = b"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n" + body
+        headers = (
+            "WARC/1.0\r\n"
+            "WARC-Type: response\r\n"
+            f"WARC-Target-URI: {uri}\r\n"
+            f"Content-Length: {len(http_payload)}\r\n"
+            "\r\n"
+        ).encode("ascii")
+        return headers + http_payload + b"\r\n\r\n"
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        warc_path = Path(tmpdir) / "duplicate.warc"
+        warc_path.write_bytes(record("https://example.com/a") + record("https://example.com/b"))
+        with pytest.raises(ValueError, match="duplicate payload SHA"):
+            parse_warc_records(warc_path)
+
+
+def test_paired_input_identity_compares_only_exogenous_pipeline_inputs():
+    """Resolver outputs may change; captured sources, evidence, and mentions may not."""
+    assert PAIR_COMPARISON_FILES == [
+        "sources.jsonl",
+        "evidence.jsonl",
+        "mentions.jsonl",
+    ]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        group_a = root / "a" / "CASE-01"
+        group_b = root / "b" / "CASE-01"
+        group_a.mkdir(parents=True)
+        group_b.mkdir(parents=True)
+
+        for filename in PAIR_COMPARISON_FILES:
+            payload = json.dumps({"id": filename, "value": "same"}) + "\n"
+            (group_a / filename).write_text(payload, encoding="utf-8")
+            (group_b / filename).write_text(payload, encoding="utf-8")
+
+        (group_a / "candidates.jsonl").write_text('{"candidate":"old"}\n', encoding="utf-8")
+        (group_b / "candidates.jsonl").write_text('{"candidate":"new"}\n', encoding="utf-8")
+        (group_a / "clusters.jsonl").write_text('{"cluster":"old"}\n', encoding="utf-8")
+        (group_b / "clusters.jsonl").write_text('{"cluster":"new"}\n', encoding="utf-8")
+
+        ok, errors = verify_paired_input_identity(root / "a", root / "b", "CASE-01")
+        assert ok, errors
+
+        (group_b / "mentions.jsonl").write_text(
+            json.dumps({"id": "mentions.jsonl", "value": "changed"}) + "\n",
+            encoding="utf-8",
+        )
+        ok, errors = verify_paired_input_identity(root / "a", root / "b", "CASE-01")
+        assert not ok
+        assert any("mentions.jsonl" in error for error in errors)
+
+
+def test_paired_input_identity_fails_when_both_required_inputs_are_missing():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        (root / "a" / "CASE-01").mkdir(parents=True)
+        (root / "b" / "CASE-01").mkdir(parents=True)
+
+        ok, errors = verify_paired_input_identity(root / "a", root / "b", "CASE-01")
+
+        assert not ok
+        assert len(errors) == len(PAIR_COMPARISON_FILES)
 
 
 def test_occurrence_mention_metrics_exclude_zero_gold_mentions():
