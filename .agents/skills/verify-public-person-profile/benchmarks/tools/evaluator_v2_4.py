@@ -80,6 +80,8 @@ REAL_WEB_DEV_V2_REQUIRED_ASSETS = frozenset(
     }
 )
 
+EVALUATION_ROLES = frozenset({"development", "blind_release"})
+
 
 @dataclass
 class WarcRecord:
@@ -945,6 +947,19 @@ def evaluate_bundle_v2_4(
     }
 
 
+def classify_evaluation_decision(all_gates_passed: bool, evaluation_role: str) -> str:
+    """Map gate results to a lifecycle decision without promoting development results to release."""
+    if evaluation_role not in EVALUATION_ROLES:
+        raise ValueError(
+            f"Unknown evaluation role '{evaluation_role}'; expected one of {sorted(EVALUATION_ROLES)}"
+        )
+    if not all_gates_passed:
+        return "blocked"
+    if evaluation_role == "development":
+        return "ready_for_blind_evaluation"
+    return "eligible_for_release_review"
+
+
 def aggregate_suite_v2_4(
     results: List[Dict[str, Any]],
     expected_case_ids: List[str],
@@ -954,8 +969,13 @@ def aggregate_suite_v2_4(
     asset_manifest_passed: bool = True,
     asset_manifest_errors: Optional[List[str]] = None,
     max_false_splits: int = 0,
+    evaluation_role: str = "development",
 ) -> Dict[str, Any]:
-    """Aggregates Evaluator V2.4 suite results and evaluates strict benchmark release gates."""
+    """Aggregate suite results and evaluate gates within an explicit dataset lifecycle role."""
+    if evaluation_role not in EVALUATION_ROLES:
+        raise ValueError(
+            f"Unknown evaluation role '{evaluation_role}'; expected one of {sorted(EVALUATION_ROLES)}"
+        )
     n = len(results)
     actual_cids = [r["case_id"] for r in results]
 
@@ -1117,9 +1137,14 @@ def aggregate_suite_v2_4(
     }
 
     all_gates_pass = all(gates.values())
+    evaluation_decision = classify_evaluation_decision(all_gates_pass, evaluation_role)
 
     return {
         "evaluator_version": "2.4.0",
+        "evaluation_role": evaluation_role,
+        "evaluation_decision": evaluation_decision,
+        "development_gates_passed": all_gates_pass and evaluation_role == "development",
+        "release_review_eligible": all_gates_pass and evaluation_role == "blind_release",
         "provenance": provenance or {},
         "total_cases_evaluated": n,
         "expected_case_count": len(expected_case_ids),
@@ -1177,13 +1202,20 @@ def render_markdown_report(suite_eval: Dict[str, Any]) -> str:
     all_pass = suite_eval.get("all_gates_passed", False)
     funnel = suite_eval.get("suite_funnel", {})
     diag = suite_eval.get("diagnostic_metrics", {})
+    evaluation_role = suite_eval.get("evaluation_role", "development")
+    evaluation_decision = suite_eval.get(
+        "evaluation_decision",
+        classify_evaluation_decision(all_pass, evaluation_role),
+    )
 
     status_str = "PASSED" if all_pass else "FAILED"
+    report_scope = "开发集门禁" if evaluation_role == "development" else "预注册盲测门禁"
 
     lines = [
-        f"# Evaluator V2.4 自动化评测与发布门禁审计报告",
+        f"# Evaluator V2.4 {report_scope}审计报告",
         f"",
         f"**评测结论**: `{status_str}`  ",
+        f"**评测角色**: `{evaluation_role}` | **生命周期决策**: `{evaluation_decision}`  ",
         f"**评测器版本**: `v2.4.0` | **时间戳**: `{prov.get('git_commit_sha', 'unknown')[:7]}` (`dirty={prov.get('git_dirty')}`)  ",
         f"",
         f"## 1. 资产与溯源自检清单",
@@ -1195,7 +1227,7 @@ def render_markdown_report(suite_eval: Dict[str, Any]) -> str:
         f"- Query Index SHA-256: `{prov.get('query_index_sha256', 'none')}`",
         f"- 资产清单程序化核验: `{'PASS' if gates.get('asset_manifest_gate') else 'FAIL'}`",
         f"",
-        f"## 2. 核心发布门禁状态 (Primary Release Gates)",
+        f"## 2. 核心评测门禁状态 (Primary Evaluation Gates)",
         f"| 门禁项 | 规则与标准 | 实际观测值 | 状态 |",
         f"|---|---|---|:---:|",
         f"| `clean_git_tree_gate` | Git 工作区干净（无未提交修改） | dirty={prov.get('git_dirty')} | {'PASS' if gates.get('clean_git_tree_gate') else 'FAIL'} |",
@@ -1255,12 +1287,18 @@ def render_markdown_report(suite_eval: Dict[str, Any]) -> str:
     lines.append("")
     lines.append("## 6. 结论与下一步指引")
     if all_pass:
-        lines.append("所有预注册门禁均已通过，满足发布与合流标准。")
+        if evaluation_role == "development":
+            lines.append(
+                "开发集门禁已通过；该结果仅支持冻结候选并进入全新预注册盲测，不构成发布结论。"
+            )
+        else:
+            lines.append(
+                "预注册盲测门禁已通过；该结果支持进入独立发布复核，不自动构成发布结论。"
+            )
     else:
         failed_gates = [k for k, v in gates.items() if not v]
         lines.append(f"**当前未达标门禁 ({len(failed_gates)} 项)**: `{', '.join(failed_gates)}`")
-        lines.append("依据预注册合流协议，当前基线未达到发布要求，已冻结为 Phase 4.0 严密红灯基线。")
-        lines.append("下一步工作建议：推进 Phase 4.1 通用同页 Candidate 假拆分合并，消解 DEV-002 与 DEV-004 的假拆分。")
+        lines.append("当前评测未达到该生命周期阶段的进入条件；应仅在开发资产上修复后重新评估。")
 
     return "\n".join(lines) + "\n"
 
@@ -1275,6 +1313,13 @@ def main():
     parser.add_argument("--query-index", type=Path, default=None, help="Path to query_index.jsonl")
     parser.add_argument("--asset-manifest", type=Path, default=None, help="Path to asset_manifest.json (optional, auto-detected)")
     parser.add_argument("--track-name", type=str, default="name_only", choices=["name_only", "hinted"])
+    parser.add_argument(
+        "--evaluation-role",
+        type=str,
+        default="development",
+        choices=sorted(EVALUATION_ROLES),
+        help="Dataset lifecycle role. Defaults to development so omitted input cannot claim release eligibility.",
+    )
     parser.add_argument("--paired-runs-dir", type=Path, default=None, help="Path to paired run bundles (e.g. Group 2 for Group 3)")
     parser.add_argument("--max-false-splits", type=int, default=0, help="Maximum allowed false splits (default 0 for dev suite)")
     parser.add_argument("--output-json", type=Path, required=True, help="Path to write evaluation JSON")
@@ -1387,6 +1432,7 @@ def main():
         asset_manifest_passed=asset_manifest_passed,
         asset_manifest_errors=asset_manifest_errors,
         max_false_splits=args.max_false_splits,
+        evaluation_role=args.evaluation_role,
     )
 
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
@@ -1400,10 +1446,13 @@ def main():
         print(f"Wrote Markdown report to {args.output_md}")
 
     if suite_eval["all_gates_passed"]:
-        print("ALL GATES PASSED: Ready for release/merge.")
+        if args.evaluation_role == "development":
+            print("DEVELOPMENT GATES PASSED: Ready for preregistered blind evaluation.")
+        else:
+            print("BLIND EVALUATION GATES PASSED: Eligible for independent release review.")
         sys.exit(0)
     else:
-        print("GATES FAILED: Release blocked.")
+        print("GATES FAILED: Advancement blocked.")
         sys.exit(1)
 
 
