@@ -209,7 +209,14 @@ class ClaimEvidenceSupport(BaseModel):
     relation_span_start: Optional[int] = Field(default=None, ge=0)
     relation_span_end: Optional[int] = Field(default=None, gt=0)
     provenance_level: Optional[Literal["clause", "relation"]] = None
-    subject_resolution: Optional[Literal["explicit_mention", "pronoun_anaphora", "pro_drop_anaphora", "profile_field", "coordinated_subject"]] = "explicit_mention"
+    subject_resolution: Optional[Literal[
+        "explicit_mention",
+        "pronoun_anaphora",
+        "pro_drop_anaphora",
+        "profile_field",
+        "coordinated_subject",
+        "document_context",
+    ]] = "explicit_mention"
     antecedent_mention_id: Optional[str] = None
     antecedent_clause_span: Optional[Tuple[int, int]] = None
 

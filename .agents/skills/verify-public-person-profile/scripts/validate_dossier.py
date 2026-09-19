@@ -668,13 +668,33 @@ def validate_bundle(bundle_dir: Path, warc_path: Optional[Path] = None) -> Dict[
                                 f"claims.jsonl: Support clause subject mention '{sup.subject_mention_id}' does not match "
                                 f"claim subject_mention_id '{c.subject_mention_id}'!"
                             )
-                        # 2. The subject mention itself MUST originate from the supported evidence!
+                        # 2. The subject normally originates from the supported evidence.
+                        # A document-context support may point to another exact slice from
+                        # the same source page, but never to a different source.
                         subj_m = mentions[c.subject_mention_id]
                         if subj_m.evidence_id != sup.evidence_id:
-                            errors.append(
-                                f"claims.jsonl: Cross-evidence contamination! Subject mention '{c.subject_mention_id}' "
-                                f"originates from evidence '{subj_m.evidence_id}', but support clause attaches foreign evidence '{sup.evidence_id}'!"
+                            subject_ev = evidence.get(subj_m.evidence_id)
+                            support_ev = evidence.get(sup.evidence_id)
+                            selector = (
+                                support_ev.locator.selector_or_page
+                                if support_ev is not None
+                                else ""
                             )
+                            same_source = bool(
+                                subject_ev is not None
+                                and support_ev is not None
+                                and subject_ev.source_id == support_ev.source_id
+                            )
+                            if (
+                                sup.subject_resolution != "document_context"
+                                or not same_source
+                                or not selector.startswith("document-context:")
+                            ):
+                                errors.append(
+                                    f"claims.jsonl: Cross-evidence contamination! Subject mention '{c.subject_mention_id}' "
+                                    f"originates from evidence '{subj_m.evidence_id}', but support clause attaches "
+                                    f"evidence '{sup.evidence_id}' without a valid same-source document-context contract!"
+                                )
                         # 3. Subject span containment: if the subject's name is explicitly present in the support clause,
                         # the subject mention's span [char_start, char_end] MUST fall within [clause_span_start, clause_span_end]
                         elif subj_m.raw_name_text.lower() in sup.verbatim_clause.lower():
@@ -712,7 +732,10 @@ def validate_bundle(bundle_dir: Path, warc_path: Optional[Path] = None) -> Dict[
                                     f"claims.jsonl: Relation span boundary violation! Claim {c.claim_id} relation span "
                                     f"[{sup.relation_span_start}:{sup.relation_span_end}] is not contained within clause span [{sup.clause_span_start}:{sup.clause_span_end}]!"
                                 )
-                            if subj_m.raw_name_text.lower() in sup.verbatim_clause.lower():
+                            if (
+                                subj_m.evidence_id == sup.evidence_id
+                                and subj_m.raw_name_text.lower() in sup.verbatim_clause.lower()
+                            ):
                                 if not (sup.relation_span_start <= subj_m.char_start and subj_m.char_end <= sup.relation_span_end):
                                     errors.append(
                                         f"claims.jsonl: Relation span subject violation! Claim {c.claim_id} subject mention "

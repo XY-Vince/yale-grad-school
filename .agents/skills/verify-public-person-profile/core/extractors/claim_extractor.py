@@ -1814,3 +1814,149 @@ def extract_claims_from_evidence(
             unique_claims.append(c)
 
     return unique_claims
+
+
+def extract_document_context_claims(
+    evidence: Evidence,
+    candidate_entity_id: str,
+    subject_mention: EntityMention,
+    target_name: str,
+) -> List[Claim]:
+    """Extract claims from narrowly typed blocks whose subject anchor is elsewhere on the same page."""
+    selector = evidence.locator.selector_or_page
+    excerpt = evidence.verbatim_excerpt
+    if not selector.startswith("document-context:") or not excerpt:
+        return []
+
+    claims: List[Claim] = []
+
+    def append_claim(
+        predicate: str,
+        object_raw: str,
+        temporal_status: TemporalStatus,
+        relation_start: int,
+        relation_end: int,
+        confidence: float,
+    ) -> None:
+        if not object_raw or not (0 <= relation_start < relation_end <= len(excerpt)):
+            return
+        key = (
+            f"{subject_mention.mention_id}:{predicate}:{object_raw}:"
+            f"affirmative:{temporal_status.value}:document_context"
+        ).encode("utf-8")
+        claims.append(
+            Claim(
+                claim_id=f"CLM-{hashlib.sha256(key).hexdigest()[:32]}",
+                candidate_entity_id=candidate_entity_id,
+                subject_mention_id=subject_mention.mention_id,
+                predicate=predicate,
+                object_raw=object_raw,
+                polarity=FactPolarity.AFFIRMATIVE,
+                temporal_status=temporal_status,
+                adjudication_status=AdjudicationStatus.UNRESOLVED,
+                as_of=evidence.retrieved_at.date(),
+                extraction_confidence=confidence,
+                evidence_ids=[subject_mention.evidence_id, evidence.evidence_id],
+                support_clauses=[
+                    ClaimEvidenceSupport(
+                        evidence_id=evidence.evidence_id,
+                        subject_mention_id=subject_mention.mention_id,
+                        clause_span_start=relation_start,
+                        clause_span_end=relation_end,
+                        verbatim_clause=excerpt[relation_start:relation_end],
+                        relation_span_start=relation_start,
+                        relation_span_end=relation_end,
+                        provenance_level="relation",
+                        subject_resolution="document_context",
+                    )
+                ],
+            )
+        )
+
+    if selector == "document-context:personal-education-card":
+        card_match = re.search(
+            r'<small\b[^>]*>(?P<dates>.*?)</small>[\s\S]{0,1800}?'
+            r'<h5\b[^>]*card-title[^>]*>(?P<degree>.*?)</h5>',
+            excerpt,
+            re.IGNORECASE,
+        )
+        if card_match:
+            degree = html_lib.unescape(re.sub(r"<[^>]+>", " ", card_match.group("degree")))
+            degree = re.sub(r"\s+", " ", degree).strip()
+            if re.match(
+                r"^(?:Ph\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Doctor|Master|Bachelor)",
+                degree,
+                re.IGNORECASE,
+            ):
+                year_values = [int(value) for value in re.findall(r"(?:19|20)\d{2}", card_match.group("dates"))]
+                temporal = TemporalStatus.UNKNOWN
+                if year_values and max(year_values) <= evidence.retrieved_at.year:
+                    temporal = TemporalStatus.FORMER
+                append_claim(
+                    "received_degree",
+                    degree,
+                    temporal,
+                    card_match.start(),
+                    card_match.end(),
+                    0.94,
+                )
+
+    elif selector == "document-context:profile-title":
+        if evidence.source_quality_class not in {
+            SourceQualityClass.CLASS_A,
+            SourceQualityClass.CLASS_B,
+        }:
+            return []
+        title_match = re.search(
+            r"<title\b[^>]*>(?P<title>.*?)</title>",
+            excerpt,
+            re.IGNORECASE | re.DOTALL,
+        )
+        if title_match:
+            title_text = html_lib.unescape(re.sub(r"<[^>]+>", " ", title_match.group("title")))
+            title_text = re.sub(r"\s+", " ", title_text).strip()
+            title_parts = [part.strip() for part in re.split(r"\s*[|]\s*", title_text, maxsplit=1)]
+            if len(title_parts) == 2:
+                title_subject, title_institution = title_parts
+                if (
+                    is_mention_matching_target(title_subject, target_name)
+                    and re.search(
+                        r"\b(?:University|College|School|Institute|Academy|Hospital|Medicine)\b",
+                        title_institution,
+                        re.IGNORECASE,
+                    )
+                ):
+                    append_claim(
+                        "affiliated_with",
+                        title_institution,
+                        TemporalStatus.CURRENT,
+                        title_match.start(),
+                        title_match.end(),
+                        0.98,
+                    )
+
+    elif selector == "document-context:encyclopedic-leadership":
+        target_tokens = target_name.strip().split()
+        if len(target_tokens) >= 2:
+            surname = target_tokens[-1]
+            role_match = re.search(
+                rf'\b{re.escape(surname)}\s+(?:was|served\s+as|became)\s+(?:the\s+)?'
+                r'(?:(?P<year>\d{4})\s+)?(?P<org>[A-Z][A-Za-z0-9.&-]*)\s+'
+                r'(?P<role>President|Chair|Chairman|Chairwoman)\b(?:\s+and\s+CEO)?',
+                excerpt,
+                re.IGNORECASE,
+            )
+            if role_match:
+                organization = role_match.group("org")
+                role = role_match.group("role")
+                object_raw = f"{organization} {role}"
+                append_claim(
+                    "holds_position",
+                    object_raw,
+                    TemporalStatus.FORMER,
+                    role_match.start(),
+                    role_match.end(),
+                    0.96,
+                )
+
+    return claims
