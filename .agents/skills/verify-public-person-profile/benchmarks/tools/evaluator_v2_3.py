@@ -1,10 +1,10 @@
 """
 Blind Evaluation Protocol v1.3 - Evaluator V2.3 (Strict Contract & Audit Engine).
 Key Upgrades over V2.2:
-1. Zero False Released Claims:
+1. Zero Unmatched Released Claims:
    - Eliminates statistical blind spot by defining:
-     false_released_claims = released_claims_count - tp_5d
-   - Enforces zero_false_released_claims_gate across all cases (completed and abstained).
+     unmatched_released_claims = max(0, released_claims_count - tp_5d)
+   - Enforces zero_unmatched_released_claims_gate across all cases (completed and abstained).
 2. Paired Input Identity Gate (paired_input_identity_gate):
    - When paired runs directory (e.g. Group 2 vs Group 3) is provided, verifies that
      sources, evidence, mentions, candidates, and clusters are byte/semantic identical
@@ -233,9 +233,13 @@ def verify_paired_input_identity(group_a_dir: Path, group_b_dir: Path, case_id: 
     for fname in PAIR_COMPARISON_FILES:
         fa = bundle_a / fname
         fb = bundle_b / fname
+        # Both files must exist; if either or both are missing, fail
+        if not fa.exists() or not fb.exists():
+            mismatches.append(f"{case_id}/{fname} missing in bundles (fa_exists={fa.exists()}, fb_exists={fb.exists()})")
+            continue
         ha = compute_canonical_jsonl_hash(fa)
         hb = compute_canonical_jsonl_hash(fb)
-        if ha != hb:
+        if ha == "missing" or hb == "missing" or ha != hb:
             mismatches.append(f"{case_id}/{fname} hash mismatch: {ha} != {hb}")
 
     return len(mismatches) == 0, mismatches
@@ -361,7 +365,7 @@ def evaluate_bundle_v2_3(
     - Mention Detection P/R/F1
     - Cluster ER B^3 and Pairwise on common universe
     - Pure 5D Bipartite Matching
-    - Explicit calculation of false_released_claims = released_claims - TP_5D across ALL cases
+    - Explicit calculation of unmatched_released_claims = max(0, released_claims - TP_5D) across ALL cases
     """
     case_id = gold_case.case_id
     target_name = gold_case.target_name
@@ -523,7 +527,7 @@ def evaluate_bundle_v2_3(
             er_b3 = compute_b3(g_clust_common, s_clust_common, list(u_common))
             er_pairwise = compute_pairwise(g_clust_common, s_clust_common, list(u_common))
 
-    # 10. Claim Evaluation with True false_released_claims = released_claims - TP_5D
+    # 10. Claim Evaluation with True unmatched_released_claims = max(0, released_claims - TP_5D)
     gold_claims_dicts = [c.model_dump() for c in gold_case.gold_claims]
     n_gold = len(gold_claims_dicts)
     is_fact_bearing = gold_case.is_fact_bearing
@@ -542,12 +546,14 @@ def evaluate_bundle_v2_3(
             claim_prec = (tp_5d / n_ext) if n_ext > 0 else 0.0
             claim_rec = (tp_5d / n_gold) if n_gold > 0 else 0.0
             claim_f1 = (2 * claim_prec * claim_rec / (claim_prec + claim_rec)) if (claim_prec + claim_rec) > 0 else 0.0
-            subj_acc = (tp_5d / (tp_5d + tp_4d_diag)) if (tp_5d + tp_4d_diag) > 0 else (1.0 if n_ext == 0 else 0.0)
 
-            # Evaluator V2.3: false_released_claims covers ungrounded claims in completed runs
-            false_released_claims = max(0, n_ext - tp_5d)
-            spurious_claims = false_released_claims
-            spurious_rate = (false_released_claims / n_ext) if n_ext > 0 else 0.0
+            diag_denom = tp_5d + tp_4d_diag
+            subj_acc = (tp_5d / diag_denom) if diag_denom > 0 else None
+
+            # Evaluator V2.3: unmatched_released_claims covers ungrounded claims in completed runs
+            unmatched_released_claims = max(0, n_ext - tp_5d)
+            spurious_claims = unmatched_released_claims
+            spurious_rate = (unmatched_released_claims / n_ext) if n_ext > 0 else 0.0
             abstention_accuracy = 1.0 if outcome_match else 0.0
         else:
             # Fact-bearing case where system conservatively abstained
@@ -558,9 +564,9 @@ def evaluate_bundle_v2_3(
             claim_prec = None
             claim_rec = 0.0
             claim_f1 = 0.0
-            subj_acc = 1.0
+            subj_acc = None
 
-            false_released_claims = n_ext
+            unmatched_released_claims = n_ext
             spurious_claims = n_ext
             spurious_rate = 1.0 if n_ext > 0 else 0.0
             abstention_accuracy = 1.0 if outcome_match else 0.0
@@ -571,9 +577,9 @@ def evaluate_bundle_v2_3(
         claim_prec = None
         claim_rec = None
         claim_f1 = None
-        subj_acc = 1.0
+        subj_acc = None
 
-        false_released_claims = n_released
+        unmatched_released_claims = n_released
         spurious_claims = n_released
         spurious_rate = 1.0 if n_released > 0 else 0.0
         abstention_accuracy = 1.0 if actual_outcome in {"ambiguous_identity", "insufficient_evidence"} else 0.0
@@ -595,11 +601,11 @@ def evaluate_bundle_v2_3(
         "released_claims_count": n_released,
         "tp_5d": tp_5d,
         "tp_4d_diag": tp_4d_diag,
-        "false_released_claims": false_released_claims,
+        "unmatched_released_claims": unmatched_released_claims,
         "claim_precision": round(claim_prec, 4) if claim_prec is not None else None,
         "claim_recall": round(claim_rec, 4) if claim_rec is not None else None,
         "claim_f1": round(claim_f1, 4) if claim_f1 is not None else None,
-        "subject_attribution_accuracy": round(subj_acc, 4),
+        "subject_attribution_accuracy": round(subj_acc, 4) if subj_acc is not None else None,
         "mention_precision": round(mention_prec, 4),
         "mention_recall": round(mention_rec, 4),
         "mention_f1": round(mention_f1, 4),
@@ -629,7 +635,7 @@ def aggregate_suite_v2_3(
     val_rate = sum(1.0 if r["validation_passed"] else 0.0 for r in results) / n if n else 0.0
     total_false_merges = sum(r["false_merges"] for r in results)
     total_false_splits = sum(r["false_splits"] for r in results)
-    total_false_released = sum(r["false_released_claims"] for r in results)
+    total_unmatched_released = sum(r["unmatched_released_claims"] for r in results)
 
     # Mention & ER Aggregation
     macro_mention_prec = sum(r["mention_precision"] for r in results) / n if n else 0.0
@@ -646,7 +652,9 @@ def aggregate_suite_v2_3(
         macro_prec = (sum(r["claim_precision"] for r in completed_fb) / len(completed_fb)) if completed_fb else 0.0
         macro_rec = sum(r["claim_recall"] for r in fb_cases if r["claim_recall"] is not None) / n_fb
         macro_f1 = (2 * macro_prec * macro_rec / (macro_prec + macro_rec)) if (macro_prec + macro_rec) > 0 else 0.0
-        macro_subj = sum(r["subject_attribution_accuracy"] for r in fb_cases) / n_fb
+
+        subj_scores = [r["subject_attribution_accuracy"] for r in fb_cases if r["subject_attribution_accuracy"] is not None]
+        macro_subj = (sum(subj_scores) / len(subj_scores)) if subj_scores else None
 
         total_tp_5d = sum(r["tp_5d"] for r in fb_cases)
         total_ext_fb = sum(r["released_claims_count"] for r in fb_cases)
@@ -656,7 +664,8 @@ def aggregate_suite_v2_3(
         micro_rec = (total_tp_5d / total_gold_fb) if total_gold_fb > 0 else 0.0
         micro_f1 = (2 * micro_prec * micro_rec / (micro_prec + micro_rec)) if (micro_prec + micro_rec) > 0 else 0.0
     else:
-        macro_prec = macro_rec = macro_f1 = macro_subj = 0.0
+        macro_prec = macro_rec = macro_f1 = 0.0
+        macro_subj = None
         micro_prec = micro_rec = micro_f1 = 0.0
 
     # Abstention cases
@@ -673,25 +682,43 @@ def aggregate_suite_v2_3(
 
     outcome_acc = sum(1.0 if r["outcome_match"] else 0.0 for r in results) / n if n else 0.0
 
+    prov = provenance or {}
+    clean_git = not bool(prov.get("git_dirty", True))
+    prov_complete = bool(
+        prov.get("git_commit_sha")
+        and prov.get("git_commit_sha") not in {"unknown", ""}
+        and prov.get("evaluator_sha256")
+        and prov.get("evaluator_sha256") not in {"none", ""}
+        and prov.get("gold_sha256")
+        and prov.get("gold_sha256") not in {"none", ""}
+        and prov.get("corpus_warc_sha256")
+        and prov.get("corpus_warc_sha256") not in {"none", ""}
+        and prov.get("query_index_sha256")
+        and prov.get("query_index_sha256") not in {"none", ""}
+    )
+
+    completed_fb_cases = [r for r in results if r["is_fact_bearing"] and r["actual_outcome"] == "completed"]
+    completed_released_claims_pass = (
+        len(completed_fb_cases) > 0 and all((r.get("tp_5d", 0) >= 1) for r in completed_fb_cases)
+    ) if completed_fb_cases else True
+
     gates = {
+        "clean_git_tree_gate": clean_git,
+        "provenance_complete_gate": prov_complete,
         "seal_integrity_gate": seal_intact,
         "structural_validation_gate": (val_rate == 1.0),
         "case_completeness_gate": completeness_pass,
         "zero_false_merges_gate": (total_false_merges == 0),
-        "zero_false_released_claims_gate": (total_false_released == 0),
+        "zero_unmatched_released_claims_gate": (total_unmatched_released == 0),
         "ambiguity_safety_gate": (abs_accuracy == 1.0 if abs_accuracy is not None else True),
         "paired_input_identity_gate": paired_identity_passed,
         "mention_recall_gate": (macro_mention_rec >= 0.95),
         "b3_f1_gate": (macro_b3_f1 >= 0.95),
         "claim_precision_gate": (macro_prec >= 0.95),
         "claim_recall_gate": (macro_rec >= 0.80),
-        "subject_attribution_gate": (macro_subj >= 0.95),
+        "subject_attribution_gate": (macro_subj >= 0.95) if macro_subj is not None else False,
         "outcome_accuracy_gate": (outcome_acc >= 0.90),
-        "completed_released_claims_gate": all(
-            (r["released_claims_count"] > 0)
-            for r in results
-            if r["is_fact_bearing"] and r["actual_outcome"] == "completed"
-        ),
+        "completed_released_claims_gate": completed_released_claims_pass,
     }
     all_gates_pass = all(gates.values())
 
@@ -705,7 +732,7 @@ def aggregate_suite_v2_3(
         "structural_validation_rate": round(val_rate, 4),
         "total_false_merges": total_false_merges,
         "total_false_splits": total_false_splits,
-        "total_false_released_claims": total_false_released,
+        "total_unmatched_released_claims": total_unmatched_released,
         "outcome_accuracy": round(outcome_acc, 4),
         "mention_evaluation": {
             "macro_precision": round(macro_mention_prec, 4),
@@ -719,7 +746,7 @@ def aggregate_suite_v2_3(
             "macro_precision": round(macro_prec, 4),
             "macro_recall": round(macro_rec, 4),
             "macro_f1": round(macro_f1, 4),
-            "subject_attribution_accuracy": round(macro_subj, 4),
+            "subject_attribution_accuracy": round(macro_subj, 4) if macro_subj is not None else "N/A",
             "micro_precision": round(micro_prec, 4),
             "micro_recall": round(micro_rec, 4),
             "micro_f1": round(micro_f1, 4),
@@ -763,11 +790,13 @@ def render_markdown_report(suite_eval: Dict[str, Any]) -> str:
         f"## 2. 权威发布门禁状态 (Official Gates Checklist)",
         f"| 门禁名称 | 门禁检验标准 | 实际测量值 / 状态 | 门禁结果 |",
         f"|---|---|---|---|",
+        f"| `clean_git_tree_gate` | 工作区完全干净 (git_dirty == False) | clean={gates.get('clean_git_tree_gate')} | {'PASS' if gates.get('clean_git_tree_gate') else 'FAIL'} |",
+        f"| `provenance_complete_gate` | 完整记录 Git/Evaluator/Gold/WARC/QueryIndex 哈希 | complete={gates.get('provenance_complete_gate')} | {'PASS' if gates.get('provenance_complete_gate') else 'FAIL'} |",
         f"| `seal_integrity_gate` | Merkle 根密封 100% 校验通过 | seal_intact={suite_eval.get('seal_intact')} | {'PASS' if gates.get('seal_integrity_gate') else 'FAIL'} |",
         f"| `structural_validation_gate` | 4 层结构校验 100% 通过 | rate={suite_eval.get('structural_validation_rate')} | {'PASS' if gates.get('structural_validation_gate') else 'FAIL'} |",
         f"| `case_completeness_gate` | 所有预期用例完全覆盖 | completeness={suite_eval.get('completeness_pass')} | {'PASS' if gates.get('case_completeness_gate') else 'FAIL'} |",
         f"| `zero_false_merges_gate` | 跨实体假合并总数绝对为 0 | false_merges={suite_eval.get('total_false_merges')} | {'PASS' if gates.get('zero_false_merges_gate') else 'FAIL'} |",
-        f"| `zero_false_released_claims_gate` | 未核验释放断言数绝对为 0 | false_released={suite_eval.get('total_false_released_claims')} | {'PASS' if gates.get('zero_false_released_claims_gate') else 'FAIL'} |",
+        f"| `zero_unmatched_released_claims_gate` | 未核验释放断言数绝对为 0 | unmatched_released={suite_eval.get('total_unmatched_released_claims')} | {'PASS' if gates.get('zero_unmatched_released_claims_gate') else 'FAIL'} |",
         f"| `ambiguity_safety_gate` | 稀疏与对照组 100% 拒答 | abstention_acc={suite_eval.get('abstention_evaluation', {}).get('abstention_accuracy')} | {'PASS' if gates.get('ambiguity_safety_gate') else 'FAIL'} |",
         f"| `paired_input_identity_gate` | G2/G3 对应输入去除时间戳后哈希一致 | passed={gates.get('paired_input_identity_gate')} | {'PASS' if gates.get('paired_input_identity_gate') else 'FAIL'} |",
         f"| `mention_recall_gate` | 实体提及召回率 $\\ge 95.0\\%$ | recall={suite_eval.get('mention_evaluation', {}).get('macro_recall')} | {'PASS' if gates.get('mention_recall_gate') else 'FAIL'} |",
@@ -776,19 +805,20 @@ def render_markdown_report(suite_eval: Dict[str, Any]) -> str:
         f"| `claim_recall_gate` | 释放断言召回率 $\\ge 80.0\\%$ | rec={suite_eval.get('fact_bearing_evaluation', {}).get('macro_recall')} | {'PASS' if gates.get('claim_recall_gate') else 'FAIL'} |",
         f"| `subject_attribution_gate` | 主体归属准确率 $\\ge 95.0\\%$ | subj_acc={suite_eval.get('fact_bearing_evaluation', {}).get('subject_attribution_accuracy')} | {'PASS' if gates.get('subject_attribution_gate') else 'FAIL'} |",
         f"| `outcome_accuracy_gate` | 运行状态匹配率 $\\ge 90.0\\%$ | acc={suite_eval.get('outcome_accuracy')} | {'PASS' if gates.get('outcome_accuracy_gate') else 'FAIL'} |",
-        f"| `completed_released_claims_gate` | 完成用例必须至少释放 1 条有效断言 | passed={gates.get('completed_released_claims_gate')} | {'PASS' if gates.get('completed_released_claims_gate') else 'FAIL'} |",
+        f"| `completed_released_claims_gate` | 完成用例每个必须满足 TP_5D $\\ge 1$ | passed={gates.get('completed_released_claims_gate')} | {'PASS' if gates.get('completed_released_claims_gate') else 'FAIL'} |",
         f"",
         f"## 3. 逐案例详细审计表 (Case-Level Breakdown)",
-        f"| Case ID | 目标人物 | 实际状态 | 期望状态 | 匹配 | 释放数 | TP_5D | False Rel | Precision | Recall | F-Merge | F-Split |",
-        f"|---|---|---|---|---|---|---|---|---|---|---|---|",
+        f"| Case ID | 目标人物 | 实际状态 | 期望状态 | 匹配 | 释放数 | TP_5D | Unmatched Rel | Precision | Recall | Subj Acc | F-Merge | F-Split |",
+        f"|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
 
     for c in suite_eval.get("case_details", []):
         lines.append(
             f"| `{c['case_id']}` | {c['target_name']} | `{c['actual_outcome']}` | `{c['expected_outcome']}` | "
-            f"{'✓' if c['outcome_match'] else '✗'} | {c['released_claims_count']} | {c['tp_5d']} | {c['false_released_claims']} | "
+            f"{'✓' if c['outcome_match'] else '✗'} | {c['released_claims_count']} | {c['tp_5d']} | {c['unmatched_released_claims']} | "
             f"{c['claim_precision'] if c['claim_precision'] is not None else 'N/A'} | "
             f"{c['claim_recall'] if c['claim_recall'] is not None else 'N/A'} | "
+            f"{c['subject_attribution_accuracy'] if c['subject_attribution_accuracy'] is not None else 'N/A'} | "
             f"{c['false_merges']} | {c['false_splits']} |"
         )
 
@@ -898,7 +928,7 @@ def main():
         fb_tag = "Fact" if res["is_fact_bearing"] else "Abstain"
         print(f"  [{cid}|{fb_tag}] Outcome: {res['actual_outcome']} (exp: {res['expected_outcome']}), "
               f"P: {res['claim_precision']}, R: {res['claim_recall']}, "
-              f"TP_5D: {res['tp_5d']}/{res['gold_claims_count']}, FalseRel: {res['false_released_claims']}, "
+              f"TP_5D: {res['tp_5d']}/{res['gold_claims_count']}, UnmatchedRel: {res['unmatched_released_claims']}, "
               f"FMerges: {res['false_merges']}, FSplits: {res['false_splits']}")
 
     suite_eval = aggregate_suite_v2_3(
@@ -914,7 +944,7 @@ def main():
     print(f"  Seal Intact: {suite_eval['seal_intact']}")
     print(f"  Completeness: {suite_eval['completeness_pass']}")
     print(f"  False Merges: {suite_eval['total_false_merges']}, False Splits: {suite_eval['total_false_splits']}")
-    print(f"  Total False Released Claims: {suite_eval['total_false_released_claims']}")
+    print(f"  Total Unmatched Released Claims: {suite_eval['total_unmatched_released_claims']}")
     print(f"  Paired Input Identity: {suite_eval['paired_input_check']['passed']}")
     print(f"  Mention Rec: {suite_eval['mention_evaluation']['macro_recall']}, B3 F1: {suite_eval['mention_evaluation']['b3_f1']}")
     print(f"  Fact-Bearing ({suite_eval['fact_bearing_evaluation']['case_count']} cases): "

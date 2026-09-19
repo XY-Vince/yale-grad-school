@@ -35,6 +35,7 @@ from benchmarks.tools.evaluator_v2_3 import (
     read_jsonl_strict,
     verify_gold_warc_integrity,
     verify_paired_input_identity,
+    PAIR_COMPARISON_FILES,
 )
 from models.gold_schema_v2 import GoldCase, GoldSuite
 
@@ -149,7 +150,7 @@ def test_adversarial_1_candidate_permutation():
         r1 = evaluate_bundle_v2_3(b1, gcase, "completed")
         r2 = evaluate_bundle_v2_3(b2, gcase, "completed")
         assert r1["tp_5d"] == r2["tp_5d"] == 1
-        assert r1["false_released_claims"] == r2["false_released_claims"] == 0
+        assert r1["unmatched_released_claims"] == r2["unmatched_released_claims"] == 0
 
 
 def test_adversarial_2_homonym_separation():
@@ -197,7 +198,7 @@ def test_adversarial_2_homonym_separation():
         res = evaluate_bundle_v2_3(b, gcase, "completed")
         assert res["tp_5d"] == 0
         assert res["tp_4d_diag"] == 1
-        assert res["false_released_claims"] == 1
+        assert res["unmatched_released_claims"] == 1
 
 
 def test_adversarial_3_missing_source_keyerror():
@@ -304,7 +305,7 @@ def test_adversarial_8_case_completeness_gate():
     results = [
         {"case_id": f"C-{i}", "is_fact_bearing": False, "seal_verified": True, "validation_passed": True, "outcome_match": True,
          "mention_precision": 1.0, "mention_recall": 1.0, "mention_f1": 1.0, "er_b3_f1": 1.0, "er_pairwise_f1": 1.0,
-         "false_merges": 0, "false_splits": 0, "false_released_claims": 0, "spurious_claims": 0, "spurious_rate": 0.0, "abstention_accuracy": 1.0}
+         "false_merges": 0, "false_splits": 0, "unmatched_released_claims": 0, "spurious_claims": 0, "spurious_rate": 0.0, "abstention_accuracy": 1.0}
         for i in range(4)
     ]
     suite = aggregate_suite_v2_3(results, expected_case_ids=[f"C-{i}" for i in range(5)])
@@ -329,7 +330,7 @@ def test_adversarial_9_abstention_spurious_claims_distinction():
 
         gcase = GoldCase(case_id="ADV-09", target_name="Alice", is_fact_bearing=False)
         res = evaluate_bundle_v2_3(b, gcase, "ambiguous_identity")
-        assert res["false_released_claims"] == 0
+        assert res["unmatched_released_claims"] == 0
         assert res["spurious_claims"] == 0
 
 
@@ -461,8 +462,8 @@ def test_adversarial_15_missing_evidence_reference_fail_closed():
             evaluate_bundle_v2_3(b, gcase, "completed")
 
 
-def test_adversarial_16_false_released_claims_completed_zero_tp():
-    """Attack 16: Completed case releases 2 claims with 0 true matches -> false_released_claims == 2."""
+def test_adversarial_16_unmatched_released_claims_completed_zero_tp():
+    """Attack 16: Completed case releases 2 claims with 0 true matches -> unmatched_released_claims == 2."""
     with tempfile.TemporaryDirectory() as tmpdir:
         td = Path(tmpdir)
         b = td / "bundle"
@@ -494,11 +495,11 @@ def test_adversarial_16_false_released_claims_completed_zero_tp():
         res = evaluate_bundle_v2_3(b, gcase, "completed")
         assert res["tp_5d"] == 0
         assert res["released_claims_count"] == 2
-        assert res["false_released_claims"] == 2
+        assert res["unmatched_released_claims"] == 2
 
         suite = aggregate_suite_v2_3([res], expected_case_ids=["ADV-16"])
-        assert suite["total_false_released_claims"] == 2
-        assert not suite["gates"]["zero_false_released_claims_gate"]
+        assert suite["total_unmatched_released_claims"] == 2
+        assert not suite["gates"]["zero_unmatched_released_claims_gate"]
         assert not suite["all_gates_passed"]
 
 
@@ -531,3 +532,132 @@ def test_adversarial_17_paired_input_identity_gate():
         ok2, errs2 = verify_paired_input_identity(g2_dir, g3_dir, "CASE-01")
         assert not ok2
         assert len(errs2) > 0
+
+
+def test_adversarial_18_completed_released_claims_gate_fails_on_zero_tp():
+    """Attack 18: Completed case with claims but TP_5D == 0 fails completed_released_claims_gate."""
+    res = {
+        "case_id": "ADV-18",
+        "is_fact_bearing": True,
+        "actual_outcome": "completed",
+        "expected_outcome": "completed",
+        "outcome_match": True,
+        "released_claims_count": 2,
+        "tp_5d": 0,
+        "unmatched_released_claims": 2,
+        "seal_verified": True,
+        "validation_passed": True,
+        "mention_precision": 1.0,
+        "mention_recall": 1.0,
+        "mention_f1": 1.0,
+        "er_b3_f1": 1.0,
+        "er_pairwise_f1": 1.0,
+        "false_merges": 0,
+        "false_splits": 0,
+        "spurious_claims": 2,
+        "spurious_rate": 1.0,
+        "abstention_accuracy": 1.0,
+        "claim_precision": 0.0,
+        "claim_recall": 0.0,
+        "gold_claims_count": 2,
+        "subject_attribution_accuracy": None,
+    }
+    suite = aggregate_suite_v2_3([res], expected_case_ids=["ADV-18"])
+    assert not suite["gates"]["completed_released_claims_gate"], "Completed case with TP_5D=0 must fail completed_released_claims_gate!"
+    assert not suite["all_gates_passed"]
+
+
+def test_adversarial_19_clean_git_tree_gate():
+    """Attack 19: clean_git_tree_gate fails when git_dirty is True."""
+    res = {
+        "case_id": "ADV-19", "is_fact_bearing": False, "seal_verified": True, "validation_passed": True, "outcome_match": True,
+        "mention_precision": 1.0, "mention_recall": 1.0, "mention_f1": 1.0, "er_b3_f1": 1.0, "er_pairwise_f1": 1.0,
+        "false_merges": 0, "false_splits": 0, "unmatched_released_claims": 0, "spurious_claims": 0, "spurious_rate": 0.0, "abstention_accuracy": 1.0
+    }
+    suite_dirty = aggregate_suite_v2_3([res], expected_case_ids=["ADV-19"], provenance={"git_dirty": True})
+    assert not suite_dirty["gates"]["clean_git_tree_gate"]
+
+    suite_clean = aggregate_suite_v2_3([res], expected_case_ids=["ADV-19"], provenance={"git_dirty": False})
+    assert suite_clean["gates"]["clean_git_tree_gate"]
+
+
+def test_adversarial_20_provenance_complete_gate():
+    """Attack 20: provenance_complete_gate fails when warc/gold/qidx hash is missing or 'none'."""
+    res = {
+        "case_id": "ADV-20", "is_fact_bearing": False, "seal_verified": True, "validation_passed": True, "outcome_match": True,
+        "mention_precision": 1.0, "mention_recall": 1.0, "mention_f1": 1.0, "er_b3_f1": 1.0, "er_pairwise_f1": 1.0,
+        "false_merges": 0, "false_splits": 0, "unmatched_released_claims": 0, "spurious_claims": 0, "spurious_rate": 0.0, "abstention_accuracy": 1.0
+    }
+    incomplete_prov = {
+        "git_commit_sha": "abc123",
+        "evaluator_sha256": "def456",
+        "gold_sha256": "789ghi",
+        "corpus_warc_sha256": "none",
+        "query_index_sha256": "jkl012",
+    }
+    suite_inc = aggregate_suite_v2_3([res], expected_case_ids=["ADV-20"], provenance=incomplete_prov)
+    assert not suite_inc["gates"]["provenance_complete_gate"]
+
+    complete_prov = {
+        "git_commit_sha": "abc123",
+        "evaluator_sha256": "def456",
+        "gold_sha256": "789ghi",
+        "corpus_warc_sha256": "valid_warc_hash",
+        "query_index_sha256": "valid_qidx_hash",
+        "git_dirty": False,
+    }
+    suite_comp = aggregate_suite_v2_3([res], expected_case_ids=["ADV-20"], provenance=complete_prov)
+    assert suite_comp["gates"]["provenance_complete_gate"]
+
+
+def test_adversarial_21_paired_input_identity_fails_on_missing_file():
+    """Attack 21: paired_input_identity_gate fails when a required file is missing in both runs."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        td = Path(tmpdir)
+        g2_dir = td / "g2"
+        g3_dir = td / "g3"
+        b_g2 = g2_dir / "CASE-01"
+        b_g3 = g3_dir / "CASE-01"
+        b_g2.mkdir(parents=True)
+        b_g3.mkdir(parents=True)
+
+        # Neither bundle has sources.jsonl, evidence.jsonl, etc.
+        ok, mismatches = verify_paired_input_identity(g2_dir, g3_dir, "CASE-01")
+        assert not ok
+        assert len(mismatches) == len(PAIR_COMPARISON_FILES)
+
+
+def test_adversarial_22_subject_attribution_none_on_no_diagnostic_pairs():
+    """Attack 22: Subject attribution reports None/N/A on non-diagnostic and abstention cases."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        td = Path(tmpdir)
+        b = td / "bundle"
+        create_minimal_bundle_v2_3(b, outcome="insufficient_evidence", claims=[], dossier_claims=[])
+
+        # Abstention case: subj_acc is None
+        gcase_abs = GoldCase(case_id="ADV-22A", target_name="Target", is_fact_bearing=False)
+        res_abs = evaluate_bundle_v2_3(b, gcase_abs, "insufficient_evidence")
+        assert res_abs["subject_attribution_accuracy"] is None
+
+        # Completed case but no diagnostic 5D or 4D pairs: subj_acc is None
+        sources = [{"source_id": "SRC-1", "content_sha256": "5555555555555555555555555555555555555555555555555555555555555555"}]
+        evidence = [{"evidence_id": "EVI-1", "source_id": "SRC-1", "char_start": 0, "char_end": 50}]
+        mentions = [{"mention_id": "M-1", "source_id": "SRC-1", "evidence_id": "EVI-1", "char_start": 0, "char_end": 5, "raw_name_text": "Target"}]
+        candidates = [{"candidate_entity_id": "CAND-1", "mention_ids": ["M-1"]}]
+        # Predicate completely different (no 4D match possible)
+        claims = [{"claim_id": "C-1", "candidate_entity_id": "CAND-1", "predicate": "unknown_predicate", "object_raw": "X", "polarity": "affirmative", "temporal_status": "current"}]
+        create_minimal_bundle_v2_3(b, candidate_id="CAND-1", sources=sources, evidence=evidence, mentions=mentions, candidates=candidates, claims=claims)
+
+        gcase_comp = GoldCase(
+            case_id="ADV-22B",
+            target_name="Target",
+            is_fact_bearing=True,
+            gold_entities=[{"gold_entity_id": "ENT-1", "canonical_name": "Target"}],
+            gold_mentions=[{"gold_mention_id": "GM-1", "gold_entity_id": "ENT-1", "source_content_sha256": "5555555555555555555555555555555555555555555555555555555555555555", "char_start": 0, "char_end": 5, "verbatim_text": "Target"}],
+            gold_clusters=[["GM-1"]],
+            gold_claims=[{"claim_id": "GC-1", "subject_gold_entity_id": "ENT-1", "predicate": "real_predicate", "object_raw": "Y", "polarity": "affirmative", "temporal_status": "current"}],
+        )
+        res_comp = evaluate_bundle_v2_3(b, gcase_comp, "completed")
+        assert res_comp["tp_5d"] == 0
+        assert res_comp["tp_4d_diag"] == 0
+        assert res_comp["subject_attribution_accuracy"] is None
