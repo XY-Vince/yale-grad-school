@@ -143,7 +143,21 @@ def test_adversarial_1_candidate_permutation():
             ],
             gold_clusters=[["GM-1"], ["GM-2"]],
             gold_claims=[
-                {"claim_id": "GC-1", "subject_gold_entity_id": "ENT-ALICE", "predicate": "holds_position", "object_raw": "Prof", "polarity": "affirmative", "temporal_status": "current"}
+                {
+                    "claim_id": "GC-1",
+                    "subject_gold_entity_id": "ENT-ALICE",
+                    "predicate": "holds_position",
+                    "object_raw": "Prof",
+                    "polarity": "affirmative",
+                    "temporal_status": "current",
+                    "supports": [{
+                        "source_url": "https://example.com/alice",
+                        "source_content_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "char_start": 0,
+                        "char_end": 5,
+                        "verbatim_text": "Alice",
+                    }],
+                }
             ],
         )
 
@@ -191,7 +205,21 @@ def test_adversarial_2_homonym_separation():
             ],
             gold_clusters=[["GM-A"], ["GM-B"]],
             gold_claims=[
-                {"claim_id": "GC-1", "subject_gold_entity_id": "ENT-STANFORD", "predicate": "holds_position", "object_raw": "Stanford Prof", "polarity": "affirmative", "temporal_status": "current"}
+                {
+                    "claim_id": "GC-1",
+                    "subject_gold_entity_id": "ENT-STANFORD",
+                    "predicate": "holds_position",
+                    "object_raw": "Stanford Prof",
+                    "polarity": "affirmative",
+                    "temporal_status": "current",
+                    "supports": [{
+                        "source_url": "https://example.com/stanford",
+                        "source_content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        "char_start": 0,
+                        "char_end": 8,
+                        "verbatim_text": "John Doe",
+                    }],
+                }
             ],
         )
 
@@ -488,7 +516,21 @@ def test_adversarial_16_unmatched_released_claims_completed_zero_tp():
             ],
             gold_clusters=[["GM-1"]],
             gold_claims=[
-                {"claim_id": "GC-1", "subject_gold_entity_id": "ENT-1", "predicate": "holds_position", "object_raw": "True Role", "polarity": "affirmative", "temporal_status": "current"}
+                {
+                    "claim_id": "GC-1",
+                    "subject_gold_entity_id": "ENT-1",
+                    "predicate": "holds_position",
+                    "object_raw": "True Role",
+                    "polarity": "affirmative",
+                    "temporal_status": "current",
+                    "supports": [{
+                        "source_url": "https://example.com/target",
+                        "source_content_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+                        "char_start": 0,
+                        "char_end": 5,
+                        "verbatim_text": "Target",
+                    }],
+                }
             ],
         )
 
@@ -655,7 +697,23 @@ def test_adversarial_22_subject_attribution_none_on_no_diagnostic_pairs():
             gold_entities=[{"gold_entity_id": "ENT-1", "canonical_name": "Target"}],
             gold_mentions=[{"gold_mention_id": "GM-1", "gold_entity_id": "ENT-1", "source_content_sha256": "5555555555555555555555555555555555555555555555555555555555555555", "char_start": 0, "char_end": 5, "verbatim_text": "Target"}],
             gold_clusters=[["GM-1"]],
-            gold_claims=[{"claim_id": "GC-1", "subject_gold_entity_id": "ENT-1", "predicate": "real_predicate", "object_raw": "Y", "polarity": "affirmative", "temporal_status": "current"}],
+            gold_claims=[
+                {
+                    "claim_id": "GC-1",
+                    "subject_gold_entity_id": "ENT-1",
+                    "predicate": "real_predicate",
+                    "object_raw": "Y",
+                    "polarity": "affirmative",
+                    "temporal_status": "current",
+                    "supports": [{
+                        "source_url": "https://example.com/target",
+                        "source_content_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+                        "char_start": 0,
+                        "char_end": 5,
+                        "verbatim_text": "Target",
+                    }],
+                }
+            ],
         )
         res_comp = evaluate_bundle_v2_3(b, gcase_comp, "completed")
         assert res_comp["tp_5d"] == 0

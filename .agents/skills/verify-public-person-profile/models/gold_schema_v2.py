@@ -65,6 +65,10 @@ class GoldClaimSupport(BaseModel):
     char_start: int = Field(..., ge=0)
     char_end: int = Field(..., gt=0)
     verbatim_text: str = Field(..., min_length=1)
+    subject_anchor: Optional[str] = None
+    relation_anchor: Optional[str] = None
+    object_anchor: Optional[str] = None
+    dom_container: Optional[str] = None
 
     @field_validator("source_content_sha256")
     @classmethod
@@ -91,7 +95,7 @@ class GoldClaim(BaseModel):
     equivalence_set: List[str] = Field(default_factory=list)
     polarity: str = Field(..., description="'affirmative' or 'negative'")
     temporal_status: str = Field(..., description="'current', 'former', or 'unknown'")
-    supports: List[GoldClaimSupport] = Field(default_factory=list, description="Claim-level verbatim evidence spans")
+    supports: List[GoldClaimSupport] = Field(..., min_length=1, description="Claim-level verbatim evidence spans")
 
     @field_validator("polarity")
     @classmethod
