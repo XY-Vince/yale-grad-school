@@ -153,11 +153,13 @@ def clean_position_title(raw_title: str) -> str:
     if cleaned.lower().startswith("it, "):
         cleaned = re.sub(r"^it,\s*", "", cleaned, flags=re.IGNORECASE).strip()
     cleaned = re.sub(
-        r"^(?:(?:[a-z]+ly\s+)?(?:award-winning|recognized|acclaimed|respected|renowned|noted|prominent|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting)\s+)+",
+        r"^(?:(?:[a-z]+ly\s+)?(?:award-winning|recognized|acclaimed|respected|renowned|noted|prominent|leading|honorary|emeritus|former|past|previous|ex-|current|acting)\s+)+",
         "",
         cleaned,
         flags=re.IGNORECASE,
     ).strip()
+    if not re.match(r"^distinguished\s+(?:university\s+)?professors?\b", cleaned, re.IGNORECASE):
+        cleaned = re.sub(r"^distinguished\s+", "", cleaned, flags=re.IGNORECASE).strip()
     cleaned = re.sub(r"^(?:现任|曾任|担任|被聘为)\s*", "", cleaned).strip()
     cleaned = re.sub(r"^[一-鿿A-Za-z0-9]{2,15}?(?:大学|学院|研究所|研究院|医院)\s*", "", cleaned).strip()
     # Singularize standard plural roles
@@ -204,6 +206,10 @@ def split_sentences_and_clauses(text: str) -> List[Tuple[int, int, str]]:
     )
     last_end = 0
     for match in re.finditer(delimiters, text, re.IGNORECASE):
+        last_open = text.rfind("<", 0, match.start())
+        last_close = text.rfind(">", 0, match.start())
+        if last_open > last_close:
+            continue
         raw_seg = text[last_end:match.start()]
         lstrip_len = len(raw_seg) - len(raw_seg.lstrip())
         clause = raw_seg.strip()
@@ -398,9 +404,37 @@ def extract_claims_from_evidence(
             if longer_name:
                 return []
 
-    raw_seed = f"{evidence.source_id}:{target_name or 'target'}:1:1"
-    base_subj_id = subject_mention_id or f"MEN-{hashlib.sha256(raw_seed.encode('utf-8')).hexdigest()[:12]}"
-    base_cand_id = candidate_entity_id or "CAND-DEFAULT"
+    is_target_zh = any("\u4e00" <= c <= "\u9fff" for c in target_name) if target_name else False
+    t_clean = target_name.strip() if target_name else ""
+    t_toks = [re.escape(t) for t in t_clean.split()]
+    raw_t_toks = t_clean.split()
+    surname = raw_t_toks[-1] if len(raw_t_toks) >= 2 and not is_target_zh else None
+    conflicting_surname = False
+    if surname and target_name:
+        all_persons = build_person_mention_universe(excerpt, known_persons=[target_name])
+        target_given = raw_t_toks[0].lower()
+        for p in all_persons:
+            p_name = p.get("name", "").strip()
+            p_parts = p_name.split()
+            if len(p_parts) >= 2 and p_parts[-1].lower() == surname.lower():
+                if target_given not in p_name.lower():
+                    conflicting_surname = True
+                    break
+
+    target_ev_mentions = [
+        m for m in (evidence_mentions or [])
+        if m.evidence_id == evidence.evidence_id and is_mention_matching_target(m.raw_name_text, target_name)
+    ]
+    if target_ev_mentions:
+        base_subj_id = subject_mention_id or target_ev_mentions[0].mention_id
+        if mention_to_cand_id and base_subj_id in mention_to_cand_id:
+            base_cand_id = candidate_entity_id or mention_to_cand_id[base_subj_id]
+        else:
+            base_cand_id = candidate_entity_id or "CAND-DEFAULT"
+    else:
+        raw_seed = f"{evidence.source_id}:{target_name or 'target'}:1:1"
+        base_subj_id = subject_mention_id or f"MEN-{hashlib.sha256(raw_seed.encode('utf-8')).hexdigest()[:12]}"
+        base_cand_id = candidate_entity_id or "CAND-DEFAULT"
 
     # Sentence & Clause level parsing
     raw_clauses = split_sentences_and_clauses(excerpt)
@@ -417,13 +451,10 @@ def extract_claims_from_evidence(
 
     claims: List[Claim] = []
 
-    is_target_zh = any("\u4e00" <= c <= "\u9fff" for c in target_name) if target_name else False
     if is_target_zh:
         target_pat = re.escape(target_name.strip())
         target_word_pat = target_pat
     else:
-        t_clean = target_name.strip() if target_name else ""
-        t_toks = [re.escape(t) for t in t_clean.split()]
         if len(t_toks) >= 2:
             target_word_pat = rf"\b(?:" + r"\s+".join(t_toks) + rf")\b"
             target_pat = rf"(?:" + r"\s+".join(t_toks) + rf")"
@@ -435,6 +466,7 @@ def extract_claims_from_evidence(
             target_word_pat = rf"\b{target_pat}\b"
 
     target_mentioned_in_prev_clause = False
+    target_seen_in_excerpt = bool(target_ev_mentions)
     prev_clause_subj_id = None
     prev_clause_cand_id = None
     prev_clause_target_name = target_name
@@ -471,6 +503,7 @@ def extract_claims_from_evidence(
             prev_clause_span = None
             continue
 
+        is_surname_clause = False
         if clause_m is not None:
             if target_name and not is_mention_matching_target(clause_m.raw_name_text, target_name):
                 if not mention_to_cand_id or clause_m.mention_id not in mention_to_cand_id:
@@ -498,13 +531,19 @@ def extract_claims_from_evidence(
                         break
             else:
                 has_target = bool(re.search(target_word_pat, clause, re.IGNORECASE))
+                if not has_target and surname and target_seen_in_excerpt and not conflicting_surname:
+                    surname_verb_pat = rf"\b{re.escape(surname)}\s+(?:was|is|serves|served|joined|retired|holds|held|became|has\s+been|had\s+been)\b"
+                    if re.search(surname_verb_pat, clause, re.IGNORECASE):
+                        has_target = True
+                        is_surname_clause = True
             if has_target:
+                target_seen_in_excerpt = True
                 subj_id = base_subj_id
                 candidate_entity_id = base_cand_id
                 clause_target_name = t_clean
 
         if not has_target and target_mentioned_in_prev_clause and prev_clause_subj_id:
-            if re.match(r"^(?:and\s+|also\s+)?(?:she|he|they|i|my)\b|^(?:其|该学者|该专家)", clause_lower.strip()) or re.match(PRO_DROP_ZH_PATTERN, clause.strip()):
+            if re.match(r"^(?:(?:in\s+\d{4}|since\s+\d{4}|from\s+\d{4}|currently|previously|formerly|later|subsequently|and|also|thereafter)\s*[,，]?\s*)*(?:she|he|they|i|my)\b|^(?:其|该学者|该专家)", clause_lower.strip()) or re.match(PRO_DROP_ZH_PATTERN, clause.strip()):
                 is_anaphoric = True
             elif re.match(r"^(?:<[^>]+>)?\s*(?:position|roles?|title|rank|职位|职务|职称|头衔)\s*[:：]", clause_lower.strip()):
                 is_profile_field = True
@@ -581,6 +620,11 @@ def extract_claims_from_evidence(
                     if t_idx >= 0:
                         rel_s = min(rel_s, c_start + t_idx)
                         rel_e = max(rel_e, c_start + t_idx + len(clause_target_name))
+                elif is_surname_clause and surname and surname.lower() in clause.lower():
+                    s_idx = clause.lower().find(surname.lower())
+                    if s_idx >= 0:
+                        rel_s = min(rel_s, c_start + s_idx)
+                        rel_e = max(rel_e, c_start + s_idx + len(surname))
                 elif is_anaphoric:
                     pronoun_m = re.search(r"\b(she|he|they|i|my|其|该学者|该专家)\b", clause, re.IGNORECASE)
                     if pronoun_m:
@@ -630,6 +674,8 @@ def extract_claims_from_evidence(
             else:
                 c_target_pat = r"[A-Z][a-z]+\s+[A-Z][a-z]+"
                 c_word_pat = rf"\b{c_target_pat}\b"
+            if is_surname_clause and surname:
+                c_word_pat = rf"(?:{c_word_pat}|\b{re.escape(surname)}\b)"
             curr_target_pat = rf"(?:{c_word_pat}|\bshe\b|\bhe\b|\bthey\b|\bi\b|\bmy\b)" if is_anaphoric else c_word_pat
 
         pol = detect_clause_polarity(clause)
@@ -678,13 +724,13 @@ def extract_claims_from_evidence(
         found_roles: List[Tuple[str, int, int]] = []
 
         ROLE_HEAD_WORDS = r"(?:Director|Dean|Chair|President|Head|Professor|Scientist|Fellow|Researcher|Engineer|Agent|Realtor|Associate|Scholar|Physician|Specialist|Doctor|Student|Analyst|Consultant|Manager|Candidate|Clerk|Resident|Member|Trustee|教授|副教授|研究员|博士后|院长|主任|科学家|工程师|会长|校长|医师|队长)"
-        ROLE_PREFIX_WORDS = r"(?:Center|Institute|Department|Division|Program|Laboratory|Lab|Assistant|Associate|Full|Distinguished|Adjunct|Clinical|Visiting|Executive|Senior|Junior|Principal|Lead|Staff|Software|Postdoctoral|Real\s+Estate|Research|MS|PhD|BS|Investment\s+Banking|IT|Business\s+Systems|Hospital|Global\s+Surgery|Data\s+Visualization|Surgery|Master\x27s|Graduate|Undergraduate)"
+        ROLE_PREFIX_WORDS = r"(?:Center|Institute|Department|Division|Program|Laboratory|Lab|Assistant|Associate|Full|Distinguished|Adjunct|Clinical|Visiting|Executive|Senior|Junior|Principal|Lead|Staff|Software|Postdoctoral|Real\s+Estate|Research|MS|PhD|BS|Investment\s+Banking|IT|Business\s+Systems|Hospital|Global\s+Surgery|Data\s+Visualization|Surgery|Master\x27s|Graduate|Undergraduate|University|Regents|Endowed|Named)"
         ROLE_LOOKAHEAD = rf"(?:(?:the|a|an)\s+)?(?:(?:[a-z]+ly\s+)?(?:award-winning|renowned|noted|prominent|acclaimed|leading|distinguished|honorary|emeritus|former|past|previous|ex-|current|acting)\s+)*(?:{ROLE_PREFIX_WORDS}\s+)*{ROLE_HEAD_WORDS}\b"
 
         field_token = r"(?!\b(?:at|in|for|from|with|to|by|while|the|a|an|of|and)\b)[A-Za-z]+"
         field_expr = rf"{field_token}(?:\s+(?:and\s+(?!{ROLE_LOOKAHEAD}))?{field_token})*"
         role_base_pat = (
-            rf"(?:{ROLE_PREFIX_WORDS}\s+)?"
+            rf"(?:{ROLE_PREFIX_WORDS}\s+)*"
             rf"(?:Associate\s+Research\s+Scientists?|Research\s+Scientists?|Professor(?:s)?(?:\s+of\s+{field_expr})?|Postdoctoral(?:\s+Associates?|\s+Researchers?|\s+Fellows?)?|Postdoc(?:\s+Fellows?)?|Fellows?|Deans?|Directors?(?:\s+of\s+(?:the\s+)?[A-Za-z]+(?:\s+[A-Za-z]+)*?(?=\s+(?:at|in|from|with)\b|[,，.;:\n]|$))?|Scientists?|Engineers?|Agents?|Chairs?|Realtors?|Presidents?|Researchers?|Associates?|[^\s，。；、]{{0,15}}?{ROLE_HEAD_WORDS})\b"
         )
         compound_role_pat = rf"({role_base_pat})(?:\s+(?:and|&|/)\s+({role_base_pat}))?"
@@ -848,13 +894,26 @@ def extract_claims_from_evidence(
         else:
             affil_verb_pat = r"\b(?:at|joined|affiliated with|associated with|employed by|works at|working at|student at|undergraduate student at|graduate student at|researcher at|associate at|就职于|受聘于|任职于|就读于|in\s+(?:the\s+)?(?=(?:(?:[A-Za-z0-9&.-]+\s+)*(?:Department|Division|Section|Center|Institute|School|College|University|Program)|University|College))\b)\s*"
 
+        affil_org_core = (
+            r"(?:University(?:\s+(?:of|at)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?"
+            r"|[A-Z][A-Za-z\s]{0,45}?(?:University(?:\s+(?:of|at)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?"
+            r"|College|Institute(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?"
+            r"|Hospital|School(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?"
+            r"|Department(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?"
+            r"|Center(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?"
+            r"|Section(?:\s+of\s+[A-Za-z]+(?:\s+[A-Za-z]+)*)?"
+            r"|Program(?:\s+(?:on|for|in)\s+[A-Za-z]+(?:\s+[A-Za-z]+)*)?"
+            r"|Foundation|Realty|Real\s+Estate|Agency|Firm|Google|Microsoft|Meta|Apple|Amazon|OpenAI|IEEE|Company|Corp|Inc|LLC|大学|学院|研究所|研究院|公司|集团|医院|中心))"
+        )
+        article_or_tag = r"(?:(?:the|a|an)\s+)?(?:<[^>]*>\s*)?(?:(?:the|a|an)\s+)?"
         affil_matches = re.finditer(
-            rf"{affil_verb_pat}([A-Z][A-Za-z\s]{{0,45}}?(?:University(?:\s+(?:of|at)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|College|Institute(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Hospital|School(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Department(?:\s+of\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Center(?:\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)?|Section(?:\s+of\s+[A-Za-z]+(?:\s+[A-Za-z]+)*)?|Program(?:\s+(?:on|for|in)\s+[A-Za-z]+(?:\s+[A-Za-z]+)*)?|Foundation|Realty|Real\s+Estate|Agency|Firm|Google|Microsoft|Meta|Apple|Amazon|OpenAI|IEEE|Company|Corp|Inc|LLC|大学|学院|研究所|研究院|公司|集团|医院|中心))\b",
+            rf"{affil_verb_pat}{article_or_tag}({affil_org_core})\b",
             clause,
             re.IGNORECASE,
         )
         for m in affil_matches:
             affil = m.group(1).strip()
+            affil = re.sub(r"<[^>]+>", "", affil).strip()
             # Strip trailing participial phrases / clauses like 'working in the Mothes Lab'
             affil = re.sub(
                 r"\s+(?:working|focusing|conducting|serving|located|based|joined|received|graduated|leading)\s+.*$",
@@ -1435,7 +1494,7 @@ def extract_claims_from_evidence(
                 org_name = "University of Maryland"
             elif "bu.edu" in host:
                 org_name = "Boston University"
-            if org_name:
+            if org_name and org_name.lower() in clause.lower():
                 raw_key = f"{subj_id}:affiliated_with:{org_name}:affirmative:current".encode("utf-8")
                 claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
                 support = make_support(c_start + email_m.start(), c_start + email_m.end())
