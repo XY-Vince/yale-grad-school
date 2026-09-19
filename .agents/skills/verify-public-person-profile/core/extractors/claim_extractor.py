@@ -6,6 +6,8 @@ Generates deterministic 128-bit SHA-256 Claim IDs and records ClaimEvidenceSuppo
 """
 
 import hashlib
+import html as html_lib
+import json
 import re
 from typing import Dict, List, Optional, Tuple
 from models.schemas import (
@@ -16,6 +18,7 @@ from models.schemas import (
     EntityMention,
     Evidence,
     FactPolarity,
+    SourceQualityClass,
     TemporalStatus,
     PREDICATE_ALLOWLIST,
 )
@@ -1581,6 +1584,225 @@ def extract_claims_from_evidence(
                         support_clauses=[support],
                     )
                 )
+
+    # Structured profile fields may be separated from the person's name by DOM
+    # boundaries. Bind them only when the evidence contains one resolved target
+    # candidate and comes from an institutional or otherwise curated source.
+    structured_mentions = sorted(target_ev_mentions, key=lambda item: item.char_start)
+    structured_candidate_ids = {
+        (mention_to_cand_id.get(item.mention_id) if mention_to_cand_id else None) or base_cand_id
+        for item in structured_mentions
+    }
+    trusted_structured_source = evidence.source_quality_class in {
+        SourceQualityClass.CLASS_A,
+        SourceQualityClass.CLASS_B,
+    }
+
+    if structured_mentions and len(structured_candidate_ids) == 1 and trusted_structured_source:
+        profile_mention = structured_mentions[0]
+        profile_candidate_id = next(iter(structured_candidate_ids))
+
+        def append_profile_claim(
+            predicate: str,
+            object_raw: str,
+            temporal_status: TemporalStatus,
+            support_start: int,
+            support_end: int,
+            confidence: float = 0.97,
+        ) -> None:
+            if not object_raw or not (0 <= support_start < support_end <= len(excerpt)):
+                return
+            support_text = excerpt[support_start:support_end]
+            raw_key = (
+                f"{profile_mention.mention_id}:{predicate}:{object_raw}:"
+                f"affirmative:{temporal_status.value}"
+            ).encode("utf-8")
+            claim_id = f"CLM-{hashlib.sha256(raw_key).hexdigest()[:32]}"
+            claims.append(
+                Claim(
+                    claim_id=claim_id,
+                    candidate_entity_id=profile_candidate_id,
+                    subject_mention_id=profile_mention.mention_id,
+                    predicate=predicate,
+                    object_raw=object_raw,
+                    polarity=FactPolarity.AFFIRMATIVE,
+                    temporal_status=temporal_status,
+                    adjudication_status=AdjudicationStatus.UNRESOLVED,
+                    as_of=evidence.retrieved_at.date(),
+                    extraction_confidence=confidence,
+                    evidence_ids=[evidence.evidence_id],
+                    support_clauses=[
+                        ClaimEvidenceSupport(
+                            evidence_id=evidence.evidence_id,
+                            subject_mention_id=profile_mention.mention_id,
+                            clause_span_start=support_start,
+                            clause_span_end=support_end,
+                            verbatim_clause=support_text,
+                            relation_span_start=support_start,
+                            relation_span_end=support_end,
+                            provenance_level="relation",
+                            subject_resolution="profile_field",
+                        )
+                    ],
+                )
+            )
+
+        # JSON-LD Person.jobTitle is an explicit structured assertion.
+        json_ld_pattern = re.compile(
+            r'<script[^>]*type=["\']application/ld(?:\+|&#x2B;|%2B)json["\'][^>]*>'
+            r'(?P<payload>.*?)</script>',
+            re.IGNORECASE | re.DOTALL,
+        )
+
+        def iter_person_nodes(value):
+            if isinstance(value, dict):
+                node_type = value.get("@type")
+                node_types = node_type if isinstance(node_type, list) else [node_type]
+                if "Person" in node_types:
+                    yield value
+                for child in value.values():
+                    yield from iter_person_nodes(child)
+            elif isinstance(value, list):
+                for child in value:
+                    yield from iter_person_nodes(child)
+
+        for script_match in json_ld_pattern.finditer(excerpt):
+            payload = html_lib.unescape(script_match.group("payload"))
+            try:
+                parsed_payload = json.loads(payload)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            for person_node in iter_person_nodes(parsed_payload):
+                person_name = str(person_node.get("name") or "").split(",", 1)[0].strip()
+                if not is_mention_matching_target(person_name, target_name or ""):
+                    continue
+                raw_titles = person_node.get("jobTitle") or []
+                if isinstance(raw_titles, str):
+                    raw_titles = [raw_titles]
+                for raw_title in raw_titles:
+                    if not isinstance(raw_title, str) or not raw_title.strip():
+                        continue
+                    title = clean_position_title(raw_title)
+                    raw_local_start = excerpt.find(raw_title, script_match.start(), script_match.end())
+                    if title and raw_local_start >= 0:
+                        append_profile_claim(
+                            "holds_position",
+                            title,
+                            TemporalStatus.CURRENT,
+                            raw_local_start,
+                            raw_local_start + len(raw_title),
+                        )
+
+        # Profile headers commonly place the canonical name immediately before
+        # a dedicated position/title element without a sentence-level verb.
+        position_pattern = re.compile(
+            r'<(?P<tag>div|span)\b(?=[^>]*\bclass\s*=\s*["\'][^"\']*'
+            r'(?:\bposition\b|profile-details-header-info__title)[^"\']*["\'])[^>]*>'
+            r'(?P<body>.*?)</(?P=tag)>',
+            re.IGNORECASE | re.DOTALL,
+        )
+        for target_mention in structured_mentions:
+            local_end = min(len(excerpt), target_mention.char_end + 800)
+            position_match = position_pattern.search(excerpt, target_mention.char_end, local_end)
+            if not position_match:
+                continue
+            raw_position = html_lib.unescape(
+                re.sub(r"<[^>]+>", " ", position_match.group("body"))
+            )
+            raw_position = re.sub(r"\s+", " ", raw_position).strip()
+            if re.search(r",\s*(?:Department|Division|School|College|Institute|Center)\b", raw_position, re.IGNORECASE):
+                raw_position = raw_position.split(",", 1)[0].strip()
+            position = clean_position_title(raw_position)
+            if position:
+                profile_mention = target_mention
+                append_profile_claim(
+                    "holds_position",
+                    position,
+                    TemporalStatus.CURRENT,
+                    target_mention.char_start,
+                    position_match.end(),
+                )
+            break
+
+        # Select the first (normally highest/latest) degree listed in a formal
+        # Education section. Institution is retained as provenance context and
+        # is not independently promoted to a claim here.
+        education_heading = re.search(
+            r'<h[1-6][^>]*>\s*Education\s*</h[1-6]>',
+            excerpt,
+            re.IGNORECASE,
+        )
+        education_has_profile_anchor = bool(
+            education_heading
+            and any(
+                item.char_end <= education_heading.start()
+                and education_heading.start() - item.char_end <= 2500
+                for item in structured_mentions
+            )
+        )
+        if education_heading and education_has_profile_anchor:
+            education_region_end = min(len(excerpt), education_heading.end() + 4000)
+            next_heading = re.search(
+                r'<h[1-6]\b',
+                excerpt[education_heading.end():education_region_end],
+                re.IGNORECASE,
+            )
+            if next_heading:
+                education_region_end = education_heading.end() + next_heading.start()
+            education_region = excerpt[education_heading.end():education_region_end]
+            degree_match = re.search(
+                r'<li[^>]*>\s*[A-Z][A-Za-z\s&.-]+?(?:University|College|Institute|School)\s*,\s*'
+                r'(?P<degree>(?:Ph\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|Doctor of Philosophy|'
+                r'Master(?:\x27s)?|Bachelor(?:\x27s)?)(?:\s+in\s+[A-Za-z][A-Za-z\s&.-]*?)?)'
+                r'\s*(?:\(\d{4}\))?\s*</li>',
+                education_region,
+                re.IGNORECASE,
+            )
+            if degree_match:
+                degree = re.sub(r"\s+", " ", degree_match.group("degree")).strip()
+                degree_start = education_heading.end() + degree_match.start("degree")
+                degree_end = education_heading.end() + degree_match.end("degree")
+                append_profile_claim(
+                    "received_degree",
+                    degree,
+                    TemporalStatus.FORMER,
+                    degree_start,
+                    degree_end,
+                    confidence=0.95,
+                )
+
+        # Directory/roster headings are inherited only when the target mention
+        # lies inside that heading's section in the same Evidence slice.
+        roster_headings = list(
+            re.finditer(
+                r'<h2[^>]*>\s*(?P<role>Master(?:\x27|’)s Students?|Ph\.?D\.?\s+Students?|'
+                r'Postdoctoral\s+Associates?|Faculty|Staff)\s*</h2>',
+                excerpt,
+                re.IGNORECASE,
+            )
+        )
+        for index, heading in enumerate(roster_headings):
+            section_end = roster_headings[index + 1].start() if index + 1 < len(roster_headings) else len(excerpt)
+            if not any(heading.end() <= item.char_start < section_end for item in structured_mentions):
+                continue
+            raw_role = heading.group("role")
+            if re.search(r"Master", raw_role, re.IGNORECASE):
+                roster_role = "Master's Student"
+            elif re.search(r"Ph\.?D", raw_role, re.IGNORECASE):
+                roster_role = "PhD Student"
+            elif re.search(r"Postdoctoral", raw_role, re.IGNORECASE):
+                roster_role = "Postdoctoral Associate"
+            else:
+                roster_role = raw_role.rstrip("sS")
+            append_profile_claim(
+                "holds_position",
+                roster_role,
+                TemporalStatus.CURRENT,
+                heading.start(),
+                heading.end(),
+                confidence=0.95,
+            )
+            break
 
     # Deduplicate claims
     unique_claims = []

@@ -349,7 +349,10 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                     # Contiguous noun phrase match strictly within same sentence
                     # sep_pat prohibits periods
                     sep_pat = r"[\s,&-]+(?:(?:the|of|at|in|for|on|and|&|to|from|with|by|a|an)\b[\s,&-]*)*"
-                    phrase_pat = sep_pat.join(re.escape(tok) for tok in substantive)
+                    phrase_tokens = [re.escape(tok) for tok in substantive]
+                    if substantive[-1] in ROLE_WORDS:
+                        phrase_tokens[-1] = rf"{re.escape(substantive[-1])}s?"
+                    phrase_pat = sep_pat.join(phrase_tokens)
                     for m in re.finditer(rf"(?<!\w){phrase_pat}(?!\w)", sent_lower):
                         if not _is_conflict(m.end()):
                             return (s_start + m.start(), s_start + m.end(), can_id, cat)
@@ -360,7 +363,10 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                     # Check against atomic tokens from tokenize_with_abbreviations
                     found_tok = False
                     for tok_str, t_start, t_end in sent_tokens:
-                        if tok_str.lower() == cand_lower or tok_str.lower() == tok.lower():
+                        role_forms = {tok.lower()}
+                        if tok.lower() in ROLE_WORDS:
+                            role_forms.add(f"{tok.lower()}s")
+                        if tok_str.lower() == cand_lower or tok_str.lower() in role_forms:
                             if not _is_conflict(t_end):
                                 return (s_start + t_start, s_start + t_end, can_id, cat)
                     # Fallback to word-boundary regex if token split differed

@@ -277,7 +277,8 @@ def locate_evidence_slices(
 
     # Strategy 2d: Personal Portfolio / Bio Introduction
     about_pat = re.compile(
-        r'<p[^>]*>[\s\S]*?\b(?:My name is|I am|I\x27m)\b[\s\S]*?</p>',
+        r'<p\b[^>]*>(?:(?!</p>)[\s\S])*?\b(?:My name is|I am|I\x27m)\b'
+        r'(?:(?!</p>)[\s\S])*?</p>',
         re.IGNORECASE,
     )
     for am in about_pat.finditer(html_text):

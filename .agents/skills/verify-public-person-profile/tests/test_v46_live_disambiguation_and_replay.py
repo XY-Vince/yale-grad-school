@@ -410,8 +410,8 @@ def test_live_xin_zhou_pipeline_execution_from_warc(tmp_path):
     assert res["layers"]["structural_valid"] is True
     assert res["layers"]["warc_record_ids_present"] is True
     assert res["layers"]["provenance_replay_valid"] is True
-    assert res["layers"]["semantic_review_passed"] is False  # 9 unadjudicated claims -> PARTIAL
-    assert res["audit_details"]["unadjudicated_claim_count"] == 9
+    assert res["layers"]["semantic_review_passed"] is False  # Unadjudicated claims -> PARTIAL
+    assert res["audit_details"]["unadjudicated_claim_count"] == 10
 
     # Verify dossier content in tmp_path
     dossier_md = (bundle_dir / "dossier.md").read_text(encoding="utf-8")
@@ -428,7 +428,7 @@ def test_run_pipeline_warc_convergence(tmp_path):
     Enforces that:
     1. Outcome is strictly ambiguous_identity.
     2. Primary candidate is not automatically selected (None in dossier, statements is empty).
-    3. Both candidate entities have their claims extracted (Medicine: 3 claims, Biostatistics: 6 claims).
+    3. Both candidate entities have their claims extracted (Medicine: 4 claims, Biostatistics: 6 claims).
     4. Review edges between candidate entities never accompany completed.
     5. Four-layer quality validator passes with 3 structural/provenance layers True, semantic layer PARTIAL.
     """
@@ -485,11 +485,17 @@ def test_run_pipeline_warc_convergence(tmp_path):
 
     # 4. Two-candidate claims extracted
     claims = [json.loads(line) for line in (bundle_dir / "claims.jsonl").read_text(encoding="utf-8").strip().split("\n") if line]
-    assert len(claims) == 9, f"Expected exactly 9 claims across both candidates, got {len(claims)}"
+    assert len(claims) == 10, f"Expected exactly 10 claims across both candidates, got {len(claims)}"
     c1_claims = [c for c in claims if c["candidate_entity_id"] == "CAND-1940fe4aefdf"]
     c2_claims = [c for c in claims if c["candidate_entity_id"] == "CAND-238ef964c826"]
-    assert len(c1_claims) == 3, f"Expected 3 medicine claims, got {len(c1_claims)}"
+    assert len(c1_claims) == 4, f"Expected 4 medicine claims, got {len(c1_claims)}"
     assert len(c2_claims) == 6, f"Expected 6 biostatistics claims, got {len(c2_claims)}"
+    assert any(
+        c["predicate"] == "holds_position"
+        and c["object_raw"] == "Associate Research Scientist"
+        and c["temporal_status"] == "current"
+        for c in c1_claims
+    ), "The structured Yale Medicine profile title must be retained as a current claim"
 
     # 5. Review edges discipline: review edges must NOT accompany completed
     matches = [json.loads(line) for line in (bundle_dir / "matches.jsonl").read_text(encoding="utf-8").strip().split("\n") if line]
@@ -505,7 +511,7 @@ def test_run_pipeline_warc_convergence(tmp_path):
     assert res["layers"]["warc_record_ids_present"] is True
     assert res["layers"]["provenance_replay_valid"] is True
     assert res["layers"]["semantic_review_passed"] is False
-    assert res["audit_details"]["unadjudicated_claim_count"] == 9
+    assert res["audit_details"]["unadjudicated_claim_count"] == 10
 
 
 def test_candidate_scoped_contradiction_detection():
@@ -4042,7 +4048,6 @@ def test_chinese_maximal_span_and_predicate_counterexamples():
         assert len(matching) == expected_count, (
             f"Expected {expected_count} mentions of '{target}' in '{text}', got {len(matching)}: {mentions}"
         )
-
 
 
 
