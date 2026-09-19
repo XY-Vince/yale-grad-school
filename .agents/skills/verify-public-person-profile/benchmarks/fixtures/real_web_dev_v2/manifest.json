@@ -1,0 +1,146 @@
+[
+  {
+    "case_id": "DEV-001",
+    "target_name": "Xin Zhou",
+    "category": "homonym_hint_resolvable",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "known_hints": [
+      "Cornell"
+    ],
+    "aliases": []
+  },
+  {
+    "case_id": "DEV-002",
+    "target_name": "Sarah Luckart",
+    "category": "academic_unambiguous",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "completed",
+    "expected_outcome_hinted": "completed",
+    "known_hints": [],
+    "aliases": []
+  },
+  {
+    "case_id": "DEV-003",
+    "target_name": "Yao Sun",
+    "category": "homonym_hint_resolvable",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "known_hints": [
+      "NJIT"
+    ],
+    "aliases": []
+  },
+  {
+    "case_id": "DEV-004",
+    "target_name": "Rohini Dutta",
+    "category": "academic_unambiguous",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "completed",
+    "expected_outcome_hinted": "completed",
+    "known_hints": [],
+    "aliases": []
+  },
+  {
+    "case_id": "DEV-005",
+    "target_name": "\u6bb5\u4e16\u6cfd",
+    "category": "negative_control_sparse",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "insufficient_evidence",
+    "expected_outcome_hinted": "insufficient_evidence",
+    "known_hints": [],
+    "aliases": [
+      "Shize Duan"
+    ]
+  },
+  {
+    "case_id": "DEV-006",
+    "target_name": "Ray Liu",
+    "category": "homonym_hint_resolvable",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "known_hints": [
+      "University of Maryland"
+    ],
+    "aliases": []
+  },
+  {
+    "case_id": "DEV-007",
+    "target_name": "Logan Chen",
+    "category": "negative_control_sparse",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "insufficient_evidence",
+    "expected_outcome_hinted": "insufficient_evidence",
+    "known_hints": [],
+    "aliases": [
+      "\u9648\u5f66\u8fbe"
+    ]
+  },
+  {
+    "case_id": "DEV-008",
+    "target_name": "Adeline Miao",
+    "category": "negative_control_sparse",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "insufficient_evidence",
+    "expected_outcome_hinted": "insufficient_evidence",
+    "known_hints": [],
+    "aliases": []
+  },
+  {
+    "case_id": "DEV-009",
+    "target_name": "Yining Zhang",
+    "category": "homonym_hint_resolvable",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "known_hints": [
+      "Yale"
+    ],
+    "aliases": []
+  },
+  {
+    "case_id": "DEV-010",
+    "target_name": "Albert Zhao",
+    "category": "homonym_hint_resolvable",
+    "tracks": [
+      "name_only",
+      "hinted"
+    ],
+    "expected_outcome_name_only": "ambiguous_identity",
+    "expected_outcome_hinted": "completed",
+    "known_hints": [
+      "Boston University"
+    ],
+    "aliases": []
+  }
+]

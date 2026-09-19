@@ -168,13 +168,17 @@ def parse_warc_payload_shas(warc_path: Path) -> Set[str]:
 
 
 def verify_gold_warc_integrity(gold_suite: GoldSuite, warc_path: Path):
-    """Verifies that all source_content_sha256 in Gold mentions exist in the WARC archive."""
+    """Verifies that all source_content_sha256 in Gold mentions and Gold claim supports exist in the WARC archive."""
     warc_shas = parse_warc_payload_shas(warc_path)
     missing = []
     for case in gold_suite:
         for gm in case.gold_mentions:
             if gm.source_content_sha256 not in warc_shas:
                 missing.append((case.case_id, gm.gold_mention_id, gm.source_content_sha256))
+        for gc in case.gold_claims:
+            for sup in getattr(gc, "supports", []):
+                if sup.source_content_sha256 not in warc_shas:
+                    missing.append((case.case_id, gc.claim_id, sup.source_content_sha256))
     if missing:
         raise ValueError(
             f"FAIL-CLOSED: {len(missing)} Gold mentions reference missing WARC payloads: {missing[:5]}"

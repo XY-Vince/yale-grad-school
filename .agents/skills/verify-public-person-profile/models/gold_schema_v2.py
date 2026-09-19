@@ -15,7 +15,7 @@ Strict Pydantic V2 Models for Ground Truth:
 """
 
 import re
-from typing import List, Optional, Set
+from typing import List, Literal, Optional, Set
 from pydantic import BaseModel, Field, RootModel, field_validator, model_validator
 
 HEX64_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -59,6 +59,30 @@ class GoldMention(BaseModel):
         return self
 
 
+class GoldClaimSupport(BaseModel):
+    source_url: str = Field(..., min_length=1)
+    source_content_sha256: str = Field(..., description="64-char lowercase hex SHA256 of source HTML payload")
+    char_start: int = Field(..., ge=0)
+    char_end: int = Field(..., gt=0)
+    verbatim_text: str = Field(..., min_length=1)
+
+    @field_validator("source_content_sha256")
+    @classmethod
+    def validate_sha256(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not HEX64_PATTERN.match(v):
+            raise ValueError(f"Invalid SHA-256 digest format: {v}")
+        return v
+
+    @model_validator(mode="after")
+    def validate_spans(self) -> "GoldClaimSupport":
+        if self.char_end <= self.char_start:
+            raise ValueError(
+                f"char_end ({self.char_end}) must be strictly greater than char_start ({self.char_start})"
+            )
+        return self
+
+
 class GoldClaim(BaseModel):
     claim_id: str = Field(..., min_length=1, description="Unique claim ID, e.g. GCLM-01")
     subject_gold_entity_id: str = Field(..., min_length=1, description="Entity ID this fact belongs to")
@@ -67,6 +91,7 @@ class GoldClaim(BaseModel):
     equivalence_set: List[str] = Field(default_factory=list)
     polarity: str = Field(..., description="'affirmative' or 'negative'")
     temporal_status: str = Field(..., description="'current', 'former', or 'unknown'")
+    supports: List[GoldClaimSupport] = Field(default_factory=list, description="Claim-level verbatim evidence spans")
 
     @field_validator("polarity")
     @classmethod
@@ -93,6 +118,7 @@ class GoldCase(BaseModel):
     expected_outcome_name_only: Optional[str] = None
     expected_outcome_hinted: Optional[str] = None
     is_fact_bearing: bool = True
+    annotation_type: Literal["curator_annotation", "double_blind_adjudicated"] = "curator_annotation"
     gold_entities: List[GoldEntity] = Field(default_factory=list)
     gold_mentions: List[GoldMention] = Field(default_factory=list)
     gold_clusters: List[List[str]] = Field(default_factory=list, description="Clusters of gold_mention_ids")
