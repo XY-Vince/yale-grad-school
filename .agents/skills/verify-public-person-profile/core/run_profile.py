@@ -650,7 +650,10 @@ def run_pipeline(
             orgs = extract_organizations(ev.verbatim_excerpt)
             for m in mentions:
                 m.inferred_affiliations = list(orgs)
-            mentions_list.extend(mentions)
+                if any(existing.mention_id == m.mention_id for existing in mentions_list):
+                    dup_seed = f"{m.mention_id}:{ev.evidence_id}"
+                    m.mention_id = f"MEN-{hashlib.sha256(dup_seed.encode('utf-8')).hexdigest()[:12]}"
+                mentions_list.append(m)
 
     # Phase 2: Entity Resolution and Clustering (Constrained Union-Find)
     evidence_text_by_id = {ev.evidence_id: ev.verbatim_excerpt for ev in evidence_list}

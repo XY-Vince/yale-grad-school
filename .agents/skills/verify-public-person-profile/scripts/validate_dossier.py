@@ -76,7 +76,7 @@ ZH_GENERIC_WORDS = [
 ]
 
 ACADEMIC_CATEGORIES = {"university", "college", "school", "academy", "univ"}
-HEALTH_CATEGORIES = {"hospital", "clinic", "infirmary", "health"}
+HEALTH_CATEGORIES = {"hospital", "clinic", "infirmary", "health", "medicine", "medical"}
 RESEARCH_CATEGORIES = {"institute", "institution", "laboratory", "lab", "center"}
 COMPANY_CATEGORIES = {"company", "corporation", "corp", "inc", "ltd", "firm", "group"}
 DEPT_CATEGORIES = {"department", "dept", "division", "section"}
@@ -326,8 +326,9 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                     substantive = [re.sub(r"^[^\w.]+|[^\w.]+$", "", tok) for tok in clean_tokens if tok]
                     substantive = [tok for tok in substantive if tok]
 
+                ROLE_WORDS = {"resident", "fellow", "professor", "scientist", "director", "dean", "chair", "student", "doctor", "physician", "intern", "engineer", "researcher", "scholar", "clerk", "member"}
                 def _is_conflict(match_end_rel: int) -> bool:
-                    if not cat:
+                    if not cat or any(rw in raw_obj.lower() for rw in ROLE_WORDS):
                         return False
                     after_text = sent_lower[match_end_rel : match_end_rel + 35]
                     punct_split = re.split(r"[.;:!?\n]", after_text)
