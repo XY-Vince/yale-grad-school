@@ -1,0 +1,844 @@
+{
+  "evaluator_version": "2.4.0",
+  "evaluation_role": "development",
+  "evaluation_decision": "ready_for_blind_evaluation",
+  "development_gates_passed": true,
+  "release_review_eligible": false,
+  "provenance": {
+    "evaluator_version": "2.4.0",
+    "git_commit_sha": "78871c9342de023b8ccad54e9e0745d5666016ae",
+    "git_dirty": false,
+    "evaluator_sha256": "4120a180d1e8417dddeb735fb4050f45e4275f54993718841252a2228a64c517",
+    "gold_sha256": "438c16f254c9d3b3c4e348d15a3689b8308e95828c043079d64d82c9d052c1fd",
+    "corpus_warc_sha256": "f67066a877a8f51877f941c78f1142c006154c4c7fd6fdd02389dee6e188671a",
+    "query_index_sha256": "d6c2cd1da2bdc53b2d444b6bf401868ad934c3431d85ba7520dd97e42c71843b"
+  },
+  "total_cases_evaluated": 10,
+  "expected_case_count": 10,
+  "completeness_pass": true,
+  "seal_intact": true,
+  "structural_validation_rate": 1.0,
+  "target_entity_case_recall": 1.0,
+  "entity_source_recall": 1.0,
+  "total_false_merges": 0,
+  "total_false_splits": 0,
+  "max_false_splits_allowed": 0,
+  "total_unmatched_released_claims": 0,
+  "outcome_accuracy": 1.0,
+  "suite_funnel": {
+    "l1_gold_sources": {
+      "numerator": 14,
+      "denominator": 14,
+      "rate": 1.0
+    },
+    "l2_entity_source_hits": {
+      "numerator": 14,
+      "denominator": 14,
+      "rate": 1.0
+    },
+    "l3_target_mentions_covered": {
+      "numerator": 28,
+      "denominator": 114,
+      "rate": 0.2456
+    },
+    "l4_target_mentions_extracted": {
+      "numerator": 25,
+      "denominator": 28,
+      "rate": 0.8929
+    },
+    "l5_claim_supports_covered": {
+      "numerator": 13,
+      "denominator": 17,
+      "rate": 0.7647
+    },
+    "l6a_proposed_claims_tp": {
+      "numerator": 14,
+      "denominator": 17,
+      "rate": 0.8235
+    },
+    "l6b_released_claims_tp": {
+      "numerator": 14,
+      "denominator": 17,
+      "rate": 0.8235
+    }
+  },
+  "diagnostic_metrics": {
+    "occurrence_mention_precision": 0.9388,
+    "occurrence_mention_recall": 0.3244,
+    "occurrence_mention_f1": 0.4822,
+    "common_universe_b3_f1": 1.0,
+    "common_universe_pairwise_f1": 1.0
+  },
+  "fact_bearing_evaluation": {
+    "case_count": 7,
+    "macro_precision": 1.0,
+    "macro_recall": 0.8095,
+    "macro_f1": 0.8947,
+    "micro_precision": 1.0,
+    "micro_recall": 0.8235,
+    "micro_f1": 0.9032,
+    "subject_attribution_accuracy": 1.0,
+    "total_extracted_claims": 14,
+    "total_gold_claims": 17,
+    "total_tp_5d": 14
+  },
+  "abstention_evaluation": {
+    "case_count": 3,
+    "abstention_accuracy": 1.0,
+    "total_spurious_claims": 0,
+    "spurious_case_rate": 0.0
+  },
+  "gates": {
+    "clean_git_tree_gate": true,
+    "provenance_complete_gate": true,
+    "asset_manifest_gate": true,
+    "seal_integrity_gate": true,
+    "structural_validation_gate": true,
+    "case_completeness_gate": true,
+    "paired_input_identity_gate": true,
+    "target_entity_case_recall_gate": true,
+    "entity_source_recall_gate": true,
+    "zero_false_merges_gate": true,
+    "false_splits_gate": true,
+    "zero_unmatched_released_claims_gate": true,
+    "claim_precision_gate": true,
+    "claim_recall_gate": true,
+    "subject_attribution_gate": true,
+    "outcome_accuracy_gate": true,
+    "ambiguity_safety_gate": true,
+    "completed_released_claims_gate": true
+  },
+  "all_gates_passed": true,
+  "paired_comparison": {
+    "identity_passed": true,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "asset_manifest_verification": {
+    "passed": true,
+    "error_count": 0,
+    "errors": []
+  },
+  "case_details": [
+    {
+      "case_id": "DEV-001",
+      "target_name": "Xin Zhou",
+      "bundle_tree_hash": "a647b25aca807eeb65902c3f1d2ea4ca66da0859b7c78625c5cd62562743fd90",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "completed",
+      "expected_outcome": "completed",
+      "outcome_match": true,
+      "is_fact_bearing": true,
+      "target_entity_recalled": true,
+      "gold_claims_count": 3,
+      "extracted_claims_count": 2,
+      "proposed_claims_count": 5,
+      "released_claims_count": 2,
+      "tp_5d": 2,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": 1.0,
+      "claim_recall": 0.6667,
+      "claim_f1": 0.8,
+      "subject_attribution_accuracy": 1.0,
+      "mention_precision": 0.7143,
+      "mention_recall": 0.3571,
+      "mention_f1": 0.4762,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 2,
+          "denominator": 5,
+          "rate": 0.4
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 1,
+          "denominator": 2,
+          "rate": 0.5
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 2,
+          "denominator": 3,
+          "rate": 0.6667
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 2,
+          "denominator": 3,
+          "rate": 0.6667
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 2,
+          "denominator": 3,
+          "rate": 0.6667
+        },
+        "first_failure_stage": "l5_claim_support_window_miss"
+      }
+    },
+    {
+      "case_id": "DEV-002",
+      "target_name": "Sarah Luckart",
+      "bundle_tree_hash": "ec11688a7191bb63effb838350537f6e96fc8ce701b482cd0e88f8c72fb4c4fd",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "completed",
+      "expected_outcome": "completed",
+      "outcome_match": true,
+      "is_fact_bearing": true,
+      "target_entity_recalled": true,
+      "gold_claims_count": 3,
+      "extracted_claims_count": 3,
+      "proposed_claims_count": 3,
+      "released_claims_count": 3,
+      "tp_5d": 3,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": 1.0,
+      "claim_recall": 1.0,
+      "claim_f1": 1.0,
+      "subject_attribution_accuracy": 1.0,
+      "mention_precision": 1.0,
+      "mention_recall": 0.2778,
+      "mention_f1": 0.4348,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 6,
+          "denominator": 18,
+          "rate": 0.3333
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 5,
+          "denominator": 6,
+          "rate": 0.8333
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 3,
+          "denominator": 3,
+          "rate": 1.0
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 3,
+          "denominator": 3,
+          "rate": 1.0
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 3,
+          "denominator": 3,
+          "rate": 1.0
+        },
+        "first_failure_stage": "all_stages_passed"
+      }
+    },
+    {
+      "case_id": "DEV-003",
+      "target_name": "Yao Sun",
+      "bundle_tree_hash": "5f2d35e25555eefd016916e3a06cc069af65f8d187d15b99894c467ebc826a34",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "completed",
+      "expected_outcome": "completed",
+      "outcome_match": true,
+      "is_fact_bearing": true,
+      "target_entity_recalled": true,
+      "gold_claims_count": 2,
+      "extracted_claims_count": 1,
+      "proposed_claims_count": 1,
+      "released_claims_count": 1,
+      "tp_5d": 1,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": 1.0,
+      "claim_recall": 0.5,
+      "claim_f1": 0.6667,
+      "subject_attribution_accuracy": 1.0,
+      "mention_precision": 1.0,
+      "mention_recall": 0.3333,
+      "mention_f1": 0.5,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 1,
+          "denominator": 2,
+          "rate": 0.5
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 1,
+          "denominator": 1,
+          "rate": 1.0
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 1,
+          "denominator": 2,
+          "rate": 0.5
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 1,
+          "denominator": 2,
+          "rate": 0.5
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 1,
+          "denominator": 2,
+          "rate": 0.5
+        },
+        "first_failure_stage": "l5_claim_support_window_miss"
+      }
+    },
+    {
+      "case_id": "DEV-004",
+      "target_name": "Rohini Dutta",
+      "bundle_tree_hash": "524e50f8b0577b5365cb8572290ff7a94a9625b52fbfcbcbc0f9953e96344934",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "completed",
+      "expected_outcome": "completed",
+      "outcome_match": true,
+      "is_fact_bearing": true,
+      "target_entity_recalled": true,
+      "gold_claims_count": 2,
+      "extracted_claims_count": 2,
+      "proposed_claims_count": 2,
+      "released_claims_count": 2,
+      "tp_5d": 2,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": 1.0,
+      "claim_recall": 1.0,
+      "claim_f1": 1.0,
+      "subject_attribution_accuracy": 1.0,
+      "mention_precision": 0.8571,
+      "mention_recall": 0.3429,
+      "mention_f1": 0.4898,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 13,
+          "denominator": 35,
+          "rate": 0.3714
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 12,
+          "denominator": 13,
+          "rate": 0.9231
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "first_failure_stage": "all_stages_passed"
+      }
+    },
+    {
+      "case_id": "DEV-005",
+      "target_name": "段世泽",
+      "bundle_tree_hash": "600d5157583d1dc42274b687b9daa22955d7f3943d12e60a152b95da5577b354",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "insufficient_evidence",
+      "expected_outcome": "insufficient_evidence",
+      "outcome_match": true,
+      "is_fact_bearing": false,
+      "target_entity_recalled": true,
+      "gold_claims_count": 0,
+      "extracted_claims_count": 0,
+      "proposed_claims_count": 0,
+      "released_claims_count": 0,
+      "tp_5d": 0,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": null,
+      "claim_recall": null,
+      "claim_f1": null,
+      "subject_attribution_accuracy": null,
+      "mention_precision": null,
+      "mention_recall": null,
+      "mention_f1": null,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "first_failure_stage": "none_abstention_passed"
+      }
+    },
+    {
+      "case_id": "DEV-006",
+      "target_name": "Ray Liu",
+      "bundle_tree_hash": "3c93ff6f5da470a978567280f2917ec6241b8d9c3bea681ff65203fda7b6dc5f",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "completed",
+      "expected_outcome": "completed",
+      "outcome_match": true,
+      "is_fact_bearing": true,
+      "target_entity_recalled": true,
+      "gold_claims_count": 3,
+      "extracted_claims_count": 3,
+      "proposed_claims_count": 4,
+      "released_claims_count": 3,
+      "tp_5d": 3,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": 1.0,
+      "claim_recall": 1.0,
+      "claim_f1": 1.0,
+      "subject_attribution_accuracy": 1.0,
+      "mention_precision": 1.0,
+      "mention_recall": 0.087,
+      "mention_f1": 0.16,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 3,
+          "denominator": 44,
+          "rate": 0.0682
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 3,
+          "denominator": 3,
+          "rate": 1.0
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 2,
+          "denominator": 3,
+          "rate": 0.6667
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 3,
+          "denominator": 3,
+          "rate": 1.0
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 3,
+          "denominator": 3,
+          "rate": 1.0
+        },
+        "first_failure_stage": "l5_claim_support_window_miss"
+      }
+    },
+    {
+      "case_id": "DEV-007",
+      "target_name": "Logan Chen",
+      "bundle_tree_hash": "73c7ca5fa683ff96ef64624e6ca52fac23c2212d6e53a5e6d00fe2a0c3ff35bf",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "insufficient_evidence",
+      "expected_outcome": "insufficient_evidence",
+      "outcome_match": true,
+      "is_fact_bearing": false,
+      "target_entity_recalled": true,
+      "gold_claims_count": 0,
+      "extracted_claims_count": 0,
+      "proposed_claims_count": 0,
+      "released_claims_count": 0,
+      "tp_5d": 0,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": null,
+      "claim_recall": null,
+      "claim_f1": null,
+      "subject_attribution_accuracy": null,
+      "mention_precision": null,
+      "mention_recall": null,
+      "mention_f1": null,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "first_failure_stage": "none_abstention_passed"
+      }
+    },
+    {
+      "case_id": "DEV-008",
+      "target_name": "Adeline Miao",
+      "bundle_tree_hash": "0b6b38c17a203aed4354a8a6ff8272a83d4547727732034f3b75846f3f94133d",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "insufficient_evidence",
+      "expected_outcome": "insufficient_evidence",
+      "outcome_match": true,
+      "is_fact_bearing": false,
+      "target_entity_recalled": true,
+      "gold_claims_count": 0,
+      "extracted_claims_count": 0,
+      "proposed_claims_count": 0,
+      "released_claims_count": 0,
+      "tp_5d": 0,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": null,
+      "claim_recall": null,
+      "claim_f1": null,
+      "subject_attribution_accuracy": null,
+      "mention_precision": null,
+      "mention_recall": null,
+      "mention_f1": null,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 0,
+          "denominator": 0,
+          "rate": 1.0
+        },
+        "first_failure_stage": "none_abstention_passed"
+      }
+    },
+    {
+      "case_id": "DEV-009",
+      "target_name": "Yining Zhang",
+      "bundle_tree_hash": "5b9e4942d04bb687d8702b6fc490ba8ed68b71d018752a31d511dd6565068dcf",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "completed",
+      "expected_outcome": "completed",
+      "outcome_match": true,
+      "is_fact_bearing": true,
+      "target_entity_recalled": true,
+      "gold_claims_count": 2,
+      "extracted_claims_count": 1,
+      "proposed_claims_count": 1,
+      "released_claims_count": 1,
+      "tp_5d": 1,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": 1.0,
+      "claim_recall": 0.5,
+      "claim_f1": 0.6667,
+      "subject_attribution_accuracy": 1.0,
+      "mention_precision": 1.0,
+      "mention_recall": 0.6,
+      "mention_f1": 0.75,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 1,
+          "denominator": 1,
+          "rate": 1.0
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 1,
+          "denominator": 1,
+          "rate": 1.0
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 1,
+          "denominator": 2,
+          "rate": 0.5
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 1,
+          "denominator": 2,
+          "rate": 0.5
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 1,
+          "denominator": 2,
+          "rate": 0.5
+        },
+        "first_failure_stage": "l5_claim_support_window_miss"
+      }
+    },
+    {
+      "case_id": "DEV-010",
+      "target_name": "Albert Zhao",
+      "bundle_tree_hash": "7412d5eec841257246fb2d1e6d0397fdffe5ea6a2037e58797e08cedf3195609",
+      "seal_verified": true,
+      "validation_passed": true,
+      "validation_errors": 0,
+      "actual_outcome": "completed",
+      "expected_outcome": "completed",
+      "outcome_match": true,
+      "is_fact_bearing": true,
+      "target_entity_recalled": true,
+      "gold_claims_count": 2,
+      "extracted_claims_count": 2,
+      "proposed_claims_count": 2,
+      "released_claims_count": 2,
+      "tp_5d": 2,
+      "tp_4d_diag": 0,
+      "unmatched_released_claims": 0,
+      "claim_precision": 1.0,
+      "claim_recall": 1.0,
+      "claim_f1": 1.0,
+      "subject_attribution_accuracy": 1.0,
+      "mention_precision": 1.0,
+      "mention_recall": 0.2727,
+      "mention_f1": 0.4286,
+      "er_b3_f1": 1.0,
+      "er_pairwise_f1": 1.0,
+      "false_merges": 0,
+      "false_splits": 0,
+      "spurious_claims": 0,
+      "spurious_rate": 0.0,
+      "abstention_accuracy": 1.0,
+      "funnel": {
+        "l1_gold_sources": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l2_entity_source_hits": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l3_target_mentions_covered": {
+          "numerator": 2,
+          "denominator": 9,
+          "rate": 0.2222
+        },
+        "l4_target_mentions_extracted": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l5_claim_supports_covered": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l6a_proposed_claims_tp": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "l6b_released_claims_tp": {
+          "numerator": 2,
+          "denominator": 2,
+          "rate": 1.0
+        },
+        "first_failure_stage": "all_stages_passed"
+      }
+    }
+  ]
+}

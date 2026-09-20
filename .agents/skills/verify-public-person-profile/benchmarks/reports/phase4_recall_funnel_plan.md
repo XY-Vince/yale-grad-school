@@ -1,5 +1,31 @@
 # Phase 4 召回漏斗诊断与通用修复实施计划
 
+## 0. 实施状态（2026-09-19）
+
+Phase 4.0 至 Phase 4.4 已完成。生产与评测增量分别冻结在提交
+`273dcbc`（同源文档上下文事实绑定）与 `78871c9`（开发集/盲测生命周期决策分离）。
+
+在 `78871c9` 的干净工作树上重新执行了 20 次配对运行：G2 为 Hinted +
+TargetPrior OFF，G3 为相同输入下 Hinted + TargetPrior ON。20 个 Bundle 均重新生成
+并封印；Evaluator V2.4 以 `evaluation_role=development` 运行，结果如下：
+
+- 18/18 开发集门禁通过，生命周期决策为 `ready_for_blind_evaluation`；
+- Strict 5D TP 为 14/17，Macro Recall 为 0.8095，Micro Recall 为 0.8235；
+- Macro Precision 与 Subject Attribution Accuracy 均为 1.0；
+- Outcome Accuracy 为 1.0（10/10）；
+- 假合并、假拆分、未匹配释放断言均为 0；
+- 3 个非事实型稀疏案例均安全弃答；
+- G2/G3 的 `sources.jsonl`、`evidence.jsonl` 与 `mentions.jsonl` 配对一致性通过。
+
+程序化工件：
+
+- `benchmarks/reports/phase4_4_development_eval.json`
+- `benchmarks/reports/phase4_4_development_eval.md`
+
+上述结果来自已用于规则设计的 `DEV-001` 至 `DEV-010`，仅证明开发集进入条件已满足，
+不构成发布结论。后续不得继续根据这 10 个案例调整生产规则；下一阶段应冻结候选提交并
+执行全新、预注册且由独立 Curator 构建的 `blind_release_v2`。
+
 ## 1. 当前基线与口径纠偏
 
 - 当前检出分支为 `feat/v5-alpha-integration@b63a733`；`main` 仍停在 `319c72d`。当前状态应称为“集成分支完成”，尚未实际合并到 `main`。
