@@ -49,6 +49,11 @@ if str(SKILL_ROOT) not in sys.path:
     sys.path.insert(0, str(SKILL_ROOT))
 
 from benchmarks.tools.er_metrics import compute_b3, compute_pairwise
+from models.blind_protocol import (
+    BLIND_V2_REQUIRED_ASSETS,
+    BlindGateThresholds,
+    BlindPreregistration,
+)
 from models.gold_schema_v2 import GoldCase, GoldSuite
 from scripts.validate_dossier import validate_bundle
 
@@ -81,6 +86,20 @@ REAL_WEB_DEV_V2_REQUIRED_ASSETS = frozenset(
 )
 
 EVALUATION_ROLES = frozenset({"development", "blind_release"})
+
+DEFAULT_GATE_THRESHOLDS = BlindGateThresholds(
+    target_entity_case_recall=1.0,
+    entity_source_recall=0.95,
+    max_false_merges=0,
+    max_false_splits=0,
+    max_unmatched_released_claims=0,
+    macro_claim_precision=0.95,
+    macro_claim_recall=0.80,
+    subject_attribution_accuracy=0.95,
+    outcome_accuracy=0.90,
+    abstention_accuracy=1.0,
+    paired_input_identity_required=True,
+)
 
 
 @dataclass
@@ -274,9 +293,17 @@ def verify_asset_manifest(
         return False, [f"Asset manifest file not found: {manifest_path}"]
 
     try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest_document = json.loads(manifest_path.read_text(encoding="utf-8"))
     except Exception as e:
         return False, [f"Malformed asset_manifest.json: {e}"]
+
+    if (
+        isinstance(manifest_document, dict)
+        and isinstance(manifest_document.get("assets"), dict)
+    ):
+        manifest = manifest_document["assets"]
+    else:
+        manifest = manifest_document
 
     if not isinstance(manifest, dict) or not manifest:
         return False, ["Asset manifest must be a non-empty JSON object"]
@@ -960,6 +987,48 @@ def classify_evaluation_decision(all_gates_passed: bool, evaluation_role: str) -
     return "eligible_for_release_review"
 
 
+def validate_blind_preregistration_for_run(
+    preregistration: BlindPreregistration,
+    *,
+    git_commit_sha: str,
+    git_dirty: bool,
+    evaluator_sha256: str,
+    gold_schema_sha256: str,
+    expected_count: int,
+    track_name: str,
+    paired_runs_dir: Optional[Path],
+    warc_file: Optional[Path],
+    query_index: Optional[Path],
+    asset_manifest: Optional[Path],
+) -> None:
+    errors: list[str] = []
+    if git_commit_sha != preregistration.candidate_git_commit:
+        errors.append(
+            f"candidate Git commit mismatch: expected {preregistration.candidate_git_commit}, got {git_commit_sha}"
+        )
+    if git_dirty:
+        errors.append("candidate Git worktree is dirty")
+    if evaluator_sha256 != preregistration.evaluator_sha256:
+        errors.append("evaluator SHA-256 does not match preregistration")
+    if gold_schema_sha256 != preregistration.gold_schema_sha256:
+        errors.append("Gold Schema SHA-256 does not match preregistration")
+    if expected_count != preregistration.expected_case_count:
+        errors.append("expected case count does not match preregistration")
+    if track_name != preregistration.track_name:
+        errors.append("track name does not match preregistration")
+    if preregistration.paired_control_required and paired_runs_dir is None:
+        errors.append("paired control runs are required by preregistration")
+    for label, path in (
+        ("WARC", warc_file),
+        ("query index", query_index),
+        ("asset manifest", asset_manifest),
+    ):
+        if path is None or not path.is_file():
+            errors.append(f"{label} is required for blind_release evaluation")
+    if errors:
+        raise ValueError("FAIL-CLOSED blind preregistration mismatch: " + "; ".join(errors))
+
+
 def aggregate_suite_v2_4(
     results: List[Dict[str, Any]],
     expected_case_ids: List[str],
@@ -970,12 +1039,17 @@ def aggregate_suite_v2_4(
     asset_manifest_errors: Optional[List[str]] = None,
     max_false_splits: int = 0,
     evaluation_role: str = "development",
+    gate_thresholds: Optional[BlindGateThresholds] = None,
 ) -> Dict[str, Any]:
     """Aggregate suite results and evaluate gates within an explicit dataset lifecycle role."""
     if evaluation_role not in EVALUATION_ROLES:
         raise ValueError(
             f"Unknown evaluation role '{evaluation_role}'; expected one of {sorted(EVALUATION_ROLES)}"
         )
+    thresholds = gate_thresholds or DEFAULT_GATE_THRESHOLDS
+    effective_max_false_splits = (
+        thresholds.max_false_splits if gate_thresholds is not None else max_false_splits
+    )
     n = len(results)
     actual_cids = [r["case_id"] for r in results]
 
@@ -1022,6 +1096,7 @@ def aggregate_suite_v2_4(
         macro_prec = macro_rec = macro_f1 = 0.0
         macro_subj = None
         micro_prec = micro_rec = micro_f1 = 0.0
+        total_tp_5d = total_ext_fb = total_gold_fb = 0
         target_entity_case_recall = 1.0
 
     # Entity x Source Recall across suite
@@ -1057,6 +1132,13 @@ def aggregate_suite_v2_4(
         and prov.get("query_index_sha256")
         and prov.get("query_index_sha256") not in {"none", ""}
     )
+    if evaluation_role == "blind_release":
+        prov_complete = bool(
+            prov_complete
+            and prov.get("preregistration_sha256")
+            and prov.get("gold_schema_sha256")
+            and prov.get("blind_suite_id")
+        )
 
     completed_fb_cases = [r for r in results if r["is_fact_bearing"] and r["actual_outcome"] == "completed"]
     completed_released_claims_pass = (
@@ -1109,21 +1191,33 @@ def aggregate_suite_v2_4(
         "seal_integrity_gate": seal_intact,
         "structural_validation_gate": (val_rate == 1.0),
         "case_completeness_gate": completeness_pass,
-        "paired_input_identity_gate": paired_identity_passed,
+        "paired_input_identity_gate": (
+            paired_identity_passed if thresholds.paired_input_identity_required else True
+        ),
 
         # Entity Discovery & Clustered ER Gates (Primary)
-        "target_entity_case_recall_gate": (target_entity_case_recall == 1.0),
-        "entity_source_recall_gate": (entity_source_recall >= 0.95),
-        "zero_false_merges_gate": (total_false_merges == 0),
-        "false_splits_gate": (total_false_splits <= max_false_splits),
+        "target_entity_case_recall_gate": (
+            target_entity_case_recall >= thresholds.target_entity_case_recall
+        ),
+        "entity_source_recall_gate": (entity_source_recall >= thresholds.entity_source_recall),
+        "zero_false_merges_gate": (total_false_merges <= thresholds.max_false_merges),
+        "false_splits_gate": (total_false_splits <= effective_max_false_splits),
 
         # Claim & State Machine Gates (Primary)
-        "zero_unmatched_released_claims_gate": (total_unmatched_released == 0),
-        "claim_precision_gate": (macro_prec >= 0.95),
-        "claim_recall_gate": (macro_rec >= 0.80),
-        "subject_attribution_gate": (macro_subj >= 0.95) if macro_subj is not None else False,
-        "outcome_accuracy_gate": (outcome_acc >= 0.90),
-        "ambiguity_safety_gate": (abs_accuracy == 1.0 if abs_accuracy is not None else True),
+        "zero_unmatched_released_claims_gate": (
+            total_unmatched_released <= thresholds.max_unmatched_released_claims
+        ),
+        "claim_precision_gate": (macro_prec >= thresholds.macro_claim_precision),
+        "claim_recall_gate": (macro_rec >= thresholds.macro_claim_recall),
+        "subject_attribution_gate": (
+            macro_subj >= thresholds.subject_attribution_accuracy
+            if macro_subj is not None
+            else False
+        ),
+        "outcome_accuracy_gate": (outcome_acc >= thresholds.outcome_accuracy),
+        "ambiguity_safety_gate": (
+            abs_accuracy >= thresholds.abstention_accuracy if abs_accuracy is not None else True
+        ),
         "completed_released_claims_gate": completed_released_claims_pass,
     }
 
@@ -1143,6 +1237,7 @@ def aggregate_suite_v2_4(
         "evaluator_version": "2.4.0",
         "evaluation_role": evaluation_role,
         "evaluation_decision": evaluation_decision,
+        "gate_thresholds": thresholds.model_dump(mode="json"),
         "development_gates_passed": all_gates_pass and evaluation_role == "development",
         "release_review_eligible": all_gates_pass and evaluation_role == "blind_release",
         "provenance": provenance or {},
@@ -1155,7 +1250,7 @@ def aggregate_suite_v2_4(
         "entity_source_recall": round(entity_source_recall, 4),
         "total_false_merges": total_false_merges,
         "total_false_splits": total_false_splits,
-        "max_false_splits_allowed": max_false_splits,
+        "max_false_splits_allowed": effective_max_false_splits,
         "total_unmatched_released_claims": total_unmatched_released,
         "outcome_accuracy": round(outcome_acc, 4),
         "suite_funnel": suite_funnel,
@@ -1202,6 +1297,10 @@ def render_markdown_report(suite_eval: Dict[str, Any]) -> str:
     all_pass = suite_eval.get("all_gates_passed", False)
     funnel = suite_eval.get("suite_funnel", {})
     diag = suite_eval.get("diagnostic_metrics", {})
+    thresholds = suite_eval.get(
+        "gate_thresholds",
+        DEFAULT_GATE_THRESHOLDS.model_dump(mode="json"),
+    )
     evaluation_role = suite_eval.get("evaluation_role", "development")
     evaluation_decision = suite_eval.get(
         "evaluation_decision",
@@ -1237,16 +1336,16 @@ def render_markdown_report(suite_eval: Dict[str, Any]) -> str:
         f"| `structural_validation_gate` | Schema 结构校验通过率 100% | val_rate={suite_eval.get('structural_validation_rate')} | {'PASS' if gates.get('structural_validation_gate') else 'FAIL'} |",
         f"| `case_completeness_gate` | 期望案例全量完成评估 | actual={suite_eval.get('total_cases_evaluated')}/{suite_eval.get('expected_case_count')} | {'PASS' if gates.get('case_completeness_gate') else 'FAIL'} |",
         f"| `paired_input_identity_gate` | 对照实验上游输入哈希完全一致 | matched={gates.get('paired_input_identity_gate')} | {'PASS' if gates.get('paired_input_identity_gate') else 'FAIL'} |",
-        f"| `target_entity_case_recall_gate` | 事实型案例目标实体发现率 100% | rec={suite_eval.get('target_entity_case_recall')} | {'PASS' if gates.get('target_entity_case_recall_gate') else 'FAIL'} |",
-        f"| `entity_source_recall_gate` | 实体×来源对发现率 $\\ge 95.0\\%$ | rec={suite_eval.get('entity_source_recall')} | {'PASS' if gates.get('entity_source_recall_gate') else 'FAIL'} |",
-        f"| `zero_false_merges_gate` | 绝对不允许不同实体错误合并 | false_merges={suite_eval.get('total_false_merges')} | {'PASS' if gates.get('zero_false_merges_gate') else 'FAIL'} |",
+        f"| `target_entity_case_recall_gate` | 事实型案例目标实体发现率 $\\ge {thresholds.get('target_entity_case_recall', 1.0)*100:.1f}\\%$ | rec={suite_eval.get('target_entity_case_recall')} | {'PASS' if gates.get('target_entity_case_recall_gate') else 'FAIL'} |",
+        f"| `entity_source_recall_gate` | 实体×来源对发现率 $\\ge {thresholds.get('entity_source_recall', 0.95)*100:.1f}\\%$ | rec={suite_eval.get('entity_source_recall')} | {'PASS' if gates.get('entity_source_recall_gate') else 'FAIL'} |",
+        f"| `zero_false_merges_gate` | 不同实体错误合并 $\\le {thresholds.get('max_false_merges', 0)}$ | false_merges={suite_eval.get('total_false_merges')} | {'PASS' if gates.get('zero_false_merges_gate') else 'FAIL'} |",
         f"| `false_splits_gate` | 同一实体假拆分 $\\le {suite_eval.get('max_false_splits_allowed', 0)}$ | false_splits={suite_eval.get('total_false_splits')} | {'PASS' if gates.get('false_splits_gate') else 'FAIL'} |",
-        f"| `zero_unmatched_released_claims_gate` | 释放断言必须 100% 具备真值支撑 | unmatched={suite_eval.get('total_unmatched_released_claims')} | {'PASS' if gates.get('zero_unmatched_released_claims_gate') else 'FAIL'} |",
-        f"| `ambiguity_safety_gate` | 稀疏/歧义负例必须 100% 安全弃答 | abs_acc={suite_eval.get('abstention_evaluation', {}).get('abstention_accuracy')} | {'PASS' if gates.get('ambiguity_safety_gate') else 'FAIL'} |",
-        f"| `claim_precision_gate` | 释放断言 Macro Precision $\\ge 95.0\\%$ | macro_prec={suite_eval.get('fact_bearing_evaluation', {}).get('macro_precision')} | {'PASS' if gates.get('claim_precision_gate') else 'FAIL'} |",
-        f"| `claim_recall_gate` | 释放断言 Macro Recall $\\ge 80.0\\%$ | macro_rec={suite_eval.get('fact_bearing_evaluation', {}).get('macro_recall')} | {'PASS' if gates.get('claim_recall_gate') else 'FAIL'} |",
-        f"| `subject_attribution_gate` | 主体归属准确率 $\\ge 95.0\\%$ | subj_acc={suite_eval.get('fact_bearing_evaluation', {}).get('subject_attribution_accuracy')} | {'PASS' if gates.get('subject_attribution_gate') else 'FAIL'} |",
-        f"| `outcome_accuracy_gate` | 运行状态匹配率 $\\ge 90.0\\%$ | acc={suite_eval.get('outcome_accuracy')} | {'PASS' if gates.get('outcome_accuracy_gate') else 'FAIL'} |",
+        f"| `zero_unmatched_released_claims_gate` | 未匹配释放断言 $\\le {thresholds.get('max_unmatched_released_claims', 0)}$ | unmatched={suite_eval.get('total_unmatched_released_claims')} | {'PASS' if gates.get('zero_unmatched_released_claims_gate') else 'FAIL'} |",
+        f"| `ambiguity_safety_gate` | 弃答准确率 $\\ge {thresholds.get('abstention_accuracy', 1.0)*100:.1f}\\%$ | abs_acc={suite_eval.get('abstention_evaluation', {}).get('abstention_accuracy')} | {'PASS' if gates.get('ambiguity_safety_gate') else 'FAIL'} |",
+        f"| `claim_precision_gate` | 释放断言 Macro Precision $\\ge {thresholds.get('macro_claim_precision', 0.95)*100:.1f}\\%$ | macro_prec={suite_eval.get('fact_bearing_evaluation', {}).get('macro_precision')} | {'PASS' if gates.get('claim_precision_gate') else 'FAIL'} |",
+        f"| `claim_recall_gate` | 释放断言 Macro Recall $\\ge {thresholds.get('macro_claim_recall', 0.80)*100:.1f}\\%$ | macro_rec={suite_eval.get('fact_bearing_evaluation', {}).get('macro_recall')} | {'PASS' if gates.get('claim_recall_gate') else 'FAIL'} |",
+        f"| `subject_attribution_gate` | 主体归属准确率 $\\ge {thresholds.get('subject_attribution_accuracy', 0.95)*100:.1f}\\%$ | subj_acc={suite_eval.get('fact_bearing_evaluation', {}).get('subject_attribution_accuracy')} | {'PASS' if gates.get('subject_attribution_gate') else 'FAIL'} |",
+        f"| `outcome_accuracy_gate` | 运行状态匹配率 $\\ge {thresholds.get('outcome_accuracy', 0.90)*100:.1f}\\%$ | acc={suite_eval.get('outcome_accuracy')} | {'PASS' if gates.get('outcome_accuracy_gate') else 'FAIL'} |",
         f"| `completed_released_claims_gate` | 完成用例每个必须满足 TP_5D $\\ge 1$ | passed={gates.get('completed_released_claims_gate')} | {'PASS' if gates.get('completed_released_claims_gate') else 'FAIL'} |",
         f"",
         f"## 3. 六级召回漏斗分析 (Six-Level Recall Funnel)",
@@ -1312,6 +1411,12 @@ def main():
     parser.add_argument("--warc-file", type=Path, default=None, help="Path to corpus.warc")
     parser.add_argument("--query-index", type=Path, default=None, help="Path to query_index.jsonl")
     parser.add_argument("--asset-manifest", type=Path, default=None, help="Path to asset_manifest.json (optional, auto-detected)")
+    parser.add_argument(
+        "--preregistration",
+        type=Path,
+        default=None,
+        help="Public Blind V2 preregistration; required for blind_release evaluation",
+    )
     parser.add_argument("--track-name", type=str, default="name_only", choices=["name_only", "hinted"])
     parser.add_argument(
         "--evaluation-role",
@@ -1332,6 +1437,8 @@ def main():
     gold_sha = compute_file_sha256(args.gold_file)
     warc_sha = compute_file_sha256(args.warc_file) if args.warc_file else "none"
     qidx_sha = compute_file_sha256(args.query_index) if args.query_index else "none"
+    gold_schema_path = SKILL_ROOT / "models" / "gold_schema_v2.py"
+    gold_schema_sha = compute_file_sha256(gold_schema_path)
 
     provenance = {
         "evaluator_version": "2.4.0",
@@ -1341,6 +1448,7 @@ def main():
         "gold_sha256": gold_sha,
         "corpus_warc_sha256": warc_sha,
         "query_index_sha256": qidx_sha,
+        "gold_schema_sha256": gold_schema_sha,
     }
 
     # 2. Asset Manifest Check if available or provided
@@ -1350,13 +1458,41 @@ def main():
         if potential_manifest.exists():
             asset_manifest_path = potential_manifest
 
+    blind_preregistration = None
+    if args.evaluation_role == "blind_release":
+        if args.preregistration is None or not args.preregistration.is_file():
+            raise ValueError("--preregistration is required for blind_release evaluation")
+        blind_preregistration = BlindPreregistration.model_validate_json(
+            args.preregistration.read_text(encoding="utf-8")
+        )
+        validate_blind_preregistration_for_run(
+            blind_preregistration,
+            git_commit_sha=git_sha,
+            git_dirty=git_dirty,
+            evaluator_sha256=evaluator_sha,
+            gold_schema_sha256=gold_schema_sha,
+            expected_count=args.expected_count,
+            track_name=args.track_name,
+            paired_runs_dir=args.paired_runs_dir,
+            warc_file=args.warc_file,
+            query_index=args.query_index,
+            asset_manifest=asset_manifest_path,
+        )
+        provenance["preregistration_sha256"] = compute_file_sha256(args.preregistration)
+        provenance["blind_suite_id"] = blind_preregistration.suite_id
+
     asset_manifest_passed = True
     asset_manifest_errors = []
     if asset_manifest_path:
+        required_asset_contract = (
+            set(BLIND_V2_REQUIRED_ASSETS)
+            if args.evaluation_role == "blind_release"
+            else set(REAL_WEB_DEV_V2_REQUIRED_ASSETS)
+        )
         asset_manifest_passed, asset_manifest_errors = verify_asset_manifest(
             asset_manifest_path,
             asset_manifest_path.parent,
-            required_assets=set(REAL_WEB_DEV_V2_REQUIRED_ASSETS),
+            required_assets=required_asset_contract,
         )
         print(f"Asset Manifest Verification ({asset_manifest_path.name}): {'PASS' if asset_manifest_passed else 'FAIL'}")
         if not asset_manifest_passed:
@@ -1433,6 +1569,7 @@ def main():
         asset_manifest_errors=asset_manifest_errors,
         max_false_splits=args.max_false_splits,
         evaluation_role=args.evaluation_role,
+        gate_thresholds=(blind_preregistration.thresholds if blind_preregistration else None),
     )
 
     args.output_json.parent.mkdir(parents=True, exist_ok=True)

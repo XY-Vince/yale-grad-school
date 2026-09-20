@@ -29,11 +29,17 @@ from benchmarks.tools.evaluator_v2_4 import (
     evaluate_bundle_v2_4,
     parse_warc_records,
     render_markdown_report,
+    validate_blind_preregistration_for_run,
     verify_asset_manifest,
     verify_gold_warc_integrity,
     verify_paired_input_identity,
 )
 from models.gold_schema_v2 import GoldCase, GoldClaim, GoldClaimSupport, GoldSuite
+from models.blind_protocol import (
+    BLIND_V2_REQUIRED_ASSETS,
+    BlindGateThresholds,
+    BlindPreregistration,
+)
 
 
 def test_schema_v2_2_rejects_empty_supports():
@@ -164,6 +170,31 @@ def test_asset_manifest_verification_detects_tampering():
         ok, errors = verify_asset_manifest(manifest_path, td)
         assert not ok
         assert any("SHA-256 mismatch" in e for e in errors)
+
+
+def test_asset_manifest_accepts_blind_v2_envelope_with_explicit_contract():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        assets = {}
+        for filename in sorted(BLIND_V2_REQUIRED_ASSETS):
+            path = root / filename
+            path.write_text(f"blind payload for {filename}", encoding="utf-8")
+            assets[filename] = {
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "bytes": path.stat().st_size,
+            }
+        manifest_path = root / "asset_manifest.json"
+        manifest_path.write_text(
+            json.dumps({"suite_id": "blind_release_v2", "assets": assets}),
+            encoding="utf-8",
+        )
+
+        ok, errors = verify_asset_manifest(
+            manifest_path,
+            root,
+            required_assets=set(BLIND_V2_REQUIRED_ASSETS),
+        )
+        assert ok, errors
 
 
 def test_asset_manifest_rejects_missing_declaration_and_unlisted_asset():
@@ -396,6 +427,29 @@ def test_false_splits_gate_blocks_release():
     suite_lenient = aggregate_suite_v2_4([res], expected_case_ids=["C-1"], max_false_splits=2)
     assert suite_lenient["gates"]["false_splits_gate"]
 
+    stricter = BlindGateThresholds(
+        target_entity_case_recall=1.0,
+        entity_source_recall=0.95,
+        max_false_merges=0,
+        max_false_splits=0,
+        max_unmatched_released_claims=0,
+        macro_claim_precision=0.95,
+        macro_claim_recall=1.0,
+        subject_attribution_accuracy=0.95,
+        outcome_accuracy=0.90,
+        abstention_accuracy=1.0,
+        paired_input_identity_required=True,
+    )
+    below_preregistered_recall = dict(res, claim_recall=0.9, tp_5d=9, gold_claims_count=10)
+    suite_preregistered = aggregate_suite_v2_4(
+        [below_preregistered_recall],
+        expected_case_ids=["C-1"],
+        gate_thresholds=stricter,
+        evaluation_role="blind_release",
+    )
+    assert not suite_preregistered["gates"]["claim_recall_gate"]
+    assert suite_preregistered["evaluation_decision"] == "blocked"
+
 
 def test_development_pass_cannot_be_reported_as_release_ready():
     """A seen development suite may advance to blind evaluation, never directly to release."""
@@ -425,6 +479,87 @@ def test_blind_pass_requires_independent_release_review():
 
     with pytest.raises(ValueError, match="evaluation role"):
         classify_evaluation_decision(True, "unknown")
+
+
+def test_blind_run_requires_frozen_preregistered_inputs(tmp_path: Path):
+    commit = "1" * 40
+    evaluator_sha = "2" * 64
+    schema_sha = "3" * 64
+    prereg = BlindPreregistration.model_construct(
+        candidate_git_commit=commit,
+        evaluator_sha256=evaluator_sha,
+        gold_schema_sha256=schema_sha,
+        expected_case_count=30,
+        track_name="hinted",
+        paired_control_required=True,
+    )
+    paired = tmp_path / "paired"
+    paired.mkdir()
+    required_files = []
+    for name in ("corpus.warc", "query_index.jsonl", "asset_manifest.json"):
+        path = tmp_path / name
+        path.write_text("fixture", encoding="utf-8")
+        required_files.append(path)
+
+    validate_blind_preregistration_for_run(
+        prereg,
+        git_commit_sha=commit,
+        git_dirty=False,
+        evaluator_sha256=evaluator_sha,
+        gold_schema_sha256=schema_sha,
+        expected_count=30,
+        track_name="hinted",
+        paired_runs_dir=paired,
+        warc_file=required_files[0],
+        query_index=required_files[1],
+        asset_manifest=required_files[2],
+    )
+
+    with pytest.raises(ValueError, match="paired control runs"):
+        validate_blind_preregistration_for_run(
+            prereg,
+            git_commit_sha=commit,
+            git_dirty=False,
+            evaluator_sha256=evaluator_sha,
+            gold_schema_sha256=schema_sha,
+            expected_count=30,
+            track_name="hinted",
+            paired_runs_dir=None,
+            warc_file=required_files[0],
+            query_index=required_files[1],
+            asset_manifest=required_files[2],
+        )
+
+
+def test_blind_provenance_requires_preregistration_and_schema_hashes():
+    provenance = {
+        "git_commit_sha": "1" * 40,
+        "git_dirty": False,
+        "evaluator_sha256": "2" * 64,
+        "gold_sha256": "3" * 64,
+        "corpus_warc_sha256": "4" * 64,
+        "query_index_sha256": "5" * 64,
+    }
+    missing = aggregate_suite_v2_4(
+        [],
+        expected_case_ids=[],
+        provenance=provenance,
+        evaluation_role="blind_release",
+    )
+    assert not missing["gates"]["provenance_complete_gate"]
+
+    provenance.update({
+        "preregistration_sha256": "6" * 64,
+        "gold_schema_sha256": "7" * 64,
+        "blind_suite_id": "blind_release_v2",
+    })
+    complete = aggregate_suite_v2_4(
+        [],
+        expected_case_ids=[],
+        provenance=provenance,
+        evaluation_role="blind_release",
+    )
+    assert complete["gates"]["provenance_complete_gate"]
 
 
 def test_six_level_funnel_first_failure_attribution():
