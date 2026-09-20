@@ -1,0 +1,281 @@
+{
+  "$defs": {
+    "BlindGateThresholds": {
+      "additionalProperties": false,
+      "properties": {
+        "target_entity_case_recall": {
+          "maximum": 1.0,
+          "minimum": 1.0,
+          "title": "Target Entity Case Recall",
+          "type": "number"
+        },
+        "entity_source_recall": {
+          "maximum": 1.0,
+          "minimum": 0.95,
+          "title": "Entity Source Recall",
+          "type": "number"
+        },
+        "max_false_merges": {
+          "maximum": 0,
+          "minimum": 0,
+          "title": "Max False Merges",
+          "type": "integer"
+        },
+        "max_false_splits": {
+          "maximum": 0,
+          "minimum": 0,
+          "title": "Max False Splits",
+          "type": "integer"
+        },
+        "max_unmatched_released_claims": {
+          "maximum": 0,
+          "minimum": 0,
+          "title": "Max Unmatched Released Claims",
+          "type": "integer"
+        },
+        "macro_claim_precision": {
+          "maximum": 1.0,
+          "minimum": 0.95,
+          "title": "Macro Claim Precision",
+          "type": "number"
+        },
+        "macro_claim_recall": {
+          "maximum": 1.0,
+          "minimum": 0.8,
+          "title": "Macro Claim Recall",
+          "type": "number"
+        },
+        "subject_attribution_accuracy": {
+          "maximum": 1.0,
+          "minimum": 0.95,
+          "title": "Subject Attribution Accuracy",
+          "type": "number"
+        },
+        "outcome_accuracy": {
+          "maximum": 1.0,
+          "minimum": 0.9,
+          "title": "Outcome Accuracy",
+          "type": "number"
+        },
+        "abstention_accuracy": {
+          "maximum": 1.0,
+          "minimum": 1.0,
+          "title": "Abstention Accuracy",
+          "type": "number"
+        },
+        "paired_input_identity_required": {
+          "const": true,
+          "title": "Paired Input Identity Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "target_entity_case_recall",
+        "entity_source_recall",
+        "max_false_merges",
+        "max_false_splits",
+        "max_unmatched_released_claims",
+        "macro_claim_precision",
+        "macro_claim_recall",
+        "subject_attribution_accuracy",
+        "outcome_accuracy",
+        "abstention_accuracy",
+        "paired_input_identity_required"
+      ],
+      "title": "BlindGateThresholds",
+      "type": "object"
+    },
+    "BlindStratumSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "stratum_id": {
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_\\-]*$",
+          "title": "Stratum Id",
+          "type": "string"
+        },
+        "case_count": {
+          "exclusiveMinimum": 0,
+          "title": "Case Count",
+          "type": "integer"
+        },
+        "fact_bearing": {
+          "title": "Fact Bearing",
+          "type": "boolean"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stratum_id",
+        "case_count",
+        "fact_bearing",
+        "description"
+      ],
+      "title": "BlindStratumSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "protocol_version": {
+      "const": "2.0",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "suite_id": {
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9_\\-]*$",
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "evaluation_role": {
+      "const": "blind_release",
+      "title": "Evaluation Role",
+      "type": "string"
+    },
+    "candidate_git_commit": {
+      "title": "Candidate Git Commit",
+      "type": "string"
+    },
+    "evaluator_sha256": {
+      "title": "Evaluator Sha256",
+      "type": "string"
+    },
+    "gold_schema_sha256": {
+      "title": "Gold Schema Sha256",
+      "type": "string"
+    },
+    "expected_case_count": {
+      "minimum": 30,
+      "title": "Expected Case Count",
+      "type": "integer"
+    },
+    "candidate_pool_minimum": {
+      "minimum": 90,
+      "title": "Candidate Pool Minimum",
+      "type": "integer"
+    },
+    "selection_method": {
+      "const": "stratified_seeded_without_replacement",
+      "title": "Selection Method",
+      "type": "string"
+    },
+    "permitted_attempts": {
+      "const": 1,
+      "title": "Permitted Attempts",
+      "type": "integer"
+    },
+    "track_name": {
+      "const": "hinted",
+      "title": "Track Name",
+      "type": "string"
+    },
+    "paired_control_required": {
+      "const": true,
+      "title": "Paired Control Required",
+      "type": "boolean"
+    },
+    "independent_curator_required": {
+      "const": true,
+      "title": "Independent Curator Required",
+      "type": "boolean"
+    },
+    "hidden_gold_required": {
+      "const": true,
+      "title": "Hidden Gold Required",
+      "type": "boolean"
+    },
+    "gold_annotation_policy": {
+      "const": "two_curators_independent_then_adjudicated",
+      "title": "Gold Annotation Policy",
+      "type": "string"
+    },
+    "minimum_independent_curators": {
+      "minimum": 2,
+      "title": "Minimum Independent Curators",
+      "type": "integer"
+    },
+    "adjudicator_separate_from_implementation": {
+      "const": true,
+      "title": "Adjudicator Separate From Implementation",
+      "type": "boolean"
+    },
+    "selection_seed_commitment_sha256": {
+      "title": "Selection Seed Commitment Sha256",
+      "type": "string"
+    },
+    "candidate_pool_commitment_sha256": {
+      "title": "Candidate Pool Commitment Sha256",
+      "type": "string"
+    },
+    "selection_manifest_commitment_sha256": {
+      "title": "Selection Manifest Commitment Sha256",
+      "type": "string"
+    },
+    "exclusion_registry_commitment_sha256": {
+      "title": "Exclusion Registry Commitment Sha256",
+      "type": "string"
+    },
+    "curator_attestation_sha256": {
+      "title": "Curator Attestation Sha256",
+      "type": "string"
+    },
+    "hidden_asset_manifest_commitment_sha256": {
+      "title": "Hidden Asset Manifest Commitment Sha256",
+      "type": "string"
+    },
+    "excluded_suite_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Excluded Suite Ids",
+      "type": "array"
+    },
+    "strata": {
+      "items": {
+        "$ref": "#/$defs/BlindStratumSpec"
+      },
+      "minItems": 2,
+      "title": "Strata",
+      "type": "array"
+    },
+    "thresholds": {
+      "$ref": "#/$defs/BlindGateThresholds"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "suite_id",
+    "evaluation_role",
+    "candidate_git_commit",
+    "evaluator_sha256",
+    "gold_schema_sha256",
+    "expected_case_count",
+    "candidate_pool_minimum",
+    "selection_method",
+    "permitted_attempts",
+    "track_name",
+    "paired_control_required",
+    "independent_curator_required",
+    "hidden_gold_required",
+    "gold_annotation_policy",
+    "minimum_independent_curators",
+    "adjudicator_separate_from_implementation",
+    "selection_seed_commitment_sha256",
+    "candidate_pool_commitment_sha256",
+    "selection_manifest_commitment_sha256",
+    "exclusion_registry_commitment_sha256",
+    "curator_attestation_sha256",
+    "hidden_asset_manifest_commitment_sha256",
+    "excluded_suite_ids",
+    "strata",
+    "thresholds"
+  ],
+  "title": "BlindPreregistration",
+  "type": "object"
+}
