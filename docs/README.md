@@ -1,122 +1,86 @@
-# 🎓 GradQuest
+# 🎓 GradQuest @ Yale: PhD Life Simulator
 
-> *Navigate the PhD journey: Publish, survive, and thrive—or strategically exit.*
+> *Navigate the PhD journey at Yale: Publish, survive, and defend—or strategically exit.*
 
-[![Play Now](https://img.shields.io/badge/▶_Play_Now-GitHub_Pages-blue?style=for-the-badge)](https://xy-vince.github.io/GradQuest/)
-[![Version](https://img.shields.io/badge/Version-2.46-green?style=flat-square)](CHANGELOG.md)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-2.59.2-green?style=flat-square)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](../LICENSE)
 
 ---
 
 ## 🎮 Play Now
 
-**[▶ Play GradQuest](https://xy-vince.github.io/GradQuest/)** — No download required!
+**[▶ Play GradQuest @ Yale](https://xy-vince.github.io/yale-grad-school/)** — Runs entirely in your browser, no download required!
+
+*Note: GradQuest is maintained as the interactive simulation subproject of the **(Yale) Grad School** workspace hub.*
 
 ---
 
 ## 📖 About
 
-GradQuest is a **strategic PhD life simulator** that models the North American graduate school experience. 
+**GradQuest @ Yale** is a strategic, client-side PhD life simulator modeling the academic journey. Manage research, publications, funding, and advisor relationships while balancing mental stamina and stress.
 
-**V2.46: Focused Mode** - Streamlined to core progression only:
-- 🎯 Reduced cognitive load by ~60%
-- Clear action pipeline: Idea → Discovery → Paper → Thesis → Defense
-- Recovery actions appear only when needed
+### Baseline: V2.59.2
+- **Focused Core Progression**: Streamlined research pipeline (Read Papers → Idea → Discovery → Figures → Paper Submission → Thesis → Defense Gauntlet).
+- **Conference Balance**: Strategic conference choices (Poster, Talk, Network) with persistent benefits.
+- **Slog Check**: Every punishment unlocks a mechanical recovery path (Vacation, Therapy, Emergency Grant, Extension).
+- **Defense Gauntlet**: 3-turn interactive oral defense with committee skepticism calculations.
 
 ---
 
 ## 🎯 Win Conditions
 
-| Path | Requirements |
-|------|--------------|
-| **🎓 PhD** | 3 journal papers + thesis defense |
-| **🚪 Master's Exit** | 30 credits + 18 months + advisor approval |
+Per the authoritative `GRADUATION_CONTRACT`:
+
+| Route | Requirements |
+|---|---|
+| **🎓 Standard PhD** | 3 journal papers (`state.items.paper ≥ 3`) + Quals passed + 100% thesis + Defense Gauntlet victory |
+| **🔬 Hybrid PhD** | 2 journal papers + 2 conference papers (`state.items.paper ≥ 2 && state.confPaperCount ≥ 2`) + Quals passed + 100% thesis + Defense Gauntlet victory |
+| **🚪 Master's Exit** | Strategic exit available in Year 2+ when burnout or funding constraints prevent PhD completion |
 
 ---
 
-## 🔬 Core Actions (V2.46 Focused Mode)
+## 🔬 Core Progression Pipeline
 
 | Phase | Action | Description |
-|-------|--------|-------------|
-| **Ideation** | 📚 Read Papers | Generate new ideas |
-| **Execution** | 💡 Work on Idea | → Preliminary Findings |
-| **Execution** | 🔬 Develop Findings | → Key Discovery |
-| **Validation** | 📊 Validate Discovery | Create figures (3 needed) |
-| **Dissemination** | 📋 Conference Paper | Quick publish (4mo) |
-| **Dissemination** | � Journal Paper | Submit for review (8-12mo) |
-| **Writing** | 📖 Write Thesis | +20% per action |
-| **Endgame** | 🎓 Defend Thesis | Final exam! |
-| **Recovery** | ☕ Take a Break | +15 morale |
-| **Quals** | 📚 Study for Quals | Prep level 3 to pass |
+|---|---|---|
+| **Ideation** | 📚 Read Papers | Discover literature and generate viable research ideas |
+| **Execution** | 💡 Work on Idea | Develop ideas into preliminary laboratory findings |
+| **Execution** | 🔬 Develop Findings | Refine findings into a key scientific discovery |
+| **Validation** | 📊 Validate Discovery | Produce peer-review ready figures (3 needed per manuscript) |
+| **Dissemination** | 📋 Conference Paper | Rapid peer dissemination (shorter review cycle) |
+| **Dissemination** | 📝 Journal Paper | Authoritative journal submission under rigorous review |
+| **Writing** | 📖 Write Thesis | Synthesize published and unpublished work into dissertation |
+| **Endgame** | 🎓 Defend Thesis | Face the 3-turn Committee Defense Gauntlet |
 
 ---
 
-## 🎤 Conferences (V2.46)
+## 🛡️ Recovery & Health Mechanics
 
-- **2 conferences per year max**
-- Appear at top of action list when available
-- **One choice per conference**: Poster, Talk, or Network
-
----
-
-## 🛡️ Recovery Actions (Emergency Only)
-
-These appear **only when in crisis**:
-
-| Action | Trigger | Effect |
-|--------|---------|--------|
-| 🏖️ Vacation | Burnout ≥60 + advisor offered | −burnout |
-| 🏥 Medical Leave | Morale <10 | Reset +40 morale (3-6mo) |
-| 💰 Emergency Grant | Funding=0 + teaching load | +12mo funding (permanent penalty) |
+- **Morale**: Reaching 0 triggers academic dismissal or dropout. Take breaks, socialize, or take vacations to recover.
+- **Stress**: Numeric stress is capped at `100`. High stress accelerates monthly decay and elevates committee skepticism during defense.
+- **Funding**: Tracked in months (`state.fundingMonths`). Running out adds `teaching_load` status, reducing available research turns.
 
 ---
 
-## � Stats Dashboard
+## 🚀 Local Development
 
-| Stat | Description |
-|------|-------------|
-| **� Morale** | Falls to 0 = Game Over |
-| **🧑‍🏫 Advisor** | Affects outcomes, triggers interventions |
-| **� Papers** | 3 journal papers for PhD |
-| **🤝 Network** | Unlocks abilities at 40/60/80 |
-| **📚 Quals** | Pass by September Year 2 |
+The game runs as a zero-dependency static web application:
 
----
-
-## 🚀 Quick Start
-
-### Play Online (Recommended)
-**[xy-vince.github.io/GradQuest](https://xy-vince.github.io/GradQuest/)**
-
-### Run Locally
 ```bash
-git clone https://github.com/XY-Vince/GradQuest.git
-cd GradQuest/docs
-# Open index.html in browser
+# Clone the repository
+git clone https://github.com/XY-Vince/yale-grad-school.git
+cd yale-grad-school
+
+# Open docs/index.html directly in any browser
+open docs/index.html
+
+# Run browser verification tests
+node --check tests/browser_tests.js
+python3 run_tests.py
 ```
-
----
-
-## 📋 Version History
-
-See [CHANGELOG.md](CHANGELOG.md) for full history.
-
-| Version | Theme |
-|---------|-------|
-| **v2.46** | Conference Streamline — 2/year, one-choice |
-| **v2.45** | Focused Mode — core actions only |
-| **v2.43** | Defense Integrity — skepticism breakdown |
-| **v2.42** | Event Modal Audit — visual notification system |
-| **v2.40** | Defense Gauntlet — 3-turn minigame |
 
 ---
 
 ## 📄 License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-<p align="center">
-  <i>Made with ☕ and existential dread</i>
-</p>
+MIT License — see [LICENSE](../LICENSE) for details.

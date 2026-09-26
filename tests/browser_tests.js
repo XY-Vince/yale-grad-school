@@ -425,6 +425,48 @@ const TestSuite = {
                     this.assert(strained.breakdown.some(t => t.includes('Stress')), 'Defense breakdown should mention stress');
                 });
 
+                // Test 13: Brand display reflects GradQuest @ Yale
+                await this.runTest('brandDisplayReflectsYaleGradSchool', () => {
+                    this.assert(document.title.includes('GradQuest @ Yale'), `Expected title to include 'GradQuest @ Yale', got: ${document.title}`);
+                    const headerH1 = document.querySelector('header.header h1');
+                    this.assert(headerH1 && headerH1.textContent.includes('GradQuest @ Yale'), `Expected header h1 to contain 'GradQuest @ Yale'`);
+                    const welcomeH2 = document.querySelector('#start-screen h2');
+                    this.assert(welcomeH2 && welcomeH2.textContent.includes('GradQuest @ Yale'), `Expected start screen welcome to contain 'GradQuest @ Yale'`);
+                });
+
+                // Test 14: Save/load continuity preserves gradquest_save key
+                await this.runTest('saveLoadContinuityPreservesStorageKey', () => {
+                    const originalRawSave = localStorage.getItem('gradquest_save');
+                    try {
+                        // 1. Verify game saves directly to gradquest_save
+                        game.selectSpecialization('computational');
+                        game.start();
+                        game.state.morale = 77;
+                        game.state.confPaperCount = 2;
+                        game.save();
+
+                        const savedRaw = localStorage.getItem('gradquest_save');
+                        this.assert(savedRaw !== null, 'game.save() must write to localStorage key gradquest_save');
+                        const parsed = JSON.parse(savedRaw);
+                        this.assert(parsed.morale === 77, 'Saved morale should match state');
+                        this.assert(parsed.confPaperCount === 2, 'Saved conference papers should match state');
+
+                        // 2. Verify game loads directly from gradquest_save
+                        parsed.morale = 88;
+                        parsed.confPaperCount = 3;
+                        localStorage.setItem('gradquest_save', JSON.stringify(parsed));
+                        game.load();
+                        this.assert(game.state.morale === 88, 'game.load() should read modified state from gradquest_save');
+                        this.assert(game.state.confPaperCount === 3, 'game.load() should read modified papers from gradquest_save');
+                    } finally {
+                        if (originalRawSave !== null) {
+                            localStorage.setItem('gradquest_save', originalRawSave);
+                        } else {
+                            localStorage.removeItem('gradquest_save');
+                        }
+                    }
+                });
+
                 this.renderResults();
                 console.log('[TestSuite] Tests complete:', this.results);
 
