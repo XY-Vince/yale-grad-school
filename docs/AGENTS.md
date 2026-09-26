@@ -1,18 +1,19 @@
-# 🤖 AGENTS.md - AI Assistant Guide for GradQuest
+# 🤖 AGENTS.md - GradQuest @ Yale Subproject Guide
 
-> **Version**: 2.55 🎯 Focused Mode | **Architecture**: Static JavaScript (GitHub Pages)  
-> **Philosophy**: *"Every punishment must unlock a new form of agency."*  
-> **Core Tenet**: Mechanics avoid infinite death spirals through mandatory recovery actions.
+> [!NOTE]
+> **Subproject Authority**: This file provides gameplay and mechanics context for **GradQuest @ Yale**,
+> an interactive simulation subproject of the **(Yale) Grad School Workspace Hub**.
+> Global repository routing and confidentiality boundaries are governed by the root [AGENTS.md](../AGENTS.md).
+>
+> - **Game Version**: V2.59.2 🎯 Focused Mode | **Architecture**: Static Single-File JavaScript (`docs/index.html`)
+> - **Philosophy**: *"Every punishment must unlock a new form of agency."*
+> - **Live Site**: `https://xy-vince.github.io/yale-grad-school/` (formerly `xy-vince.github.io/GradQuest/`)
+> - **Active Tests**: `tests/browser_tests.js` (legacy `tests.html` retired)
+> - **Save Storage**: `localStorage['gradquest_save']` (preserved)
 
 ## Project Overview
 
-**GradQuest** is a strategic PhD life simulator running entirely client-side. Players navigate the research pipeline while managing morale, funding, and advisor relationships.
-
-- **Live Site**: [xy-vince.github.io/GradQuest](https://xy-vince.github.io/GradQuest/)
-- **Current**: V2.55 🎯 Focused Mode - Conference Streamline (2/year, one-choice)
-- **Architecture**: Pure static JavaScript on GitHub Pages
-- **Storage**: Browser LocalStorage for saves
-- **Mobile-First**: 4-tab navigation (📊 Status / 🎯 Actions / 🔬 Lab / ⏩ Next)
+**GradQuest @ Yale** is a strategic PhD life simulator running entirely client-side. Players navigate the research pipeline while managing morale, funding, and advisor relationships.
 
 ## 🎯 V3.0 "Gold Release" Roadmap
 

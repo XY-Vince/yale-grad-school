@@ -1,66 +1,45 @@
-# Contributing to GradQuest
+# Contributing to GradQuest @ Yale
 
-Thank you for your interest in contributing! 🎓
-
-## How to Contribute
-
-### Reporting Bugs
-1. Check existing [Issues](https://github.com/XY-Vince/GradQuest/issues)
-2. Create a new issue with:
-   - Clear title
-   - Steps to reproduce
-   - Expected vs actual behavior
-   - Browser/OS info
-
-### Feature Requests
-Open an issue with the `enhancement` label describing:
-- The feature
-- Why it would be useful
-- Potential implementation approach
-
-### Code Contributions
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Make your changes
-4. Test locally
-5. Submit a Pull Request
-
-### Commit Convention
-
-Use [Conventional Commits](https://conventionalcommits.org/):
-
-```
-feat: add new action type
-fix: resolve paper delay bug
-docs: update README
-style: format code
-refactor: simplify game loop
-test: add event tests
-```
-
-## Development Setup
-
-```bash
-git clone https://github.com/YOUR_USERNAME/GradQuest.git
-cd GradQuest
-pip install -r requirements.txt
-python -m pytest tests/
-```
-
-## Project Structure
-
-- `docs/index.html` - Static web game (edit for UI changes)
-- `gradquest/` - Python backend
-- `data/rulesets/` - Game data YAML files
-- `tests/` - pytest suite
-
-## Code Style
-
-- JavaScript: Use `const`/`let`, arrow functions
-- Python: Follow PEP 8
-- Keep functions small and focused
+Thank you for your interest in contributing to **GradQuest @ Yale**! 🎓
 
 ---
 
-Questions? Open an issue or reach out!
+## 🏛️ Architecture Overview
+
+GradQuest @ Yale is a **pure client-side static game** contained primarily within:
+- `docs/index.html`: The authoritative single-file engine, rendering, state management, and event system.
+- `tests/browser_tests.js`: Headless browser test suite verifying gameplay balance and regression invariants.
+- `data/`: Historical/experimental rulesets and auxiliary playtest references.
+
+There is **no server or Python runtime backend** for the game. Any state change must respect the core engineering standards:
+- Always use `this.updateState(changes, owner)` for state mutations.
+- Maintain canonical state fields (`state.items.paper`, `state.confPaperCount`, `state.fundingMonths`, `teaching_load`, max stress 100).
+- Preserve save compatibility using `localStorage['gradquest_save']`.
+
+---
+
+## 🛠️ Development & Testing
+
+```bash
+# 1. Syntax check test suites
+node --check tests/browser_tests.js
+
+# 2. Run Playwright browser integration tests
+python3 run_tests.py
+
+# 3. Check git hygiene before committing
+git diff --check
+```
+
+---
+
+## 📝 Commit Convention
+
+We follow [Conventional Commits](https://conventionalcommits.org/):
+
+```
+feat(game): add new advisor event
+fix(defense): resolve skepticism multiplier edge case
+docs(readme): update gameplay instructions
+test(storage): add save continuity regression assertion
+```
