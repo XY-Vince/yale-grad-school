@@ -179,6 +179,22 @@
       "title": "Paired Control Required",
       "type": "boolean"
     },
+    "query_budget_per_case": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Query Budget Per Case",
+      "type": "integer"
+    },
+    "investigator_isolation_backend": {
+      "const": "macos_seatbelt",
+      "title": "Investigator Isolation Backend",
+      "type": "string"
+    },
+    "one_shot_execution_required": {
+      "const": true,
+      "title": "One Shot Execution Required",
+      "type": "boolean"
+    },
     "independent_curator_required": {
       "const": true,
       "title": "Independent Curator Required",
@@ -261,6 +277,9 @@
     "permitted_attempts",
     "track_name",
     "paired_control_required",
+    "query_budget_per_case",
+    "investigator_isolation_backend",
+    "one_shot_execution_required",
     "independent_curator_required",
     "hidden_gold_required",
     "gold_annotation_policy",

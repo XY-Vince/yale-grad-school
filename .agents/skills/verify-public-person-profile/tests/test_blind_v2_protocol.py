@@ -11,6 +11,7 @@ from benchmarks.tools.blind_v2_protocol import (
     validate_curator_attestation,
     validate_hidden_gold_alignment,
     validate_revealed_assets,
+    validate_execution_assets,
     verify_hidden_asset_manifest,
     verify_toolchain_hashes,
     verify_commitment,
@@ -42,6 +43,9 @@ def prereg_payload() -> dict:
         "permitted_attempts": 1,
         "track_name": "hinted",
         "paired_control_required": True,
+        "query_budget_per_case": 15,
+        "investigator_isolation_backend": "macos_seatbelt",
+        "one_shot_execution_required": True,
         "independent_curator_required": True,
         "hidden_gold_required": True,
         "gold_annotation_policy": "two_curators_independent_then_adjudicated",
@@ -153,6 +157,50 @@ def test_stratified_selection_and_reveal_validation():
     tampered.entries[0].candidate_id = "fact_bearing-059"
     with pytest.raises(ValueError, match="deterministic selection"):
         validate_revealed_assets(prereg, pool, tampered, exclusions, "secret-seed")
+
+
+def test_execution_assets_must_match_selection_and_cover_every_query(tmp_path: Path):
+    prereg = BlindPreregistration.model_validate(prereg_payload())
+    pool = candidate_pool()
+    selected = select_candidate_ids(prereg, pool, "secret-seed")
+    by_id = {entry.candidate_id: entry for entry in pool.entries}
+    manifest = BlindPersonaManifest(
+        suite_id="blind_release_v2",
+        entries=[
+            {"case_id": f"BLIND2-{idx:03d}", **by_id[cid].model_dump()}
+            for idx, cid in enumerate(selected, start=1)
+        ],
+    )
+    case_manifest = tmp_path / "case_manifest.json"
+    case_manifest.write_text(manifest.model_dump_json(indent=2), encoding="utf-8")
+    required_queries = []
+    for entry in manifest.entries:
+        required_queries.extend(
+            [entry.target_name, *[f"{entry.target_name} {hint}" for hint in entry.hints]]
+        )
+    query_index = tmp_path / "query_index.jsonl"
+    query_index.write_text(
+        "\n".join(
+            json.dumps({"query": query, "urls": []})
+            for query in sorted(set(required_queries))
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    summary = validate_execution_assets(prereg, manifest, case_manifest, query_index)
+    assert summary["case_count"] == 30
+
+    tampered = manifest.model_copy(deep=True)
+    tampered.entries[0].target_name = "Different Person"
+    case_manifest.write_text(tampered.model_dump_json(indent=2), encoding="utf-8")
+    with pytest.raises(ValueError, match="differs from the committed selection"):
+        validate_execution_assets(prereg, manifest, case_manifest, query_index)
+
+    case_manifest.write_text(manifest.model_dump_json(indent=2), encoding="utf-8")
+    query_index.write_text("", encoding="utf-8")
+    with pytest.raises(ValueError, match="missing preregistered execution queries"):
+        validate_execution_assets(prereg, manifest, case_manifest, query_index)
 
 
 def test_reveal_rejects_prior_exposure_in_candidate_pool():

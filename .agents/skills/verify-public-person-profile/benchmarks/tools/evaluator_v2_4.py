@@ -1029,6 +1029,30 @@ def validate_blind_preregistration_for_run(
         raise ValueError("FAIL-CLOSED blind preregistration mismatch: " + "; ".join(errors))
 
 
+def load_expected_case_ids(case_manifest: Path) -> list[str]:
+    manifest_data = json.loads(case_manifest.read_text(encoding="utf-8"))
+    if isinstance(manifest_data, list):
+        cases = manifest_data
+    elif isinstance(manifest_data, dict):
+        for key in ("cases", "primary_cases", "results", "entries"):
+            if key in manifest_data:
+                cases = manifest_data[key]
+                break
+        else:
+            raise ValueError("Unknown manifest schema")
+    else:
+        raise ValueError("Unknown manifest schema")
+    if not isinstance(cases, list) or not all(
+        isinstance(case, dict) and isinstance(case.get("case_id"), str)
+        for case in cases
+    ):
+        raise ValueError("Manifest cases must be objects with string case_id values")
+    case_ids = [case["case_id"] for case in cases]
+    if len(case_ids) != len(set(case_ids)):
+        raise ValueError("Manifest case_id values must be unique")
+    return case_ids
+
+
 def aggregate_suite_v2_4(
     results: List[Dict[str, Any]],
     expected_case_ids: List[str],
@@ -1499,17 +1523,7 @@ def main():
             print("Asset errors:", asset_manifest_errors)
 
     # 3. Load Expected Cases from Manifest
-    manifest_data = json.loads(args.case_manifest.read_text(encoding="utf-8"))
-    if isinstance(manifest_data, list):
-        expected_cids = [c["case_id"] for c in manifest_data]
-    elif "cases" in manifest_data:
-        expected_cids = [c["case_id"] for c in manifest_data["cases"]]
-    elif "primary_cases" in manifest_data:
-        expected_cids = [c["case_id"] for c in manifest_data["primary_cases"]]
-    elif "results" in manifest_data:
-        expected_cids = [c["case_id"] for c in manifest_data["results"]]
-    else:
-        raise ValueError("Unknown manifest schema!")
+    expected_cids = load_expected_case_ids(args.case_manifest)
 
     if len(expected_cids) != args.expected_count:
         raise ValueError(f"Expected count ({args.expected_count}) != manifest case count ({len(expected_cids)})!")

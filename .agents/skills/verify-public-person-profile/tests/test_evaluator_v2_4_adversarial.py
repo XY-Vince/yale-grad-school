@@ -27,6 +27,7 @@ from benchmarks.tools.evaluator_v2_4 import (
     compute_bundle_tree_hash,
     compute_case_funnel,
     evaluate_bundle_v2_4,
+    load_expected_case_ids,
     parse_warc_records,
     render_markdown_report,
     validate_blind_preregistration_for_run,
@@ -560,6 +561,22 @@ def test_blind_provenance_requires_preregistration_and_schema_hashes():
         evaluation_role="blind_release",
     )
     assert complete["gates"]["provenance_complete_gate"]
+
+
+def test_evaluator_accepts_blind_persona_manifest_entries_shape(tmp_path: Path):
+    manifest = {
+        "suite_id": "blind_release_v2",
+        "entries": [
+            {"case_id": "BLIND2-001"},
+            {"case_id": "BLIND2-002"},
+        ],
+    }
+    path = tmp_path / "case_manifest.json"
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+    assert load_expected_case_ids(path) == [
+        "BLIND2-001",
+        "BLIND2-002",
+    ]
 
 
 def test_six_level_funnel_first_failure_attribution():
