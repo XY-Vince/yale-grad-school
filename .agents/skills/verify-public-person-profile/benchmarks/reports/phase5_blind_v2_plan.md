@@ -39,7 +39,7 @@
 
 ## 6. 当前验证状态与基线冻结（2026-09-29）
 
-- 技能全目录测试：`201 passed in 24.01s`。
+- 技能全目录测试：201 项全量通过（包含 `tests/` 目录 200 项测试 + `benchmarks/tools/test_hand_fixtures.py` 1 项 ER 手算基准测试；已配置 `conftest.py` 与 `pyproject.toml`，支持从技能根目录或 GradQuest 宿主根目录直接执行 `pytest`，无 CWD 或 PYTHONPATH 依赖）。
 - Blind 协议与 Runner 定向测试：33 passed（含 protocol 12 项、evaluator adversarial 17 项、runner 4 项）。
 - GradQuest 宿主浏览器回归：`12 passed`。
 - Python 语法检查 (`python3 -m compileall -q`)、代码卫生 (`git diff --check`)：全部通过。
