@@ -30,5 +30,5 @@ scratch/
 .agents/skills/verify-public-person-profile/scratch/
 
 # Binaries and archives
-gh.zip
+*.zip
 gh_*/

@@ -141,6 +141,13 @@ def validate_revealed_assets(
         raise ValueError("selection manifest does not match deterministic selection")
     if len(actual_ids) != preregistration.expected_case_count:
         raise ValueError("selection manifest case count does not match preregistration")
+    expected_case_ids = [
+        f"BLIND2-{index:03d}"
+        for index in range(1, preregistration.expected_case_count + 1)
+    ]
+    actual_case_ids = [entry.case_id for entry in selection_manifest.entries]
+    if actual_case_ids != expected_case_ids:
+        raise ValueError("selection manifest case IDs must be contiguous and deterministic")
 
     pool_by_id = {entry.candidate_id: entry for entry in candidate_pool.entries}
     for selected in selection_manifest.entries:
@@ -163,6 +170,78 @@ def validate_revealed_assets(
         "selected_case_count": len(selection_manifest.entries),
         "strata_counts": dict(counts),
         "prior_exposure_overlap_count": 0,
+    }
+
+
+def expected_queries_for_persona(
+    target_name: str,
+    hints: list[str],
+    aliases: list[str],
+) -> list[str]:
+    queries = [target_name, *[f"{target_name} {hint}" for hint in hints]]
+    for alias in aliases:
+        if alias != target_name:
+            queries.append(alias)
+            queries.extend(f"{alias} {hint}" for hint in hints)
+    return queries
+
+
+def validate_execution_assets(
+    preregistration: BlindPreregistration,
+    selection_manifest: BlindPersonaManifest,
+    case_manifest_path: Path,
+    query_index_path: Path,
+) -> dict[str, Any]:
+    case_manifest = BlindPersonaManifest.model_validate(_load_json(case_manifest_path))
+    if case_manifest.model_dump(mode="json") != selection_manifest.model_dump(mode="json"):
+        raise ValueError("case_manifest.json differs from the committed selection manifest")
+
+    indexed_queries: set[str] = set()
+    for line_number, raw_line in enumerate(
+        query_index_path.read_text(encoding="utf-8").splitlines(),
+        1,
+    ):
+        if not raw_line.strip():
+            continue
+        try:
+            entry = json.loads(raw_line)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"malformed query_index.jsonl at line {line_number}"
+            ) from exc
+        query = entry.get("query") if isinstance(entry, dict) else None
+        urls = entry.get("urls") if isinstance(entry, dict) else None
+        if not isinstance(query, str) or not query.strip() or not isinstance(urls, list):
+            raise ValueError(f"invalid query index entry at line {line_number}")
+        normalized = " ".join(query.casefold().split())
+        if normalized in indexed_queries:
+            raise ValueError(f"duplicate normalized query index key at line {line_number}")
+        indexed_queries.add(normalized)
+
+    required_queries: set[str] = set()
+    for persona in case_manifest.entries:
+        persona_queries = expected_queries_for_persona(
+            persona.target_name,
+            persona.hints,
+            persona.aliases,
+        )
+        if len(persona_queries) > preregistration.query_budget_per_case:
+            raise ValueError(
+                f"case {persona.case_id} requires {len(persona_queries)} queries, "
+                f"exceeding preregistered budget {preregistration.query_budget_per_case}"
+            )
+        required_queries.update(" ".join(query.casefold().split()) for query in persona_queries)
+
+    missing_queries = sorted(required_queries - indexed_queries)
+    if missing_queries:
+        raise ValueError(
+            "query_index.jsonl is missing preregistered execution queries: "
+            + ", ".join(missing_queries)
+        )
+    return {
+        "case_count": len(case_manifest.entries),
+        "required_query_count": len(required_queries),
+        "indexed_query_count": len(indexed_queries),
     }
 
 
@@ -464,6 +543,12 @@ def main() -> None:
         raise ValueError("hidden asset verification failed: " + "; ".join(hidden_asset_errors))
 
     summary = validate_revealed_assets(prereg, pool, selection, exclusions, seed)
+    summary["execution_assets"] = validate_execution_assets(
+        prereg,
+        selection,
+        args.hidden_assets_dir / "case_manifest.json",
+        args.hidden_assets_dir / "query_index.jsonl",
+    )
     gold_alignment = validate_hidden_gold_alignment(
         prereg,
         selection,

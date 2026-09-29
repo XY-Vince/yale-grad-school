@@ -61,6 +61,9 @@ class BlindPreregistration(StrictProtocolModel):
     permitted_attempts: Literal[1]
     track_name: Literal["hinted"]
     paired_control_required: Literal[True]
+    query_budget_per_case: int = Field(..., ge=1, le=100)
+    investigator_isolation_backend: Literal["macos_seatbelt"]
+    one_shot_execution_required: Literal[True]
     independent_curator_required: Literal[True]
     hidden_gold_required: Literal[True]
     gold_annotation_policy: Literal["two_curators_independent_then_adjudicated"]
