@@ -1,0 +1,31 @@
+{
+  "runs": [
+    {
+      "case_manifest_sha256": "803ec5a0db028757b7280180e849875431011727eeaf31a159a891b193b0cd32",
+      "curation_rel_path": "agent-blind-v1-evaluation-20260921",
+      "sealed": true,
+      "suite_id": "agent-blind-v1"
+    },
+    {
+      "case_manifest_sha256": "e16c70308de7841383da4da09f6a65df85764d3c6b2c19411941e55af07fb70c",
+      "curation_rel_path": "agent-blind-v6-curation-20260929",
+      "sealed": false,
+      "suite_id": "agent-blind-v6"
+    },
+    {
+      "case_manifest_sha256": "682539f55108777c0fdd8aaf332ab71788a4272a169e5f7f2b572d21040ec3a3",
+      "curation_asset_manifest_sha256": "00d0e0ef0a7451232a41befe36d14cb0dadc612f4f31699f0cb0e828629f373e",
+      "curation_rel_path": "agent-blind-v7-curation-20260929",
+      "sealed": true,
+      "suite_id": "agent-blind-v7"
+    },
+    {
+      "case_manifest_sha256": "334906aed87f539e4f730dbbc1a4a1841a8c619e42a5b217c1b4594613be13ef",
+      "curation_asset_manifest_sha256": "6b624bd5ebd507a44bcf5b6fd7816c8ba965316bdb383453cfc894b39da7332a",
+      "curation_rel_path": "agent-blind-v10-curation-20260930",
+      "sealed": true,
+      "suite_id": "agent-blind-v10"
+    }
+  ],
+  "schema_version": "1.0"
+}
