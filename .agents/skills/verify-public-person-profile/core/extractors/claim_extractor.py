@@ -1917,6 +1917,7 @@ def extract_document_context_claims(
             title_person, title_institution, _ = extract_institution_from_title(
                 title_match.group(0),
                 target_name,
+                matcher=is_mention_matching_target,
             )
             if title_person and title_institution:
                 append_claim(
