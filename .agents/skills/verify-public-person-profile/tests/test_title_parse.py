@@ -6,10 +6,10 @@ from scripts.validate_dossier import check_object_presence
 
 def test_title_parse_v10_reproduction_clean():
     """Verify that multi-pipe titles with section filler extract clean institution without delimiters."""
-    title = "<title>\n\t\t\t\n\n    Emily Clark | Faculty  | University of the Incarnate Word \n\t\t</title>"
-    person, inst, span = extract_institution_from_title(title, "Emily Clark")
-    assert person == "Emily Clark"
-    assert inst == "University of the Incarnate Word"
+    title = "<title>\n\t\t\t\n\n    Synthetic Scholar | Faculty  | University of Example City \n\t\t</title>"
+    person, inst, span = extract_institution_from_title(title, "Synthetic Scholar")
+    assert person == "Synthetic Scholar"
+    assert inst == "University of Example City"
     assert inst in title
     assert span is not None
     assert title[span[0]:span[1]] == inst
@@ -117,3 +117,37 @@ def test_validator_check_object_presence_empirical_sweep():
     ]
     for obj, text in sweep:
         assert check_object_presence(obj, text) is True, f"Failed object presence on {obj}"
+
+
+def test_title_parse_fixture_driven_e2e_object_presence():
+    """Fixture-driven E2E: parse raw title to extract object_raw, then assert check_object_presence in evidence sentences."""
+    fixtures = [
+        (
+            "<title>Dr. Jane Doe | Department of Computer Science | University of Illinois - Chicago</title>",
+            "Jane Doe",
+            "She is a faculty member at University of Illinois - Chicago since 2019.",
+        ),
+        (
+            "<title>Bob Smith | Texas A&M - Commerce | Faculty Directory</title>",
+            "Bob Smith",
+            "Bob Smith teaches at Texas A&M - Commerce.",
+        ),
+        (
+            "<title>Carol White :: School of Engineering :: Columbia University</title>",
+            "Carol White",
+            "Carol White joined the engineering department at Columbia University.",
+        ),
+        (
+            "<title>张三 | 清华大学 | 教师主页</title>",
+            "张三",
+            "张三教授目前就职于清华大学交叉信息研究院。",
+        ),
+    ]
+    for raw_title, person, evidence_sentence in fixtures:
+        matched_person, object_raw, span = extract_institution_from_title(raw_title, person)
+        assert matched_person is not None, f"Failed to match person {person} in {raw_title}"
+        assert object_raw is not None, f"Failed to extract institution from {raw_title}"
+        assert object_raw in raw_title, f"object_raw '{object_raw}' must be verbatim substring of '{raw_title}'"
+        assert check_object_presence(object_raw, evidence_sentence) is True, (
+            f"check_object_presence failed for extracted '{object_raw}' in '{evidence_sentence}'"
+        )

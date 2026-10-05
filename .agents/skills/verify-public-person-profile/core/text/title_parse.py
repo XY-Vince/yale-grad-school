@@ -4,9 +4,22 @@ from __future__ import annotations
 
 import html
 import re
-from typing import Optional, Tuple
+from typing import Callable, Optional, Tuple
 
-from core.extractors.subject_attribution import is_exact_or_verified_alias_match
+
+def default_person_matcher(segment: str, target_name: str) -> bool:
+    """Case-folded whitespace-normalized string equality with common honorific stripping."""
+    seg_clean = " ".join(html.unescape(segment).casefold().split())
+    target_clean = " ".join(html.unescape(target_name).casefold().split())
+    if seg_clean == target_clean:
+        return True
+    honorifics = ("dr.", "dr ", "prof.", "prof ", "professor ")
+    for h in honorifics:
+        if seg_clean.startswith(h) and seg_clean[len(h):].strip() == target_clean:
+            return True
+        if target_clean.startswith(h) and target_clean[len(h):].strip() == seg_clean:
+            return True
+    return False
 
 
 # Tier 1: Canonical institution head nouns (English and CJK)
@@ -65,6 +78,7 @@ def _clean_whitespace(text: str) -> str:
 def extract_institution_from_title(
     title_raw: str,
     target_name: str,
+    matcher: Optional[Callable[[str, str], bool]] = None,
 ) -> Tuple[Optional[str], Optional[str], Optional[Tuple[int, int]]]:
     """
     Parses an HTML title string to extract (matched_person_name, object_raw, span_in_title_raw).
@@ -105,10 +119,11 @@ def extract_institution_from_title(
     # Step 2: Identify target person segment
     matched_person_segments: list[str] = []
     other_segments: list[str] = []
+    match_fn = matcher or default_person_matcher
 
     for seg in segments:
         seg_norm = html.unescape(seg)
-        if is_exact_or_verified_alias_match(seg_norm, {target_name}) or is_exact_or_verified_alias_match(seg, {target_name}):
+        if match_fn(seg_norm, target_name) or match_fn(seg, target_name):
             matched_person_segments.append(seg)
         else:
             other_segments.append(seg)
