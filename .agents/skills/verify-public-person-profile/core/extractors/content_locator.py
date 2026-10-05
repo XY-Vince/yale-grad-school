@@ -19,6 +19,7 @@ from models.schemas import (
     LocatorType,
     SourceQualityClass,
 )
+from core.text.title_parse import extract_institution_from_title
 
 
 def _is_domain_or_subdomain(hostname: str, domain: str) -> bool:
@@ -209,27 +210,16 @@ def locate_evidence_slices(
     if eff_quality in {SourceQualityClass.CLASS_A, SourceQualityClass.CLASS_B}:
         title_pattern = re.compile(r"<title\b[^>]*>(?P<title>.*?)</title>", re.IGNORECASE | re.DOTALL)
         for title_match in title_pattern.finditer(html_text):
-            title_text = re.sub(r"<[^>]+>", " ", title_match.group("title"))
-            title_text = re.sub(r"\s+", " ", title_text).strip()
-            parts = [part.strip() for part in re.split(r"\s*[|]\s*", title_text, maxsplit=1)]
-            if len(parts) != 2:
-                continue
-            target_norm = " ".join(target_name.casefold().split())
-            left_norm = " ".join(parts[0].casefold().split())
-            institution = parts[1]
-            if left_norm != target_norm:
-                continue
-            if not re.search(
-                r"\b(?:University|College|School|Institute|Academy|Hospital|Medicine)\b",
-                institution,
-                re.IGNORECASE,
-            ):
-                continue
-            add_evidence(
-                title_match.start(),
-                title_match.end(),
-                "document-context:profile-title",
+            title_person, title_institution, _ = extract_institution_from_title(
+                title_match.group(0),
+                target_name,
             )
+            if title_person and title_institution:
+                add_evidence(
+                    title_match.start(),
+                    title_match.end(),
+                    "document-context:profile-title",
+                )
 
     # Strategy 2: Academic Profile Heading & Biography Container
     # Look for <h1-h3> containing target name followed by biography / roles section (skipping modal/dialog headings)

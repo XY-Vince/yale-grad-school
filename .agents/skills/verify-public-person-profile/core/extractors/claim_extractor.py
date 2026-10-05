@@ -30,6 +30,7 @@ from core.extractors.subject_attribution import (
     resolve_pronoun_antecedent,
     is_exact_or_verified_alias_match,
 )
+from core.text.title_parse import extract_institution_from_title
 
 PRO_DROP_DIRECT_PREDICATES = r"(?:现任|曾任|兼任|担任|现为|曾为|荣获|获|入选|受聘|任职|就任|就职|毕业|就读|求学|发表|出版|撰写|出生|生于)"
 PRO_DROP_ADVERB_CONNECTORS = r"(?:目前|随后|并|同时|此前|此后)"
@@ -1913,27 +1914,19 @@ def extract_document_context_claims(
             re.IGNORECASE | re.DOTALL,
         )
         if title_match:
-            title_text = html_lib.unescape(re.sub(r"<[^>]+>", " ", title_match.group("title")))
-            title_text = re.sub(r"\s+", " ", title_text).strip()
-            title_parts = [part.strip() for part in re.split(r"\s*[|]\s*", title_text, maxsplit=1)]
-            if len(title_parts) == 2:
-                title_subject, title_institution = title_parts
-                if (
-                    is_mention_matching_target(title_subject, target_name)
-                    and re.search(
-                        r"\b(?:University|College|School|Institute|Academy|Hospital|Medicine)\b",
-                        title_institution,
-                        re.IGNORECASE,
-                    )
-                ):
-                    append_claim(
-                        "affiliated_with",
-                        title_institution,
-                        TemporalStatus.CURRENT,
-                        title_match.start(),
-                        title_match.end(),
-                        0.98,
-                    )
+            title_person, title_institution, _ = extract_institution_from_title(
+                title_match.group(0),
+                target_name,
+            )
+            if title_person and title_institution:
+                append_claim(
+                    "affiliated_with",
+                    title_institution,
+                    TemporalStatus.CURRENT,
+                    title_match.start(),
+                    title_match.end(),
+                    0.98,
+                )
 
     elif selector == "document-context:encyclopedic-leadership":
         target_tokens = target_name.strip().split()

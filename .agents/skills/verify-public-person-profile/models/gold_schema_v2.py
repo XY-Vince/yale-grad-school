@@ -122,7 +122,11 @@ class GoldCase(BaseModel):
     expected_outcome_name_only: Optional[str] = None
     expected_outcome_hinted: Optional[str] = None
     is_fact_bearing: bool = True
-    annotation_type: Literal["curator_annotation", "double_blind_adjudicated"] = "curator_annotation"
+    annotation_type: Literal[
+        "curator_annotation",
+        "double_blind_adjudicated",
+        "multi_agent_adjudicated",
+    ] = "curator_annotation"
     gold_entities: List[GoldEntity] = Field(default_factory=list)
     gold_mentions: List[GoldMention] = Field(default_factory=list)
     gold_clusters: List[List[str]] = Field(default_factory=list, description="Clusters of gold_mention_ids")
