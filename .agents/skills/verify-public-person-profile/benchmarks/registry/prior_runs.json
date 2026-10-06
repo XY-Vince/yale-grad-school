@@ -44,7 +44,8 @@
       "evaluation_result_rel_path": null,
       "evaluation_result_sha256": null,
       "exclusion_reason": "sealed_curation_aborted_execution",
-      "terminal_status": "execution_failed"
+      "terminal_status": "execution_failed",
+      "defect_note": "query_index ↔ corpus.warc inconsistent (detected 2026-10-06); query index references URLs absent from WARC at line 6; artifacts not usable as reference corpus"
     },
     {
       "suite_id": "agent-blind-v10",
