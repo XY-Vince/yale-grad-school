@@ -37,11 +37,11 @@ python3 -m compileall -q "$CANDIDATE_DIR/$SKILL_REL"
 python3 -m compileall -q "$HARNESS_DIR/$SKILL_REL"
 
 echo ""
-echo "[7/8] Verifying physical prior runs registry against disk..."
+echo "[7/9] Verifying physical prior runs registry against disk..."
 python3 "$HARNESS_DIR/$SKILL_REL/scripts/verify_prior_runs.py"
 
 echo ""
-echo "[8/8] Verifying git repository roots & cleanliness..."
+echo "[8/9] Verifying git repository roots & cleanliness..."
 echo "Candidate repo root: $(cd "$CANDIDATE_DIR" && git rev-parse --show-toplevel)"
 CAND_PORCELAIN=$(cd "$CANDIDATE_DIR" && git status --porcelain)
 if [ -n "$CAND_PORCELAIN" ]; then
@@ -66,6 +66,10 @@ echo "Candidate HEAD: $CAND_HEAD"
 echo "Harness HEAD:   $HARN_HEAD"
 
 echo ""
+echo "[9/9] Verifying runtime exposure registry integrity & monotonicity..."
+python3 "$HARNESS_DIR/$SKILL_REL/scripts/verify_prior_runs.py" --check-runtime
+
+echo ""
 echo "============================================================"
-echo "ALL 8 VERIFICATION CHECKS PASSED SUCCESSFULLY!"
+echo "ALL 9 VERIFICATION CHECKS PASSED SUCCESSFULLY!"
 echo "============================================================"
