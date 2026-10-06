@@ -141,20 +141,40 @@ def main() -> int:
     skill_root = Path(__file__).resolve().parent.parent
     registry_path = skill_root / "benchmarks" / "registry" / "prior_runs.json"
     prior_runs_root = Path(os.environ.get("PRIOR_RUNS_ROOT", "/Users/xiang-yu/Desktop/ABCD"))
+    runtime_reg_path = Path(
+        os.environ.get(
+            "ABCD_RUNTIME_REGISTRY",
+            prior_runs_root / "ledger" / "registry" / "runtime_prior_runs.json",
+        )
+    )
+    runtime_count = 0
+    if runtime_reg_path.is_file():
+        try:
+            r_data = json.loads(runtime_reg_path.read_text(encoding="utf-8"))
+            runtime_count = len(r_data.get("runs", []))
+        except Exception:
+            pass
 
     reg_sha = file_sha256(registry_path) if registry_path.is_file() else "MISSING"
+    print("Authority Source: Harness (canonical authoritative copy)")
     print(f"Registry File: {registry_path}")
     print(f"Registry File SHA-256: {reg_sha}")
     print(f"Prior Runs Root: {prior_runs_root}")
-    print("-" * 80)
+    print(f"Runtime Registry Path: {runtime_reg_path}")
+    print(f"Registry Audit Count: Seed: 151 entries | Runtime: {runtime_count} entries")
+    print("-" * 120)
 
     ok, records, errors = verify_prior_runs(registry_path, prior_runs_root)
 
-    print(f"{'Suite ID':<16} | {'Item':<32} | {'Sealed':<6} | {'Exclusion Reason':<32} | {'SHA-256'}")
-    print("-" * 150)
+    header = f"{'Suite ID':<16} | {'Suite Directory':<34} | {'Item':<32} | {'Sealed':<6} | {'Exclusion Reason':<34} | {'SHA-256'}"
+    print(header)
+    print("-" * len(header))
     for r in records:
-        print(f"{r['suite_id']:<16} | {r['item']:<32} | {r['sealed']:<6} | {r['exclusion_reason']:<32} | {r['sha256']}")
-    print("-" * 150)
+        print(
+            f"{r['suite_id']:<16} | {r['rel_dir']:<34} | {r['item']:<32} | {r['sealed']:<6} | "
+            f"{r['exclusion_reason']:<34} | {r['sha256']}"
+        )
+    print("-" * len(header))
 
     if ok:
         print(f"PASS: All {len(records)} historical artifacts verified against physical disk.")

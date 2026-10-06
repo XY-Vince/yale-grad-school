@@ -124,7 +124,12 @@ def apply_directional_sync(
         if needs_sync:
             show_diff(src, dst, rel_path)
             if apply:
-                if not force and not _is_git_clean(dst_repo_root):
+                if force:
+                    print(
+                        f"WARNING: --force specified: bypassing clean destination repository check on {dst_repo_root}!",
+                        file=sys.stderr,
+                    )
+                elif not _is_git_clean(dst_repo_root):
                     raise RuntimeError(
                         f"Refusing to sync to dirty destination repository {dst_repo_root}. "
                         "Commit or stash changes before applying sync, or specify --force."
