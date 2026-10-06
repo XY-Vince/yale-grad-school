@@ -7,19 +7,23 @@ import re
 from typing import Callable, Optional, Tuple
 
 
+import unicodedata
+
+
+def normalize_person_title_name(name: str) -> str:
+    """Normalize person name for strict identity comparison matching core attribution rules."""
+    norm = unicodedata.normalize("NFKC", html.unescape(name or "")).strip().casefold()
+    norm = re.sub(r"^(?:prof(?:essor|\.)?|dr\.|mr\.|ms\.|mrs\.)\s+", "", norm)
+    norm = re.sub(r"^(?:教授|博士|院士|主任|老师|学者|会长|校长|院长)\s*", "", norm)
+    norm = re.sub(r"\s*(?:教授|博士|院士|主任|老师|学者|会长|校长|院长|先生|女士)$", "", norm)
+    return " ".join(norm.split())
+
+
 def default_person_matcher(segment: str, target_name: str) -> bool:
-    """Case-folded whitespace-normalized string equality with common honorific stripping."""
-    seg_clean = " ".join(html.unescape(segment).casefold().split())
-    target_clean = " ".join(html.unescape(target_name).casefold().split())
-    if seg_clean == target_clean:
-        return True
-    honorifics = ("dr.", "dr ", "prof.", "prof ", "professor ")
-    for h in honorifics:
-        if seg_clean.startswith(h) and seg_clean[len(h):].strip() == target_clean:
-            return True
-        if target_clean.startswith(h) and target_clean[len(h):].strip() == seg_clean:
-            return True
-    return False
+    """Strict equality of normalized full names; rejects partial token overlap or substrings."""
+    norm_seg = normalize_person_title_name(segment)
+    norm_target = normalize_person_title_name(target_name)
+    return bool(norm_seg and norm_target and norm_seg == norm_target)
 
 
 # Tier 1: Canonical institution head nouns (English and CJK)

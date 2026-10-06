@@ -151,3 +151,31 @@ def test_title_parse_fixture_driven_e2e_object_presence():
         assert check_object_presence(object_raw, evidence_sentence) is True, (
             f"check_object_presence failed for extracted '{object_raw}' in '{evidence_sentence}'"
         )
+
+
+def test_person_matcher_parity_with_attribution_rules():
+    """H2: Verify parity between default_person_matcher and is_mention_matching_target."""
+    from core.extractors.claim_extractor import is_mention_matching_target
+    from core.text.title_parse import default_person_matcher
+
+    test_pairs = [
+        ("Dr. Jane Doe", "Jane Doe", True),
+        ("Prof. Robert Smith", "Robert Smith", True),
+        ("Alice Cooper", "Alice Cooper", True),
+        ("Alice Cooper", "Bob Cooper", False),
+        ("Alice Cooper", "Alice Cooper-Smith", False),
+        ("张伟教授", "张伟", True),
+        ("李明院士", "李明", True),
+        ("王芳博士", "王芳", True),
+        ("陈晓", "陈晓", True),
+        ("陈晓", "陈晓明", False),
+        ("Mr. David Miller", "David Miller", True),
+        ("Ms. Sarah Connor", "Sarah Connor", True),
+    ]
+    for seg, target, expected in test_pairs:
+        res_default = default_person_matcher(seg, target)
+        res_attr = is_mention_matching_target(seg, target)
+        assert res_default == expected, f"default_person_matcher mismatch on ({seg}, {target})"
+        assert res_attr == expected, f"is_mention_matching_target mismatch on ({seg}, {target})"
+        assert res_default == res_attr, f"Matcher parity failed on ({seg}, {target})"
+

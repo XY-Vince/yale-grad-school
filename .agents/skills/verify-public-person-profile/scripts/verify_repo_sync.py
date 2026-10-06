@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -19,9 +21,13 @@ AUTHORITATIVE_SOURCES: dict[str, str] = {
     "core/extractors/claim_extractor.py": "candidate",
     "core/extractors/content_locator.py": "candidate",
     "scripts/validate_dossier.py": "candidate",
+    "tests/test_title_parse.py": "candidate",
+    "scripts/verify_repo_sync.py": "candidate",
+    "scripts/verify_all.sh": "candidate",
     # Harness Authority (benchmark evaluation schemas & historical run registry owned by harness)
     "models/gold_schema_v2.py": "harness",
     "benchmarks/registry/prior_runs.json": "harness",
+    "scripts/verify_prior_runs.py": "harness",
 }
 
 SHARED_FILES: tuple[str, ...] = tuple(AUTHORITATIVE_SOURCES.keys())
@@ -33,6 +39,17 @@ def compute_sha256(path: Path) -> str:
         while chunk := f.read(65536):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _is_git_clean(repo_path: Path) -> bool:
+    res = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return res.returncode == 0 and not res.stdout.strip()
 
 
 def verify_sync(candidate_skill: Path, harness_skill: Path) -> tuple[bool, list[str]]:
@@ -60,28 +77,63 @@ def verify_sync(candidate_skill: Path, harness_skill: Path) -> tuple[bool, list[
     return len(mismatches) == 0, mismatches
 
 
-def apply_directional_sync(candidate_skill: Path, harness_skill: Path) -> None:
+def show_diff(src: Path, dst: Path, rel_path: str) -> None:
+    src_lines = src.read_text(encoding="utf-8", errors="replace").splitlines(keepends=True)
+    dst_lines = dst.read_text(encoding="utf-8", errors="replace").splitlines(keepends=True) if dst.is_file() else []
+    diff = difflib.unified_diff(
+        dst_lines,
+        src_lines,
+        fromfile=f"mirror:{rel_path}",
+        tofile=f"authority:{rel_path}",
+    )
+    diff_text = "".join(diff)
+    if diff_text:
+        print(f"--- Diff for {rel_path} ---")
+        print(diff_text)
+
+
+def apply_directional_sync(
+    candidate_skill: Path,
+    harness_skill: Path,
+    apply: bool = False,
+    force: bool = False,
+) -> None:
     """Sync shared files strictly in the authoritative direction (Authority -> Mirror)."""
+    cand_repo = candidate_skill.parents[2]
+    harn_repo = harness_skill.parents[2]
+
     for rel_path, auth in AUTHORITATIVE_SOURCES.items():
         cand_file = candidate_skill / rel_path
         harn_file = harness_skill / rel_path
 
         if auth == "candidate":
             src, dst = cand_file, harn_file
-            src_repo, dst_repo = "candidate", "harness"
+            src_repo_name, dst_repo_name = "candidate", "harness"
+            dst_repo_root = harn_repo
         elif auth == "harness":
             src, dst = harn_file, cand_file
-            src_repo, dst_repo = "harness", "candidate"
+            src_repo_name, dst_repo_name = "harness", "candidate"
+            dst_repo_root = cand_repo
         else:
             raise ValueError(f"Unknown authority '{auth}' for {rel_path}")
 
         if not src.is_file():
-            raise FileNotFoundError(f"Authoritative source file missing: {src} ({src_repo})")
+            raise FileNotFoundError(f"Authoritative source file missing: {src} ({src_repo_name})")
 
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        if not dst.is_file() or compute_sha256(src) != compute_sha256(dst):
-            shutil.copy2(src, dst)
-            print(f"SYNC: {rel_path} copied from {src_repo} (Authority) to {dst_repo} (Mirror)")
+        needs_sync = not dst.is_file() or compute_sha256(src) != compute_sha256(dst)
+        if needs_sync:
+            show_diff(src, dst, rel_path)
+            if apply:
+                if not force and not _is_git_clean(dst_repo_root):
+                    raise RuntimeError(
+                        f"Refusing to sync to dirty destination repository {dst_repo_root}. "
+                        "Commit or stash changes before applying sync, or specify --force."
+                    )
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+                print(f"SYNC APPLIED: {rel_path} copied from {src_repo_name} (Authority) to {dst_repo_name} (Mirror)")
+            else:
+                print(f"DRY RUN: {rel_path} differs between {src_repo_name} (Authority) and {dst_repo_name} (Mirror). Use --apply to copy.")
 
 
 def main() -> int:
@@ -97,11 +149,21 @@ def main() -> int:
         action="store_true",
         help="Directionally synchronize files from Authority to Mirror (strictly prohibited in reverse)",
     )
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Apply changes to disk (default is dry-run mode)",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Allow writing to dirty destination repository (use with caution)",
+    )
     args = parser.parse_args()
 
-    if args.sync:
-        print("Applying directional sync from authoritative repositories...")
-        apply_directional_sync(args.candidate_skill, args.harness_skill)
+    if args.sync or args.apply:
+        print(f"Checking directional sync (apply={args.apply})...")
+        apply_directional_sync(args.candidate_skill, args.harness_skill, apply=args.apply, force=args.force)
 
     ok, mismatches = verify_sync(args.candidate_skill, args.harness_skill)
     if ok:
