@@ -137,7 +137,60 @@ def verify_prior_runs(
     return len(errors) == 0, records, errors
 
 
+def verify_runtime_registry_integrity(path: Path) -> tuple[bool, str, int, str]:
+    if not path.is_file():
+        return True, "not present (0 entries)", 0, "MISSING"
+
+    raw_bytes = path.read_bytes()
+    h = hashlib.sha256(raw_bytes).hexdigest()
+    try:
+        data = json.loads(raw_bytes.decode("utf-8"))
+    except Exception as exc:
+        return False, f"invalid JSON: {exc}", 0, h
+
+    runs = data.get("runs", [])
+    if not runs:
+        return True, "empty registry (0 entries)", 0, h
+
+    genesis = "0" * 64
+    for i, run in enumerate(runs):
+        expected_seq = i + 1
+        actual_seq = run.get("entry_seq")
+        if actual_seq is not None and actual_seq != expected_seq:
+            return False, f"entry_seq mismatch at index {i}: expected {expected_seq}, got {actual_seq}", len(runs), h
+
+        expected_prev = runs[i - 1].get("entry_hash") if i > 0 else genesis
+        actual_prev = run.get("prev_hash")
+        if actual_prev is not None and actual_prev != expected_prev:
+            return False, f"prev_hash mismatch at index {i}: expected {expected_prev}, got {actual_prev}", len(runs), h
+
+        actual_hash = run.get("entry_hash")
+        if actual_hash:
+            payload = {k: v for k, v in run.items() if k != "entry_hash"}
+            canon_bytes = json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+            computed_hash = hashlib.sha256(canon_bytes).hexdigest()
+            if actual_hash != computed_hash:
+                return False, f"entry_hash corruption at index {i}: expected {computed_hash}, got {actual_hash}", len(runs), h
+
+    latest = runs[-1].get("entry_hash")
+    declared_latest = data.get("latest_entry_hash")
+    if declared_latest and latest and declared_latest != latest:
+        return False, f"latest_entry_hash mismatch: expected {latest}, got {declared_latest}", len(runs), h
+
+    declared_n = data.get("n_entries")
+    if declared_n is not None and declared_n != len(runs):
+        return False, f"n_entries mismatch: expected {len(runs)}, got {declared_n}", len(runs), h
+
+    return True, f"valid hash chain across {len(runs)} entries", len(runs), h
+
+
 def main() -> int:
+    import argparse
+    parser = argparse.ArgumentParser(description="Mechanical verifier for prior runs and runtime exposure registries.")
+    parser.add_argument("--check-runtime", action="store_true", help="Audit only the runtime exposure registry integrity and hash chain.")
+    parser.add_argument("--min-entries", type=int, default=0, help="Minimum required entries in runtime registry (monotonic check).")
+    args = parser.parse_args()
+
     skill_root = Path(__file__).resolve().parent.parent
     registry_path = skill_root / "benchmarks" / "registry" / "prior_runs.json"
     prior_runs_root = Path(os.environ.get("PRIOR_RUNS_ROOT", "/Users/xiang-yu/Desktop/ABCD"))
@@ -147,13 +200,23 @@ def main() -> int:
             prior_runs_root / "ledger" / "registry" / "runtime_prior_runs.json",
         )
     )
-    runtime_count = 0
-    if runtime_reg_path.is_file():
-        try:
-            r_data = json.loads(runtime_reg_path.read_text(encoding="utf-8"))
-            runtime_count = len(r_data.get("runs", []))
-        except Exception:
-            pass
+
+    r_ok, r_msg, r_count, r_sha = verify_runtime_registry_integrity(runtime_reg_path)
+
+    if args.check_runtime:
+        print("Authority Source: Harness (canonical authoritative copy)")
+        print(f"Runtime Registry Path: {runtime_reg_path}")
+        print(f"Runtime Registry SHA-256: {r_sha}")
+        print(f"Runtime Registry Entries: {r_count}")
+        print(f"Runtime Registry Integrity: {'PASS' if r_ok else 'FAIL'} ({r_msg})")
+        if not r_ok:
+            print(f"ERROR: Runtime registry integrity violation: {r_msg}", file=sys.stderr)
+            return 1
+        if r_count < args.min_entries:
+            print(f"ERROR: Runtime registry entries regressed: {r_count} < required {args.min_entries}", file=sys.stderr)
+            return 1
+        print("PASS: Runtime registry integrity and hash chain verified.")
+        return 0
 
     reg_sha = file_sha256(registry_path) if registry_path.is_file() else "MISSING"
     print("Authority Source: Harness (canonical authoritative copy)")
@@ -161,7 +224,8 @@ def main() -> int:
     print(f"Registry File SHA-256: {reg_sha}")
     print(f"Prior Runs Root: {prior_runs_root}")
     print(f"Runtime Registry Path: {runtime_reg_path}")
-    print(f"Registry Audit Count: Seed: 151 entries | Runtime: {runtime_count} entries")
+    print(f"Runtime Registry SHA-256: {r_sha}")
+    print(f"Runtime Registry Audit: Seed: 151 entries | Runtime: {r_count} entries | Integrity: {'PASS' if r_ok else 'FAIL'}")
     print("-" * 120)
 
     ok, records, errors = verify_prior_runs(registry_path, prior_runs_root)
@@ -176,7 +240,10 @@ def main() -> int:
         )
     print("-" * len(header))
 
-    if ok:
+    if not r_ok:
+        errors.append(f"Runtime registry hash chain integrity failed: {r_msg}")
+
+    if ok and r_ok:
         print(f"PASS: All {len(records)} historical artifacts verified against physical disk.")
         return 0
     else:
