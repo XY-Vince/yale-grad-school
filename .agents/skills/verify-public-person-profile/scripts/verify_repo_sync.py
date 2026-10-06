@@ -102,6 +102,21 @@ def apply_directional_sync(
     cand_repo = candidate_skill.parents[2]
     harn_repo = harness_skill.parents[2]
 
+    if apply:
+        if force:
+            print("WARNING: --force specified: bypassing clean destination repository check!", file=sys.stderr)
+        else:
+            if not _is_git_clean(cand_repo):
+                raise RuntimeError(
+                    f"Refusing to sync: candidate repository {cand_repo} has uncommitted changes. "
+                    "Commit or stash changes before applying sync, or specify --force."
+                )
+            if not _is_git_clean(harn_repo):
+                raise RuntimeError(
+                    f"Refusing to sync: harness repository {harn_repo} has uncommitted changes. "
+                    "Commit or stash changes before applying sync, or specify --force."
+                )
+
     for rel_path, auth in AUTHORITATIVE_SOURCES.items():
         cand_file = candidate_skill / rel_path
         harn_file = harness_skill / rel_path
@@ -124,16 +139,6 @@ def apply_directional_sync(
         if needs_sync:
             show_diff(src, dst, rel_path)
             if apply:
-                if force:
-                    print(
-                        f"WARNING: --force specified: bypassing clean destination repository check on {dst_repo_root}!",
-                        file=sys.stderr,
-                    )
-                elif not _is_git_clean(dst_repo_root):
-                    raise RuntimeError(
-                        f"Refusing to sync to dirty destination repository {dst_repo_root}. "
-                        "Commit or stash changes before applying sync, or specify --force."
-                    )
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src, dst)
                 print(f"SYNC APPLIED: {rel_path} copied from {src_repo_name} (Authority) to {dst_repo_name} (Mirror)")
