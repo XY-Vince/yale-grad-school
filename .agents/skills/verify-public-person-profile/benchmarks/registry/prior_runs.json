@@ -13,6 +13,7 @@
       "seal_sha256": null,
       "evaluation_result_rel_path": "ledger/agent-blind-v1.result.json",
       "evaluation_result_sha256": "59d2e940182891c343906ea9022e0c5f4d98d387b57e092ec18e54639e8777e4",
+      "exclusion_reason": "historical_evaluation_probe",
       "terminal_status": "execution_failed"
     },
     {
@@ -27,6 +28,7 @@
       "seal_sha256": null,
       "evaluation_result_rel_path": null,
       "evaluation_result_sha256": null,
+      "exclusion_reason": "curation_aborted_pool_proposal",
       "terminal_status": "curation_aborted"
     },
     {
@@ -41,6 +43,7 @@
       "seal_sha256": "8107fc6ce695c4db0a674e60a7cc378e877843d81e8bc0acb5fe90e6ccd5f6d8",
       "evaluation_result_rel_path": null,
       "evaluation_result_sha256": null,
+      "exclusion_reason": "sealed_curation_aborted_execution",
       "terminal_status": "execution_failed"
     },
     {
@@ -55,6 +58,7 @@
       "seal_sha256": "9fe68f62f421b832f82326e18fd8bb8164bfd310fb40c5f3106e41466698e6f5",
       "evaluation_result_rel_path": null,
       "evaluation_result_sha256": null,
+      "exclusion_reason": "sealed_curation_one_shot_consumed",
       "terminal_status": "execution_failed"
     }
   ]
