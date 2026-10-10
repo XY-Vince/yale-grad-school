@@ -1,0 +1,22 @@
+{
+  "run_id": "RUN-YAO-SUN-RECALL-V5-1",
+  "run_outcome": "completed",
+  "run_fingerprint": "2812012932211e0e5386be0cc94de5390eb6db0b8d1d1faeb4b085c5e1d405d9",
+  "tool_version": "verify-public-person-profile/1.0.0-recall-pipeline",
+  "model_name": "recall_investigation_pipeline",
+  "query_budget": 20,
+  "queries_executed": 14,
+  "pages_fetched": 12,
+  "crawl_errors": [
+    "Search endpoint html.duckduckgo.com returned HTTP 202 (Bot detection challenge)",
+    "Direct HTTPS fetch to surveydatascience.isr.umich.edu returned HTTP 403 (Cloudflare WAF; resolved via archive snapshot)",
+    "Direct HTTPS fetch to aapor.org returned HTTP 403 (Cloudflare WAF; resolved via conference program snapshot)",
+    "Direct HTTPS fetch to pubmed.ncbi.nlm.nih.gov returned HTTP 403 (Incapsula WAF; resolved via NCBI E-utilities API)"
+  ],
+  "abstention_records": [],
+  "target_prior": null,
+  "enable_target_prior": false,
+  "prior_affinity_scores": null,
+  "prior_thresholds": null,
+  "execution_time_seconds": 0.009
+}

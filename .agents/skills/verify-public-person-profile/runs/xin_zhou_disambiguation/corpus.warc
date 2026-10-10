@@ -1,0 +1,64 @@
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:1a29fd08-2369-47f9-a933-cb77f0f40831>
+WARC-Target-URI: https://cira.yale.edu/people/xin-zhou-phd
+WARC-Date: 2026-09-10T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 919
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 839
+
+<!DOCTYPE html>
+<html>
+<head><title>Xin Zhou, Ph.D. | CIRA</title></head>
+<body>
+<h1>Xin Zhou, Ph.D.</h1>
+<p>Roles: Assistant Professor of Biostatistics, Yale School of Public Health</p>
+<p>Biography: Dr. Xin Zhou is an Assistant Professor in the Department of Biostatistics at the Yale School of Public Health. He received his Ph.D. in Biostatistics from the University of North Carolina at Chapel Hill in 2015. Prior to arriving at Yale, Dr. Zhou was a Postdoctoral Fellow in the Departments of Biostatistics and Epidemiology at Harvard T.H. Chan School of Public Health. His research is focused on statistical and machine learning methods in precision medicine, cluster randomized trials, and high dimensional data analysis. He is affiliated with the Center for Interdisciplinary Research on AIDS at Yale University.</p>
+</body>
+</html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:7bb7cb1f-f426-4789-bddd-6aa7026c879f>
+WARC-Target-URI: https://github.com/xinzhoubiostat
+WARC-Date: 2026-09-10T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 318
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 238
+
+<!DOCTYPE html>
+<html>
+<head><title>xinzhoubiostat (Xin Zhou) · GitHub</title></head>
+<body>
+<p>Xin Zhou is an Assistant Professor of Biostatistics at Yale University and developer of biostatistical software swdpower.</p>
+</body>
+</html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:95886827-4c47-41d2-ac76-ad59e0c7d0e3>
+WARC-Target-URI: https://medicine.yale.edu/profile/xin-zhou19/
+WARC-Date: 2026-09-10T00:00:00Z
+Content-Type: application/http; msgtype=response
+Content-Length: 681
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 601
+
+<!DOCTYPE html>
+<html>
+<head><title>Xin Zhou, PhD | Yale School of Medicine</title></head>
+<body>
+<h1>Xin Zhou, PhD</h1>
+<p>Position: Associate Research Scientist, Section of Infectious Diseases, Department of Internal Medicine, Yale School of Medicine.</p>
+<p>Biography: Dr. Xin Zhou is a junior faculty member in the Yale School of Medicine AIDS Program. He received his Ph.D. in Communication from SUNY at Albany. His research investigates the intersection of health communication, communication technology, user engagement with mHealth technologies, and health behavior change.</p>
+</body>
+</html>
+

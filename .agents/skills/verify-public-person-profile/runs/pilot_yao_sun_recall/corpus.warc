@@ -1,0 +1,168 @@
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:e847a0a2-8b4f-4a9f-9392-3c9027524369>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://www.linkedin.com/posts/emma-zang-72245436_exciting-news-from-yales-zcafe-were-thrilled-activity-7462567624812716032-hI9k
+Content-Type: application/http; msgtype=response
+Content-Length: 481
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 401
+
+<html><body><article><div class='post-content'>Exciting news from Yale's Z-CAFE! We're thrilled to welcome Yao Sun as a predoctoral fellow. Yao Sun holds a Master's degree in Survey Methodology from the University of Michigan and a Bachelor of Science in Sociology from the University of Wisconsin-Madison. Yao Sun will be joining the lab in New Haven at Yale University.</div></article></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:dd6234b4-7cb5-4140-af53-a1c75e2db6c8>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://www.linkedin.com/in/yao-sun-9955061b3
+Content-Type: application/http; msgtype=response
+Content-Length: 329
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 249
+
+<html><body><section class='profile-summary'><h1>Yao Sun</h1><p>Yao Sun is a Predoctoral Fellow at Yale University in the Z-CAFE lab. Previously Yao Sun was a Graduate Student Research Assistant at University of Michigan.</p></section></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:1920cffe-ccac-4bce-9135-9b0c8f3f513a>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://surveydatascience.isr.umich.edu/people/students/yao-sun/
+Content-Type: application/http; msgtype=response
+Content-Length: 499
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 419
+
+<html><body><main id='student-profile'><h1>Yao Sun</h1><p>Yao Sun is an M.S. student in the Michigan Program in Survey and Data Science at the University of Michigan. Yao Sun earned a Bachelor of Science in Sociology from the University of Wisconsin-Madison. Yao Sun previously worked as an undergraduate research assistant in the Department of Sociology at the University of Wisconsin-Madison.</p></main></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:1abe8c49-9367-47e1-afcf-3d7154e34ce0>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://aapor.org/conference/awards/roper-fellows-2026/
+Content-Type: application/http; msgtype=response
+Content-Length: 378
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 298
+
+<html><body><article class='award-announcement'><h2>2026 Awards</h2><p>The 2026 Burns Bud Roper Fellow Award was awarded to Yao Sun from the Michigan Program in Survey and Data Science at the Survey Research Center, Institute for Social Research, University of Michigan.</p></article></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:4c72a495-a4a4-4e18-895d-0f0c3ff79a83>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://isr.umich.edu/news-events/presentations/multilingual-llm-survey-2025/
+Content-Type: application/http; msgtype=response
+Content-Length: 402
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 322
+
+<html><body><div class='presentation-summary'><p>Yao Sun presented research on evaluating GPT for multilingual survey translation and adaptation at the AAPOR conference. Yao Sun served as a research assistant for the Study of Mindful Aging: Relationships and Thinking at the University of Michigan.</p></div></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:6552dcd2-12de-489b-813a-b041901f10bf>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://honors.umich.edu/programs/2021-honors-convocation.pdf
+Content-Type: application/http; msgtype=response
+Content-Length: 305
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 225
+
+<html><body><div class='convocation-program'><p>Derek Teen-Yao Sun was recognized at the University of Michigan Honors Convocation as an undergraduate student in the Stephen M. Ross School of Business.</p></div></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:5702b584-51f3-4459-8dfe-5721dce3b184>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://api.brokercheck.finra.org/search/individual/7569730
+Content-Type: application/http; msgtype=response
+Content-Length: 340
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 260
+
+{"individualId": 7569730, "firstName": "Derek", "middleName": "Teen-Yao", "lastName": "Sun", "summary": "Derek Teen-Yao Sun, CRD 7569730, was employed by Guggenheim Securities, LLC in New York, NY from August 2023 to July 2025 as a registered representative."}
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:923f1982-decb-41a4-aef2-7ea1dd05f96a>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=37142791&retmode=xml
+Content-Type: application/http; msgtype=response
+Content-Length: 317
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 237
+
+<xml><article><authors>Yao Sun co-authored research from the Zhejiang University School of Medicine, collaborating with researchers at the University of Michigan Medical School on STING-mediated innate immunity.</authors></article></xml>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:59a5dc5c-8e3f-4150-b205-1c8e17997d2c>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://www.ucsfbenioffchildrens.org/find-a-doctor/yao-sun-md-phd
+Content-Type: application/http; msgtype=response
+Content-Length: 236
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 156
+
+<html><body><p>Dr. Yao Sun is a physician and professor employed by UCSF Benioff Children's Hospital, serving as the Chief of Neonatology.</p></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:a4be9067-a653-4399-b5a0-b6d550167535>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://en.uestc.edu.cn/people/yao-sun
+Content-Type: application/http; msgtype=response
+Content-Length: 263
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 183
+
+<html><body><p>Yao Sun is a professor at the University of Electronic Science and Technology of China, specializing in wireless communications and semantic networks.</p></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:84605af2-71c3-48e3-9a7e-52b77bf8a27a>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://humanities.njit.edu/people/ysun
+Content-Type: application/http; msgtype=response
+Content-Length: 241
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 161
+
+<html><body><p>Yao Sun is an assistant professor in the Department of Humanities and Social Sciences at the New Jersey Institute of Technology.</p></body></html>
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:9f9c1f79-c9d6-4143-9c60-946acf1304e1>
+WARC-Date: 2026-10-10T12:00:00Z
+WARC-Target-URI: https://www.me.psu.edu/autodrive/team-members.aspx
+Content-Type: application/http; msgtype=response
+Content-Length: 241
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 161
+
+<html><body><p>Yao Sun is an engineering student affiliated with Pennsylvania State University participating in the SAE AutoDrive Challenge II.</p></body></html>
+

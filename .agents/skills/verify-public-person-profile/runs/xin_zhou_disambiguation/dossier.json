@@ -1,0 +1,11 @@
+{
+  "dossier_id": "DOS-XZ-DISAMB",
+  "candidate_entity_id": null,
+  "proposed_cluster_id": null,
+  "statements": [],
+  "ambiguous_candidates": [
+    "CAND-0cac1cf8cc7d",
+    "CAND-18f108549e50"
+  ],
+  "generated_at": "2026-09-12T12:55:37.061042Z"
+}

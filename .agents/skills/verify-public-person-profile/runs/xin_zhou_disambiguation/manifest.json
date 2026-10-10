@@ -1,0 +1,13 @@
+{
+  "run_id": "RUN-DISAMB-SYNTHETIC",
+  "run_outcome": "ambiguous_identity",
+  "run_fingerprint": "e96d794b96026c7cc8a0380c89499b213d232b46cb3efaf1c11a87a2748b5701",
+  "tool_version": "verify-public-person-profile/1.0.0",
+  "model_name": "deterministic_pipeline",
+  "query_budget": 15,
+  "queries_executed": 3,
+  "pages_fetched": 3,
+  "crawl_errors": [],
+  "abstention_records": [],
+  "execution_time_seconds": 0.12
+}

@@ -23,11 +23,12 @@ __pycache__/
 *.class
 .pytest_cache/
 
-# Skill and runner artifacts
-runs/
-scratch/
-.agents/skills/verify-public-person-profile/runs/
-.agents/skills/verify-public-person-profile/scratch/
+/runs/
+/scratch/
+/.agents/skills/verify-public-person-profile/runs/*
+!/.agents/skills/verify-public-person-profile/runs/xin_zhou_disambiguation/
+!/.agents/skills/verify-public-person-profile/runs/pilot_yao_sun_recall/
+/.agents/skills/verify-public-person-profile/scratch/
 
 # Binaries and archives
 *.zip

@@ -1,0 +1,97 @@
+{
+  "dossier_id": "DOS-YAO-SUN-HIGH-CONFIDENCE-01",
+  "candidate_entity_id": "CAND-01",
+  "proposed_cluster_id": "CLUST-01",
+  "statements": [
+    {
+      "statement_id": "STMT-f38bb188",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: predoctoral fellow (谓词: holds_position)",
+      "backed_claim_ids": [
+        "CLM-01"
+      ]
+    },
+    {
+      "statement_id": "STMT-4fb006cb",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: Z-CAFE (谓词: affiliated_with)",
+      "backed_claim_ids": [
+        "CLM-02"
+      ]
+    },
+    {
+      "statement_id": "STMT-4bb1a2ac",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: Yale University (谓词: employed_by)",
+      "backed_claim_ids": [
+        "CLM-03"
+      ]
+    },
+    {
+      "statement_id": "STMT-c7943a3c",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: University of Michigan (谓词: affiliated_with)",
+      "backed_claim_ids": [
+        "CLM-04"
+      ]
+    },
+    {
+      "statement_id": "STMT-abf6a7a2",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: University of Wisconsin-Madison (谓词: graduated_from)",
+      "backed_claim_ids": [
+        "CLM-05"
+      ]
+    },
+    {
+      "statement_id": "STMT-4e34f96f",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: Bachelor of Science in Sociology (谓词: received_degree)",
+      "backed_claim_ids": [
+        "CLM-06"
+      ]
+    },
+    {
+      "statement_id": "STMT-2223aa3e",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: Michigan Program in Survey and Data Science (谓词: affiliated_with)",
+      "backed_claim_ids": [
+        "CLM-07"
+      ]
+    },
+    {
+      "statement_id": "STMT-becfd83f",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: Burns Bud Roper Fellow Award (谓词: awarded_honor)",
+      "backed_claim_ids": [
+        "CLM-08"
+      ]
+    },
+    {
+      "statement_id": "STMT-cbde335f",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: Institute for Social Research (谓词: affiliated_with)",
+      "backed_claim_ids": [
+        "CLM-09"
+      ]
+    },
+    {
+      "statement_id": "STMT-7bcbebb9",
+      "section": "当前职位与核心教育履历 (Current Role & Education)",
+      "rendered_text": "已验证公开事实: research assistant (谓词: holds_position)",
+      "backed_claim_ids": [
+        "CLM-10"
+      ]
+    }
+  ],
+  "ambiguous_candidates": [
+    "CAND-01",
+    "CAND-02",
+    "CAND-03",
+    "CAND-04",
+    "CAND-05",
+    "CAND-06",
+    "CAND-07"
+  ],
+  "generated_at": "2026-10-10T15:27:57.483712Z"
+}
