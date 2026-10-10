@@ -1,1 +1,3 @@
 *.warc -whitespace
+*.pdf binary
+investigations/**/raw_sources/* -whitespace
