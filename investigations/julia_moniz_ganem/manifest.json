@@ -1,0 +1,51 @@
+{
+  "bundle_version": "1.0",
+  "created_at": "2026-10-10T23:23:34.062735+00:00",
+  "bundle_name": "Julia Moniz Ganem Dynamic Investigation Bundle",
+  "target_name": "Julia Moniz Ganem",
+  "run_outcome": "COMPLETED",
+  "files": {
+    "verified_claims.jsonl": {
+      "byte_size": 1990,
+      "sha256": "fdcf9def63f59b1f01d151db9072b795d66bda980c393aadc77e19e904fe777a"
+    },
+    "corroborated_leads.jsonl": {
+      "byte_size": 492,
+      "sha256": "f5b12ec16ce64063e8fe7caabffb25a72a8b5ca84c560d6173f3daf6752b3da0"
+    },
+    "source_inventory.jsonl": {
+      "byte_size": 1927,
+      "sha256": "43031b5ba0706c6bbf4d1211b678d710b6949b344c869e950e5954a8db499f09"
+    },
+    "recall_report.md": {
+      "byte_size": 4682,
+      "sha256": "32745751798295a2f918f1f091520c51ddf3f935328d7b2d15381778440f15bf"
+    },
+    "open_questions.jsonl": {
+      "byte_size": 453,
+      "sha256": "72cda4268a6a9878cfffbba30f096d1762fc9cb4e92ca9aff2ec606f1808b646"
+    },
+    "dossier.json": {
+      "byte_size": 3033,
+      "sha256": "b930927cb5156f97c9570a1ec677113750cbb12f8e0cdd82151d460a2c7313a9"
+    },
+    "query_logs.jsonl": {
+      "byte_size": 2155,
+      "sha256": "65e59869c90342f0a40b84f90b06db0e57d71dd982b2bb276cb21e21fca7cc3a"
+    },
+    "raw_sources/crossref_works_julia_moniz_ganem.json": {
+      "byte_size": 32767,
+      "sha256": "ef39186c8d5a93bb5ca2526f7571b5cf44aec32c80da4d8262293dabe52a48a1"
+    },
+    "raw_sources/pubmed_efetch_41856594.xml": {
+      "byte_size": 25889,
+      "sha256": "77d3959135d519ea5c26b041e9a8ea38400669349c7c9cea2b9e71a1d51e8372"
+    },
+    "raw_sources/pubmed_efetch_42780177.xml": {
+      "byte_size": 4800,
+      "sha256": "ef8e775afa56c5499532541c6da652516e9c84637d8f5f594e9b64323695e615"
+    }
+  },
+  "queries_executed": 7,
+  "execution_time_seconds": 3.541
+}

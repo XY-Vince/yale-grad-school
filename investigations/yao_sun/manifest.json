@@ -1,0 +1,105 @@
+{
+  "bundle_version": "1.0",
+  "created_at": "2026-10-10T23:03:17.358443+00:00",
+  "bundle_name": "Yao Sun Investigation Bundle (Evidence-Grounded)",
+  "target_name": "Yao Sun",
+  "run_outcome": "COMPLETED",
+  "files": {
+    "build_dossier_json.py": {
+      "byte_size": 6823,
+      "sha256": "bc5f9c7ea5a7c3945dbe852aeafda88c83e6d6245457bcce05ef6589f3608776"
+    },
+    "build_ledgers.py": {
+      "byte_size": 13036,
+      "sha256": "9f6c446e804bc172445ecdcf9a31d8f616e8f2602e0016c88146bc5c7a837d12"
+    },
+    "corroborated_leads.jsonl": {
+      "byte_size": 1891,
+      "sha256": "23f257ea7922af16fe357f449bb43608bf5e11f4a1af47c8855674be7a001e0c"
+    },
+    "dossier.json": {
+      "byte_size": 5339,
+      "sha256": "8853dc25f385dbfb88f0d568198c89bebb739a5e5723c73a4d659bfb6ccd6a35"
+    },
+    "generate_report.py": {
+      "byte_size": 22098,
+      "sha256": "ea825440c097149e6edb320eb437b2b994399c335cc9f82ea07936fd688ffe2d"
+    },
+    "open_questions.jsonl": {
+      "byte_size": 1088,
+      "sha256": "1b52f7e8674bc88d028376f9bdec4d9401c3a9c82d4cf93ba89877b5dfad59de"
+    },
+    "query_logs.jsonl": {
+      "byte_size": 1780,
+      "sha256": "043a828c439c4c32aa608b5514fbea1c41433ca0f8aa373a3daaad6d5afef112"
+    },
+    "raw_sources/aapor_80th_recap.html": {
+      "byte_size": 91519,
+      "sha256": "79f6debb7fd51c3163af05f677bf2b5e5332d7d1b5c89069f6b2b2606ab29d8c"
+    },
+    "raw_sources/aapor_81st_recap.html": {
+      "byte_size": 95570,
+      "sha256": "131c7d7043746c968aa49e53f9cbc5a4c4654c74595bd5f2829d6ac0cc8a64a8"
+    },
+    "raw_sources/aapor_past_roper.html": {
+      "byte_size": 72922,
+      "sha256": "46e94b58b88eddca002789a39f26f90c34bfc1bdedbaf2b7c34b8075b7b09578"
+    },
+    "raw_sources/emma_zang_linkedin_post.html": {
+      "byte_size": 91269,
+      "sha256": "6dda79385b3353bc663f6ec41324428fc197447df82d3c2d0f035115122fe8c6"
+    },
+    "raw_sources/finra_brokercheck_7569730.json": {
+      "byte_size": 1764,
+      "sha256": "4b34204916a475a94166d00013689a6707a596ba4566eb015ca6e5d7363e560b"
+    },
+    "raw_sources/google_search_wisconsin.html": {
+      "byte_size": 93254,
+      "sha256": "067b23a994db765621803e34ec763a5784751eb5c9d34bb36be2d605a34089bc"
+    },
+    "raw_sources/mapor_2025_program.pdf": {
+      "byte_size": 9084229,
+      "sha256": "c835cbe8b16e23ca8f8a22ed63f79e3c1a1b7561edbdc07c2da519dd5dc00f48"
+    },
+    "raw_sources/pubmed_efetch_37142791.xml": {
+      "byte_size": 48186,
+      "sha256": "c73754cfa2e4ed4443418422db3f732734e9eccc5e7c76eb579b66e4069e1b4a"
+    },
+    "raw_sources/src_umich_aapor_2025_archive.html": {
+      "byte_size": 130,
+      "sha256": "d729d882df8b2245aef58d00c272a6f29efb7be049e466b6cc26805c1190c551"
+    },
+    "raw_sources/surveydatascience_student_profile_waf403.html": {
+      "byte_size": 42846,
+      "sha256": "f15840fcce4021f8a4826809fbef852a73563ad1133b08a409790b298783223d"
+    },
+    "raw_sources/uw_sociology_search_yao_sun.html": {
+      "byte_size": 222313,
+      "sha256": "238db7bff32f7d90d2d2c8082656c9eee5614b4101fd14506fd860c8ea1479bc"
+    },
+    "raw_sources/yale_emma_zang_profile.html": {
+      "byte_size": 34690,
+      "sha256": "677d8db1e4a9958ccb29b74f2beea78f048fb0bef20ea6edcda5f47be045e3b1"
+    },
+    "raw_sources/yale_zcafe_homepage.html": {
+      "byte_size": 48046,
+      "sha256": "fa4ece5781839924d2c43248adcb0334da25e1a5876ef58c22f7f16c72f2e7da"
+    },
+    "raw_sources/yao_sun_linkedin_profile.html": {
+      "byte_size": 212004,
+      "sha256": "90dc620a9ffe0cb513838ed075109ca88c86bc6f74cba3605273b9b48a074520"
+    },
+    "recall_report.md": {
+      "byte_size": 17774,
+      "sha256": "af5b817d4260b5cadd678e5bb06e1b35bb32260d38e7f5a70a8abf67b52be996"
+    },
+    "source_inventory.jsonl": {
+      "byte_size": 10713,
+      "sha256": "0769a1f51b1a104d6d1cd6ece48252d59cf43eae6af18d875102874027679a10"
+    },
+    "verified_claims.jsonl": {
+      "byte_size": 6502,
+      "sha256": "f91ffda39884b4f67bab9b2b291ed126bfada41a158351c6e74a359f2d484767"
+    }
+  }
+}

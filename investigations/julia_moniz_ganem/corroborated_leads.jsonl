@@ -1,0 +1,2 @@
+{"lead_id": "LEAD-01", "candidate_id": "CAND-01", "confidence_tier": "HIGH_CONFIDENCE_LEAD", "description": "Target entity Julia Moniz Ganem exhibits verified scholarly publication activity in scientific registries.", "corroborating_source_ids": ["SRC-01"]}
+{"lead_id": "LEAD-02", "candidate_id": "CAND-01", "confidence_tier": "MODERATE_CONFIDENCE_LEAD", "description": "Domain and institutional signals correlate with clues: Public Health; Vaccine.", "corroborating_source_ids": ["SRC-01"]}

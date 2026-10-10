@@ -1,4 +1,10 @@
 """
+[DEPRECATED - DO NOT USE IN PRODUCTION OR AUDIT PATH]
+This hardcoded script is retired per Round 1 audit.
+All investigation bundles must be generated via the parameterized pipeline
+and verified via verify_investigation_bundle.py.
+"""
+"""
 Builds authentic 3-tier ledgers for Yao Sun investigation:
 1. Verified Claims (anchored in raw bytes of downloaded sources)
 2. Corroborated Leads (supported across multi-source institutional records)

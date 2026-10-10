@@ -1,4 +1,10 @@
 """
+[DEPRECATED - DO NOT USE IN PRODUCTION OR AUDIT PATH]
+This hardcoded script is retired per Round 1 audit.
+All investigation bundles must be generated via the parameterized pipeline
+and verified via verify_investigation_bundle.py.
+"""
+"""
 Generates the comprehensive, evidence-based profile report for Yao Sun.
 """
 

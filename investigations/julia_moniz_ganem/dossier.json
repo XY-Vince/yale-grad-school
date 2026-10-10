@@ -1,0 +1,73 @@
+{
+  "dossier_id": "DOS-1a4df4bf",
+  "target_name": "Julia Moniz Ganem",
+  "investigation_status": "PLAUSIBLE_PRIMARY_MATCH_WITH_HOMONYMS",
+  "primary_candidate_id": "CAND-01",
+  "statements": [
+    {
+      "statement_id": "STMT-VCLM-01",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-01] Julia Moniz Ganem affiliated_with 'Section of Pediatric Infectious Diseases, Department of Pediatrics, Yale School of Medicine, New Haven, Connecticut' (状态: AS_OF_PUBLICATION)",
+      "backed_claim_ids": [
+        "VCLM-01"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-02",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-02] Julia Moniz Ganem authored_work 'Real-World Effectiveness of Maternal RSVpreF Vaccination and Durability of Infant Protection.' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-02"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-03",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-03] Julia Moniz Ganem authored_work 'Real-world effectiveness of perinatal RSV immunoprophylaxis: protocol for a test-negative case-control study.' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-03"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-04",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-03] Julia Moniz Ganem affiliated_with 'Yale School of Medicine Department of Pediatrics, New Haven, Connecticut, USA.' (状态: AS_OF_PUBLICATION)",
+      "backed_claim_ids": [
+        "VCLM-04"
+      ]
+    }
+  ],
+  "candidate_matrix": [
+    {
+      "candidate_id": "CAND-01",
+      "canonical_name": "Julia Moniz Ganem",
+      "affiliation": "Section of Pediatric Infectious Diseases, Department of Pediatrics, Yale School of Medicine, New Haven, Connecticut",
+      "match_status": "PRIMARY_TARGET",
+      "differentiation_rationale": "Matches provided institutional and topical clues.",
+      "evidence_citations": [
+        "VCLM-01"
+      ]
+    },
+    {
+      "candidate_id": "CAND-02",
+      "canonical_name": "Julia Moniz Ganem",
+      "affiliation": "Biomedical / Academic Institution",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Distinct institutional affiliation or disciplinary focus (Biomedical / Academic Institution).",
+      "evidence_citations": [
+        "VCLM-02"
+      ]
+    },
+    {
+      "candidate_id": "CAND-03",
+      "canonical_name": "Julia Moniz Ganem",
+      "affiliation": "Yale School of Medicine Department of Pediatrics, New Haven, Connecticut, USA.",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Distinct institutional affiliation or disciplinary focus (Yale School of Medicine Department of Pediatrics, New Haven, Connecticut, USA.).",
+      "evidence_citations": [
+        "VCLM-03",
+        "VCLM-04"
+      ]
+    }
+  ]
+}

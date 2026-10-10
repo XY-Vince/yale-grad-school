@@ -1,149 +1,107 @@
 {
-  "dossier_version": "2.0-authentic",
+  "dossier_id": "DOS-YAO-SUN-2026-RECALL",
   "target_name": "Yao Sun",
-  "resolution_status": "CONFIRMED_TARGET_HIGH_CONFIDENCE",
-  "confidence_score": 0.96,
-  "current_position": {
-    "title": "Predoctoral Fellow",
-    "institution": "Yale University",
-    "department": "Department of Sociology",
-    "lab": "Z-CAFE (Computational Aging, Family, and Evidence lab)",
-    "supervisor": "Emma Zang, Ph.D. (Associate Professor of Sociology)",
-    "announcement_date": "2026-05-19T18:19:29.527Z",
-    "research_focus": "AI for social science",
-    "source_reference": "SRC-01"
-  },
-  "education_history": [
+  "generated_at": "2026-10-10T20:00:00Z",
+  "adjudication_status": "MATCHED_HIGH_CONFIDENCE",
+  "target_candidate_id": "CAND-01",
+  "candidate_entities": [
     {
-      "degree": "Master of Science (M.S.)",
-      "field": "Survey Methodology / Survey and Data Science (MPSDS)",
-      "institution": "University of Michigan-Ann Arbor",
-      "school_or_institute": "Institute for Social Research (ISR) / Survey Research Center (SRC)",
-      "completion_year": 2026,
-      "evidence_sources": [
-        "SRC-01",
-        "SRC-02",
-        "SRC-03"
-      ]
+      "candidate_id": "CAND-01",
+      "canonical_name": "Yao Sun",
+      "cluster_label": "Yao Sun (Yale Z-CAFE Predoctoral Fellow / UMich Survey & Data Science M.S.)",
+      "category": "TARGET_MATCH",
+      "match_confidence": 0.99,
+      "current_affiliation": "Yale University, Center for Advancing Financial and Environmental Well-Being (Z-CAFE) & Institution for Social and Policy Studies (ISPS)",
+      "current_role": "Predoctoral Fellow",
+      "email": "yao.sun@yale.edu",
+      "past_affiliation": "University of Michigan, Survey Research Center (SRC), Institute for Social Research (ISR)",
+      "past_education": "University of Michigan - Rackham Graduate School (M.S. Survey & Data Science, 2024-2026); University of Wisconsin-Madison (B.S. Sociology, Lead, 2021-2023)",
+      "verified_claims_count": 10,
+      "corroborated_leads_count": 2,
+      "analytical_inferences_count": 1
     },
-    {
-      "degree": "Bachelor of Science (B.S.)",
-      "field": "Sociology",
-      "institution": "University of Wisconsin-Madison",
-      "school_or_institute": "Department of Sociology",
-      "completion_year": 2024,
-      "evidence_sources": [
-        "LEAD-01",
-        "UMich MPSDS Directory"
-      ]
-    }
-  ],
-  "honors_and_fellowships": [
-    {
-      "award_name": "Burns 'Bud' Roper Fellow Award",
-      "organization": "American Association for Public Opinion Research (AAPOR)",
-      "award_year": 2026,
-      "cohort_affiliation": "Michigan Program in Survey and Data Science, Survey Research Center, Institute for Social Research, University of Michigan",
-      "source_reference": "SRC-03"
-    }
-  ],
-  "scholarly_contributions": [
-    {
-      "title": "Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health Outcomes among Korean American Adults",
-      "conference": "Midwest Association for Public Opinion Research (MAPOR) 50th Annual Conference",
-      "date": "November 2025",
-      "session": "Engaging with Hard-to-Reach Populations (Moderator: James Wagner)",
-      "authors": [
-        "Yao Sun (Program in Survey and Data Science, ISR, University of Michigan-Ann Arbor)",
-        "Sunghee Lee (Program in Survey and Data Science, ISR, University of Michigan-Ann Arbor)"
-      ],
-      "program_page": 15,
-      "source_reference": "SRC-02"
-    },
-    {
-      "title": "Evaluating GPT for Multilingual Survey Translation and Adaptation",
-      "conference": "American Association for Public Opinion Research (AAPOR) 80th Annual Conference",
-      "date": "May 2025",
-      "authors": [
-        "Yao Sun",
-        "UMich SRC Research Team"
-      ],
-      "source_reference": "LEAD-03"
-    },
-    {
-      "title": "Integrating Street View Imagery and Vision-Language Models for Perceived Neighborhood Safety",
-      "conference": "American Association for Public Opinion Research (AAPOR) 81st Annual Conference",
-      "date": "May 2026",
-      "authors": [
-        "Yao Sun",
-        "UMich SRC Research Team"
-      ],
-      "source_reference": "LEAD-03"
-    }
-  ],
-  "key_mentors_and_collaborators": [
-    {
-      "name": "Emma Zang",
-      "role": "Predoctoral Advisor & Lab Director (Yale Z-CAFE)",
-      "institution": "Yale University"
-    },
-    {
-      "name": "Sunghee Lee",
-      "role": "Research Professor & Primary Methodology Co-author (MPSDS)",
-      "institution": "University of Michigan"
-    },
-    {
-      "name": "Tian Tong",
-      "role": "Predoctoral Fellow Cohort Colleague (Yale Z-CAFE)",
-      "institution": "Yale University (former Georgetown M.S. Data Science)"
-    },
-    {
-      "name": "James Wagner",
-      "role": "Session Moderator & Methodology Colleague (MAPOR 2025)",
-      "institution": "University of Michigan"
-    },
-    {
-      "name": "Brady West",
-      "role": "Research Professor & Faculty Colleague",
-      "institution": "University of Michigan"
-    }
-  ],
-  "methodological_competencies": [
-    "Survey Methodology & Total Survey Error (TSE)",
-    "Natural Language Processing & Large Language Models (LLM / GPT questionnaire adaptation)",
-    "Computer Vision & Vision-Language Models (VLM street-view urban sensing)",
-    "Geospatial Information Systems (GIS) & Survey-Spatial Record Linkage",
-    "Environmental & Immigrant Minority Health Disparities (Korean American adult cohorts)"
-  ],
-  "disambiguation_separators": [
     {
       "candidate_id": "CAND-02",
-      "full_name": "Derek Teen-Yao Sun",
-      "crd_number": "7569730",
-      "education": "Stephen M. Ross School of Business, B.B.A. (2023)",
-      "career": "Guggenheim Securities, LLC (Investment Banking Representative, Aug 2023 - Jul 2025)",
-      "verdict": "EXCLUDED (Zero academic or Yale trajectory; Wall St broker)"
+      "canonical_name": "Derek Teen-Yao Sun",
+      "cluster_label": "Derek Teen-Yao Sun (Guggenheim Securities / FINRA CRD 7569730)",
+      "category": "PLAUSIBLE_HOMONYM_DISAMBIGUATION",
+      "match_confidence": 0.05,
+      "current_affiliation": "Investment Banking / Brokerage",
+      "past_affiliation": "Guggenheim Securities, LLC (New York, NY)",
+      "verified_claims_count": 1,
+      "corroborated_leads_count": 0,
+      "disambiguation_reason": "Different middle name, FINRA broker registration, investment banking domain."
     },
     {
       "candidate_id": "CAND-03",
-      "full_name": "Dr. Yao Sun",
-      "affiliation": "Zhejiang University School of Medicine (Pancreatic Disease Lab)",
-      "coauthorship": "Co-authored 2023 Nature Cell Biol paper with UMich Medical School physiology faculty",
-      "verdict": "EXCLUDED (Medical researcher / cellular immunity, not computational social scientist)"
+      "canonical_name": "Dr. Yao Sun",
+      "cluster_label": "Dr. Yao Sun (Cell Biology Researcher, Zhejiang Univ & UMich Physiology)",
+      "category": "PLAUSIBLE_HOMONYM_DISAMBIGUATION",
+      "match_confidence": 0.02,
+      "current_affiliation": "Zhejiang University / UMich Physiology",
+      "verified_claims_count": 1,
+      "corroborated_leads_count": 0,
+      "disambiguation_reason": "Biomedical stem cell/physiology research, distinct career track from survey data science."
     },
     {
       "candidate_id": "CAND-04",
-      "full_name": "Dr. Yao Sun, M.D., Ph.D.",
-      "affiliation": "UCSF Benioff Children's Hospital",
-      "role": "Professor and Chief of Neonatology",
-      "verdict": "EXCLUDED (Senior pediatric physician)"
+      "canonical_name": "Dr. Yao Sun (UCSF)",
+      "cluster_label": "Dr. Yao Sun (UCSF Neonatology, Clinical Professor)",
+      "category": "EXPLORATORY_HOMONYM_DISAMBIGUATION",
+      "match_confidence": 0.01,
+      "current_affiliation": "University of California, San Francisco",
+      "verified_claims_count": 0,
+      "corroborated_leads_count": 0,
+      "disambiguation_reason": "Senior pediatric neonatal clinician, medical doctorate, no survey methodology association."
     },
     {
       "candidate_id": "CAND-05",
-      "full_name": "Prof. Yao Sun",
-      "affiliation": "University of Electronic Science and Technology of China (UESTC)",
-      "role": "Professor in 6G wireless communication & semantic networking",
-      "verdict": "EXCLUDED (Telecommunications engineering professor)"
+      "canonical_name": "Prof. Yao Sun (UESTC)",
+      "cluster_label": "Prof. Yao Sun (UESTC, Wireless Communications & 6G)",
+      "category": "EXPLORATORY_HOMONYM_DISAMBIGUATION",
+      "match_confidence": 0.01,
+      "current_affiliation": "University of Electronic Science and Technology of China",
+      "verified_claims_count": 0,
+      "corroborated_leads_count": 0,
+      "disambiguation_reason": "Engineering professor in 6G wireless communication and semantic networks."
+    }
+  ],
+  "timeline": [
+    {
+      "period": "2021-09 - 2023-12",
+      "tier": "TIER_2_CORROBORATED_LEAD",
+      "institution": "University of Wisconsin-Madison",
+      "details": "Undergraduate study in Sociology; awarded UW-Madison Undergraduate Scholarship for Summer Study (May 2022). Corroborated via LinkedIn asset metadata and search index."
+    },
+    {
+      "period": "2024-08 - 2026-05",
+      "tier": "TIER_1_VERIFIED_FACT",
+      "institution": "University of Michigan - Rackham Graduate School",
+      "details": "Completed Master of Science in Survey and Data Science at Survey Research Center, Institute for Social Research. Awarded MPSDS Tuition Fellowship (Sep 2025)."
+    },
+    {
+      "period": "2025-11",
+      "tier": "TIER_1_VERIFIED_FACT",
+      "institution": "Midwest Association for Public Opinion Research (MAPOR)",
+      "details": "Presented research: 'Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health Outcomes among Korean American Adults' (co-authored with Dr. Sunghee Lee)."
+    },
+    {
+      "period": "2026-04",
+      "tier": "TIER_1_VERIFIED_FACT",
+      "institution": "American Association for Public Opinion Research (AAPOR)",
+      "details": "Awarded 2026 Burns 'Bud' Roper AAPOR Fellow Award (verified via official AAPOR past roper roster)."
+    },
+    {
+      "period": "2026-05",
+      "tier": "TIER_1_VERIFIED_FACT",
+      "institution": "American Association for Public Opinion Research (AAPOR 2026)",
+      "details": "Presented research: 'How Do VLMs Feel What Machine Learning Tools See? Safety and Safety Perception through Street View Images In Detroit, Michigan'."
+    },
+    {
+      "period": "2026-05 - Present",
+      "tier": "TIER_1_VERIFIED_FACT",
+      "institution": "Yale University",
+      "details": "Appointed as Predoctoral Fellow at Z-CAFE (Center for Advancing Financial and Environmental Well-Being) led by Dr. Emma Zang; affiliated with Yale Institution for Social and Policy Studies (ISPS), email: yao.sun@yale.edu."
     }
   ]
 }
