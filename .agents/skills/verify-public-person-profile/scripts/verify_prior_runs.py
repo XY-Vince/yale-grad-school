@@ -137,7 +137,7 @@ def verify_prior_runs(
     return len(errors) == 0, records, errors
 
 
-def verify_runtime_registry_integrity(path: Path) -> tuple[bool, str, int, str]:
+def verify_runtime_registry_integrity(path: Path, anchor_path: Path | None = None) -> tuple[bool, str, int, str]:
     if not path.is_file():
         return True, "not present (0 entries)", 0, "MISSING"
 
@@ -181,6 +181,20 @@ def verify_runtime_registry_integrity(path: Path) -> tuple[bool, str, int, str]:
     if declared_n is not None and declared_n != len(runs):
         return False, f"n_entries mismatch: expected {len(runs)}, got {declared_n}", len(runs), h
 
+    if anchor_path and anchor_path.is_file():
+        try:
+            anchor = json.loads(anchor_path.read_text(encoding="utf-8"))
+            anchored_n = anchor.get("n_entries", 0)
+            anchored_hash = anchor.get("latest_entry_hash")
+            if len(runs) < anchored_n:
+                return False, f"external anchor regression: {len(runs)} < anchored {anchored_n}", len(runs), h
+            if anchored_n > 0 and anchored_hash:
+                target_hash = runs[anchored_n - 1].get("entry_hash")
+                if target_hash != anchored_hash:
+                    return False, f"external anchor hash mismatch at entry {anchored_n}: expected {anchored_hash}, got {target_hash}", len(runs), h
+        except Exception as exc:
+            return False, f"failed to parse external anchor {anchor_path}: {exc}", len(runs), h
+
     return True, f"valid hash chain across {len(runs)} entries", len(runs), h
 
 
@@ -201,7 +215,8 @@ def main() -> int:
         )
     )
 
-    r_ok, r_msg, r_count, r_sha = verify_runtime_registry_integrity(runtime_reg_path)
+    anchor_path = skill_root / "benchmarks" / "registry" / "runtime_registry_anchor.json"
+    r_ok, r_msg, r_count, r_sha = verify_runtime_registry_integrity(runtime_reg_path, anchor_path=anchor_path)
 
     if args.check_runtime:
         print("Authority Source: Harness (canonical authoritative copy)")
