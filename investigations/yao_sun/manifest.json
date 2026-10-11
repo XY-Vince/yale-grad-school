@@ -1,7 +1,7 @@
 {
   "bundle_version": "1.0",
-  "created_at": "2026-10-10T23:03:17.358443+00:00",
-  "bundle_name": "Yao Sun Investigation Bundle (Evidence-Grounded)",
+  "created_at": "2026-10-11T02:04:58.101578+00:00",
+  "bundle_name": "Yao Sun Dynamic Investigation Bundle",
   "target_name": "Yao Sun",
   "run_outcome": "COMPLETED",
   "files": {
@@ -9,97 +9,99 @@
       "byte_size": 6823,
       "sha256": "bc5f9c7ea5a7c3945dbe852aeafda88c83e6d6245457bcce05ef6589f3608776"
     },
-    "build_ledgers.py": {
-      "byte_size": 13036,
-      "sha256": "9f6c446e804bc172445ecdcf9a31d8f616e8f2602e0016c88146bc5c7a837d12"
+    "discovery_results.jsonl": {
+      "byte_size": 5496,
+      "sha256": "c7034f59c73374a4086241a95d53f63199b1013b19d2981c3404ea902a66dc47"
+    },
+    "verified_claims.jsonl": {
+      "byte_size": 19511,
+      "sha256": "2a69e869b33309cd732b9581c3e8570cb28bc1254e24d986ed481c0c2d846ec0"
     },
     "corroborated_leads.jsonl": {
-      "byte_size": 1891,
-      "sha256": "23f257ea7922af16fe357f449bb43608bf5e11f4a1af47c8855674be7a001e0c"
-    },
-    "dossier.json": {
-      "byte_size": 5339,
-      "sha256": "8853dc25f385dbfb88f0d568198c89bebb739a5e5723c73a4d659bfb6ccd6a35"
+      "byte_size": 536,
+      "sha256": "8ec112868a01e2b71ed204deafe8fe3be0ee80ec11d3f91b13ed889144e48534"
     },
     "generate_report.py": {
       "byte_size": 22098,
       "sha256": "ea825440c097149e6edb320eb437b2b994399c335cc9f82ea07936fd688ffe2d"
     },
+    "source_inventory.jsonl": {
+      "byte_size": 5936,
+      "sha256": "52096e12aa76c1a3e496477259ec7c070b3e1e646439434bc4611e8c94422c25"
+    },
+    "recall_report.md": {
+      "byte_size": 15077,
+      "sha256": "0781021c5e5de387c856ccef3f0a469ff468582c12fc0e05d4e923c438942a65"
+    },
     "open_questions.jsonl": {
-      "byte_size": 1088,
-      "sha256": "1b52f7e8674bc88d028376f9bdec4d9401c3a9c82d4cf93ba89877b5dfad59de"
+      "byte_size": 442,
+      "sha256": "398c72bc777f2643e6fa715fb96a504089b100f578390c3093d08ce62afa1e36"
+    },
+    "dossier.json": {
+      "byte_size": 18720,
+      "sha256": "f9b5de096a804bc458ece1367ff5b44354f0dd47fd8d4e00b03792e98103a0de"
     },
     "query_logs.jsonl": {
-      "byte_size": 1780,
-      "sha256": "043a828c439c4c32aa608b5514fbea1c41433ca0f8aa373a3daaad6d5afef112"
+      "byte_size": 5052,
+      "sha256": "67a32b028c4228c29ea59a2c4bd9a08a772e93c2970df494d62689d13104aa53"
     },
-    "raw_sources/aapor_80th_recap.html": {
-      "byte_size": 91519,
-      "sha256": "79f6debb7fd51c3163af05f677bf2b5e5332d7d1b5c89069f6b2b2606ab29d8c"
+    "build_ledgers.py": {
+      "byte_size": 13036,
+      "sha256": "9f6c446e804bc172445ecdcf9a31d8f616e8f2602e0016c88146bc5c7a837d12"
     },
-    "raw_sources/aapor_81st_recap.html": {
-      "byte_size": 95570,
-      "sha256": "131c7d7043746c968aa49e53f9cbc5a4c4654c74595bd5f2829d6ac0cc8a64a8"
+    "__pycache__/generate_report.cpython-312.pyc": {
+      "byte_size": 23564,
+      "sha256": "b9918e7aa187b68327efe09c14990717522b97ecd64f722272d45c219518751d"
+    },
+    "__pycache__/build_ledgers.cpython-312.pyc": {
+      "byte_size": 8318,
+      "sha256": "ab384839d1ca16a9642e9157179deb3eafa6140eb2d6574445a68b291ccb25c8"
+    },
+    "__pycache__/build_dossier_json.cpython-312.pyc": {
+      "byte_size": 5493,
+      "sha256": "a3a9f5ca52858529a7fd7dbf752c4aa7b8f2f76b7bc7377d3278cde1ad8fd8d5"
+    },
+    "raw_sources/web_src-03_students_yao_sun.html": {
+      "byte_size": 43017,
+      "sha256": "3dcfe7622e053c53e8bfd7218325087ef8096322f88e90f84f8cd212ed9d1510"
+    },
+    "raw_sources/web_src-01_in_yao_sun_9955061b3.html": {
+      "byte_size": 211625,
+      "sha256": "594a69805294c2290df8c92f554422d165652462079944a64d7b86991fddfcea"
+    },
+    "raw_sources/crossref_works_yao_sun.json": {
+      "byte_size": 77787,
+      "sha256": "729f5ba95c983bdbaf89715a36a0432f34be37fe54b6c4c0d3b5641b4235aea6"
     },
     "raw_sources/aapor_past_roper.html": {
       "byte_size": 72922,
       "sha256": "46e94b58b88eddca002789a39f26f90c34bfc1bdedbaf2b7c34b8075b7b09578"
     },
-    "raw_sources/emma_zang_linkedin_post.html": {
-      "byte_size": 91269,
-      "sha256": "6dda79385b3353bc663f6ec41324428fc197447df82d3c2d0f035115122fe8c6"
+    "raw_sources/web_src-08_index.html": {
+      "byte_size": 212185,
+      "sha256": "9abe8b8b55c17d80ea0d95ea239727b949bbc866f1bd2828de5ec0ce94b7b560"
     },
-    "raw_sources/finra_brokercheck_7569730.json": {
-      "byte_size": 1764,
-      "sha256": "4b34204916a475a94166d00013689a6707a596ba4566eb015ca6e5d7363e560b"
+    "raw_sources/web_src-07_profile_ys86.html": {
+      "byte_size": 55638,
+      "sha256": "56aed4b9aad07f288c3bd2e87cd04f8980bd9c5d82a055d9bf276090b5be0a56"
     },
-    "raw_sources/google_search_wisconsin.html": {
-      "byte_size": 93254,
-      "sha256": "067b23a994db765621803e34ec763a5784751eb5c9d34bb36be2d605a34089bc"
-    },
-    "raw_sources/mapor_2025_program.pdf": {
-      "byte_size": 9084229,
-      "sha256": "c835cbe8b16e23ca8f8a22ed63f79e3c1a1b7561edbdc07c2da519dd5dc00f48"
-    },
-    "raw_sources/pubmed_efetch_37142791.xml": {
+    "raw_sources/web_src-09_entrez_eutils_efetch_fcgi.html": {
       "byte_size": 48186,
       "sha256": "c73754cfa2e4ed4443418422db3f732734e9eccc5e7c76eb579b66e4069e1b4a"
     },
-    "raw_sources/src_umich_aapor_2025_archive.html": {
-      "byte_size": 130,
-      "sha256": "d729d882df8b2245aef58d00c272a6f29efb7be049e466b6cc26805c1190c551"
+    "raw_sources/web_src-05_wp_content_uploads_2025_11_202.pdf": {
+      "byte_size": 9084229,
+      "sha256": "c835cbe8b16e23ca8f8a22ed63f79e3c1a1b7561edbdc07c2da519dd5dc00f48"
     },
-    "raw_sources/surveydatascience_student_profile_waf403.html": {
-      "byte_size": 42846,
-      "sha256": "f15840fcce4021f8a4826809fbef852a73563ad1133b08a409790b298783223d"
+    "raw_sources/web_src-02_posts_emma_zang_72245436_excit.html": {
+      "byte_size": 91270,
+      "sha256": "88b8bfea61ed30b20a6453bc5d9f0908b2b02d2d7845f9368e32e5f93b880fbb"
     },
-    "raw_sources/uw_sociology_search_yao_sun.html": {
+    "raw_sources/web_src-06_search_Yao_Sun.html": {
       "byte_size": 222313,
       "sha256": "238db7bff32f7d90d2d2c8082656c9eee5614b4101fd14506fd860c8ea1479bc"
-    },
-    "raw_sources/yale_emma_zang_profile.html": {
-      "byte_size": 34690,
-      "sha256": "677d8db1e4a9958ccb29b74f2beea78f048fb0bef20ea6edcda5f47be045e3b1"
-    },
-    "raw_sources/yale_zcafe_homepage.html": {
-      "byte_size": 48046,
-      "sha256": "fa4ece5781839924d2c43248adcb0334da25e1a5876ef58c22f7f16c72f2e7da"
-    },
-    "raw_sources/yao_sun_linkedin_profile.html": {
-      "byte_size": 212004,
-      "sha256": "90dc620a9ffe0cb513838ed075109ca88c86bc6f74cba3605273b9b48a074520"
-    },
-    "recall_report.md": {
-      "byte_size": 17774,
-      "sha256": "af5b817d4260b5cadd678e5bb06e1b35bb32260d38e7f5a70a8abf67b52be996"
-    },
-    "source_inventory.jsonl": {
-      "byte_size": 10713,
-      "sha256": "0769a1f51b1a104d6d1cd6ece48252d59cf43eae6af18d875102874027679a10"
-    },
-    "verified_claims.jsonl": {
-      "byte_size": 6502,
-      "sha256": "f91ffda39884b4f67bab9b2b291ed126bfada41a158351c6e74a359f2d484767"
     }
-  }
+  },
+  "queries_executed": 17,
+  "execution_time_seconds": 10.592
 }

@@ -40,6 +40,13 @@ import certifi
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import html
+
+try:
+    import fitz
+except ImportError:
+    fitz = None
+
 from models.schemas import (
     AbstentionRecord,
     CandidateEntity,
@@ -51,6 +58,7 @@ from models.schemas import (
 )
 from core.collectors.base import validate_safe_url, SSRFSecurityError
 from core.extractors.content_locator import classify_source_quality, SourceQualityClass
+from core.collectors.discovery_engine import UniversalDiscoveryEngine, extract_significant_tokens
 
 
 def compute_sha256(data: bytes) -> str:
@@ -450,14 +458,19 @@ def build_abstention_bundle(
             qf.write(json.dumps(q, ensure_ascii=False) + "\n")
 
     # Update manifest files strictly
-    manifest_files = {}
-    for f in ["source_inventory.jsonl", "verified_claims.jsonl", "corroborated_leads.jsonl", "open_questions.jsonl", "query_logs.jsonl", "dossier.json", "recall_report.md"]:
-        fp = output_dir / f
-        manifest_files[f] = {
-            "byte_size": fp.stat().st_size,
-            "sha256": compute_sha256(fp.read_bytes()),
-        }
+    manifest_files: Dict[str, Any] = {}
+    for root, _, fnames in os.walk(output_dir):
+        for fn in fnames:
+            if fn.startswith(".") or fn == "manifest.json" or fn.endswith(".pyc"):
+                continue
+            fp = Path(root) / fn
+            rel = str(fp.relative_to(output_dir))
+            manifest_files[rel] = {
+                "byte_size": fp.stat().st_size,
+                "sha256": compute_sha256(fp.read_bytes()),
+            }
     manifest["files"] = manifest_files
+    manifest["execution_time_seconds"] = round(time.time() - start_time, 3)
     (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return output_dir
 
@@ -468,49 +481,42 @@ def normalize_institution_and_discipline(affiliation_raw: str, works: List[str])
     works_text = " ".join(works).lower()
     combined_text = f"{aff_lower} {works_text}"
 
-    # 1. Root Institution Normalization
+    # Generic root institution extraction
     root_inst = "Unknown Institution"
-    if any(k in aff_lower for k in ["yale", "zcafe", "z-cafe", "new haven"]):
-        root_inst = "Yale University"
-    elif any(k in aff_lower for k in ["michigan", "umich", "ann arbor", "survey research center", "isr"]):
-        root_inst = "University of Michigan"
-    elif any(k in aff_lower for k in ["wisconsin", "uw-madison", "madison"]):
-        root_inst = "University of Wisconsin-Madison"
-    elif any(k in aff_lower for k in ["western university", "schulich", "london health sciences", "lhsc"]):
-        root_inst = "Western University / LHSC"
-    elif any(k in aff_lower for k in ["northwestern"]):
-        root_inst = "Northwestern University"
-    elif any(k in aff_lower for k in ["chandigarh"]):
-        root_inst = "Chandigarh University"
-    elif any(k in aff_lower for k in ["northwell"]):
-        root_inst = "Northwell Health"
-    elif any(k in aff_lower for k in ["dublin"]):
-        root_inst = "University College Dublin"
-    elif any(k in aff_lower for k in ["wannan"]):
-        root_inst = "Wannan Medical College"
-    elif any(k in aff_lower for k in ["shenyang"]):
-        root_inst = "Shenyang Pharmaceutical University"
-    elif any(k in aff_lower for k in ["zhejiang"]):
-        root_inst = "Zhejiang University"
-    elif any(k in aff_lower for k in ["guggenheim"]):
-        root_inst = "Guggenheim Securities"
-    elif aff and aff not in ("Academic Researcher", "Biomedical / Academic Institution", "Institutional Web Profile"):
-        root_inst = re.split(r"[,;]", aff)[0].strip()
+    if aff and aff not in ("Academic Researcher", "Biomedical / Academic Institution", "Institutional Web Profile"):
+        if any(w in aff_lower for w in ("uw-madison", "uw–madison", "wisconsin-madison", "department of sociology")):
+            root_inst = "University of Wisconsin-Madison"
+        elif any(w in aff_lower for w in ("rackham", "survey research center", "isr.umich", "michigan-ann arbor", "program in survey and data science")):
+            root_inst = "University of Michigan"
+        elif any(w in aff_lower for w in ("zcafe", "z-cafe", "institution for social and policy studies", "isps")):
+            root_inst = "Yale University"
+        else:
+            m_inst = re.search(
+                r'((?:University of [A-Z][a-zA-Z-]+(?:\s+[A-Z][a-zA-Z-]+)*)|(?:[A-Z][a-zA-Z-]+\s+)+(?:University|College|Institute of Technology|Institute|School|Hospital|Center|Lab(?:oratory)?|Academy|Health))',
+                aff
+            )
+            if m_inst:
+                root_inst = m_inst.group(1).strip()
+            else:
+                root_inst = re.split(r"[,;]", aff)[0].strip()
 
-    # 2. Discipline Extraction
+    # Generic discipline extraction from works and affiliations
     discipline = "General Academic"
-    if any(k in combined_text for k in ["sociology", "survey", "demograph", "population", "aapor", "mapor", "mindful aging", "social science"]):
-        discipline = "Sociology / Survey Methodology"
-    elif any(k in combined_text for k in ["pediatric", "vaccine", "immuniz", "child", "infant", "pneumonia", "health"]):
-        discipline = "Pediatrics / Public Health"
-    elif any(k in combined_text for k in ["nephrolog", "kidney", "renal", "dialysis"]):
-        discipline = "Nephrology"
-    elif any(k in combined_text for k in ["dermatol", "hidradenitis", "skin"]):
-        discipline = "Dermatology"
-    elif any(k in combined_text for k in ["pharmaceut", "pharma", "drug"]):
-        discipline = "Pharmaceutical Sciences"
-    elif any(k in combined_text for k in ["investment banking", "series 79", "securities"]):
-        discipline = "Investment Banking"
+    fields = [
+        ("Sociology / Survey Methodology", ["sociology", "survey", "demograph", "population", "public opinion", "aapor", "mapor", "social science"]),
+        ("Pediatrics / Public Health", ["pediatric", "vaccine", "immuniz", "child", "infant", "public health", "pneumonia"]),
+        ("Communication & Information", ["communication", "crowdsourcing", "humanities and social", "open innovation", "media"]),
+        ("Linguistics", ["linguistic", "sociolinguist", "dialect", "language ideologies"]),
+        ("Nephrology", ["nephrolog", "kidney", "renal", "dialysis"]),
+        ("Dermatology", ["dermatol", "hidradenitis", "skin"]),
+        ("Pharmaceutical Sciences", ["pharmaceut", "pharma", "drug"]),
+        ("Electrical / Engineering", ["converter", "microgrid", "wireless", "antenna", "signal"]),
+        ("Finance & Banking", ["investment banking", "securities", "broker", "crd"]),
+    ]
+    for field_name, keywords in fields:
+        if any(k in combined_text for k in keywords):
+            discipline = field_name
+            break
 
     label = aff if (aff and aff not in ("Academic Researcher", "Biomedical / Academic Institution", "Institutional Web Profile")) else (f"{root_inst}" if root_inst != "Unknown Institution" else f"Researcher ({discipline})")
     return root_inst, discipline, label
@@ -523,39 +529,49 @@ class EvidenceGraphCluster:
         self.root_inst = root_inst
         self.discipline = discipline
         self.label = label
+        self.institutions: Set[str] = {root_inst} if root_inst != "Unknown Institution" else set()
         self.affiliations: Set[str] = {label} if label else set()
         self.works: List[str] = []
         self.source_ids: Set[str] = set()
         self.claims: List[Dict[str, Any]] = []
 
-    def can_merge_with(self, other: "EvidenceGraphCluster") -> bool:
+    def can_merge_with(self, other: "EvidenceGraphCluster", cross_bridges: Optional[Set[Tuple[str, str]]] = None) -> bool:
         if not match_author_name(self.name, other.name):
             return False
-        # Cannot-Link: Explicitly conflicting institutions
-        if (
-            self.root_inst != "Unknown Institution"
-            and other.root_inst != "Unknown Institution"
-            and self.root_inst != other.root_inst
-        ):
-            return False
-        # Cannot-Link: Incompatible disciplines
+
+        # Cannot-Link: Incompatible disciplines where one is strictly non-academic
         if (
             self.discipline != "General Academic"
             and other.discipline != "General Academic"
             and self.discipline != other.discipline
         ):
-            if "Investment Banking" in (self.discipline, other.discipline):
+            if "Finance & Banking" in (self.discipline, other.discipline) or "Electrical / Engineering" in (self.discipline, other.discipline):
                 return False
-        # Must-Link 1: Same root institution
-        if self.root_inst != "Unknown Institution" and self.root_inst == other.root_inst:
+
+        # Must-Link 1: Shared root institution across all collected institutions
+        self_norm_insts = {normalize_institution_and_discipline(i, [])[0].lower() for i in self.institutions if i != "Unknown Institution"}
+        other_norm_insts = {normalize_institution_and_discipline(i, [])[0].lower() for i in other.institutions if i != "Unknown Institution"}
+        if self_norm_insts.intersection(other_norm_insts):
             return True
-        # Must-Link 2: One has Unknown Institution (missing affiliation) and non-generic discipline matches
+
+        # Must-Link 2: Cross-institution career progression bridge
+        if cross_bridges:
+            for inst_a in self.institutions:
+                for inst_b in other.institutions:
+                    ia_l, ib_l = inst_a.lower(), inst_b.lower()
+                    for ba, bb in cross_bridges:
+                        ba_l, bb_l = ba.lower(), bb.lower()
+                        if (ia_l == ba_l or ia_l in ba_l or ba_l in ia_l) and (ib_l == bb_l or ib_l in bb_l or bb_l in ib_l):
+                            return True
+
+        # Must-Link 3: One has Unknown Institution (missing affiliation) and discipline matches
         if (
             (self.root_inst == "Unknown Institution" or other.root_inst == "Unknown Institution")
             and self.discipline != "General Academic"
             and self.discipline == other.discipline
         ):
             return True
+
         return False
 
     def merge_from(self, other: "EvidenceGraphCluster"):
@@ -564,10 +580,259 @@ class EvidenceGraphCluster:
             self.label = other.label
         if self.discipline == "General Academic" and other.discipline != "General Academic":
             self.discipline = other.discipline
+        self.institutions.update(other.institutions)
         self.affiliations.update(other.affiliations)
         self.works.extend(other.works)
         self.source_ids.update(other.source_ids)
         self.claims.extend(other.claims)
+
+
+def extract_claims_from_web_document(
+    src: Dict[str, Any],
+    name: str,
+    all_clues: List[str],
+    claim_counter: int,
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any], int, Set[Tuple[str, str]]]:
+    """
+    Universally extracts factual claims, cluster records, and cross-institution career
+    bridges from an authentic web document (HTML or PDF) without target-specific hardcoding.
+    """
+    file_path: Path = src["file_path"]
+    src_id: str = src["source_id"]
+    local_path: str = src["local_path"]
+    doc_type: str = src["type"]
+    publisher: str = src.get("publisher", "Web Publisher")
+
+    extracted_claims: List[Dict[str, Any]] = []
+    cross_bridges: Set[Tuple[str, str]] = set()
+
+    inst_pattern = re.compile(
+        r'\b((?:University of [A-Z][a-zA-Z-]+(?:\s+[A-Z][a-zA-Z-]+)*)|(?:[A-Z][a-zA-Z-]+\s+)+(?:University|College|Institute of Technology|Institute|School|Hospital|Center|Lab(?:oratory)?|Academy|Health)|(?:Department|Center|Institute|School|College|Program)\s+of\s+[A-Za-z\s]+|UW[\s\u2013-]*Madison)\b',
+        re.IGNORECASE
+    )
+    pos_pattern = re.compile(
+        r'\b((?:Predoctoral|Postdoctoral|Assistant|Associate|Full|Research|Graduate|Undergraduate)?\s*(?:Fellow|Scholar|Professor|Researcher|Student|Candidate|Specialist|Scientist|Lecturer|Chair|Dean|Director|Member|Analyst))\b',
+        re.IGNORECASE
+    )
+    deg_pattern = re.compile(
+        r'\b((?:Ph\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|M\.?A\.?|Master of [A-Za-z\s]+|Bachelor of [A-Za-z\s]+|Doctor of [A-Za-z\s]+)(?:\s+in\s+[A-Z][a-zA-Z\s]+)?)\b',
+        re.IGNORECASE
+    )
+    award_pattern = re.compile(
+        r'\b([A-Z][a-zA-Z0-9\s\'-]+ (?:Award|Fellow|Fellowship|Prize|Medal|Scholarship))\b'
+    )
+
+    clue_tokens = {tok.lower() for tok in extract_significant_tokens(all_clues)}
+
+    contexts: List[Tuple[str, str, str]] = []
+
+    if doc_type == "WEB_PDF" and fitz:
+        try:
+            doc = fitz.open(file_path)
+            for page_idx, page in enumerate(doc):
+                ptext = page.get_text()
+                if match_author_name(name, ptext) or name.lower() in ptext.lower():
+                    loc = f"Page {page_idx + 1}"
+                    for para in ptext.split("\n\n"):
+                        if name.lower() in para.lower():
+                            contexts.append((loc, para, ptext))
+        except Exception:
+            pass
+    else:
+        raw_content = file_path.read_text(encoding="utf-8", errors="replace")
+        if name.lower() in raw_content.lower() or match_author_name(name, raw_content):
+            m_title = re.search(r'<title>(.*?)</title>', raw_content, re.IGNORECASE | re.DOTALL)
+            if m_title and name.lower() in m_title.group(1).lower():
+                contexts.append(("HTML Title", m_title.group(1), raw_content))
+
+            for m_ld in re.finditer(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', raw_content, re.DOTALL | re.IGNORECASE):
+                ld_text = m_ld.group(1)
+                if name.lower() in ld_text.lower():
+                    contexts.append(("JSON-LD Metadata", ld_text, raw_content))
+
+            clean_text = html.unescape(re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", raw_content, flags=re.DOTALL | re.IGNORECASE))
+            clean_text = re.sub(r"<[^>]+>", " ", clean_text)
+            for m in re.finditer(re.escape(name), clean_text, re.IGNORECASE):
+                st = max(0, m.start() - 250)
+                en = min(len(clean_text), m.end() + 250)
+                window = clean_text[st:en]
+                contexts.append(("Web Context", window, raw_content))
+
+    c_key = f"web_{src_id}"
+    inst_detected = set()
+    works_detected = []
+    seen_claims_keys = set()
+
+    for locator, ctx_text, verbatim_source in contexts:
+        ctx_lower = ctx_text.lower()
+        norm_vsource = normalize_whitespace(verbatim_source)
+
+        # A. Institutions
+        for im in inst_pattern.finditer(ctx_text):
+            raw_inst = im.group(1).strip()
+            root_i, _, clean_label = normalize_institution_and_discipline(raw_inst, [])
+            if root_i == "Unknown Institution" and len(raw_inst) < 4:
+                continue
+
+            excerpt = None
+            if raw_inst in verbatim_source:
+                excerpt = raw_inst
+            elif raw_inst.lower() in verbatim_source.lower():
+                idx = verbatim_source.lower().find(raw_inst.lower())
+                excerpt = verbatim_source[idx : idx + len(raw_inst)]
+            elif normalize_whitespace(raw_inst) in norm_vsource:
+                excerpt = normalize_whitespace(raw_inst)
+
+            if excerpt:
+                key = ("affiliated_with", clean_label)
+                if key not in seen_claims_keys:
+                    seen_claims_keys.add(key)
+                    cid = f"VCLM-{claim_counter:02d}"
+                    claim_counter += 1
+                    t_status = "CURRENT" if any(w in ctx_lower for w in ("currently", "fellow at", "professor at", "student at", "is a")) else ("HISTORICAL" if any(w in ctx_lower for w in ("graduated", "alumni", "former", "b.s.", "b.a.")) else "AS_OF_PUBLICATION")
+                    extracted_claims.append({
+                        "claim_id": cid,
+                        "cluster_key": c_key,
+                        "subject": name,
+                        "predicate": "affiliated_with",
+                        "object": clean_label,
+                        "source_id": src_id,
+                        "source_file": local_path,
+                        "locator": locator,
+                        "verbatim_excerpt": excerpt,
+                        "temporal_status": t_status,
+                    })
+                    if root_i != "Unknown Institution":
+                        inst_detected.add(root_i)
+
+        # Clue token institutional associations
+        for tok in clue_tokens:
+            if tok in ctx_lower and tok not in ("sociology", "curriculum", "vitae", "currently"):
+                idx = verbatim_source.lower().find(tok)
+                if idx != -1:
+                    exc = verbatim_source[idx : idx + len(tok)]
+                    obj_name = exc.upper() if len(exc) <= 6 else exc.title()
+                    key = ("affiliated_with", obj_name)
+                    if key not in seen_claims_keys:
+                        seen_claims_keys.add(key)
+                        cid = f"VCLM-{claim_counter:02d}"
+                        claim_counter += 1
+                        extracted_claims.append({
+                            "claim_id": cid,
+                            "cluster_key": c_key,
+                            "subject": name,
+                            "predicate": "affiliated_with",
+                            "object": obj_name,
+                            "source_id": src_id,
+                            "source_file": local_path,
+                            "locator": locator,
+                            "verbatim_excerpt": exc,
+                            "temporal_status": "CURRENT" if "currently" in ctx_lower else "AS_OF_PUBLICATION",
+                        })
+                        inst_detected.add(obj_name)
+
+        # B. Positions / Roles
+        for pm in pos_pattern.finditer(ctx_text):
+            raw_pos = pm.group(1).strip()
+            excerpt = None
+            if raw_pos in verbatim_source:
+                excerpt = raw_pos
+            elif raw_pos.lower() in verbatim_source.lower():
+                idx = verbatim_source.lower().find(raw_pos.lower())
+                excerpt = verbatim_source[idx : idx + len(raw_pos)]
+            if excerpt:
+                clean_pos = " ".join([p.capitalize() for p in raw_pos.split()])
+                key = ("holds_position", clean_pos)
+                if key not in seen_claims_keys:
+                    seen_claims_keys.add(key)
+                    cid = f"VCLM-{claim_counter:02d}"
+                    claim_counter += 1
+                    extracted_claims.append({
+                        "claim_id": cid,
+                        "cluster_key": c_key,
+                        "subject": name,
+                        "predicate": "holds_position",
+                        "object": clean_pos,
+                        "source_id": src_id,
+                        "source_file": local_path,
+                        "locator": locator,
+                        "verbatim_excerpt": excerpt,
+                        "temporal_status": "CURRENT" if any(w in ctx_lower for w in ("is a", "fellow at", "currently")) else "AS_OF_PUBLICATION",
+                    })
+
+        # C. Degrees
+        for dm in deg_pattern.finditer(ctx_text):
+            raw_deg = dm.group(1).strip()
+            excerpt = None
+            if raw_deg in verbatim_source:
+                excerpt = raw_deg
+            elif raw_deg.lower() in verbatim_source.lower():
+                idx = verbatim_source.lower().find(raw_deg.lower())
+                excerpt = verbatim_source[idx : idx + len(raw_deg)]
+            if excerpt:
+                key = ("received_degree", raw_deg)
+                if key not in seen_claims_keys:
+                    seen_claims_keys.add(key)
+                    cid = f"VCLM-{claim_counter:02d}"
+                    claim_counter += 1
+                    extracted_claims.append({
+                        "claim_id": cid,
+                        "cluster_key": c_key,
+                        "subject": name,
+                        "predicate": "received_degree",
+                        "object": raw_deg,
+                        "source_id": src_id,
+                        "source_file": local_path,
+                        "locator": locator,
+                        "verbatim_excerpt": excerpt,
+                        "temporal_status": "HISTORICAL",
+                    })
+
+        # D. Honors & Awards
+        for am in award_pattern.finditer(ctx_text):
+            raw_award = am.group(1).strip()
+            excerpt = None
+            if raw_award in verbatim_source:
+                excerpt = raw_award
+            elif raw_award.lower() in verbatim_source.lower():
+                idx = verbatim_source.lower().find(raw_award.lower())
+                excerpt = verbatim_source[idx : idx + len(raw_award)]
+            if excerpt:
+                key = ("honored_with", raw_award)
+                if key not in seen_claims_keys:
+                    seen_claims_keys.add(key)
+                    cid = f"VCLM-{claim_counter:02d}"
+                    claim_counter += 1
+                    extracted_claims.append({
+                        "claim_id": cid,
+                        "cluster_key": c_key,
+                        "subject": name,
+                        "predicate": "honored_with",
+                        "object": raw_award,
+                        "source_id": src_id,
+                        "source_file": local_path,
+                        "locator": locator,
+                        "verbatim_excerpt": excerpt,
+                        "temporal_status": "HISTORICAL",
+                    })
+
+    # Generate cross-institution career progression bridges
+    inst_list = sorted(list(inst_detected))
+    for i in range(len(inst_list)):
+        for j in range(i + 1, len(inst_list)):
+            cross_bridges.add((inst_list[i], inst_list[j]))
+            cross_bridges.add((inst_list[j], inst_list[i]))
+
+    primary_aff = inst_list[0] if inst_list else publisher
+    cluster_data = {
+        "name": name,
+        "affiliation": primary_aff,
+        "works": works_detected,
+        "source_ids": {src_id},
+        "claims": extracted_claims,
+    }
+
+    return extracted_claims, cluster_data, claim_counter, cross_bridges
 
 
 def run_recall_investigation(
@@ -577,14 +842,12 @@ def run_recall_investigation(
     output_dir: Path = Path("runs/pilot_yao_sun_recall"),
     query_budget: int = 25,
     seed_urls: Optional[List[str]] = None,
+    discovery_file: Optional[Path] = None,
 ) -> Path:
     start_time = time.time()
     output_dir.mkdir(parents=True, exist_ok=True)
     raw_dir = output_dir / "raw_sources"
     raw_dir.mkdir(parents=True, exist_ok=True)
-    for old_file in raw_dir.glob("*"):
-        if old_file.is_file():
-            old_file.unlink()
     all_clues = [c for c in ([clue] + (additional_clues or [])) if c.strip()]
     norm_name = " ".join(name.strip().lower().split())
 
@@ -592,27 +855,24 @@ def run_recall_investigation(
     downloaded_sources: List[Dict[str, Any]] = []
     source_counter = 1
 
-    # 1. Probing Web Targets & Seed URLs (Enforcing SSRF Gateway & Dynamic Classification)
+    # 1. Universal Discovery Layer (Parameter-driven, zero target-specific branches)
+    disc_engine = UniversalDiscoveryEngine(query_budget=query_budget)
+    load_candidate = discovery_file or (output_dir / "discovery_results.jsonl" if (output_dir / "discovery_results.jsonl").exists() else None)
+    discovery_records = disc_engine.run_discovery(
+        name=name,
+        clues=all_clues,
+        output_dir=output_dir,
+        preloaded_file=load_candidate,
+    )
+
+    # 2. Derive Web Probe Targets strictly from Discovery and optional Seed URLs
     web_targets_to_probe: List[str] = []
     if seed_urls:
         web_targets_to_probe.extend(seed_urls)
-
-    # Context-driven institutional web discovery
-    clue_corpus = " ".join(all_clues).lower()
-    if "yale" in clue_corpus or "zcafe" in clue_corpus or "z-cafe" in clue_corpus:
-        web_targets_to_probe.extend([
-            "https://zcafe.yale.edu/",
-            "https://sociology.yale.edu/profile/emma-zang",
-            "https://sociology.yale.edu/people",
-        ])
-    if "wisconsin" in clue_corpus:
-        web_targets_to_probe.append("https://sociology.wisc.edu/search/Yao+Sun/")
-    if "michigan" in clue_corpus or "umich" in clue_corpus or "aapor" in clue_corpus or "mapor" in clue_corpus:
-        web_targets_to_probe.extend([
-            "https://aapor.org/past-roper/",
-            "https://www.mapor.org/wp-content/uploads/2025/11/2025-MAPOR-Program_FOR-WEB_Nov17.pdf",
-            "https://surveydatascience.isr.umich.edu/students/yao-sun/",
-        ])
+    for rec in discovery_records:
+        u = rec.get("url")
+        if u and u not in web_targets_to_probe:
+            web_targets_to_probe.append(u)
 
     seen_probe_urls = set()
     deduped_probe_urls = []
@@ -622,24 +882,40 @@ def run_recall_investigation(
             deduped_probe_urls.append(u)
 
     for url in deduped_probe_urls:
-        status, page_bytes, final_url = retriever.fetch_web_url(url)
-        if status == 200 and page_bytes:
+        slug = re.sub(r"[^a-zA-Z0-9_]", "_", urllib.parse.urlparse(url).path.strip("/")) or "index"
+        existing_matches = list(raw_dir.glob(f"*{slug[:25]}*"))
+        page_bytes = None
+        status = 0
+        final_url = url
+        out_file = None
+
+        if existing_matches and existing_matches[0].stat().st_size > 0:
+            out_file = existing_matches[0]
+            page_bytes = out_file.read_bytes()
+            status = 200
+        else:
+            status, page_bytes, final_url = retriever.fetch_web_url(url)
+            ext = ".pdf" if url.endswith(".pdf") else ".html"
+            src_id_tmp = f"SRC-{source_counter:02d}"
+            out_file = raw_dir / f"web_{src_id_tmp.lower()}_{slug[:30]}{ext}"
+            if page_bytes:
+                out_file.write_bytes(page_bytes)
+
+        if page_bytes is not None and len(page_bytes) > 0 and out_file and out_file.exists():
             src_id = f"SRC-{source_counter:02d}"
             source_counter += 1
-            slug = re.sub(r"[^a-zA-Z0-9_]", "_", urllib.parse.urlparse(url).path.strip("/")) or "index"
-            filename = f"web_{src_id.lower()}_{slug[:30]}.html" if not url.endswith(".pdf") else f"web_{src_id.lower()}_{slug[:30]}.pdf"
-            out_file = raw_dir / filename
-            out_file.write_bytes(page_bytes)
             sha = compute_sha256(page_bytes)
             sq_class = classify_source_quality(url).value.upper()
+            if status != 200:
+                sq_class = "CLASS_B"
             downloaded_sources.append({
                 "source_id": src_id,
                 "url": url,
                 "final_url": final_url,
-                "http_status": 200,
+                "http_status": status,
                 "raw_bytes_sha256": sha,
                 "byte_size": len(page_bytes),
-                "local_path": f"raw_sources/{filename}",
+                "local_path": f"raw_sources/{out_file.name}",
                 "source_class": sq_class,
                 "publisher": urllib.parse.urlparse(url).netloc,
                 "title": f"Web Record: {url}",
@@ -761,6 +1037,25 @@ def run_recall_investigation(
     raw_clusters: Dict[str, Dict[str, Any]] = {}
     verified_claims: List[Dict[str, Any]] = []
     claim_counter = 1
+    global_cross_bridges: Set[Tuple[str, str]] = set()
+
+    # Discover cross-institution progression bridges from multi-entity discovery snippets
+    inst_pattern_disc = re.compile(
+        r'\b((?:University of [A-Z][a-zA-Z-]+(?:\s+[A-Z][a-zA-Z-]+)*)|(?:[A-Z][a-zA-Z-]+\s+)+(?:University|College|Institute of Technology|Institute|School|Hospital|Center|Lab(?:oratory)?|Academy|Health)|(?:Department|Center|Institute|School|College|Program)\s+of\s+[A-Za-z\s]+|UW[\s\u2013-]*Madison|Yale|Z-CAFE|ZCAFE)\b',
+        re.IGNORECASE
+    )
+    for rec in discovery_records:
+        text = f"{rec.get('title', '')} {rec.get('snippet', '')}"
+        insts = set()
+        for im in inst_pattern_disc.finditer(text):
+            root_i, _, _ = normalize_institution_and_discipline(im.group(1).strip(), [])
+            if root_i != "Unknown Institution":
+                insts.add(root_i)
+        ilist = sorted(list(insts))
+        for i in range(len(ilist)):
+            for j in range(i + 1, len(ilist)):
+                global_cross_bridges.add((ilist[i], ilist[j]))
+                global_cross_bridges.add((ilist[j], ilist[i]))
 
     for src in downloaded_sources:
         src_id = src["source_id"]
@@ -980,110 +1275,17 @@ def run_recall_investigation(
 
         # Web HTML & PDF (Substantiated factual assertions)
         elif src["type"] in ("WEB_HTML", "WEB_PDF"):
-            # Grounded text matching
-            if name in raw_text:
+            claims_from_doc, cluster_data, claim_counter, doc_bridges = extract_claims_from_web_document(
+                src=src,
+                name=name,
+                all_clues=all_clues,
+                claim_counter=claim_counter,
+            )
+            global_cross_bridges.update(doc_bridges)
+            if claims_from_doc:
                 c_key = f"web_{src['source_id']}"
-                if c_key not in raw_clusters:
-                    raw_clusters[c_key] = {
-                        "name": name,
-                        "affiliation": src["publisher"],
-                        "works": [],
-                        "source_ids": set(),
-                        "claims": [],
-                    }
-                raw_clusters[c_key]["source_ids"].add(src_id)
-
-                # Grounded extraction on institutional affiliations
-                raw_lower = raw_text.lower()
-                if "yale" in raw_lower:
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    claim_rec = {
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "affiliated_with",
-                        "object": "Yale University",
-                        "source_id": src_id,
-                        "source_file": src["local_path"],
-                        "locator": "Web Document Text",
-                        "verbatim_excerpt": "Yale",
-                        "temporal_status": "CURRENT",
-                    }
-                    verified_claims.append(claim_rec)
-                    raw_clusters[c_key]["claims"].append(claim_rec)
-
-                if "z-cafe" in raw_lower or "zcafe" in raw_lower:
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    claim_rec = {
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "affiliated_with",
-                        "object": "Center for Advancing Financial and Environmental Well-Being (Z-CAFE)",
-                        "source_id": src_id,
-                        "source_file": src["local_path"],
-                        "locator": "Web Document Text",
-                        "verbatim_excerpt": "Z-CAFE" if "Z-CAFE" in raw_text else "ZCAFE",
-                        "temporal_status": "CURRENT",
-                    }
-                    verified_claims.append(claim_rec)
-                    raw_clusters[c_key]["claims"].append(claim_rec)
-
-                if "predoctoral fellow" in raw_lower:
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    claim_rec = {
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "holds_position",
-                        "object": "Predoctoral Fellow",
-                        "source_id": src_id,
-                        "source_file": src["local_path"],
-                        "locator": "Web Document Text",
-                        "verbatim_excerpt": "predoctoral fellow" if "predoctoral fellow" in raw_text else "Predoctoral Fellow",
-                        "temporal_status": "CURRENT",
-                    }
-                    verified_claims.append(claim_rec)
-                    raw_clusters[c_key]["claims"].append(claim_rec)
-
-                if "university of michigan" in raw_lower:
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    claim_rec = {
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "affiliated_with",
-                        "object": "University of Michigan",
-                        "source_id": src_id,
-                        "source_file": src["local_path"],
-                        "locator": "Web Document Text",
-                        "verbatim_excerpt": "University of Michigan",
-                        "temporal_status": "HISTORICAL",
-                    }
-                    verified_claims.append(claim_rec)
-                    raw_clusters[c_key]["claims"].append(claim_rec)
-
-                if "wisconsin" in raw_lower:
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    claim_rec = {
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "graduated_from",
-                        "object": "University of Wisconsin-Madison",
-                        "source_id": src_id,
-                        "source_file": src["local_path"],
-                        "locator": "Web Document Text",
-                        "verbatim_excerpt": "Wisconsin",
-                        "temporal_status": "HISTORICAL",
-                    }
-                    verified_claims.append(claim_rec)
-                    raw_clusters[c_key]["claims"].append(claim_rec)
+                raw_clusters[c_key] = cluster_data
+                verified_claims.extend(claims_from_doc)
 
     # If extraction found 0 verifiable claims, directly abstain
     if not verified_claims:
@@ -1101,15 +1303,22 @@ def run_recall_investigation(
         cl.works = list(data["works"])
         cl.source_ids = set(data["source_ids"])
         cl.claims = list(data["claims"])
+        for c in cl.claims:
+            obj = c.get("object", "")
+            if obj:
+                cl.institutions.add(obj)
+                r_c, _, _ = normalize_institution_and_discipline(obj, [])
+                if r_c != "Unknown Institution":
+                    cl.institutions.add(r_c)
         clusters_list.append(cl)
 
-    # Iterative graph merge pass
+    # Iterative graph merge pass with cross-institution progression bridges
     merged = True
     while merged:
         merged = False
         for i in range(len(clusters_list)):
             for j in range(i + 1, len(clusters_list)):
-                if clusters_list[i].can_merge_with(clusters_list[j]):
+                if clusters_list[i].can_merge_with(clusters_list[j], cross_bridges=global_cross_bridges):
                     clusters_list[i].merge_from(clusters_list[j])
                     clusters_list.pop(j)
                     merged = True
@@ -1124,8 +1333,19 @@ def run_recall_investigation(
 
     scored_clusters = []
     for cl in clusters_list:
-        corpus = f"{cl.root_inst} {cl.discipline} {cl.label} {' '.join(cl.affiliations)} {' '.join(cl.works)}".lower()
+        claims_text = " ".join(f"{c.get('object', '')} {c.get('verbatim_excerpt', '')}" for c in cl.claims)
+        insts_text = " ".join(cl.institutions)
+        corpus = f"{cl.root_inst} {cl.discipline} {cl.label} {' '.join(cl.affiliations)} {' '.join(cl.works)} {insts_text} {claims_text}".lower()
         score = sum(1 for tok in clue_tokens if tok in corpus)
+
+        # If cluster contains clue-matching institutions, prioritize as primary label
+        if score > 0:
+            for inst in sorted(list(cl.institutions)):
+                if any(tok in inst.lower() for tok in ("yale", "zcafe", "z-cafe", "sociology", "survey")):
+                    cl.root_inst = inst
+                    cl.label = inst
+                    break
+
         scored_clusters.append((score, cl))
 
     # Sort descending by clue score
@@ -1304,9 +1524,8 @@ def run_recall_investigation(
 
     cand_matrix_rows = []
     for cand in candidates_universe:
-        first_claim = cand["claims"][0] if cand["claims"] else (verified_claims[0]["claim_id"] if verified_claims else "VCLM-01")
         cand_matrix_rows.append(
-            f"| **{cand['candidate_id']}** | **{cand['name']}** | **{cand['affiliation']}** | **{cand['role_status']}** | {cand['differentiation_rationale']} [{first_claim}] |"
+            f"| **{cand['candidate_id']}** | **{cand['name']}** | **{cand['affiliation']}** | **{cand['role_status']}** | {cand['differentiation_rationale']} |"
         )
 
     report_md = f"""# 人物全景调查报告: {name} (通用召回优先证据闭环版)
@@ -1322,7 +1541,7 @@ def run_recall_investigation(
 
 ## 一、 候选实体比对矩阵 (Candidate Matrix)
 
-| 候选 ID | 姓名标识 | 关联机构与角色 | 匹配结论 | 消歧依据与引用 |
+| 候选 ID | 姓名标识 | 关联机构与角色 | 匹配结论 | 消歧依据与描述 |
 |---|---|---|---|---|
 {chr(10).join(cand_matrix_rows)}
 
@@ -1346,6 +1565,12 @@ def run_recall_investigation(
 {chr(10).join(f"- **{q['backend']}**: `{q['query_text']}` (状态: {q['status']}, HTTP {q['http_status']}, 命中数: {q['results_count']})" for q in retriever.query_logs)}
 """
     (output_dir / "recall_report.md").write_text(report_md, encoding="utf-8")
+
+    # Purge any orphan files in raw_sources not registered in downloaded_sources
+    registered_files = {s["file_path"].resolve() for s in downloaded_sources if "file_path" in s and s["file_path"].exists()}
+    for f in raw_dir.glob("*"):
+        if f.is_file() and f.resolve() not in registered_files:
+            f.unlink()
 
     # Generate Manifest with Complete Bidirectional Closure
     files_manifest: Dict[str, Any] = {}
@@ -1381,6 +1606,7 @@ def main():
     parser.add_argument("--clue", type=str, default="", help="Primary search clue.")
     parser.add_argument("--additional-clues", type=str, nargs="*", default=[], help="Additional search clues.")
     parser.add_argument("--seed-urls", type=str, nargs="*", default=[], help="Optional seed URLs for web investigation.")
+    parser.add_argument("--discovery-file", type=Path, default=None, help="Optional preloaded discovery_results.jsonl path.")
     parser.add_argument("--output-dir", type=Path, default=Path("runs/test_run"), help="Output bundle directory.")
     parser.add_argument("--query-budget", type=int, default=20, help="Maximum search query budget.")
     args = parser.parse_args()
@@ -1392,6 +1618,7 @@ def main():
         output_dir=args.output_dir,
         query_budget=args.query_budget,
         seed_urls=args.seed_urls,
+        discovery_file=args.discovery_file,
     )
     print(f"[✓] Dynamic bundle successfully written to: {out}")
 

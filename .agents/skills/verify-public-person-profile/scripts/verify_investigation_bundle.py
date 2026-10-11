@@ -448,6 +448,15 @@ class BundleVerifier:
         dossier_file = self.bundle_dir / "dossier.json"
         report_file = self.bundle_dir / "recall_report.md"
 
+        exempt_words = {
+            "cand", "stmt", "vclm", "src", "status", "状态", "as_of_publication", "historical", "current",
+            "the", "a", "an", "in", "on", "at", "to", "for", "of", "and", "or", "is", "was", "with",
+            "by", "from", "as", "affiliated_with", "authored_work", "holds_position", "graduated_from",
+            "mentioned_in", "received_degree", "employed_by", "published", "fellow", "author", "work",
+            "researcher", "institution", "候选人", "时间语义", "来源", "依据", "候选实体", "匹配结论",
+            "消歧依据", "引用", "标识", "关联机构", "角色"
+        }
+
         dossier = None
         if not dossier_file.exists():
             self.errors.append("dossier.json missing in bundle root.")
@@ -487,13 +496,6 @@ class BundleVerifier:
                                 backed_supported_tokens.add(tok)
 
                     # Extract substantive tokens from statement (excluding boilerplate/stop words)
-                    exempt_words = {
-                        "cand", "stmt", "vclm", "status", "状态", "as_of_publication", "historical", "current",
-                        "the", "a", "an", "in", "on", "at", "to", "for", "of", "and", "or", "is", "was", "with",
-                        "by", "from", "as", "affiliated_with", "authored_work", "holds_position", "graduated_from",
-                        "mentioned_in", "received_degree", "employed_by", "published", "fellow", "author", "work",
-                        "researcher", "institution"
-                    }
                     stmt_substantive_tokens = {
                         tok.lower() for tok in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", rendered_text)
                         if len(tok) > 2 and tok.lower() not in exempt_words and not tok.isdigit()
@@ -506,14 +508,13 @@ class BundleVerifier:
                             f"Dossier statement {stmt_id} text '{rendered_text}' has ZERO semantic grounding in backed claims {backed}."
                         )
 
-                    # Explicitly detect ungrounded / injected entities (e.g. 'President of Mars')
-                    suspicious_injections = {"mars", "president", "fake_fact", "fabricated", "jupiter"}
-                    if any(sinj in stmt_substantive_tokens for sinj in suspicious_injections):
-                        alien_found = stmt_substantive_tokens.intersection(suspicious_injections)
-                        if not alien_found.issubset(backed_supported_tokens):
-                            self.errors.append(
-                                f"Dossier statement {stmt_id} contains ungrounded alien token(s) {alien_found} not backed by claims."
-                            )
+                    # Mathematical grounding check: unsupported tokens cannot exceed 35% of statement
+                    unbacked_tokens = stmt_substantive_tokens - backed_supported_tokens
+                    if stmt_substantive_tokens and (len(unbacked_tokens) / len(stmt_substantive_tokens) > 0.35):
+                        self.errors.append(
+                            f"Dossier statement {stmt_id} fails semantic grounding: contains excessive ungrounded tokens {unbacked_tokens} "
+                            f"not supported by claims {backed}."
+                        )
 
                 self.info.append("Dossier JSON parsed and validated.")
             except Exception as e:
@@ -534,14 +535,22 @@ class BundleVerifier:
             if cid not in self.verified_claim_ids:
                 self.errors.append(f"recall_report.md cites phantom claim ID not in verified_claims: {cid}")
 
-        # Check report lines for ungrounded citations (e.g. fake facts citing real claim IDs)
+        # Check report lines for ungrounded citations (tokens must be grounded in cited claim)
         for line in report_text.splitlines():
             line_cids = re.findall(r"\[(VCLM-\d+)\]", line)
             if not line_cids:
                 continue
             line_lower = line.lower()
-            if any(alien in line_lower for alien in ["president of mars", "fake_fact", "fabricated"]):
-                self.errors.append(f"recall_report.md contains ungrounded claim injection: '{line.strip()}'")
+            for cid in line_cids:
+                c = self.claims.get(cid, {})
+                c_text = f"{c.get('subject', '')} {c.get('predicate', '')} {c.get('object', '')} {c.get('verbatim_excerpt', '')}".lower()
+                c_tokens = {t for t in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", c_text) if len(t) > 2}
+                line_tokens = {t for t in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", line_lower) if len(t) > 2 and t not in exempt_words}
+                line_unbacked = line_tokens - c_tokens
+                if line_tokens and (len(line_unbacked) / len(line_tokens) > 0.5):
+                    self.errors.append(
+                        f"recall_report.md line citing [{cid}] contains ungrounded tokens {line_unbacked}: '{line.strip()}'"
+                    )
 
             # For claim bullet items, ensure the claim object appears in the bullet
             for cid in line_cids:
