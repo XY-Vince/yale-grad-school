@@ -161,9 +161,9 @@ class BundleVerifier:
         try:
             data = json.loads(man_file.read_text(encoding="utf-8"))
             outcome = data.get("run_outcome", "")
-            if outcome in ("INSUFFICIENT_EVIDENCE", "ABSTENTION", "RunOutcome.INSUFFICIENT_EVIDENCE"):
+            if outcome in ("INSUFFICIENT_EVIDENCE", "ABSTENTION", "RunOutcome.INSUFFICIENT_EVIDENCE", "COLLECTION_FAILED", "RunOutcome.COLLECTION_FAILED"):
                 self.is_abstention = True
-                self.info.append("Manifest indicates INSUFFICIENT_EVIDENCE (abstention bundle).")
+                self.info.append(f"Manifest indicates {outcome} (abstention/collection-failed bundle).")
         except Exception as e:
             self.errors.append(f"manifest.json is not valid JSON: {e}")
 
@@ -764,12 +764,12 @@ class BundleVerifier:
             outcome = str(data.get("run_outcome", ""))
             claim_count = len(self.verified_claim_ids)
 
-            if claim_count == 0 and "INSUFFICIENT_EVIDENCE" not in outcome and "ABSTENTION" not in outcome:
+            if claim_count == 0 and "INSUFFICIENT_EVIDENCE" not in outcome and "ABSTENTION" not in outcome and "COLLECTION_FAILED" not in outcome:
                 self.errors.append(
                     f"Manifest run_outcome is '{outcome}' but 0 verified claims found. "
-                    "Must be INSUFFICIENT_EVIDENCE."
+                    "Must be INSUFFICIENT_EVIDENCE or COLLECTION_FAILED."
                 )
-            elif claim_count > 0 and "INSUFFICIENT_EVIDENCE" in outcome:
+            elif claim_count > 0 and ("INSUFFICIENT_EVIDENCE" in outcome or "COLLECTION_FAILED" in outcome):
                 self.errors.append(
                     f"Manifest run_outcome is '{outcome}' but {claim_count} verified claims found."
                 )

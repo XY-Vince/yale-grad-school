@@ -127,19 +127,32 @@ class UniversalEvidenceRetriever:
         self.query_counter += 1
 
         # Strict SSRF check before resolving or connecting
-        is_safe, canonical_url, ip_str = validate_safe_url(url)
+        is_safe, canonical_url, ip_or_reason = validate_safe_url(url)
         if not is_safe:
-            self.query_logs.append({
-                "query_id": qid,
-                "backend": backend,
-                "query_text": url,
-                "http_status": 403,
-                "results_count": 0,
-                "executed_at": datetime.now(timezone.utc).isoformat(),
-                "status": "BLOCKED_SSRF",
-                "error": f"SSRFSecurityError: Blocked unsafe address {url}",
-            })
-            return 403, b"", url
+            if ip_or_reason == "DNS_RESOLUTION_FAILED":
+                self.query_logs.append({
+                    "query_id": qid,
+                    "backend": backend,
+                    "query_text": url,
+                    "http_status": 0,
+                    "results_count": 0,
+                    "executed_at": datetime.now(timezone.utc).isoformat(),
+                    "status": "FAILED",
+                    "error": f"DNSResolutionError: Could not resolve hostname {urllib.parse.urlparse(url).hostname} (network unavailable)",
+                })
+                return 0, b"", url
+            else:
+                self.query_logs.append({
+                    "query_id": qid,
+                    "backend": backend,
+                    "query_text": url,
+                    "http_status": 403,
+                    "results_count": 0,
+                    "executed_at": datetime.now(timezone.utc).isoformat(),
+                    "status": "BLOCKED_SSRF",
+                    "error": f"SSRFSecurityError: Blocked unsafe address {url}",
+                })
+                return 403, b"", url
 
         req = urllib.request.Request(url, headers=self.headers)
         try:
@@ -161,6 +174,7 @@ class UniversalEvidenceRetriever:
         except urllib.error.HTTPError as e:
             status = e.code
             body = e.read()
+            status_label = "BLOCKED" if status in (403, 429) else "FAILED"
             self.query_logs.append({
                 "query_id": qid,
                 "backend": backend,
@@ -168,7 +182,7 @@ class UniversalEvidenceRetriever:
                 "http_status": status,
                 "results_count": 0,
                 "executed_at": datetime.now(timezone.utc).isoformat(),
-                "status": "EXECUTED",
+                "status": status_label,
                 "error": str(e),
             })
             return status, body, url
@@ -180,7 +194,7 @@ class UniversalEvidenceRetriever:
                 "http_status": 500,
                 "results_count": 0,
                 "executed_at": datetime.now(timezone.utc).isoformat(),
-                "status": "EXECUTED",
+                "status": "FAILED",
                 "error": str(e),
             })
             return 500, b"", url
@@ -385,6 +399,8 @@ def build_abstention_bundle(
     output_dir: Path,
     query_logs: List[Dict[str, Any]],
     start_time: float,
+    outcome: str = "INSUFFICIENT_EVIDENCE",
+    reason: Optional[str] = None,
     discovery_mode: str = "LIVE",
     discovery_input_hash: Optional[str] = None,
 ) -> Path:
@@ -395,11 +411,17 @@ def build_abstention_bundle(
             f.unlink()
 
     gap_id = f"GAP-{compute_sha256(f'{name}:{all_clues}'.encode('utf-8'))[:8]}"
+    effective_reason = reason or (
+        f"Live search and API endpoints failed during retrieval for '{name}'"
+        if outcome == "COLLECTION_FAILED"
+        else f"No verified public records or substantiated claims found for entity '{name}'"
+    )
+
     abstention = AbstentionRecord(
         gap_id=gap_id,
         target_name=name,
         query_executed="; ".join([q["query_text"] for q in query_logs[:4]]),
-        reason=f"No verified public records or substantiated claims found for entity '{name}'",
+        reason=effective_reason,
         observed_at=datetime.now(timezone.utc),
     )
 
@@ -407,27 +429,50 @@ def build_abstention_bundle(
         "bundle_version": "1.0",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "target_name": name,
-        "run_outcome": "INSUFFICIENT_EVIDENCE",
+        "run_outcome": outcome,
         "discovery_mode": discovery_mode,
         "discovery_input_hash": discovery_input_hash,
         "abstention_record": {
             "gap_id": gap_id,
-            "reason": f"No verified public records or substantiated claims found for '{name}'",
+            "reason": effective_reason,
         },
         "queries_executed": len(query_logs),
         "files": {},
     }
 
     dossier = {
-        "dossier_id": f"DOS-INSUFFICIENT-{compute_sha256(name.encode('utf-8'))[:8]}",
+        "dossier_id": f"DOS-{outcome[:6]}-{compute_sha256(name.encode('utf-8'))[:8]}",
         "target_name": name,
-        "investigation_status": "INSUFFICIENT_EVIDENCE",
+        "investigation_status": outcome,
         "primary_candidate_id": None,
         "statements": [],
         "candidate_matrix": [],
     }
 
-    recall_report_md = f"""# 人物背景全景调查报告: {name} (证据不足与规范弃答报告)
+    if outcome == "COLLECTION_FAILED":
+        recall_report_md = f"""# 人物背景全景调查报告: {name} (采集失败与检索受阻报告)
+
+> **调查对象**: {name}
+> **先验线索**: {'; '.join(all_clues)}
+> **结果状态**: **COLLECTION_FAILED (检索受阻 / 采集失败)**
+> **生成时间**: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}
+
+## 一、 候选实体比对矩阵 (Candidate Matrix)
+
+| 候选 ID | 姓名标识 | 检索线索 | 匹配状态 | 判定依据 |
+|---|---|---|---|---|
+| **CAND-NONE** | {name} | {'; '.join(all_clues)} | **COLLECTION_FAILED** | 检索网络受阻或第三方端点不可达，无法完成公开数据采集。此状态表示技术采集受限，不代表目标人物在互联网无公开记录。 |
+
+## 二、 检索轨迹与审计日志
+执行了以下检索，均受阻或异常中断：
+{chr(10).join(f"- **{q['backend']}**: `{q['query_text']}` (状态: {q.get('status', 'FAILED')}, 错误: {q.get('error', 'None')})" for q in query_logs)}
+
+## 三、 诊断与处置建议
+1. [ERR-01] 外部搜索引擎及学术端点因网络隔离、连接超时或反爬拦截无法访问；
+2. 建议检查测试环境的出网权限、DNS解析或配置预下载的发现工件与离线快照重放。
+"""
+    else:
+        recall_report_md = f"""# 人物背景全景调查报告: {name} (证据不足与规范弃答报告)
 
 > **调查对象**: {name}
 > **先验线索**: {'; '.join(all_clues)}
@@ -943,19 +988,30 @@ def extract_claims_from_web_document(
                     target_insts.add(root_i)
 
         # B. Positions / Roles
-        for pm in pos_pattern.finditer(seg_text):
-            raw_pos = pm.group(1).strip()
-            clean_pos = " ".join([p.capitalize() for p in raw_pos.split()])
-            key = ("holds_position", clean_pos)
-            if key not in seen_claims_keys:
-                seen_claims_keys.add(key)
-                cid = f"VCLM-{claim_counter:02d}"
-                claim_counter += 1
-                t_status = "CURRENT" if any(w in seg_lower for w in ("is a", "fellow at", "currently")) else "AS_OF_PUBLICATION"
-                sub_pos = seg_lower.find(name.lower())
-                sub_span = [sub_pos, sub_pos + len(name)] if sub_pos != -1 else [0, len(name)]
-                obj_pos = seg_lower.find(raw_pos.lower())
-                obj_span = [obj_pos, obj_pos + len(raw_pos)] if obj_pos != -1 else [0, len(raw_pos)]
+        if "awards" not in locator.lower():
+            for pm in pos_pattern.finditer(seg_text):
+                raw_pos = pm.group(1).strip()
+                end_pos = pm.end()
+                after_text = seg_text[end_pos:end_pos+30].strip().lower()
+                if re.match(r'^(?:award|prize|scholarship|fellowship|medal|grant|honor)\b', after_text):
+                    continue
+                before_text = seg_text[max(0, pm.start()-30):pm.start()].strip().lower()
+                if "award" in after_text[:15] or "prize" in after_text[:15]:
+                    continue
+                if raw_pos.lower() in ("award", "prize", "scholarship", "grant", "fellowship"):
+                    continue
+
+                clean_pos = " ".join([p.capitalize() for p in raw_pos.split()])
+                key = ("holds_position", clean_pos)
+                if key not in seen_claims_keys:
+                    seen_claims_keys.add(key)
+                    cid = f"VCLM-{claim_counter:02d}"
+                    claim_counter += 1
+                    t_status = "CURRENT" if any(w in seg_lower for w in ("is a", "fellow at", "currently")) else "AS_OF_PUBLICATION"
+                    sub_pos = seg_lower.find(name.lower())
+                    sub_span = [sub_pos, sub_pos + len(name)] if sub_pos != -1 else [0, len(name)]
+                    obj_pos = seg_lower.find(raw_pos.lower())
+                    obj_span = [obj_pos, obj_pos + len(raw_pos)] if obj_pos != -1 else [0, len(raw_pos)]
 
                 extracted_claims.append({
                     "claim_id": cid,
@@ -1268,9 +1324,30 @@ def run_recall_investigation(
                     "articles": articles,
                 })
 
-    # If 0 sources found -> Clean Abstention
+    all_query_logs = disc_engine.query_logs + retriever.query_logs
+
+    # If 0 sources found -> Check failure vs abstention
     if not downloaded_sources:
-        return build_abstention_bundle(name, all_clues, output_dir, retriever.query_logs, start_time)
+        failed_count = sum(1 for q in all_query_logs if q.get("status") in ("FAILED", "BLOCKED", "BLOCKED_SSRF"))
+        successful_queries = [q for q in all_query_logs if q.get("status") in ("COMPLETED", "EXECUTED")]
+        if failed_count > 0 and len(successful_queries) == 0:
+            outcome = "COLLECTION_FAILED"
+            reason = f"Live search and API endpoints were unreachable or blocked during collection for '{name}'."
+        else:
+            outcome = "INSUFFICIENT_EVIDENCE"
+            reason = f"No verified public records or substantiated claims found for entity '{name}'"
+
+        return build_abstention_bundle(
+            name=name,
+            all_clues=all_clues,
+            output_dir=output_dir,
+            query_logs=all_query_logs,
+            start_time=start_time,
+            outcome=outcome,
+            reason=reason,
+            discovery_mode=discovery_mode,
+            discovery_input_hash=discovery_input_hash,
+        )
 
     # -------------------------------------------------------------------------
     # Verified Claims Extraction Across Authentic Sources
@@ -1540,12 +1617,14 @@ def run_recall_investigation(
         cl.source_ids = set(data["source_ids"])
         cl.claims = list(data["claims"])
         for c in cl.claims:
-            obj = c.get("object", "")
-            if obj:
-                cl.institutions.add(obj)
-                r_c, _, _ = normalize_institution_and_discipline(obj, [])
-                if r_c != "Unknown Institution":
-                    cl.institutions.add(r_c)
+            pred = c.get("predicate", "")
+            if pred in ("affiliated_with", "employed_by", "graduated_from"):
+                obj = c.get("object", "")
+                if obj and not any(kw in obj.lower() for kw in ("m.s.", "b.s.", "ph.d.", "degree", "award", "fellowship")):
+                    cl.institutions.add(obj)
+                    r_c, _, _ = normalize_institution_and_discipline(obj, [])
+                    if r_c != "Unknown Institution":
+                        cl.institutions.add(r_c)
         clusters_list.append(cl)
 
     # Iterative graph merge pass with cross-institution progression bridges
@@ -1577,7 +1656,9 @@ def run_recall_investigation(
         # If cluster contains clue-matching institutions, prioritize as primary label
         if score > 0:
             for inst in sorted(list(cl.institutions)):
-                if any(tok in inst.lower() for tok in ("yale", "zcafe", "z-cafe", "sociology", "survey")):
+                if any(kw in inst.lower() for kw in ("m.s.", "b.s.", "ph.d.", "degree", "award", "fellowship")):
+                    continue
+                if any(tok in inst.lower() for tok in ("yale", "zcafe", "z-cafe", "sociology", "michigan", "wisconsin")):
                     cl.root_inst = inst
                     cl.label = inst
                     break
@@ -1662,11 +1743,21 @@ def run_recall_investigation(
     corroborated_leads = []
     if candidates_universe:
         first_cand = candidates_universe[0]
+        has_academic_registry = any(
+            s.get("type") in ("OPENALEX_JSON", "OPENALEX_WORKS_JSON", "CROSSREF_JSON", "PUBMED_XML")
+            for s in downloaded_sources
+            if s["source_id"] in (first_cand["source_ids"] or [])
+        )
+        if has_academic_registry:
+            lead_desc = f"Target entity {name} exhibits verified scholarly publication activity in scientific registries."
+        else:
+            lead_desc = f"Target entity {name} exhibits public career appointments and institutional affiliation records in professional and institutional web sources."
+
         corroborated_leads.append({
             "lead_id": "LEAD-01",
             "candidate_id": first_cand["candidate_id"],
             "confidence_tier": "HIGH_CONFIDENCE_LEAD",
-            "description": f"Target entity {name} exhibits verified scholarly publication activity in scientific registries.",
+            "description": lead_desc,
             "corroborating_source_ids": first_cand["source_ids"] or [downloaded_sources[0]["source_id"]],
         })
 

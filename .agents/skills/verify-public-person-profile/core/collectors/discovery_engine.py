@@ -106,9 +106,14 @@ class UniversalDiscoveryEngine:
 
         return families
 
-    def search_web_endpoint(self, query: str, max_results: int = 10) -> List[Dict[str, str]]:
-        """Executes a real public web search using standard search engines."""
+    def search_web_endpoint(self, query: str, max_results: int = 10) -> Tuple[List[Dict[str, str]], str, Optional[str]]:
+        """
+        Executes a real public web search using standard search engines.
+        Returns: (results, status, error_details)
+        status: 'COMPLETED', 'BLOCKED', or 'FAILED'
+        """
         results = []
+        bing_err = None
         # 1. Primary: Bing Search
         try:
             url_bing = "https://www.bing.com/search?q=" + urllib.parse.quote(query)
@@ -144,13 +149,14 @@ class UniversalDiscoveryEngine:
                             })
                             if len(results) >= max_results:
                                 break
-        except Exception:
-            pass
+        except Exception as e:
+            bing_err = f"{type(e).__name__}: {str(e)}"
 
         if results:
-            return results
+            return results, "COMPLETED", None
 
         # 2. Fallback: DuckDuckGo Form POST
+        ddg_err = None
         data = urllib.parse.urlencode({"q": query}).encode("utf-8")
         req = urllib.request.Request(
             "https://html.duckduckgo.com/html/",
@@ -175,9 +181,19 @@ class UniversalDiscoveryEngine:
                         })
                         if len(results) >= max_results:
                             break
-        except Exception:
-            pass
-        return results
+        except Exception as e:
+            ddg_err = f"{type(e).__name__}: {str(e)}"
+
+        if results:
+            return results, "COMPLETED", None
+
+        # Evaluated when 0 results found
+        if bing_err and ddg_err:
+            combined_err = f"Bing: {bing_err}; DDG: {ddg_err}"
+            status = "BLOCKED" if any(c in combined_err for c in ("403", "429", "Forbidden")) else "FAILED"
+            return [], status, combined_err
+
+        return [], "COMPLETED", None
 
     def run_discovery(
         self,
@@ -218,14 +234,17 @@ class UniversalDiscoveryEngine:
                 if total_queries >= self.query_budget:
                     break
                 total_queries += 1
-                search_res = self.search_web_endpoint(q, max_results=10)
-                self.query_logs.append({
+                search_res, q_status, q_err = self.search_web_endpoint(q, max_results=10)
+                q_log = {
                     "backend": "DiscoveryWebSearch",
                     "query_text": q,
                     "executed_at": datetime.now(timezone.utc).isoformat(),
-                    "status": "COMPLETED",
+                    "status": q_status,
                     "results_count": len(search_res),
-                })
+                }
+                if q_err:
+                    q_log["error"] = q_err
+                self.query_logs.append(q_log)
                 for rank, res in enumerate(search_res, 1):
                     url = res["url"]
                     if url not in self.discovered_urls:

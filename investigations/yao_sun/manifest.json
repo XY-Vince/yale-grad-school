@@ -12,28 +12,28 @@
       "sha256": "b6beba22953095f5b29a8aa57d7ff29a940d4ff9486fdb1a97d4b94562ec2fd6"
     },
     "verified_claims.jsonl": {
-      "byte_size": 7637,
-      "sha256": "6403569918fae80c1fbdb64efb2ef0e1b6e4417e25c6370fbba89460b3428196"
+      "byte_size": 6758,
+      "sha256": "0200da16e6c02e2add76dfbb9066fdc0c51f557a8c47cb6a88f461a04614b2e1"
     },
     "corroborated_leads.jsonl": {
-      "byte_size": 516,
-      "sha256": "e3db0d8cd8d80e1394ccee7b9004869e2e2b1ee0621a94c7d973b559f5a74a8c"
+      "byte_size": 591,
+      "sha256": "504d099eda15422d3ad0d044fce340e118ff811587b686b41ff1c9a8c1b5a0ff"
     },
     "source_inventory.jsonl": {
       "byte_size": 11322,
       "sha256": "5cdbc74c006c52600f3e7a2018757a6a781f43bda716e86131647c1b8b285038"
     },
     "recall_report.md": {
-      "byte_size": 6898,
-      "sha256": "ca250cc1d9549c5a8a0ff9c4b500f0348f2b6cd09345f7daf074426337c64e84"
+      "byte_size": 8673,
+      "sha256": "9ef134bfd054259df4fbf991665a9acecdfdc98316dcd8cbda3a8210f37eca61"
     },
     "open_questions.jsonl": {
-      "byte_size": 227,
-      "sha256": "5eabe43c69d8e0a06b69d125b00f53e1f8a30f0a1d0e37ce20a7af632ef27ebe"
+      "byte_size": 234,
+      "sha256": "6af93ab50c22ad872aefc7e39a4cd1ae8f1bd5b1728dc774b737c83f011ea14b"
     },
     "dossier.json": {
-      "byte_size": 5067,
-      "sha256": "8f9798eec494fa029197b8cc584cc3c03c04181fc6ad4063fdcdeb485b6b92b1"
+      "byte_size": 7639,
+      "sha256": "3b9a7febc9bfefb5d7c89db07bdbe7b74f73d5f6e2209ec2d770fe70881e6f4c"
     },
     "query_logs.jsonl": {
       "byte_size": 7706,

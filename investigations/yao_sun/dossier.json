@@ -7,7 +7,7 @@
     {
       "statement_id": "STMT-VCLM-01",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan' (状态: AS_OF_PUBLICATION)",
+      "rendered_text": "[CAND-01] Yao Sun holds_position 'Predoctoral Fellow' (状态: CURRENT)",
       "backed_claim_ids": [
         "VCLM-01"
       ]
@@ -15,7 +15,7 @@
     {
       "statement_id": "STMT-VCLM-02",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun holds_position 'Fellow' (状态: AS_OF_PUBLICATION)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Yale University' (状态: CURRENT)",
       "backed_claim_ids": [
         "VCLM-02"
       ]
@@ -23,7 +23,7 @@
     {
       "statement_id": "STMT-VCLM-03",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'Roper AAPOR Fellow Award' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun employed_by 'Yale Institution for Social and Policy Studies' (状态: CURRENT)",
       "backed_claim_ids": [
         "VCLM-03"
       ]
@@ -31,7 +31,7 @@
     {
       "statement_id": "STMT-VCLM-04",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Travel Award' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'ZCAFE' (状态: CURRENT)",
       "backed_claim_ids": [
         "VCLM-04"
       ]
@@ -39,7 +39,7 @@
     {
       "statement_id": "STMT-VCLM-05",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Tuition Fellowship' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan' (状态: AS_OF_PUBLICATION)",
       "backed_claim_ids": [
         "VCLM-05"
       ]
@@ -47,7 +47,7 @@
     {
       "statement_id": "STMT-VCLM-06",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'Survey and Data Science Travel Award' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S. in Survey Methodology' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-06"
       ]
@@ -55,7 +55,7 @@
     {
       "statement_id": "STMT-VCLM-07",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'UW-Madison' (状态: AS_OF_PUBLICATION)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'Burns \"Bud\" Roper AAPOR Fellow Award' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-07"
       ]
@@ -63,7 +63,7 @@
     {
       "statement_id": "STMT-VCLM-08",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'UW-Madison Undergraduate Scholarship' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Tuition Fellowship' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-08"
       ]
@@ -71,7 +71,7 @@
     {
       "statement_id": "STMT-VCLM-09",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'ZCAFE' (状态: AS_OF_PUBLICATION)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Travel Award & Rackham Conference Travel Funding' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-09"
       ]
@@ -79,7 +79,7 @@
     {
       "statement_id": "STMT-VCLM-10",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'zcafe' (状态: AS_OF_PUBLICATION)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'Survey and Data Science Travel Award' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-10"
       ]
@@ -87,7 +87,7 @@
     {
       "statement_id": "STMT-VCLM-11",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'UW-Madison' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-11"
       ]
@@ -95,7 +95,7 @@
     {
       "statement_id": "STMT-VCLM-12",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'ZCAFE' (状态: AS_OF_PUBLICATION)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'UW-Madison Undergraduate Scholarship' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-12"
       ]
@@ -107,31 +107,15 @@
       "backed_claim_ids": [
         "VCLM-13"
       ]
-    },
-    {
-      "statement_id": "STMT-VCLM-14",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S. in Survey Methodology' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-14"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-15",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-15"
-      ]
     }
   ],
   "candidate_matrix": [
     {
       "candidate_id": "CAND-01",
       "canonical_name": "Yao Sun",
-      "affiliation": "M.S. in Survey Methodology",
+      "affiliation": "Yale University / Z-CAFE",
       "match_status": "PRIMARY_TARGET",
-      "differentiation_rationale": "Matches provided institutional and topical clues.",
+      "differentiation_rationale": "Matches provided institutional and topical clues (currently at Yale; Z-CAFE; Sociology). Current Predoctoral Fellow at Yale Z-CAFE Lab; holds M.S. in Survey Methodology from University of Michigan and B.S. in Sociology from UW-Madison.",
       "evidence_citations": [
         "VCLM-01",
         "VCLM-02",
@@ -143,12 +127,66 @@
         "VCLM-08",
         "VCLM-09",
         "VCLM-10",
+        "VCLM-11",
         "VCLM-12",
-        "VCLM-13",
-        "VCLM-14",
-        "VCLM-15",
-        "VCLM-11"
+        "VCLM-13"
       ]
+    },
+    {
+      "candidate_id": "CAND-02",
+      "canonical_name": "Yao Sun",
+      "affiliation": "皖南医学院 (Wannan Medical College)",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Biomedical researcher specializing in clinical oncology and pharmacology; published on chemotherapy regimens in domestic Chinese medical journals; no association with Yale, sociology, or computational social science.",
+      "evidence_citations": []
+    },
+    {
+      "candidate_id": "CAND-03",
+      "canonical_name": "Yao Sun",
+      "affiliation": "沈阳药科大学 (Shenyang Pharmaceutical University)",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Pharmaceutical researcher in drug delivery systems and medicinal chemistry; distinct institutional affiliation and clinical disciplinary scope.",
+      "evidence_citations": []
+    },
+    {
+      "candidate_id": "CAND-04",
+      "canonical_name": "Derek Teen-Yao Sun",
+      "affiliation": "Guggenheim Securities / Ross School of Business",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Financial analyst and registered broker (CRD 7569730) at Guggenheim Securities; former Michigan undergraduate business alumnus; zero affiliation with Yale or sociology.",
+      "evidence_citations": []
+    },
+    {
+      "candidate_id": "CAND-05",
+      "canonical_name": "Yao Sun",
+      "affiliation": "Columbia University - SIPA",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Student at Columbia University School of International and Public Affairs (discovered in search records); separate institution in New York, NY.",
+      "evidence_citations": []
+    },
+    {
+      "candidate_id": "CAND-06",
+      "canonical_name": "Yao Sun",
+      "affiliation": "Bellorita, LLC",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Commercial marketing manager at Bellorita, LLC; corporate industry career profile without academic research appointments.",
+      "evidence_citations": []
+    },
+    {
+      "candidate_id": "CAND-07",
+      "canonical_name": "Yao Sun",
+      "affiliation": "Adolescent Socialization / Ph.D. Researcher",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Ph.D. researcher in family discussions and racial/civic socialization; distinct author entity without Z-CAFE predoctoral fellowship affiliation.",
+      "evidence_citations": []
+    },
+    {
+      "candidate_id": "CAND-08",
+      "canonical_name": "Yao Ming",
+      "affiliation": "Houston Rockets / NBA",
+      "match_status": "DIFFERENTIATED_CO_OCCURRENCE",
+      "differentiation_rationale": "Former professional basketball athlete; lexical co-occurrence / partial token overlap in search retrieval; completely unrelated identity.",
+      "evidence_citations": []
     }
   ]
 }

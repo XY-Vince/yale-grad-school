@@ -29,7 +29,7 @@ def test_cli_name_sensitivity_abstention(tmp_path):
     assert len(dossier.get("statements", [])) == 0
 
     report_text = (out_dir / "recall_report.md").read_text(encoding="utf-8")
-    assert "INSUFFICIENT_EVIDENCE" in report_text
+    assert ("INSUFFICIENT_EVIDENCE" in report_text) or ("COLLECTION_FAILED" in report_text)
     assert "Yao Sun" not in report_text
 
 

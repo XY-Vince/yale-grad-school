@@ -39,10 +39,10 @@ def validate_safe_url(url: str) -> Tuple[bool, str, Optional[str]]:
     try:
         addr_infos = socket.getaddrinfo(hostname, None)
     except socket.gaierror:
-        return False, url, None
+        return False, url, "DNS_RESOLUTION_FAILED"
 
     if not addr_infos:
-        return False, url, None
+        return False, url, "DNS_RESOLUTION_FAILED"
 
     for addr in addr_infos:
         ip_str = addr[4][0]
