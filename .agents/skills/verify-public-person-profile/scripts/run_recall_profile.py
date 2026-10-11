@@ -385,6 +385,8 @@ def build_abstention_bundle(
     output_dir: Path,
     query_logs: List[Dict[str, Any]],
     start_time: float,
+    discovery_mode: str = "LIVE",
+    discovery_input_hash: Optional[str] = None,
 ) -> Path:
     raw_dir = output_dir / "raw_sources"
     raw_dir.mkdir(parents=True, exist_ok=True)
@@ -406,6 +408,8 @@ def build_abstention_bundle(
         "created_at": datetime.now(timezone.utc).isoformat(),
         "target_name": name,
         "run_outcome": "INSUFFICIENT_EVIDENCE",
+        "discovery_mode": discovery_mode,
+        "discovery_input_hash": discovery_input_hash,
         "abstention_record": {
             "gap_id": gap_id,
             "reason": f"No verified public records or substantiated claims found for '{name}'",
@@ -587,15 +591,255 @@ class EvidenceGraphCluster:
         self.claims.extend(other.claims)
 
 
+NON_PERSON_WORDS = {
+    "university", "college", "institute", "department", "center", "school", "program", "hospital",
+    "united", "states", "new", "york", "san", "francisco", "north", "south", "east", "west",
+    "first", "place", "second", "third", "honorable", "mention", "best", "paper", "student",
+    "fellow", "fellowship", "award", "prize", "scholarship", "survey", "methodology", "data", "science",
+    "predoctoral", "postdoctoral", "assistant", "associate", "professor", "doctor", "master",
+    "bachelor", "dean", "director", "chair", "annual", "conference", "meeting", "journal",
+    "american", "association", "national", "public", "opinion", "research", "midwest",
+    "roper", "center", "michigan", "wisconsin", "madison", "yale", "georgetown", "chicago",
+    "harvard", "princeton", "columbia", "stanford", "berkeley", "china", "chinese",
+    "social", "sciences", "health", "medicine", "pharmacy", "medical", "pharmaceutical",
+    "curriculum", "vitae", "resume", "table", "content", "page", "spring", "summer", "fall", "winter",
+    "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"
+}
+
+
+def find_person_names_in_text(text: str, target_name: str) -> List[Tuple[str, int, int]]:
+    matches = []
+    for m in re.finditer(r'\b([A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+)\b', text):
+        candidate = m.group(1)
+        tokens = [t.lower().replace(".", "") for t in candidate.split()]
+        if any(t in NON_PERSON_WORDS for t in tokens):
+            continue
+        matches.append((candidate, m.start(), m.end()))
+    return matches
+
+
+def segment_unit_by_person(unit_text: str, target_name: str) -> Tuple[str, bool]:
+    person_matches = find_person_names_in_text(unit_text, target_name)
+    target_lower = target_name.lower()
+
+    # Find distinct names that aren't target_name
+    other_names = [p for p in person_matches if p[0].lower() != target_lower and not match_author_name(target_name, p[0])]
+    if not other_names:
+        return unit_text, False
+
+    # 1. Delimiter-based splitting (;, \n, |, •, bullet, etc.)
+    parts = re.split(r'[;\n|•·]+', unit_text)
+    for part in parts:
+        if target_lower in part.lower():
+            part_others = [p for p in find_person_names_in_text(part, target_name) if p[0].lower() != target_lower and not match_author_name(target_name, p[0])]
+            if not part_others:
+                return part.strip(), False
+
+    # 2. Sequential name boundary splitting
+    all_names = sorted(person_matches, key=lambda x: x[1])
+    target_idx = -1
+    for idx, (pname, pstart, pend) in enumerate(all_names):
+        if pname.lower() == target_lower or match_author_name(target_name, pname):
+            target_idx = idx
+            break
+
+    if target_idx != -1:
+        start_char = 0
+        if target_idx > 0:
+            start_char = all_names[target_idx - 1][2]
+        end_char = len(unit_text)
+        if target_idx < len(all_names) - 1:
+            end_char = all_names[target_idx + 1][1]
+
+        segment = unit_text[start_char:end_char].strip()
+        segment = re.sub(r'^(?:and|&|,|-|—|–)\s*', '', segment)
+        segment = re.sub(r'\s*(?:and|&|,|-|—|–)\s*$', '', segment)
+        if target_lower in segment.lower():
+            return segment, False
+
+    # Ambiguous multi-person co-occurrence
+    return unit_text, True
+
+
+def extract_atomic_units(raw_content: str, doc_type: str, file_path: Path, name: str) -> List[Dict[str, Any]]:
+    units = []
+    norm_name = name.lower()
+
+    if doc_type == "WEB_PDF" and fitz:
+        try:
+            doc = fitz.open(file_path)
+            for page_idx, page in enumerate(doc):
+                ptext = page.get_text()
+                if norm_name in ptext.lower() or match_author_name(name, ptext):
+                    lines = [l.strip() for l in ptext.splitlines() if l.strip()]
+                    for l_idx, line in enumerate(lines, 1):
+                        if norm_name in line.lower() or match_author_name(name, line):
+                            sents = [s.strip() for s in re.split(r'(?<=[.!?。！？;])\s+', line) if s.strip()]
+                            for s_idx, sent in enumerate(sents):
+                                if norm_name in sent.lower() or match_author_name(name, sent):
+                                    units.append({
+                                        "unit_type": "pdf_line",
+                                        "locator": f"Page {page_idx + 1} Line {l_idx}",
+                                        "text": sent,
+                                        "raw_block": line,
+                                    })
+        except Exception:
+            pass
+        return units
+
+    # Web HTML
+    # 1. JSON-LD Person objects
+    for m in re.finditer(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', raw_content, re.DOTALL | re.IGNORECASE):
+        raw_ld = m.group(1).strip()
+        try:
+            parsed = json.loads(raw_ld)
+            objs = []
+            if isinstance(parsed, dict):
+                if parsed.get("@type") == "Person" or "name" in parsed:
+                    objs.append(parsed)
+                if "@graph" in parsed and isinstance(parsed["@graph"], list):
+                    objs.extend([x for x in parsed["@graph"] if isinstance(x, dict) and x.get("@type") == "Person"])
+            elif isinstance(parsed, list):
+                objs.extend([x for x in parsed if isinstance(x, dict) and x.get("@type") == "Person"])
+
+            for obj in objs:
+                p_name = obj.get("name", "")
+                if not p_name or (not match_author_name(name, p_name) and norm_name not in p_name.lower()):
+                    continue
+
+                # A. worksFor
+                w_list = obj.get("worksFor", [])
+                if isinstance(w_list, dict):
+                    w_list = [w_list]
+                for wf in w_list:
+                    w_name = wf.get("name", "") if isinstance(wf, dict) else str(wf)
+                    if w_name and not w_name.startswith("*") and len(w_name) >= 3:
+                        units.append({
+                            "unit_type": "json_ld_person",
+                            "locator": "JSON-LD Person.worksFor",
+                            "text": f"{p_name} — {w_name}",
+                            "raw_block": w_name,
+                        })
+
+                # B. alumniOf
+                al_list = obj.get("alumniOf", [])
+                if isinstance(al_list, dict):
+                    al_list = [al_list]
+                for al in al_list:
+                    al_name = al.get("name", "") if isinstance(al, dict) else str(al)
+                    if al_name and not al_name.startswith("*") and len(al_name) >= 3:
+                        units.append({
+                            "unit_type": "json_ld_person",
+                            "locator": "JSON-LD Person.alumniOf",
+                            "text": f"{p_name} — {al_name}",
+                            "raw_block": al_name,
+                        })
+
+                # C. awards
+                aw_list = obj.get("awards", [])
+                if isinstance(aw_list, dict):
+                    aw_list = [aw_list]
+                for aw in aw_list:
+                    aw_str = str(aw).strip()
+                    if aw_str and not aw_str.startswith("*") and len(aw_str) >= 3:
+                        units.append({
+                            "unit_type": "json_ld_person",
+                            "locator": "JSON-LD Person.awards",
+                            "text": f"{p_name} — {aw_str}",
+                            "raw_block": aw_str,
+                        })
+
+                # D. description / bio
+                desc = obj.get("description", "")
+                if desc:
+                    desc_clean = re.sub(r'<[^>]+>', ' ', desc)
+                    for sent in re.split(r'(?<=[.!?。！？;\n])\s+', desc_clean):
+                        sent = sent.strip()
+                        if len(sent) >= 4 and not sent.startswith("*"):
+                            units.append({
+                                "unit_type": "json_ld_person",
+                                "locator": "JSON-LD Person.description",
+                                "text": f"{p_name} — {sent}",
+                                "raw_block": sent,
+                            })
+        except Exception:
+            pass
+
+    # 2. Table rows <tr>...</tr>
+    row_count = 0
+    for m in re.finditer(r'<tr[^>]*>(.*?)</tr>', raw_content, re.DOTALL | re.IGNORECASE):
+        row_count += 1
+        row_html = m.group(1)
+        if norm_name in row_html.lower():
+            cells = [html.unescape(re.sub(r'<[^>]+>', ' ', c)).strip() for c in re.findall(r'<t[dh][^>]*>(.*?)</t[dh]>', row_html, re.DOTALL | re.IGNORECASE)]
+            row_text = " | ".join([c for c in cells if c])
+            if norm_name in row_text.lower():
+                units.append({
+                    "unit_type": "table_row",
+                    "locator": f"Table Row {row_count}",
+                    "text": row_text,
+                    "raw_block": m.group(0),
+                })
+
+    # 3. List items <li>...</li>
+    li_count = 0
+    for m in re.finditer(r'<li[^>]*>(.*?)</li>', raw_content, re.DOTALL | re.IGNORECASE):
+        li_count += 1
+        li_html = m.group(1)
+        if norm_name in li_html.lower():
+            li_clean = normalize_whitespace(html.unescape(re.sub(r'<[^>]+>', ' ', li_html)))
+            if norm_name in li_clean.lower():
+                units.append({
+                    "unit_type": "list_item",
+                    "locator": f"List Item {li_count}",
+                    "text": li_clean,
+                    "raw_block": m.group(0),
+                })
+
+    # 4. Author blocks / meta tags
+    for m in re.finditer(r'<meta[^>]+name=["\']author["\'][^>]+content=["\']([^"\']+)["\']', raw_content, re.IGNORECASE):
+        content = m.group(1).strip()
+        if norm_name in content.lower():
+            units.append({
+                "unit_type": "author_block",
+                "locator": "Meta Author",
+                "text": content,
+                "raw_block": m.group(0),
+            })
+
+    # 5. General DOM text lines & sentences
+    clean_html = re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', raw_content, flags=re.DOTALL | re.IGNORECASE)
+    block_tags = r'</?(?:p|div|h[1-6]|tr|li|ul|ol|table|br|hr|blockquote|section|article|header|footer|aside|nav)[^>]*>'
+    text_with_newlines = re.sub(block_tags, '\n', clean_html, flags=re.IGNORECASE)
+    text_unescaped = html.unescape(re.sub(r'<[^>]+>', ' ', text_with_newlines))
+
+    lines = text_unescaped.split('\n')
+    for line_idx, line in enumerate(lines, 1):
+        line_clean = normalize_whitespace(line)
+        if not line_clean or norm_name not in line_clean.lower():
+            continue
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?。！？;])\s+', line_clean) if s.strip()]
+        for s_idx, sent in enumerate(sentences):
+            if norm_name in sent.lower():
+                units.append({
+                    "unit_type": "sentence",
+                    "locator": f"Line {line_idx}" if len(sentences) == 1 else f"Line {line_idx} Sent {s_idx + 1}",
+                    "text": sent,
+                    "raw_block": line_clean,
+                })
+
+    return units
+
+
 def extract_claims_from_web_document(
     src: Dict[str, Any],
     name: str,
     all_clues: List[str],
     claim_counter: int,
-) -> Tuple[List[Dict[str, Any]], Dict[str, Any], int, Set[Tuple[str, str]]]:
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any], int, Set[Tuple[str, str]], List[Dict[str, Any]]]:
     """
-    Universally extracts factual claims, cluster records, and cross-institution career
-    bridges from an authentic web document (HTML or PDF) without target-specific hardcoding.
+    Extracts factual claims, cluster records, and cross-institution career
+    bridges from an authentic web document (HTML or PDF) using atomic evidence units.
     """
     file_path: Path = src["file_path"]
     src_id: str = src["source_id"]
@@ -604,220 +848,191 @@ def extract_claims_from_web_document(
     publisher: str = src.get("publisher", "Web Publisher")
 
     extracted_claims: List[Dict[str, Any]] = []
+    extracted_leads: List[Dict[str, Any]] = []
     cross_bridges: Set[Tuple[str, str]] = set()
 
     inst_pattern = re.compile(
-        r'\b((?:University of [A-Z][a-zA-Z-]+(?:\s+[A-Z][a-zA-Z-]+)*)|(?:[A-Z][a-zA-Z-]+\s+)+(?:University|College|Institute of Technology|Institute|School|Hospital|Center|Lab(?:oratory)?|Academy|Health)|(?:Department|Center|Institute|School|College|Program)\s+of\s+[A-Za-z\s]+|UW[\s\u2013-]*Madison)\b',
+        r'\b((?:University of [A-Z][a-zA-Z-]+(?:\s+[A-Z][a-zA-Z-]+)*)|'
+        r'(?:[A-Z][a-zA-Z-]+\s+)+(?:University|College|Institute of Technology|Institute|School|Hospital|Center|Lab(?:oratory)?|Academy|Health)|'
+        r'(?:Department|Center|Institute|School|College|Program)\s+of\s+[A-Za-z\s]+|'
+        r'UW[\s\u2013-]*Madison|'
+        r'Z[\s\u2013-]*CAFE(?:\s+Lab)?)\b',
         re.IGNORECASE
     )
     pos_pattern = re.compile(
-        r'\b((?:Predoctoral|Postdoctoral|Assistant|Associate|Full|Research|Graduate|Undergraduate)?\s*(?:Fellow|Scholar|Professor|Researcher|Student|Candidate|Specialist|Scientist|Lecturer|Chair|Dean|Director|Member|Analyst))\b',
+        r'\b((?:Pre-doctoral|Predoctoral|Postdoctoral|Assistant|Associate|Full|Research|Graduate|Undergraduate|Master\'s|Doctoral)?\s*'
+        r'(?:Fellow|Scholar|Professor|Researcher|Student|Candidate|Specialist|Scientist|Lecturer|Chair|Dean|Director|Member|Analyst))\b',
         re.IGNORECASE
     )
     deg_pattern = re.compile(
-        r'\b((?:Ph\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|M\.?A\.?|Master of [A-Za-z\s]+|Bachelor of [A-Za-z\s]+|Doctor of [A-Za-z\s]+)(?:\s+in\s+[A-Z][a-zA-Z\s]+)?)\b',
+        r'\b((?:Ph\.?D\.?|M\.?S\.?|B\.?S\.?|B\.?A\.?|M\.?A\.?|Master(?:\'s)?(?:\s+of\s+[A-Za-z\s]+)?|Bachelor(?:\'s)?(?:\s+of\s+[A-Za-z\s]+)?|Doctor(?:\'s)?(?:\s+of\s+[A-Za-z\s]+)?)'
+        r'(?:\s+in\s+[A-Z][a-zA-Z\s]+)?)\b',
         re.IGNORECASE
     )
     award_pattern = re.compile(
         r'\b([A-Z][a-zA-Z0-9\s\'-]+ (?:Award|Fellow|Fellowship|Prize|Medal|Scholarship))\b'
     )
 
-    clue_tokens = {tok.lower() for tok in extract_significant_tokens(all_clues)}
-
-    contexts: List[Tuple[str, str, str]] = []
-
-    if doc_type == "WEB_PDF" and fitz:
-        try:
-            doc = fitz.open(file_path)
-            for page_idx, page in enumerate(doc):
-                ptext = page.get_text()
-                if match_author_name(name, ptext) or name.lower() in ptext.lower():
-                    loc = f"Page {page_idx + 1}"
-                    for para in ptext.split("\n\n"):
-                        if name.lower() in para.lower():
-                            contexts.append((loc, para, ptext))
-        except Exception:
-            pass
-    else:
+    raw_content = ""
+    if doc_type != "WEB_PDF":
         raw_content = file_path.read_text(encoding="utf-8", errors="replace")
-        if name.lower() in raw_content.lower() or match_author_name(name, raw_content):
-            m_title = re.search(r'<title>(.*?)</title>', raw_content, re.IGNORECASE | re.DOTALL)
-            if m_title and name.lower() in m_title.group(1).lower():
-                contexts.append(("HTML Title", m_title.group(1), raw_content))
 
-            for m_ld in re.finditer(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', raw_content, re.DOTALL | re.IGNORECASE):
-                ld_text = m_ld.group(1)
-                if name.lower() in ld_text.lower():
-                    contexts.append(("JSON-LD Metadata", ld_text, raw_content))
-
-            clean_text = html.unescape(re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", raw_content, flags=re.DOTALL | re.IGNORECASE))
-            clean_text = re.sub(r"<[^>]+>", " ", clean_text)
-            for m in re.finditer(re.escape(name), clean_text, re.IGNORECASE):
-                st = max(0, m.start() - 250)
-                en = min(len(clean_text), m.end() + 250)
-                window = clean_text[st:en]
-                contexts.append(("Web Context", window, raw_content))
-
+    units = extract_atomic_units(raw_content, doc_type, file_path, name)
     c_key = f"web_{src_id}"
-    inst_detected = set()
+    target_insts = set()
     works_detected = []
     seen_claims_keys = set()
 
-    for locator, ctx_text, verbatim_source in contexts:
-        ctx_lower = ctx_text.lower()
-        norm_vsource = normalize_whitespace(verbatim_source)
+    for u in units:
+        unit_text = u["text"]
+        locator = u["locator"]
+        u_type = u["unit_type"]
+
+        # Disambiguate person segments
+        seg_text, is_ambiguous = segment_unit_by_person(unit_text, name)
+
+        if is_ambiguous:
+            lead_id = f"LEAD-{claim_counter:02d}"
+            extracted_leads.append({
+                "lead_id": lead_id,
+                "candidate_id": "CAND-01",
+                "confidence_tier": "TIER_2_CORROBORATED",
+                "description": f"Co-occurrence of {name} and other individuals in atomic unit ({locator}): {seg_text[:140]}.",
+                "corroborating_source_ids": [src_id],
+            })
+            continue
+
+        seg_lower = seg_text.lower()
+        excerpt_to_use = u.get("raw_block", seg_text) if u_type == "json_ld_person" else seg_text
 
         # A. Institutions
-        for im in inst_pattern.finditer(ctx_text):
+        for im in inst_pattern.finditer(seg_text):
             raw_inst = im.group(1).strip()
             root_i, _, clean_label = normalize_institution_and_discipline(raw_inst, [])
             if root_i == "Unknown Institution" and len(raw_inst) < 4:
                 continue
 
-            excerpt = None
-            if raw_inst in verbatim_source:
-                excerpt = raw_inst
-            elif raw_inst.lower() in verbatim_source.lower():
-                idx = verbatim_source.lower().find(raw_inst.lower())
-                excerpt = verbatim_source[idx : idx + len(raw_inst)]
-            elif normalize_whitespace(raw_inst) in norm_vsource:
-                excerpt = normalize_whitespace(raw_inst)
+            key = ("affiliated_with", clean_label)
+            if key not in seen_claims_keys:
+                seen_claims_keys.add(key)
+                cid = f"VCLM-{claim_counter:02d}"
+                claim_counter += 1
+                t_status = "CURRENT" if any(w in seg_lower for w in ("currently", "fellow at", "professor at", "student at", "is a")) else ("HISTORICAL" if any(w in seg_lower for w in ("graduated", "alumni", "former", "b.s.", "b.a.")) else "AS_OF_PUBLICATION")
 
-            if excerpt:
-                key = ("affiliated_with", clean_label)
-                if key not in seen_claims_keys:
-                    seen_claims_keys.add(key)
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    t_status = "CURRENT" if any(w in ctx_lower for w in ("currently", "fellow at", "professor at", "student at", "is a")) else ("HISTORICAL" if any(w in ctx_lower for w in ("graduated", "alumni", "former", "b.s.", "b.a.")) else "AS_OF_PUBLICATION")
-                    extracted_claims.append({
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "affiliated_with",
-                        "object": clean_label,
-                        "source_id": src_id,
-                        "source_file": local_path,
-                        "locator": locator,
-                        "verbatim_excerpt": excerpt,
-                        "temporal_status": t_status,
-                    })
-                    if root_i != "Unknown Institution":
-                        inst_detected.add(root_i)
+                sub_pos = seg_lower.find(name.lower())
+                sub_span = [sub_pos, sub_pos + len(name)] if sub_pos != -1 else [0, len(name)]
+                obj_pos = seg_lower.find(raw_inst.lower())
+                obj_span = [obj_pos, obj_pos + len(raw_inst)] if obj_pos != -1 else [0, len(raw_inst)]
 
-        # Clue token institutional associations
-        for tok in clue_tokens:
-            if tok in ctx_lower and tok not in ("sociology", "curriculum", "vitae", "currently"):
-                idx = verbatim_source.lower().find(tok)
-                if idx != -1:
-                    exc = verbatim_source[idx : idx + len(tok)]
-                    obj_name = exc.upper() if len(exc) <= 6 else exc.title()
-                    key = ("affiliated_with", obj_name)
-                    if key not in seen_claims_keys:
-                        seen_claims_keys.add(key)
-                        cid = f"VCLM-{claim_counter:02d}"
-                        claim_counter += 1
-                        extracted_claims.append({
-                            "claim_id": cid,
-                            "cluster_key": c_key,
-                            "subject": name,
-                            "predicate": "affiliated_with",
-                            "object": obj_name,
-                            "source_id": src_id,
-                            "source_file": local_path,
-                            "locator": locator,
-                            "verbatim_excerpt": exc,
-                            "temporal_status": "CURRENT" if "currently" in ctx_lower else "AS_OF_PUBLICATION",
-                        })
-                        inst_detected.add(obj_name)
+                extracted_claims.append({
+                    "claim_id": cid,
+                    "cluster_key": c_key,
+                    "subject": name,
+                    "predicate": "affiliated_with",
+                    "object": clean_label,
+                    "source_id": src_id,
+                    "source_file": local_path,
+                    "locator": locator,
+                    "verbatim_excerpt": excerpt_to_use,
+                    "subject_span": sub_span,
+                    "object_span": obj_span,
+                    "temporal_status": t_status,
+                    "atomic_unit_type": u_type,
+                })
+                if root_i != "Unknown Institution":
+                    target_insts.add(root_i)
 
         # B. Positions / Roles
-        for pm in pos_pattern.finditer(ctx_text):
+        for pm in pos_pattern.finditer(seg_text):
             raw_pos = pm.group(1).strip()
-            excerpt = None
-            if raw_pos in verbatim_source:
-                excerpt = raw_pos
-            elif raw_pos.lower() in verbatim_source.lower():
-                idx = verbatim_source.lower().find(raw_pos.lower())
-                excerpt = verbatim_source[idx : idx + len(raw_pos)]
-            if excerpt:
-                clean_pos = " ".join([p.capitalize() for p in raw_pos.split()])
-                key = ("holds_position", clean_pos)
-                if key not in seen_claims_keys:
-                    seen_claims_keys.add(key)
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    extracted_claims.append({
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "holds_position",
-                        "object": clean_pos,
-                        "source_id": src_id,
-                        "source_file": local_path,
-                        "locator": locator,
-                        "verbatim_excerpt": excerpt,
-                        "temporal_status": "CURRENT" if any(w in ctx_lower for w in ("is a", "fellow at", "currently")) else "AS_OF_PUBLICATION",
-                    })
+            clean_pos = " ".join([p.capitalize() for p in raw_pos.split()])
+            key = ("holds_position", clean_pos)
+            if key not in seen_claims_keys:
+                seen_claims_keys.add(key)
+                cid = f"VCLM-{claim_counter:02d}"
+                claim_counter += 1
+                t_status = "CURRENT" if any(w in seg_lower for w in ("is a", "fellow at", "currently")) else "AS_OF_PUBLICATION"
+                sub_pos = seg_lower.find(name.lower())
+                sub_span = [sub_pos, sub_pos + len(name)] if sub_pos != -1 else [0, len(name)]
+                obj_pos = seg_lower.find(raw_pos.lower())
+                obj_span = [obj_pos, obj_pos + len(raw_pos)] if obj_pos != -1 else [0, len(raw_pos)]
+
+                extracted_claims.append({
+                    "claim_id": cid,
+                    "cluster_key": c_key,
+                    "subject": name,
+                    "predicate": "holds_position",
+                    "object": clean_pos,
+                    "source_id": src_id,
+                    "source_file": local_path,
+                    "locator": locator,
+                    "verbatim_excerpt": excerpt_to_use,
+                    "subject_span": sub_span,
+                    "object_span": obj_span,
+                    "temporal_status": t_status,
+                    "atomic_unit_type": u_type,
+                })
 
         # C. Degrees
-        for dm in deg_pattern.finditer(ctx_text):
+        for dm in deg_pattern.finditer(seg_text):
             raw_deg = dm.group(1).strip()
-            excerpt = None
-            if raw_deg in verbatim_source:
-                excerpt = raw_deg
-            elif raw_deg.lower() in verbatim_source.lower():
-                idx = verbatim_source.lower().find(raw_deg.lower())
-                excerpt = verbatim_source[idx : idx + len(raw_deg)]
-            if excerpt:
-                key = ("received_degree", raw_deg)
-                if key not in seen_claims_keys:
-                    seen_claims_keys.add(key)
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    extracted_claims.append({
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "received_degree",
-                        "object": raw_deg,
-                        "source_id": src_id,
-                        "source_file": local_path,
-                        "locator": locator,
-                        "verbatim_excerpt": excerpt,
-                        "temporal_status": "HISTORICAL",
-                    })
+            key = ("received_degree", raw_deg)
+            if key not in seen_claims_keys:
+                seen_claims_keys.add(key)
+                cid = f"VCLM-{claim_counter:02d}"
+                claim_counter += 1
+                sub_pos = seg_lower.find(name.lower())
+                sub_span = [sub_pos, sub_pos + len(name)] if sub_pos != -1 else [0, len(name)]
+                obj_pos = seg_lower.find(raw_deg.lower())
+                obj_span = [obj_pos, obj_pos + len(raw_deg)] if obj_pos != -1 else [0, len(raw_deg)]
+
+                extracted_claims.append({
+                    "claim_id": cid,
+                    "cluster_key": c_key,
+                    "subject": name,
+                    "predicate": "received_degree",
+                    "object": raw_deg,
+                    "source_id": src_id,
+                    "source_file": local_path,
+                    "locator": locator,
+                    "verbatim_excerpt": excerpt_to_use,
+                    "subject_span": sub_span,
+                    "object_span": obj_span,
+                    "temporal_status": "HISTORICAL",
+                    "atomic_unit_type": u_type,
+                })
 
         # D. Honors & Awards
-        for am in award_pattern.finditer(ctx_text):
+        for am in award_pattern.finditer(seg_text):
             raw_award = am.group(1).strip()
-            excerpt = None
-            if raw_award in verbatim_source:
-                excerpt = raw_award
-            elif raw_award.lower() in verbatim_source.lower():
-                idx = verbatim_source.lower().find(raw_award.lower())
-                excerpt = verbatim_source[idx : idx + len(raw_award)]
-            if excerpt:
-                key = ("honored_with", raw_award)
-                if key not in seen_claims_keys:
-                    seen_claims_keys.add(key)
-                    cid = f"VCLM-{claim_counter:02d}"
-                    claim_counter += 1
-                    extracted_claims.append({
-                        "claim_id": cid,
-                        "cluster_key": c_key,
-                        "subject": name,
-                        "predicate": "honored_with",
-                        "object": raw_award,
-                        "source_id": src_id,
-                        "source_file": local_path,
-                        "locator": locator,
-                        "verbatim_excerpt": excerpt,
-                        "temporal_status": "HISTORICAL",
-                    })
+            key = ("honored_with", raw_award)
+            if key not in seen_claims_keys:
+                seen_claims_keys.add(key)
+                cid = f"VCLM-{claim_counter:02d}"
+                claim_counter += 1
+                sub_pos = seg_lower.find(name.lower())
+                sub_span = [sub_pos, sub_pos + len(name)] if sub_pos != -1 else [0, len(name)]
+                obj_pos = seg_lower.find(raw_award.lower())
+                obj_span = [obj_pos, obj_pos + len(raw_award)] if obj_pos != -1 else [0, len(raw_award)]
 
-    # Generate cross-institution career progression bridges
-    inst_list = sorted(list(inst_detected))
+                extracted_claims.append({
+                    "claim_id": cid,
+                    "cluster_key": c_key,
+                    "subject": name,
+                    "predicate": "honored_with",
+                    "object": raw_award,
+                    "source_id": src_id,
+                    "source_file": local_path,
+                    "locator": locator,
+                    "verbatim_excerpt": excerpt_to_use,
+                    "subject_span": sub_span,
+                    "object_span": obj_span,
+                    "temporal_status": "HISTORICAL",
+                    "atomic_unit_type": u_type,
+                })
+
+    # Generate cross-institution career progression bridges ONLY for the target entity
+    inst_list = sorted(list(target_insts))
     for i in range(len(inst_list)):
         for j in range(i + 1, len(inst_list)):
             cross_bridges.add((inst_list[i], inst_list[j]))
@@ -832,7 +1047,7 @@ def extract_claims_from_web_document(
         "claims": extracted_claims,
     }
 
-    return extracted_claims, cluster_data, claim_counter, cross_bridges
+    return extracted_claims, cluster_data, claim_counter, cross_bridges, extracted_leads
 
 
 def run_recall_investigation(
@@ -843,6 +1058,8 @@ def run_recall_investigation(
     query_budget: int = 25,
     seed_urls: Optional[List[str]] = None,
     discovery_file: Optional[Path] = None,
+    discover_live: bool = False,
+    resume: bool = False,
 ) -> Path:
     start_time = time.time()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -851,18 +1068,42 @@ def run_recall_investigation(
     all_clues = [c for c in ([clue] + (additional_clues or [])) if c.strip()]
     norm_name = " ".join(name.strip().lower().split())
 
+    # Resolve discovery mode strictly
+    if discovery_file:
+        discovery_mode = "CURATED_FILE"
+        discovery_input_hash = compute_sha256(discovery_file.read_bytes())
+        target_preload = discovery_file
+    elif resume:
+        res_file = output_dir / "discovery_results.jsonl"
+        if res_file.exists():
+            discovery_mode = "RESUMED"
+            discovery_input_hash = compute_sha256(res_file.read_bytes())
+            target_preload = res_file
+        else:
+            discovery_mode = "LIVE"
+            discovery_input_hash = None
+            target_preload = None
+    else:
+        # Default or --discover-live: Always LIVE discovery (never silently reuse cached discovery)
+        discovery_mode = "LIVE"
+        discovery_input_hash = None
+        target_preload = None
+        cached_res = output_dir / "discovery_results.jsonl"
+        if cached_res.exists():
+            cached_res.unlink(missing_ok=True)
+
     retriever = UniversalEvidenceRetriever(query_budget=query_budget)
     downloaded_sources: List[Dict[str, Any]] = []
     source_counter = 1
 
     # 1. Universal Discovery Layer (Parameter-driven, zero target-specific branches)
     disc_engine = UniversalDiscoveryEngine(query_budget=query_budget)
-    load_candidate = discovery_file or (output_dir / "discovery_results.jsonl" if (output_dir / "discovery_results.jsonl").exists() else None)
     discovery_records = disc_engine.run_discovery(
         name=name,
         clues=all_clues,
         output_dir=output_dir,
-        preloaded_file=load_candidate,
+        preloaded_file=target_preload,
+        force_live=(discovery_mode == "LIVE"),
     )
 
     # 2. Derive Web Probe Targets strictly from Discovery and optional Seed URLs
@@ -1036,26 +1277,9 @@ def run_recall_investigation(
     # -------------------------------------------------------------------------
     raw_clusters: Dict[str, Dict[str, Any]] = {}
     verified_claims: List[Dict[str, Any]] = []
+    extra_web_leads: List[Dict[str, Any]] = []
     claim_counter = 1
     global_cross_bridges: Set[Tuple[str, str]] = set()
-
-    # Discover cross-institution progression bridges from multi-entity discovery snippets
-    inst_pattern_disc = re.compile(
-        r'\b((?:University of [A-Z][a-zA-Z-]+(?:\s+[A-Z][a-zA-Z-]+)*)|(?:[A-Z][a-zA-Z-]+\s+)+(?:University|College|Institute of Technology|Institute|School|Hospital|Center|Lab(?:oratory)?|Academy|Health)|(?:Department|Center|Institute|School|College|Program)\s+of\s+[A-Za-z\s]+|UW[\s\u2013-]*Madison|Yale|Z-CAFE|ZCAFE)\b',
-        re.IGNORECASE
-    )
-    for rec in discovery_records:
-        text = f"{rec.get('title', '')} {rec.get('snippet', '')}"
-        insts = set()
-        for im in inst_pattern_disc.finditer(text):
-            root_i, _, _ = normalize_institution_and_discipline(im.group(1).strip(), [])
-            if root_i != "Unknown Institution":
-                insts.add(root_i)
-        ilist = sorted(list(insts))
-        for i in range(len(ilist)):
-            for j in range(i + 1, len(ilist)):
-                global_cross_bridges.add((ilist[i], ilist[j]))
-                global_cross_bridges.add((ilist[j], ilist[i]))
 
     for src in downloaded_sources:
         src_id = src["source_id"]
@@ -1275,7 +1499,7 @@ def run_recall_investigation(
 
         # Web HTML & PDF (Substantiated factual assertions)
         elif src["type"] in ("WEB_HTML", "WEB_PDF"):
-            claims_from_doc, cluster_data, claim_counter, doc_bridges = extract_claims_from_web_document(
+            claims_from_doc, cluster_data, claim_counter, doc_bridges, doc_leads = extract_claims_from_web_document(
                 src=src,
                 name=name,
                 all_clues=all_clues,
@@ -1286,10 +1510,22 @@ def run_recall_investigation(
                 c_key = f"web_{src['source_id']}"
                 raw_clusters[c_key] = cluster_data
                 verified_claims.extend(claims_from_doc)
+            if doc_leads:
+                extra_web_leads.extend(doc_leads)
+
+    all_query_logs = disc_engine.query_logs + retriever.query_logs
 
     # If extraction found 0 verifiable claims, directly abstain
     if not verified_claims:
-        return build_abstention_bundle(name, all_clues, output_dir, retriever.query_logs, start_time)
+        return build_abstention_bundle(
+            name=name,
+            all_clues=all_clues,
+            output_dir=output_dir,
+            query_logs=all_query_logs,
+            start_time=start_time,
+            discovery_mode=discovery_mode,
+            discovery_input_hash=discovery_input_hash,
+        )
 
     # -------------------------------------------------------------------------
     # Evidence Graph Resolution (Must-Link & Cannot-Link Clustering)
@@ -1419,29 +1655,34 @@ def run_recall_investigation(
 
     # Write query_logs.jsonl
     with open(output_dir / "query_logs.jsonl", "w", encoding="utf-8") as qf:
-        for q in retriever.query_logs:
+        for q in all_query_logs:
             qf.write(json.dumps(q, ensure_ascii=False) + "\n")
 
     # Generate Corroborated Leads (Tier 2) - Strict Gating
     corroborated_leads = []
-    first_cand = candidates_universe[0]
-    corroborated_leads.append({
-        "lead_id": "LEAD-01",
-        "candidate_id": first_cand["candidate_id"],
-        "confidence_tier": "HIGH_CONFIDENCE_LEAD",
-        "description": f"Target entity {name} exhibits verified scholarly publication activity in scientific registries.",
-        "corroborating_source_ids": first_cand["source_ids"] or [downloaded_sources[0]["source_id"]],
-    })
-
-    # Only generate correlation lead if primary_candidate_id is locked and clue_score > 0
-    if primary_candidate_id is not None and has_clue_match:
+    if candidates_universe:
+        first_cand = candidates_universe[0]
         corroborated_leads.append({
-            "lead_id": "LEAD-02",
-            "candidate_id": primary_candidate_id,
-            "confidence_tier": "MODERATE_CONFIDENCE_LEAD",
-            "description": f"Domain and institutional signals correlate with clues: {'; '.join(all_clues)}.",
-            "corroborating_source_ids": first_cand["source_ids"][:1] or [downloaded_sources[0]["source_id"]],
+            "lead_id": "LEAD-01",
+            "candidate_id": first_cand["candidate_id"],
+            "confidence_tier": "HIGH_CONFIDENCE_LEAD",
+            "description": f"Target entity {name} exhibits verified scholarly publication activity in scientific registries.",
+            "corroborating_source_ids": first_cand["source_ids"] or [downloaded_sources[0]["source_id"]],
         })
+
+        # Only generate correlation lead if primary_candidate_id is locked and clue_score > 0
+        if primary_candidate_id is not None and has_clue_match:
+            corroborated_leads.append({
+                "lead_id": "LEAD-02",
+                "candidate_id": primary_candidate_id,
+                "confidence_tier": "MODERATE_CONFIDENCE_LEAD",
+                "description": f"Domain and institutional signals correlate with clues: {'; '.join(all_clues)}.",
+                "corroborating_source_ids": first_cand["source_ids"][:1] or [downloaded_sources[0]["source_id"]],
+            })
+
+    for extra_ld in extra_web_leads:
+        extra_ld["lead_id"] = f"LEAD-{len(corroborated_leads) + 1:02d}"
+        corroborated_leads.append(extra_ld)
 
     with open(output_dir / "corroborated_leads.jsonl", "w", encoding="utf-8") as f:
         for ld in corroborated_leads:
@@ -1591,8 +1832,10 @@ def run_recall_investigation(
         "bundle_name": f"{name} Dynamic Investigation Bundle",
         "target_name": name,
         "run_outcome": "COMPLETED",
+        "discovery_mode": discovery_mode,
+        "discovery_input_hash": discovery_input_hash,
         "files": files_manifest,
-        "queries_executed": len(retriever.query_logs),
+        "queries_executed": len(all_query_logs),
         "execution_time_seconds": round(time.time() - start_time, 3),
     }
     (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
@@ -1607,6 +1850,8 @@ def main():
     parser.add_argument("--additional-clues", type=str, nargs="*", default=[], help="Additional search clues.")
     parser.add_argument("--seed-urls", type=str, nargs="*", default=[], help="Optional seed URLs for web investigation.")
     parser.add_argument("--discovery-file", type=Path, default=None, help="Optional preloaded discovery_results.jsonl path.")
+    parser.add_argument("--discover-live", action="store_true", default=False, help="Force new live web discovery.")
+    parser.add_argument("--resume", action="store_true", default=False, help="Resume execution using existing output directory discovery results.")
     parser.add_argument("--output-dir", type=Path, default=Path("runs/test_run"), help="Output bundle directory.")
     parser.add_argument("--query-budget", type=int, default=20, help="Maximum search query budget.")
     args = parser.parse_args()
@@ -1619,6 +1864,8 @@ def main():
         query_budget=args.query_budget,
         seed_urls=args.seed_urls,
         discovery_file=args.discovery_file,
+        discover_live=args.discover_live,
+        resume=args.resume,
     )
     print(f"[✓] Dynamic bundle successfully written to: {out}")
 

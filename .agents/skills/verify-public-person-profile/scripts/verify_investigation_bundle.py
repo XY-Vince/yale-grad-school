@@ -60,6 +60,53 @@ def normalize_whitespace(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+NON_PERSON_WORDS = {
+    "university", "college", "institute", "department", "center", "school", "program", "hospital",
+    "united", "states", "new", "york", "san", "francisco", "north", "south", "east", "west",
+    "first", "place", "second", "third", "honorable", "mention", "best", "paper", "student",
+    "fellow", "fellowship", "award", "prize", "scholarship", "survey", "methodology", "data", "science",
+    "predoctoral", "postdoctoral", "assistant", "associate", "professor", "doctor", "master",
+    "bachelor", "dean", "director", "chair", "annual", "conference", "meeting", "journal",
+    "american", "association", "national", "public", "opinion", "research", "midwest",
+    "roper", "center", "michigan", "wisconsin", "madison", "yale", "georgetown", "chicago",
+    "harvard", "princeton", "columbia", "stanford", "berkeley", "china", "chinese",
+    "social", "sciences", "health", "medicine", "pharmacy", "medical", "pharmaceutical",
+    "curriculum", "vitae", "resume", "table", "content", "page", "spring", "summer", "fall", "winter",
+    "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"
+}
+
+
+def find_person_names_in_text(text: str, subject_name: str) -> List[Tuple[str, int, int]]:
+    matches = []
+    for m in re.finditer(r'\b([A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+)\b', text):
+        candidate = m.group(1)
+        tokens = [t.lower().replace(".", "") for t in candidate.split()]
+        if any(t in NON_PERSON_WORDS for t in tokens):
+            continue
+        matches.append((candidate, m.start(), m.end()))
+    return matches
+
+
+def match_author_name(target_name: str, author_full: str) -> bool:
+    t_parts = [p.lower() for p in target_name.strip().split() if p]
+    a_parts = [p.lower() for p in author_full.strip().split() if p]
+    if not t_parts or not a_parts:
+        return False
+    if len(t_parts) == 1 or len(a_parts) == 1:
+        return " ".join(t_parts) == " ".join(a_parts)
+    t_last = t_parts[-1]
+    a_last = a_parts[-1]
+    if t_last != a_last:
+        return False
+    t_first = t_parts[0]
+    a_first = a_parts[0]
+    return (
+        t_first == a_first
+        or (len(t_first) == 1 and a_first.startswith(t_first))
+        or (len(a_first) == 1 and t_first.startswith(a_first))
+    )
+
+
 class BundleVerifier:
     def __init__(self, bundle_dir: Path):
         self.bundle_dir = bundle_dir.resolve()
@@ -258,6 +305,51 @@ class BundleVerifier:
                     f"Claim {claim_id} verbatim excerpt not replayable in {full_path.name}. "
                     f"Excerpt: '{excerpt[:60]}...'"
                 )
+                continue
+
+            # Atomic Evidence Unit Grounding and Cross-Entity Checks
+            subject = (c.get("subject") or "").strip()
+            obj = (c.get("object") or c.get("object_raw") or "").strip()
+            if not subject:
+                self.errors.append(f"Claim {claim_id} missing subject.")
+                continue
+            if not obj:
+                self.errors.append(f"Claim {claim_id} missing object.")
+                continue
+
+            norm_excerpt = normalize_whitespace(excerpt).lower()
+            norm_obj = normalize_whitespace(obj).lower()
+            obj_tokens = [tok for tok in re.findall(r'[a-zA-Z0-9_\u4e00-\u9fa5]+', norm_obj) if len(tok) >= 3]
+            obj_grounded = (norm_obj in norm_excerpt) or any(tok in norm_excerpt for tok in obj_tokens)
+            if not obj_grounded:
+                self.errors.append(
+                    f"Claim {claim_id} object '{obj}' not grounded in verbatim_excerpt: '{excerpt[:60]}...'"
+                )
+                continue
+
+            norm_subject = normalize_whitespace(subject).lower()
+            sub_grounded = norm_subject in norm_excerpt
+            enclosing_unit = None
+            if not sub_grounded:
+                enclosing_unit = self._find_enclosing_atomic_unit(full_path, excerpt, target_subject=subject)
+                if enclosing_unit:
+                    norm_unit = normalize_whitespace(enclosing_unit).lower()
+                    if norm_subject in norm_unit or match_author_name(subject, enclosing_unit):
+                        sub_grounded = True
+
+            if not sub_grounded:
+                self.errors.append(
+                    f"Claim {claim_id} subject '{subject}' not grounded in atomic evidence unit for object '{obj}'. Excerpt: '{excerpt[:60]}...'"
+                )
+                continue
+
+            unit_to_check = enclosing_unit if enclosing_unit else excerpt
+            if c.get("predicate") != "authored_work":
+                contam_name = self._detect_cross_entity_contamination(unit_to_check, subject, obj)
+                if contam_name:
+                    self.errors.append(
+                        f"Claim {claim_id} cross-entity attribution violation: object '{obj}' belongs to another entity '{contam_name}' in evidence unit: '{unit_to_check[:80]}...'"
+                    )
 
         self.info.append(f"Audited {claim_count} verified claims.")
 
@@ -299,6 +391,16 @@ class BundleVerifier:
                     stripped = re.sub(r"<[^>]+>", " ", content)
                     if norm_excerpt in normalize_whitespace(stripped) or norm_excerpt in normalize_whitespace(html.unescape(stripped)):
                         return True
+                    for m in re.finditer(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', content, re.DOTALL | re.IGNORECASE):
+                        raw_ld = m.group(1).strip()
+                        if norm_excerpt in normalize_whitespace(raw_ld) or norm_excerpt in normalize_whitespace(raw_ld.replace(r'\"', '"').replace(r'\/', '/')):
+                            return True
+                        try:
+                            parsed = json.loads(raw_ld)
+                            if norm_excerpt in normalize_whitespace(json.dumps(parsed)):
+                                return True
+                        except Exception:
+                            pass
                 # 3. JSON unescaped match
                 if filepath.suffix.lower() == ".json":
                     unescaped = content.replace(chr(92) + chr(34), chr(34))
@@ -315,6 +417,272 @@ class BundleVerifier:
             except Exception as e:
                 self.errors.append(f"File read error on {filepath.name}: {e}")
                 return False
+
+    def _find_enclosing_atomic_unit(self, filepath: Path, excerpt: str, target_subject: Optional[str] = None) -> Optional[str]:
+        norm_exc = normalize_whitespace(excerpt).lower()
+        suffix = filepath.suffix.lower()
+
+        # 1. PDF Documents
+        if suffix == ".pdf":
+            if not fitz:
+                return None
+            try:
+                doc = fitz.open(filepath)
+                for page in doc:
+                    ptext = page.get_text()
+                    for line in ptext.splitlines():
+                        if norm_exc in normalize_whitespace(line).lower():
+                            return line.strip()
+                return None
+            except Exception:
+                return None
+
+        # 2. JSON Files (CrossRef, OpenAlex, etc.)
+        elif suffix == ".json":
+            try:
+                content = filepath.read_text(encoding="utf-8", errors="replace")
+                data = json.loads(content)
+                items = []
+                if isinstance(data, list):
+                    items = data
+                elif isinstance(data, dict):
+                    if "message" in data and isinstance(data["message"], dict) and "items" in data["message"]:
+                        items = data["message"]["items"]
+                    elif "items" in data and isinstance(data["items"], list):
+                        items = data["items"]
+                    elif "results" in data and isinstance(data["results"], list):
+                        items = data["results"]
+                    else:
+                        items = [data]
+
+                for it in items:
+                    if not isinstance(it, dict):
+                        continue
+
+                    # Author-level affiliations (CrossRef)
+                    authors = it.get("author", [])
+                    if isinstance(authors, list):
+                        matching_authors = []
+                        for a in authors:
+                            if not isinstance(a, dict):
+                                continue
+                            a_name = f"{a.get('given', '')} {a.get('family', '')}".strip()
+                            affs = a.get("affiliation", [])
+                            if isinstance(affs, list):
+                                for aff in affs:
+                                    aff_name = aff.get("name", "") if isinstance(aff, dict) else str(aff)
+                                    if norm_exc in normalize_whitespace(aff_name).lower():
+                                        matching_authors.append((a_name, aff_name))
+                        if matching_authors:
+                            if target_subject:
+                                for a_name, aff_name in matching_authors:
+                                    if match_author_name(target_subject, a_name) or target_subject.lower() in a_name.lower():
+                                        return f"{a_name} — {aff_name}"
+                            return f"{matching_authors[0][0]} — {matching_authors[0][1]}"
+
+                    # Authorship-level institutions (OpenAlex)
+                    authorships = it.get("authorships", [])
+                    if isinstance(authorships, list):
+                        matching_authors = []
+                        for ash in authorships:
+                            if not isinstance(ash, dict):
+                                continue
+                            a_name = ash.get("author", {}).get("display_name", "")
+                            insts = ash.get("institutions", [])
+                            if isinstance(insts, list):
+                                for inst in insts:
+                                    inst_name = inst.get("display_name", "") if isinstance(inst, dict) else str(inst)
+                                    if norm_exc in normalize_whitespace(inst_name).lower():
+                                        matching_authors.append((a_name, inst_name))
+                        if matching_authors:
+                            if target_subject:
+                                for a_name, inst_name in matching_authors:
+                                    if match_author_name(target_subject, a_name) or target_subject.lower() in a_name.lower():
+                                        return f"{a_name} — {inst_name}"
+                            return f"{matching_authors[0][0]} — {matching_authors[0][1]}"
+
+                    # Work title match (CrossRef / OpenAlex)
+                    title = ""
+                    if isinstance(it.get("title"), list) and it["title"]:
+                        title = str(it["title"][0])
+                    elif isinstance(it.get("title"), str):
+                        title = it["title"]
+
+                    if title and norm_exc in normalize_whitespace(title).lower():
+                        all_auths = []
+                        if isinstance(authors, list):
+                            for a in authors:
+                                if isinstance(a, dict):
+                                    name_str = f"{a.get('given', '')} {a.get('family', '')}".strip()
+                                    if name_str:
+                                        all_auths.append(name_str)
+                        if isinstance(authorships, list):
+                            for ash in authorships:
+                                if isinstance(ash, dict):
+                                    name_str = ash.get("author", {}).get("display_name", "").strip()
+                                    if name_str:
+                                        all_auths.append(name_str)
+                        return f"Title: {title} | Authors: {', '.join(all_auths)}"
+
+                # Fallback: line-by-line
+                for line in content.splitlines():
+                    if norm_exc in normalize_whitespace(line).lower():
+                        return line.strip()
+                return None
+            except Exception:
+                return None
+
+        # 3. XML Files (PubMed EFetch, etc.)
+        elif suffix == ".xml":
+            try:
+                import xml.etree.ElementTree as ET
+                content = filepath.read_text(encoding="utf-8", errors="replace")
+                root = ET.fromstring(content)
+                articles = root.findall(".//PubmedArticle") or [root]
+                for art in articles:
+                    # Check author affiliation
+                    matching_authors = []
+                    for auth in art.findall(".//Author"):
+                        last = auth.findtext("LastName") or ""
+                        fore = auth.findtext("ForeName") or ""
+                        a_name = f"{fore} {last}".strip()
+                        for aff in auth.findall(".//Affiliation"):
+                            aff_text = aff.text or ""
+                            if norm_exc in normalize_whitespace(aff_text).lower():
+                                matching_authors.append((a_name, aff_text))
+                    if matching_authors:
+                        if target_subject:
+                            for a_name, aff_text in matching_authors:
+                                if match_author_name(target_subject, a_name) or target_subject.lower() in a_name.lower():
+                                    return f"{a_name} — {aff_text}"
+                        return f"{matching_authors[0][0]} — {matching_authors[0][1]}"
+
+                    # Check article title
+                    title = art.findtext(".//ArticleTitle") or ""
+                    if title and norm_exc in normalize_whitespace(title).lower():
+                        authors = []
+                        for auth in art.findall(".//Author"):
+                            last = auth.findtext("LastName") or ""
+                            fore = auth.findtext("ForeName") or ""
+                            full = f"{fore} {last}".strip()
+                            if full:
+                                authors.append(full)
+                        return f"Title: {title} | Authors: {', '.join(authors)}"
+
+                lines = [re.sub(r'<[^>]+>', ' ', l).strip() for l in content.splitlines()]
+                for line in lines:
+                    if norm_exc in normalize_whitespace(line).lower():
+                        return line.strip()
+                return None
+            except Exception:
+                return None
+
+        # 4. HTML Files
+        elif suffix in (".html", ".htm"):
+            try:
+                import html
+                content = filepath.read_text(encoding="utf-8", errors="replace")
+                # Check JSON-LD scripts for Person
+                def dict_contains_text(d, target):
+                    if isinstance(d, str):
+                        cleaned = normalize_whitespace(re.sub(r'<[^>]+>', ' ', d)).lower()
+                        return target in cleaned
+                    elif isinstance(d, dict):
+                        return any(dict_contains_text(v, target) for v in d.values())
+                    elif isinstance(d, list):
+                        return any(dict_contains_text(item, target) for item in d)
+                    return False
+
+                for m in re.finditer(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', content, re.DOTALL | re.IGNORECASE):
+                    raw_ld = m.group(1).strip()
+                    try:
+                        p = json.loads(raw_ld)
+                        objs = []
+                        if isinstance(p, dict):
+                            if "@graph" in p and isinstance(p["@graph"], list):
+                                objs.extend([x for x in p["@graph"] if isinstance(x, dict)])
+                            else:
+                                objs.append(p)
+                        elif isinstance(p, list):
+                            objs.extend([x for x in p if isinstance(x, dict)])
+
+                        for obj in objs:
+                            if obj.get("@type") == "Person":
+                                p_name = obj.get("name", "")
+                                if dict_contains_text(obj, norm_exc):
+                                    return f"{p_name} — {excerpt}"
+                    except Exception:
+                        pass
+
+                for m in re.finditer(r'<tr[^>]*>(.*?)</tr>', content, re.DOTALL | re.IGNORECASE):
+                    row_html = m.group(1)
+                    clean_row = normalize_whitespace(html.unescape(re.sub(r'<[^>]+>', ' ', row_html)))
+                    if norm_exc in clean_row.lower():
+                        return clean_row
+                for m in re.finditer(r'<li[^>]*>(.*?)</li>', content, re.DOTALL | re.IGNORECASE):
+                    li_html = m.group(1)
+                    clean_li = normalize_whitespace(html.unescape(re.sub(r'<[^>]+>', ' ', li_html)))
+                    if norm_exc in clean_li.lower():
+                        return clean_li
+                for m in re.finditer(r'<(?:p|blockquote)[^>]*>(.*?)</(?:p|blockquote)>', content, re.DOTALL | re.IGNORECASE):
+                    p_html = m.group(1)
+                    clean_p = normalize_whitespace(html.unescape(re.sub(r'<[^>]+>', ' ', p_html)))
+                    if norm_exc in clean_p.lower():
+                        return clean_p
+                block_tags = r'</?(?:p|div|h[1-6]|tr|li|ul|ol|table|br|hr|blockquote|section|article)[^>]*>'
+                text_with_newlines = re.sub(block_tags, '\n', content, flags=re.IGNORECASE)
+                lines = [re.sub(r'<[^>]+>', ' ', l).strip() for l in text_with_newlines.split('\n')]
+                for line in lines:
+                    norm_line = normalize_whitespace(line).lower()
+                    if norm_exc in norm_line:
+                        return line.strip()
+                return None
+            except Exception:
+                return None
+
+        # 5. Generic Files
+        else:
+            try:
+                content = filepath.read_text(encoding="utf-8", errors="replace")
+                for line in content.splitlines():
+                    if norm_exc in normalize_whitespace(line).lower():
+                        return line.strip()
+                return None
+            except Exception:
+                return None
+
+    def _detect_cross_entity_contamination(self, unit_text: str, subject: str, obj: str) -> Optional[str]:
+        person_matches = find_person_names_in_text(unit_text, subject)
+        sub_lower = subject.lower()
+        other_names = [p for p in person_matches if p[0].lower() != sub_lower]
+        if not other_names:
+            return None
+
+        norm_unit = unit_text.lower()
+        norm_obj = obj.lower()
+        obj_pos = norm_unit.find(norm_obj)
+        if obj_pos == -1:
+            for tok in re.findall(r'[a-zA-Z0-9_\u4e00-\u9fa5]+', norm_obj):
+                if len(tok) >= 3 and tok in norm_unit:
+                    obj_pos = norm_unit.find(tok)
+                    break
+
+        if obj_pos == -1:
+            return None
+
+        sub_pos = norm_unit.find(sub_lower)
+        if sub_pos == -1:
+            return other_names[0][0]
+
+        for other_name, o_start, o_end in other_names:
+            dist_other = abs(o_start - obj_pos)
+            dist_sub = abs(sub_pos - obj_pos)
+            span_sub_obj = unit_text[min(sub_pos, obj_pos):max(sub_pos, obj_pos)]
+            has_delimiter = any(d in span_sub_obj for d in (';', '\n', '|', '•'))
+            if dist_other < dist_sub and has_delimiter:
+                return other_name
+
+        return None
 
     def audit_leads_and_questions(self):
         leads_file = self.bundle_dir / "corroborated_leads.jsonl"

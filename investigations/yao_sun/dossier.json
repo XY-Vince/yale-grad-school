@@ -1,13 +1,13 @@
 {
   "dossier_id": "DOS-04573a21",
   "target_name": "Yao Sun",
-  "investigation_status": "PLAUSIBLE_PRIMARY_MATCH_WITH_HOMONYMS",
+  "investigation_status": "MATCHED_HIGH_CONFIDENCE",
   "primary_candidate_id": "CAND-01",
   "statements": [
     {
       "statement_id": "STMT-VCLM-01",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'YALE' (状态: AS_OF_PUBLICATION)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan' (状态: AS_OF_PUBLICATION)",
       "backed_claim_ids": [
         "VCLM-01"
       ]
@@ -15,7 +15,7 @@
     {
       "statement_id": "STMT-VCLM-02",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'program in Survey and Data Science at the University' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun holds_position 'Fellow' (状态: AS_OF_PUBLICATION)",
       "backed_claim_ids": [
         "VCLM-02"
       ]
@@ -23,7 +23,7 @@
     {
       "statement_id": "STMT-VCLM-03",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'environmental health' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'Roper AAPOR Fellow Award' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-03"
       ]
@@ -31,7 +31,7 @@
     {
       "statement_id": "STMT-VCLM-04",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'presented analysis linking neighborhood-level environmental indicators with health' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Travel Award' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-04"
       ]
@@ -39,7 +39,7 @@
     {
       "statement_id": "STMT-VCLM-05",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'my first year of graduate school' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Tuition Fellowship' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-05"
       ]
@@ -47,7 +47,7 @@
     {
       "statement_id": "STMT-VCLM-06",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'Survey and Data Science Travel Award' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-06"
       ]
@@ -55,7 +55,7 @@
     {
       "statement_id": "STMT-VCLM-07",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Rackham Graduate School' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'UW-Madison' (状态: AS_OF_PUBLICATION)",
       "backed_claim_ids": [
         "VCLM-07"
       ]
@@ -63,7 +63,7 @@
     {
       "statement_id": "STMT-VCLM-08",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'UW-Madison' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'UW-Madison Undergraduate Scholarship' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-08"
       ]
@@ -71,7 +71,7 @@
     {
       "statement_id": "STMT-VCLM-09",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun holds_position 'Student' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'ZCAFE' (状态: AS_OF_PUBLICATION)",
       "backed_claim_ids": [
         "VCLM-09"
       ]
@@ -79,7 +79,7 @@
     {
       "statement_id": "STMT-VCLM-10",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun holds_position 'Member' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'zcafe' (状态: AS_OF_PUBLICATION)",
       "backed_claim_ids": [
         "VCLM-10"
       ]
@@ -87,7 +87,7 @@
     {
       "statement_id": "STMT-VCLM-11",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun holds_position 'Fellow' (状态: CURRENT)",
+      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-11"
       ]
@@ -95,7 +95,7 @@
     {
       "statement_id": "STMT-VCLM-12",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'Roper AAPOR Fellow Award' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'ZCAFE' (状态: AS_OF_PUBLICATION)",
       "backed_claim_ids": [
         "VCLM-12"
       ]
@@ -103,7 +103,7 @@
     {
       "statement_id": "STMT-VCLM-13",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Travel Award' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan' (状态: AS_OF_PUBLICATION)",
       "backed_claim_ids": [
         "VCLM-13"
       ]
@@ -111,7 +111,7 @@
     {
       "statement_id": "STMT-VCLM-14",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Tuition Fellowship' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S. in Survey Methodology' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-14"
       ]
@@ -119,273 +119,9 @@
     {
       "statement_id": "STMT-VCLM-15",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'Survey and Data Science Travel Award' (状态: HISTORICAL)",
+      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-15"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-16",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'UW-Madison Undergraduate Scholarship' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-16"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-17",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'UofSC-Academic Excellence Scholarship' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-17"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-18",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-18"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-19",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'YALE' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-19"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-20",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S. in Survey Methodology' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-20"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-21",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S. in Data Science' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-21"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-22",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Georgetown University' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-22"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-23",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Minnesota and National College of Business Administration and Economics' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-23"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-24",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'NORC at the University' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-24"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-25",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Ocean County College' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-25"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-26",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Survey Research Center' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-26"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-27",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'GESIS Leibniz Institute' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-27"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-28",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-28"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-29",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan-Ann Arbor\nSampling Episodes in Popular Series' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-29"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-30",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Illinois Chicago' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-30"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-31",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Wisconsin-Madison' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-31"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-32",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Illinois Chicago\nEngaging with Hard-to-Reach Populations' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-32"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-33",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Northwestern University' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-33"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-34",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Political Rhetoric and Declining Participation in Public Health' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-34"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-35",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'School of Public Health' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-35"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-36",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Carnegie Mellon University' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-36"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-37",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Illinois-Chicago\nThe Methodological Challenges in Conducting' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-37"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-38",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Rochester' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-38"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-39",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Department of Sociology' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-39"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-40",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'UW–Madison' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-40"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-41",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-02] Yao Sun holds_position 'Assistant Professor' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-41"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-42",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-03] Yao Sun authored_work 'Quantitative Diagnosis of Hepatocellular Carcinoma and Hepatic Cavernous Haemangioma Ultrasonic Images' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-42"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-43",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-04] Yao Sun authored_work 'Methods for automated concept mapping between medical databases' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-43"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-44",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-05] Yao Sun authored_work 'Modified method of fundamental solutions for the Cauchy problem connected with the Laplace equation' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-44"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-45",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-06] Yao Sun authored_work 'Construction of Artistic Design Patterns Based on Improved Distributed Data Parallel Computing of Heterogeneous Tasks' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-45"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-46",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-06] Yao Sun affiliated_with 'Yantai Vocational College, Yantai 264670, Shandong, China' (状态: AS_OF_PUBLICATION)",
-      "backed_claim_ids": [
-        "VCLM-46"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-47",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-07] Yao Sun authored_work 'The positive effects of adaptive sports intervention strategies on patients with sitting disorder' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-47"
-      ]
-    },
-    {
-      "statement_id": "STMT-VCLM-48",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-08] Yao Sun authored_work 'Automatic Search of Cubes for Attacking Stream Ciphers' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-48"
       ]
     }
   ],
@@ -393,7 +129,7 @@
     {
       "candidate_id": "CAND-01",
       "canonical_name": "Yao Sun",
-      "affiliation": "Department of Sociology",
+      "affiliation": "M.S. in Survey Methodology",
       "match_status": "PRIMARY_TARGET",
       "differentiation_rationale": "Matches provided institutional and topical clues.",
       "evidence_citations": [
@@ -407,107 +143,11 @@
         "VCLM-08",
         "VCLM-09",
         "VCLM-10",
-        "VCLM-11",
         "VCLM-12",
         "VCLM-13",
         "VCLM-14",
         "VCLM-15",
-        "VCLM-16",
-        "VCLM-17",
-        "VCLM-18",
-        "VCLM-19",
-        "VCLM-20",
-        "VCLM-21",
-        "VCLM-22",
-        "VCLM-23",
-        "VCLM-24",
-        "VCLM-25",
-        "VCLM-26",
-        "VCLM-27",
-        "VCLM-28",
-        "VCLM-29",
-        "VCLM-30",
-        "VCLM-31",
-        "VCLM-32",
-        "VCLM-33",
-        "VCLM-34",
-        "VCLM-35",
-        "VCLM-36",
-        "VCLM-37",
-        "VCLM-38",
-        "VCLM-39",
-        "VCLM-40"
-      ]
-    },
-    {
-      "candidate_id": "CAND-02",
-      "canonical_name": "Yao Sun",
-      "affiliation": "people.njit.edu",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Distinct institutional affiliation (people.njit.edu) or disciplinary focus (General Academic).",
-      "evidence_citations": [
-        "VCLM-41"
-      ]
-    },
-    {
-      "candidate_id": "CAND-03",
-      "canonical_name": "Yao Sun",
-      "affiliation": "Researcher (General Academic)",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Distinct institutional affiliation (Unknown Institution) or disciplinary focus (General Academic).",
-      "evidence_citations": [
-        "VCLM-42"
-      ]
-    },
-    {
-      "candidate_id": "CAND-04",
-      "canonical_name": "Yao Sun",
-      "affiliation": "Researcher (General Academic)",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Distinct institutional affiliation (Unknown Institution) or disciplinary focus (General Academic).",
-      "evidence_citations": [
-        "VCLM-43"
-      ]
-    },
-    {
-      "candidate_id": "CAND-05",
-      "canonical_name": "Yao Sun",
-      "affiliation": "Researcher (General Academic)",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Distinct institutional affiliation (Unknown Institution) or disciplinary focus (General Academic).",
-      "evidence_citations": [
-        "VCLM-44"
-      ]
-    },
-    {
-      "candidate_id": "CAND-06",
-      "canonical_name": "Yao Sun",
-      "affiliation": "Yantai Vocational College, Yantai 264670, Shandong, China",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Distinct institutional affiliation (Yantai Vocational College) or disciplinary focus (General Academic).",
-      "evidence_citations": [
-        "VCLM-45",
-        "VCLM-46"
-      ]
-    },
-    {
-      "candidate_id": "CAND-07",
-      "canonical_name": "Yao Sun",
-      "affiliation": "Researcher (General Academic)",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Distinct institutional affiliation (Unknown Institution) or disciplinary focus (General Academic).",
-      "evidence_citations": [
-        "VCLM-47"
-      ]
-    },
-    {
-      "candidate_id": "CAND-08",
-      "canonical_name": "Yao Sun",
-      "affiliation": "Researcher (General Academic)",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Distinct institutional affiliation (Unknown Institution) or disciplinary focus (General Academic).",
-      "evidence_citations": [
-        "VCLM-48"
+        "VCLM-11"
       ]
     }
   ]
