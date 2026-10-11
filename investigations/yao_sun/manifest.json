@@ -1,10 +1,13 @@
 {
   "bundle_version": "1.0",
-  "created_at": "2026-10-11T15:59:37.721659+00:00",
-  "bundle_name": "Yao Sun Dynamic Investigation Bundle",
+  "created_at": "2026-10-11T23:13:00.347476+00:00",
+  "bundle_name": "Yao Sun Comprehensive Investigation Bundle",
   "target_name": "Yao Sun",
   "run_outcome": "COMPLETED",
-  "discovery_mode": "LIVE",
+  "provenance": "agent_synthesized",
+  "synthesis_mode": "agent_orchestrated_deterministic_grounded",
+  "note": "Constructed through Agent reading, multi-entity disambiguation, and timeline synthesis with cryptographic source anchoring and verbatim text replay.",
+  "discovery_mode": "HYBRID_LIVE_AND_PRIMARY",
   "discovery_input_hash": null,
   "files": {
     "discovery_results.jsonl": {
@@ -12,28 +15,28 @@
       "sha256": "b6beba22953095f5b29a8aa57d7ff29a940d4ff9486fdb1a97d4b94562ec2fd6"
     },
     "verified_claims.jsonl": {
-      "byte_size": 6758,
-      "sha256": "0200da16e6c02e2add76dfbb9066fdc0c51f557a8c47cb6a88f461a04614b2e1"
+      "byte_size": 11258,
+      "sha256": "71ec4811b35bda8a85ff2081f15cd1d69131b988e228e03c71f1903bedeaea92"
     },
     "corroborated_leads.jsonl": {
-      "byte_size": 591,
-      "sha256": "504d099eda15422d3ad0d044fce340e118ff811587b686b41ff1c9a8c1b5a0ff"
+      "byte_size": 943,
+      "sha256": "6dc2b29a6b5d2b8bdeb4cef3c382f761ec266f23bea1915b2b12268be8434853"
     },
     "source_inventory.jsonl": {
-      "byte_size": 11322,
-      "sha256": "5cdbc74c006c52600f3e7a2018757a6a781f43bda716e86131647c1b8b285038"
+      "byte_size": 14043,
+      "sha256": "296d3fd849d5984fc29492b9881804a0a3d0a7031dfe98157de1fcfc98e92513"
     },
     "recall_report.md": {
-      "byte_size": 8673,
-      "sha256": "9ef134bfd054259df4fbf991665a9acecdfdc98316dcd8cbda3a8210f37eca61"
+      "byte_size": 13730,
+      "sha256": "b2bf7107e9dd282a25efcfeda5a8356636c5f56e19b16b36e6ce5476bf0a2dc0"
     },
     "open_questions.jsonl": {
-      "byte_size": 234,
-      "sha256": "6af93ab50c22ad872aefc7e39a4cd1ae8f1bd5b1728dc774b737c83f011ea14b"
+      "byte_size": 335,
+      "sha256": "491ebacf4516b34ab6f147ddb4de41d6edff4ee2f2fe26b0f8c16d301d66931a"
     },
     "dossier.json": {
-      "byte_size": 7639,
-      "sha256": "3b9a7febc9bfefb5d7c89db07bdbe7b74f73d5f6e2209ec2d770fe70881e6f4c"
+      "byte_size": 11426,
+      "sha256": "41e8ce8be76db16e3bb7532296ed3a48af8d11c4095a34718a5cbe3f810db352"
     },
     "query_logs.jsonl": {
       "byte_size": 7706,
@@ -51,6 +54,10 @@
       "byte_size": 1530,
       "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
     },
+    "raw_sources/pubmed_efetch_37142791.xml": {
+      "byte_size": 48186,
+      "sha256": "c73754cfa2e4ed4443418422db3f732734e9eccc5e7c76eb579b66e4069e1b4a"
+    },
     "raw_sources/web_src-11_in_yao_sun_9955061b3.html": {
       "byte_size": 221971,
       "sha256": "94bc2ba60ae4e64bd84fa6e181332c2276eebe2e9fe2385f77a8692033ac8564"
@@ -58,10 +65,6 @@
     "raw_sources/web_src-16_pub_dir_Yao_Sun_us_0_United_St.html": {
       "byte_size": 1530,
       "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
-    },
-    "raw_sources/web_src-02_wiki_Yao_Ming.html": {
-      "byte_size": 1101105,
-      "sha256": "281d05faac8e0308fa4fedfc3a867c24ebea18c0e9ac30449fe3c3465583a473"
     },
     "raw_sources/web_src-19_in_yao_sun_b2a75469.html": {
       "byte_size": 1530,
@@ -71,13 +74,13 @@
       "byte_size": 737148,
       "sha256": "5bcce1821426889201c72ccab7a82071c8eb800fdc2085b4c934cef62fdf6c9b"
     },
-    "raw_sources/web_src-08_nba_player_stats___id_1722_yao.html": {
-      "byte_size": 492869,
-      "sha256": "a7e906033065ce4b1b7d5316e0b4912e0d5660caf4b83aa7618c639bd93ca40d"
-    },
     "raw_sources/web_src-09_grammar_five_uses_yao.html": {
       "byte_size": 189319,
       "sha256": "073f07bb225824701627067b9c14acc520791df8f12203a91f8456f4650d257b"
+    },
+    "raw_sources/yale_zcafe_homepage.html": {
+      "byte_size": 48046,
+      "sha256": "fa4ece5781839924d2c43248adcb0334da25e1a5876ef58c22f7f16c72f2e7da"
     },
     "raw_sources/web_src-06_wiki_YAO___E3_83_90_E3_83_B3_E.html": {
       "byte_size": 94643,
@@ -91,13 +94,37 @@
       "byte_size": 128123,
       "sha256": "54c7abecc8604843ddc4dbcf55d669cd39677a98fe483694d8a9890c5ca37097"
     },
+    "raw_sources/mapor_2025_program.pdf": {
+      "byte_size": 9084229,
+      "sha256": "c835cbe8b16e23ca8f8a22ed63f79e3c1a1b7561edbdc07c2da519dd5dc00f48"
+    },
+    "raw_sources/aapor_past_roper.html": {
+      "byte_size": 72922,
+      "sha256": "46e94b58b88eddca002789a39f26f90c34bfc1bdedbaf2b7c34b8075b7b09578"
+    },
     "raw_sources/web_src-07_channel_UCFSft9_RKiVrSaPsfAsvm.html": {
       "byte_size": 2039673,
       "sha256": "bfc833ab48b37e9ce33eec06eecb31e736736582a4bbb5fbcda4a177c6778216"
     },
+    "raw_sources/finra_brokercheck_7569730.json": {
+      "byte_size": 1764,
+      "sha256": "4b34204916a475a94166d00013689a6707a596ba4566eb015ca6e5d7363e560b"
+    },
+    "raw_sources/yale_emma_zang_profile.html": {
+      "byte_size": 34690,
+      "sha256": "677d8db1e4a9958ccb29b74f2beea78f048fb0bef20ea6edcda5f47be045e3b1"
+    },
+    "raw_sources/ucsf_profiles_yao_sun.html": {
+      "byte_size": 118229,
+      "sha256": "000ecd62539bb230b47b4af31abe131643d4e0324c0c3429ce5160ea5597fde2"
+    },
     "raw_sources/web_src-05_blog_yao_meaning_in_chinese_po.html": {
       "byte_size": 33943,
       "sha256": "464e172f98d7bd3ca27b2f94c30a169f052eb0a4a05062809c633aa968473beb"
+    },
+    "raw_sources/emma_zang_linkedin_post.html": {
+      "byte_size": 91269,
+      "sha256": "6dda79385b3353bc663f6ec41324428fc197447df82d3c2d0f035115122fe8c6"
     },
     "raw_sources/web_src-18_in_yao_sun_59b67718.html": {
       "byte_size": 1530,
@@ -115,7 +142,5 @@
       "byte_size": 100608,
       "sha256": "f586360072ed71f03cace4b867b32a7107c0722e91ecbcb252d6d66cca888ee9"
     }
-  },
-  "queries_executed": 33,
-  "execution_time_seconds": 28.408
+  }
 }

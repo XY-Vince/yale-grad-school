@@ -100,3 +100,100 @@ def test_relation_level_provenance_spans():
             assert sup["relation_span_end"] is not None
             assert sup["relation_span_end"] > sup["relation_span_start"]
             assert len(sup["verbatim_clause"]) > 0
+
+
+def test_outcome_attribution_collection_failed_when_network_unreachable(monkeypatch, tmp_path):
+    """
+    Ensure the runner outputs COLLECTION_FAILED when all external
+    search and API queries fail due to network, timeout, or block.
+    """
+    from core.collectors.discovery_engine import UniversalDiscoveryEngine
+    from scripts.run_recall_profile import UniversalEvidenceRetriever, run_recall_investigation
+
+    out_dir = tmp_path / "test_failed_bundle"
+
+    def mock_disc_failed(self, *args, **kwargs):
+        self.query_logs.append({
+            "query_type": "WEB_SEARCH",
+            "query_string": "test query",
+            "endpoint": "bing",
+            "status": "FAILED",
+            "error": "Connection timeout",
+        })
+        return []
+
+    def mock_oa_failed(self, *args, **kwargs):
+        self.query_logs.append({
+            "query_type": "API_OPENALEX_AUTHORS",
+            "query_string": "test query",
+            "endpoint": "openalex",
+            "status": "FAILED",
+            "error": "Network unreachable",
+        })
+        return 0, None, "", []
+
+    monkeypatch.setattr(UniversalDiscoveryEngine, "run_discovery", mock_disc_failed)
+    monkeypatch.setattr(UniversalEvidenceRetriever, "search_openalex_authors", mock_oa_failed)
+    monkeypatch.setattr(UniversalEvidenceRetriever, "search_openalex_works", lambda self, *args, **kwargs: (0, None, "", []))
+    monkeypatch.setattr(UniversalEvidenceRetriever, "search_crossref_works", lambda self, *args, **kwargs: (0, None, "", []))
+    monkeypatch.setattr(UniversalEvidenceRetriever, "search_pubmed", lambda self, *args, **kwargs: [])
+
+    run_recall_investigation(
+        name="Mock Offline Person",
+        clue="Some Clue",
+        output_dir=out_dir,
+    )
+
+    manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["run_outcome"] == "COLLECTION_FAILED"
+    report_text = (out_dir / "recall_report.md").read_text(encoding="utf-8")
+    assert "COLLECTION_FAILED" in report_text
+
+
+def test_outcome_attribution_insufficient_evidence_when_queries_return_zero_hits(monkeypatch, tmp_path):
+    """
+    Ensure the runner outputs INSUFFICIENT_EVIDENCE when search and API queries
+    succeed (HTTP 200 / COMPLETED) but return zero candidate hits.
+    """
+    from core.collectors.discovery_engine import UniversalDiscoveryEngine
+    from scripts.run_recall_profile import UniversalEvidenceRetriever, run_recall_investigation
+
+    out_dir = tmp_path / "test_insufficient_bundle"
+
+    def mock_disc_ok(self, *args, **kwargs):
+        self.query_logs.append({
+            "query_type": "WEB_SEARCH",
+            "query_string": "test query",
+            "endpoint": "bing",
+            "status": "COMPLETED",
+            "results_count": 0,
+        })
+        return []
+
+    def mock_oa_ok(self, *args, **kwargs):
+        self.query_logs.append({
+            "query_type": "API_OPENALEX_AUTHORS",
+            "query_string": "test query",
+            "endpoint": "openalex",
+            "status": "EXECUTED",
+            "http_status": 200,
+            "results_count": 0,
+        })
+        return 200, None, "", []
+
+    monkeypatch.setattr(UniversalDiscoveryEngine, "run_discovery", mock_disc_ok)
+    monkeypatch.setattr(UniversalEvidenceRetriever, "search_openalex_authors", mock_oa_ok)
+    monkeypatch.setattr(UniversalEvidenceRetriever, "search_openalex_works", lambda self, *args, **kwargs: (200, None, "", []))
+    monkeypatch.setattr(UniversalEvidenceRetriever, "search_crossref_works", lambda self, *args, **kwargs: (200, None, "", []))
+    monkeypatch.setattr(UniversalEvidenceRetriever, "search_pubmed", lambda self, *args, **kwargs: [])
+
+    run_recall_investigation(
+        name="Mock Nonexistent Person",
+        clue="Some Clue",
+        output_dir=out_dir,
+    )
+
+    manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["run_outcome"] == "INSUFFICIENT_EVIDENCE"
+    report_text = (out_dir / "recall_report.md").read_text(encoding="utf-8")
+    assert "INSUFFICIENT_EVIDENCE" in report_text

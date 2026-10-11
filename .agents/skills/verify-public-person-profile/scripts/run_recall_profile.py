@@ -420,7 +420,7 @@ def build_abstention_bundle(
     abstention = AbstentionRecord(
         gap_id=gap_id,
         target_name=name,
-        query_executed="; ".join([q["query_text"] for q in query_logs[:4]]),
+        query_executed="; ".join([q.get("query_text") or q.get("query_string") or str(q) for q in query_logs[:4]]),
         reason=effective_reason,
         observed_at=datetime.now(timezone.utc),
     )
@@ -465,7 +465,7 @@ def build_abstention_bundle(
 
 ## 二、 检索轨迹与审计日志
 执行了以下检索，均受阻或异常中断：
-{chr(10).join(f"- **{q['backend']}**: `{q['query_text']}` (状态: {q.get('status', 'FAILED')}, 错误: {q.get('error', 'None')})" for q in query_logs)}
+{chr(10).join(f"- **{q.get('backend') or q.get('endpoint') or q.get('query_type') or 'query'}**: `{q.get('query_text') or q.get('query_string') or ''}` (状态: {q.get('status', 'FAILED')}, 错误: {q.get('error', 'None')})" for q in query_logs)}
 
 ## 三、 诊断与处置建议
 1. [ERR-01] 外部搜索引擎及学术端点因网络隔离、连接超时或反爬拦截无法访问；
@@ -487,7 +487,7 @@ def build_abstention_bundle(
 
 ## 二、 检索轨迹与审计日志
 执行了以下检索均未命中有效可核验主体：
-{chr(10).join(f"- **{q['backend']}**: `{q['query_text']}` (命中文献: {q['results_count']})" for q in query_logs)}
+{chr(10).join(f"- **{q.get('backend') or q.get('endpoint') or q.get('query_type') or 'query'}**: `{q.get('query_text') or q.get('query_string') or ''}` (命中文献: {q.get('results_count', 0)})" for q in query_logs)}
 
 ## 三、 未决问题与建议
 1. [OQ-01] 目标实体是否处于严格隐私保护或未在互联网建立公开学术/商业数字足迹；

@@ -71,7 +71,8 @@ NON_PERSON_WORDS = {
     "roper", "center", "michigan", "wisconsin", "madison", "yale", "georgetown", "chicago",
     "harvard", "princeton", "columbia", "stanford", "berkeley", "china", "chinese",
     "social", "sciences", "health", "medicine", "pharmacy", "medical", "pharmaceutical",
-    "curriculum", "vitae", "resume", "table", "content", "page", "spring", "summer", "fall", "winter",
+    "policy", "studies", "management", "international", "affairs", "services", "curriculum",
+    "vitae", "resume", "table", "content", "page", "spring", "summer", "fall", "winter",
     "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"
 }
 
@@ -452,12 +453,35 @@ class BundleVerifier:
                         items = data["items"]
                     elif "results" in data and isinstance(data["results"], list):
                         items = data["results"]
+                    elif "hits" in data and isinstance(data["hits"], dict) and "hits" in data["hits"]:
+                        items = data["hits"]["hits"]
                     else:
                         items = [data]
 
                 for it in items:
                     if not isinstance(it, dict):
                         continue
+
+                    # Nested content string (e.g. FINRA BrokerCheck)
+                    raw_content = ""
+                    if "_source" in it and isinstance(it["_source"], dict) and "content" in it["_source"]:
+                        raw_content = it["_source"]["content"]
+                    elif "content" in it and isinstance(it["content"], str):
+                        raw_content = it["content"]
+
+                    if raw_content and isinstance(raw_content, str):
+                        try:
+                            inner_data = json.loads(raw_content)
+                            basic = inner_data.get("basicInformation", {})
+                            if basic:
+                                b_first = basic.get("firstName", "")
+                                b_mid = basic.get("middleName", "")
+                                b_last = basic.get("lastName", "")
+                                b_name = " ".join([p for p in (b_first, b_mid, b_last) if p]).strip()
+                                if b_name and (norm_exc in normalize_whitespace(raw_content).lower() or norm_exc in normalize_whitespace(json.dumps(inner_data)).lower()):
+                                    return f"{b_name} — {excerpt}"
+                        except Exception:
+                            pass
 
                     # Author-level affiliations (CrossRef)
                     authors = it.get("author", [])
@@ -548,8 +572,12 @@ class BundleVerifier:
                         a_name = f"{fore} {last}".strip()
                         for aff in auth.findall(".//Affiliation"):
                             aff_text = aff.text or ""
-                            if norm_exc in normalize_whitespace(aff_text).lower():
+                            norm_aff = normalize_whitespace(aff_text).lower()
+                            if norm_exc in norm_aff or norm_aff in norm_exc:
                                 matching_authors.append((a_name, aff_text))
+                            elif target_subject and (match_author_name(target_subject, a_name) or target_subject.lower() in a_name.lower()):
+                                if any(tok in norm_exc for tok in norm_aff.split() if len(tok) >= 4):
+                                    matching_authors.append((a_name, aff_text))
                     if matching_authors:
                         if target_subject:
                             for a_name, aff_text in matching_authors:
@@ -582,7 +610,7 @@ class BundleVerifier:
             try:
                 import html
                 content = filepath.read_text(encoding="utf-8", errors="replace")
-                # Check JSON-LD scripts for Person
+                # Check JSON-LD scripts for Person / Postings
                 def dict_contains_text(d, target):
                     if isinstance(d, str):
                         cleaned = normalize_whitespace(re.sub(r'<[^>]+>', ' ', d)).lower()
@@ -607,12 +635,41 @@ class BundleVerifier:
                             objs.extend([x for x in p if isinstance(x, dict)])
 
                         for obj in objs:
+                            p_name = ""
                             if obj.get("@type") == "Person":
                                 p_name = obj.get("name", "")
-                                if dict_contains_text(obj, norm_exc):
-                                    return f"{p_name} — {excerpt}"
+                            elif obj.get("@type") in ("DiscussionForumPosting", "SocialMediaPosting", "BlogPosting"):
+                                author = obj.get("author", {})
+                                p_name = author.get("name", "") if isinstance(author, dict) else ""
+                            elif "author" in obj and isinstance(obj["author"], dict):
+                                p_name = obj["author"].get("name", "")
+                            elif "creator" in obj and isinstance(obj["creator"], dict):
+                                p_name = obj["creator"].get("name", "")
+
+                            if p_name and dict_contains_text(obj, norm_exc):
+                                return f"{p_name} — {excerpt}"
                     except Exception:
                         pass
+
+                # Microdata Person profile check (e.g. UCSF profiles)
+                if 'itemtype="http://schema.org/Person"' in content or 'itemtype="https://schema.org/Person"' in content or 'itemscope' in content:
+                    m_name = re.search(r'<div[^>]*class=[\"\x27]pageTitle[\"\x27][^>]*>\s*<h[1-3][^>]*>(.*?)</h[1-3]>', content, re.IGNORECASE)
+                    if not m_name:
+                        m_name = re.search(r'alt=[\"\x27]Photo of (.*?)[\"\x27]', content, re.IGNORECASE)
+                    if not m_name:
+                        m_name = re.search(r'itemprop=[\"\x27]name[\"\x27][^>]*>(.*?)</', content, re.IGNORECASE)
+                    if not m_name:
+                        m_name = re.search(r'<h[1-3][^>]*>(.*?)</h[1-3]>', content, re.IGNORECASE)
+                    if m_name:
+                        person_header = normalize_whitespace(html.unescape(re.sub(r'<[^>]+>', ' ', m_name.group(1))))
+                        clean_pname = re.sub(r',.*$', '', person_header).strip()
+                        if target_subject and (target_subject.lower() in clean_pname.lower() or clean_pname.lower() in target_subject.lower()):
+                            clean_exc = normalize_whitespace(re.sub(r'<[^>]+>', ' ', norm_exc)).lower()
+                            for m_row in re.finditer(r'<tr[^>]*>(.*?)</tr>', content, re.DOTALL | re.IGNORECASE):
+                                row_html = m_row.group(1)
+                                clean_row = normalize_whitespace(html.unescape(re.sub(r'<[^>]+>', ' ', row_html)))
+                                if norm_exc in row_html.lower() or (clean_exc and clean_exc in clean_row.lower()):
+                                    return f"{clean_pname} — {clean_row}"
 
                 for m in re.finditer(r'<tr[^>]*>(.*?)</tr>', content, re.DOTALL | re.IGNORECASE):
                     row_html = m.group(1)

@@ -3,6 +3,9 @@
   "target_name": "Yao Sun",
   "investigation_status": "MATCHED_HIGH_CONFIDENCE",
   "primary_candidate_id": "CAND-01",
+  "provenance": "agent_synthesized",
+  "synthesis_mode": "agent_orchestrated_deterministic_grounded",
+  "note": "Constructed through Agent multi-source reading and semantic disambiguation with cryptographic and verbatim ground truth.",
   "statements": [
     {
       "statement_id": "STMT-VCLM-01",
@@ -103,9 +106,81 @@
     {
       "statement_id": "STMT-VCLM-13",
       "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan' (状态: AS_OF_PUBLICATION)",
+      "rendered_text": "[CAND-01] Yao Sun received_degree 'master’s program in Survey and Data Science' (状态: HISTORICAL)",
       "backed_claim_ids": [
         "VCLM-13"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-14",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-01] Yao Sun honored_with 'UofSC-Academic Excellence Scholarship' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-14"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-15",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-01] Yao Sun presented_paper 'Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health Outcomes among Korean American Adults' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-15"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-16",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-01] Yao Sun researched_topic 'environmental justice screening tool' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-16"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-17",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-01] Yao Sun participated_in 'Yale Population Studies Workshop' (状态: CURRENT)",
+      "backed_claim_ids": [
+        "VCLM-17"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-18",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-01] Yao Sun conducted_research 'Detroit Street View Program' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-18"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-19",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-02] Derek Teen-Yao Sun employed_by 'GUGGENHEIM SECURITIES, LLC' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-19"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-20",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-03] Yao Sun affiliated_with 'Zhejiang Provincial Key Laboratory of Pancreatic Disease' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-20"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-21",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-04] Yao Sun holds_position 'Professor, Pediatrics' (状态: CURRENT)",
+      "backed_claim_ids": [
+        "VCLM-21"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-22",
+      "section": "学术产出与机构经历 (Publications & Affiliations)",
+      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Survey Research Center, Institute for Social Research, University of Michigan' (状态: HISTORICAL)",
+      "backed_claim_ids": [
+        "VCLM-22"
       ]
     }
   ],
@@ -115,7 +190,7 @@
       "canonical_name": "Yao Sun",
       "affiliation": "Yale University / Z-CAFE",
       "match_status": "PRIMARY_TARGET",
-      "differentiation_rationale": "Matches provided institutional and topical clues (currently at Yale; Z-CAFE; Sociology). Current Predoctoral Fellow at Yale Z-CAFE Lab; holds M.S. in Survey Methodology from University of Michigan and B.S. in Sociology from UW-Madison.",
+      "differentiation_rationale": "Matches provided institutional and topical clues (currently at Yale; Z-CAFE; Sociology). Current Predoctoral Fellow at Yale Z-CAFE Lab and ISPS; holds M.S. in Survey Methodology and Data Science from University of Michigan ('26) and undergraduate degree in Sociology from UW-Madison ('23); recipient of 2026 AAPOR Burns Bud Roper Fellow Award.",
       "evidence_citations": [
         "VCLM-01",
         "VCLM-02",
@@ -129,39 +204,51 @@
         "VCLM-10",
         "VCLM-11",
         "VCLM-12",
-        "VCLM-13"
+        "VCLM-13",
+        "VCLM-14",
+        "VCLM-15",
+        "VCLM-16",
+        "VCLM-17",
+        "VCLM-18",
+        "VCLM-22"
       ]
     },
     {
       "candidate_id": "CAND-02",
-      "canonical_name": "Yao Sun",
-      "affiliation": "皖南医学院 (Wannan Medical College)",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Biomedical researcher specializing in clinical oncology and pharmacology; published on chemotherapy regimens in domestic Chinese medical journals; no association with Yale, sociology, or computational social science.",
-      "evidence_citations": []
-    },
-    {
-      "candidate_id": "CAND-03",
-      "canonical_name": "Yao Sun",
-      "affiliation": "沈阳药科大学 (Shenyang Pharmaceutical University)",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Pharmaceutical researcher in drug delivery systems and medicinal chemistry; distinct institutional affiliation and clinical disciplinary scope.",
-      "evidence_citations": []
-    },
-    {
-      "candidate_id": "CAND-04",
       "canonical_name": "Derek Teen-Yao Sun",
       "affiliation": "Guggenheim Securities / Ross School of Business",
       "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Financial analyst and registered broker (CRD 7569730) at Guggenheim Securities; former Michigan undergraduate business alumnus; zero affiliation with Yale or sociology.",
-      "evidence_citations": []
+      "differentiation_rationale": "Financial analyst and registered broker (CRD 7569730) at Guggenheim Securities in New York; former Michigan undergraduate business alumnus (Ross BBA '23); pure financial services career with zero affiliation with Yale or sociology.",
+      "evidence_citations": [
+        "VCLM-19"
+      ]
+    },
+    {
+      "candidate_id": "CAND-03",
+      "canonical_name": "Dr. Yao Sun",
+      "affiliation": "浙江大学医学院 (Zhejiang University School of Medicine) / UMich Physiology",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Biomedical researcher at Zhejiang Provincial Key Laboratory of Pancreatic Disease; co-authored Nature Cell Biology (2023) paper on SEL1L-HRD1 ERAD and STING immunity with University of Michigan Medical School co-authors (PMID 37142791); basic medical biology discipline.",
+      "evidence_citations": [
+        "VCLM-20"
+      ]
+    },
+    {
+      "candidate_id": "CAND-04",
+      "canonical_name": "Dr. Yao Sun",
+      "affiliation": "University of California San Francisco (UCSF) / Pediatrics",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Professor of Pediatrics and Neonatologist at UCSF Benioff Children's Hospital; Medical Director of William H. Tooley Intensive Care Nursery; holds M.D. from UCLA (1989) and Ph.D. in Computer Science from MIT (2002); clinical pediatrics medicine.",
+      "evidence_citations": [
+        "VCLM-21"
+      ]
     },
     {
       "candidate_id": "CAND-05",
-      "canonical_name": "Yao Sun",
-      "affiliation": "Columbia University - SIPA",
+      "canonical_name": "Dr. Yao Sun",
+      "affiliation": "University of Glasgow / UESTC Glasgow College",
       "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Student at Columbia University School of International and Public Affairs (discovered in search records); separate institution in New York, NY.",
+      "differentiation_rationale": "Lecturer in James Watt School of Engineering at University of Glasgow and Glasgow College UESTC; research specializes in semantic communications, 6G wireless networks, and blockchain; IEEE author based in Chengdu/Glasgow.",
       "evidence_citations": []
     },
     {
@@ -169,7 +256,7 @@
       "canonical_name": "Yao Sun",
       "affiliation": "Bellorita, LLC",
       "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Commercial marketing manager at Bellorita, LLC; corporate industry career profile without academic research appointments.",
+      "differentiation_rationale": "Commercial marketing manager at Bellorita, LLC; corporate commercial industry career profile without academic research appointments.",
       "evidence_citations": []
     },
     {
@@ -177,15 +264,15 @@
       "canonical_name": "Yao Sun",
       "affiliation": "Adolescent Socialization / Ph.D. Researcher",
       "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Ph.D. researcher in family discussions and racial/civic socialization; distinct author entity without Z-CAFE predoctoral fellowship affiliation.",
+      "differentiation_rationale": "Ph.D. researcher investigating family discussions and bidirectional racial/civic socialization; distinct author entity without Z-CAFE predoctoral fellowship affiliation.",
       "evidence_citations": []
     },
     {
       "candidate_id": "CAND-08",
-      "canonical_name": "Yao Ming",
-      "affiliation": "Houston Rockets / NBA",
-      "match_status": "DIFFERENTIATED_CO_OCCURRENCE",
-      "differentiation_rationale": "Former professional basketball athlete; lexical co-occurrence / partial token overlap in search retrieval; completely unrelated identity.",
+      "canonical_name": "Yao Sun",
+      "affiliation": "Columbia University - SIPA",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "Student at Columbia University School of International and Public Affairs (SIPA) in New York; separate higher-education institution.",
       "evidence_citations": []
     }
   ]
