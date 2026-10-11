@@ -57,6 +57,7 @@ class UniversalDiscoveryEngine:
         }
         self.discovery_records: List[Dict[str, Any]] = []
         self.discovered_urls: Set[str] = set()
+        self.query_logs: List[Dict[str, Any]] = []
 
     def generate_query_families(self, name: str, clues: List[str]) -> List[Tuple[str, List[str]]]:
         """
@@ -184,18 +185,17 @@ class UniversalDiscoveryEngine:
         clues: List[str],
         output_dir: Path,
         preloaded_file: Optional[Path] = None,
+        force_live: bool = False,
     ) -> List[Dict[str, Any]]:
         """
         Runs the discovery process and emits discovery_results.jsonl.
-        If a preloaded discovery file exists (e.g. curated by Agent or previous step),
-        loads and merges it.
+        Only reuses preloaded discovery file if explicitly provided and force_live is False.
         """
         output_dir.mkdir(parents=True, exist_ok=True)
         results_file = output_dir / "discovery_results.jsonl"
 
-        target_load = preloaded_file or (results_file if results_file.exists() else None)
-        if target_load and target_load.exists():
-            for line in target_load.read_text(encoding="utf-8").splitlines():
+        if not force_live and preloaded_file and preloaded_file.exists():
+            for line in preloaded_file.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
                 if line:
                     try:
@@ -219,6 +219,13 @@ class UniversalDiscoveryEngine:
                     break
                 total_queries += 1
                 search_res = self.search_web_endpoint(q, max_results=10)
+                self.query_logs.append({
+                    "backend": "DiscoveryWebSearch",
+                    "query_text": q,
+                    "executed_at": datetime.now(timezone.utc).isoformat(),
+                    "status": "COMPLETED",
+                    "results_count": len(search_res),
+                })
                 for rank, res in enumerate(search_res, 1):
                     url = res["url"]
                     if url not in self.discovered_urls:
