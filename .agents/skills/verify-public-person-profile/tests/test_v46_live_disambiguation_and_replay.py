@@ -357,6 +357,7 @@ def test_extract_chinese_school_beijing_101_middle_school():
     ), "A bare 中 suffix must not create a school claim"
 
 
+@pytest.mark.skipif(not (LIVE_BUNDLE.exists() and LIVE_WARC.exists()), reason="live_xin_zhou fixture required")
 def test_live_xin_zhou_warc_replay_and_bundle_validity():
     """
     Targeted Real-Web Integration Test:
@@ -393,6 +394,7 @@ def test_live_xin_zhou_warc_replay_and_bundle_validity():
     assert "CAND-238ef964c826" in dossier["ambiguous_candidates"]
 
 
+@pytest.mark.skipif(not LIVE_WARC.exists(), reason="live_xin_zhou WARC fixture required")
 def test_live_xin_zhou_pipeline_execution_from_warc(tmp_path):
     """
     Targeted Integration Test:

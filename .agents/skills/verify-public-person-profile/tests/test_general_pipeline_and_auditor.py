@@ -4,13 +4,36 @@ Regression tests for universal person profiling runner and mechanical auditor.
 Ensures zero synthetic fallbacks, authentic dynamic retrieval, and fail-closed audit gates.
 """
 
+import hashlib
 import json
+import re
 import shutil
 from pathlib import Path
 import pytest
 
 from scripts.run_recall_profile import run_recall_investigation
 from scripts.verify_investigation_bundle import BundleVerifier
+
+FIXTURE_JULIA = Path(__file__).resolve().parents[4] / "investigations" / "julia_moniz_ganem"
+
+
+def copy_julia_fixture(target_dir: Path) -> Path:
+    """Helper to copy the validated Julia Moniz Ganem fixture for hermetic mutation tests."""
+    if target_dir.exists():
+        shutil.rmtree(target_dir)
+    shutil.copytree(FIXTURE_JULIA, target_dir)
+    return target_dir
+
+
+def update_manifest_file_checksum(bundle_dir: Path, rel_filename: str):
+    """Helper to update byte size and sha256 in manifest.json for mutation tests."""
+    fpath = bundle_dir / rel_filename
+    man_path = bundle_dir / "manifest.json"
+    man = json.loads(man_path.read_text(encoding="utf-8"))
+    if "files" in man and rel_filename in man["files"]:
+        man["files"][rel_filename]["byte_size"] = fpath.stat().st_size
+        man["files"][rel_filename]["sha256"] = hashlib.sha256(fpath.read_bytes()).hexdigest()
+    man_path.write_text(json.dumps(man, indent=2), encoding="utf-8")
 
 
 def test_unconfigured_nonexistent_entity_abstains_without_synthetic_files(tmp_path):
@@ -68,17 +91,14 @@ def test_auditor_catches_phantom_citation(tmp_path):
     Ensure auditor fails when recall_report.md cites a phantom claim [VCLM-99].
     """
     out_dir = tmp_path / "test_phantom"
-    run_recall_investigation(
-        name="Julia Moniz Ganem",
-        clue="Public Health",
-        additional_clues=["Vaccine"],
-        output_dir=out_dir,
-    )
+    copy_julia_fixture(out_dir)
+
     # Inject phantom citation
     report_file = out_dir / "recall_report.md"
     content = report_file.read_text(encoding="utf-8")
     content += "\n* [VCLM-99] Phantom unbacked fact."
     report_file.write_text(content, encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "recall_report.md")
 
     verifier = BundleVerifier(out_dir)
     ok = verifier.audit_all()
@@ -91,12 +111,8 @@ def test_auditor_rejects_synthetic_domains(tmp_path):
     Ensure auditor fails if a synthetic domain like profiles.institution.edu is present.
     """
     out_dir = tmp_path / "test_synthetic_rejection"
-    run_recall_investigation(
-        name="Julia Moniz Ganem",
-        clue="Public Health",
-        additional_clues=["Vaccine"],
-        output_dir=out_dir,
-    )
+    copy_julia_fixture(out_dir)
+
     inv_file = out_dir / "source_inventory.jsonl"
     lines = inv_file.read_text(encoding="utf-8").splitlines()
     if lines:
@@ -104,6 +120,7 @@ def test_auditor_rejects_synthetic_domains(tmp_path):
         first["url"] = "https://profiles.institution.edu/fake_person"
         lines[0] = json.dumps(first)
         inv_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "source_inventory.jsonl")
 
     verifier = BundleVerifier(out_dir)
     ok = verifier.audit_all()
@@ -117,12 +134,8 @@ def test_auditor_catches_mutation_unexecuted_queries(tmp_path):
     Auditor MUST fail-close.
     """
     out_dir = tmp_path / "test_mutation_queries"
-    run_recall_investigation(
-        name="Julia Moniz Ganem",
-        clue="Public Health",
-        additional_clues=["Vaccine"],
-        output_dir=out_dir,
-    )
+    copy_julia_fixture(out_dir)
+
     # Mutate query logs
     qlog_file = out_dir / "query_logs.jsonl"
     lines = [json.loads(l) for l in qlog_file.read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -130,14 +143,7 @@ def test_auditor_catches_mutation_unexecuted_queries(tmp_path):
         rec["status"] = "PLANNED_NOT_EXECUTED"
         rec["results_count"] = 999
     qlog_file.write_text("\n".join(json.dumps(r) for r in lines) + "\n", encoding="utf-8")
-
-    # Update manifest to match mutated file
-    import hashlib
-    man_path = out_dir / "manifest.json"
-    man = json.loads(man_path.read_text(encoding="utf-8"))
-    man["files"]["query_logs.jsonl"]["byte_size"] = qlog_file.stat().st_size
-    man["files"]["query_logs.jsonl"]["sha256"] = hashlib.sha256(qlog_file.read_bytes()).hexdigest()
-    man_path.write_text(json.dumps(man, indent=2), encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "query_logs.jsonl")
 
     verifier = BundleVerifier(out_dir)
     ok = verifier.audit_all()
@@ -151,25 +157,14 @@ def test_auditor_catches_mutation_deleted_citations(tmp_path):
     Auditor MUST fail-close.
     """
     out_dir = tmp_path / "test_mutation_deleted_citations"
-    run_recall_investigation(
-        name="Julia Moniz Ganem",
-        clue="Public Health",
-        additional_clues=["Vaccine"],
-        output_dir=out_dir,
-    )
+    copy_julia_fixture(out_dir)
+
     # Strip all [VCLM-xx], [LEAD-xx], [OQ-xx] from report
-    import re, hashlib
     report_file = out_dir / "recall_report.md"
     text = report_file.read_text(encoding="utf-8")
     stripped_text = re.sub(r"\[(VCLM-\d+|LEAD-\d+|OQ-\d+)\]", "", text)
     report_file.write_text(stripped_text, encoding="utf-8")
-
-    # Update manifest
-    man_path = out_dir / "manifest.json"
-    man = json.loads(man_path.read_text(encoding="utf-8"))
-    man["files"]["recall_report.md"]["byte_size"] = report_file.stat().st_size
-    man["files"]["recall_report.md"]["sha256"] = hashlib.sha256(report_file.read_bytes()).hexdigest()
-    man_path.write_text(json.dumps(man, indent=2), encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "recall_report.md")
 
     verifier = BundleVerifier(out_dir)
     ok = verifier.audit_all()
@@ -179,35 +174,97 @@ def test_auditor_catches_mutation_deleted_citations(tmp_path):
 
 def test_auditor_catches_mutation_unbacked_dossier_statement(tmp_path):
     """
-    Mutation C: Dossier injects an unbacked statement ('President of Mars').
+    Mutation C: Dossier injects an unbacked statement with empty backed_claim_ids.
     Auditor MUST fail-close.
     """
     out_dir = tmp_path / "test_mutation_unbacked_stmt"
-    run_recall_investigation(
-        name="Julia Moniz Ganem",
-        clue="Public Health",
-        additional_clues=["Vaccine"],
-        output_dir=out_dir,
-    )
-    import hashlib
+    copy_julia_fixture(out_dir)
+
     dossier_file = out_dir / "dossier.json"
     dossier = json.loads(dossier_file.read_text(encoding="utf-8"))
     dossier["statements"].append({
         "statement_id": "STMT-UNBACKED",
         "section": "Fake Section",
-        "rendered_text": "President of Mars",
+        "rendered_text": "Unbacked statement text",
         "backed_claim_ids": [],
     })
     dossier_file.write_text(json.dumps(dossier, indent=2), encoding="utf-8")
-
-    # Update manifest
-    man_path = out_dir / "manifest.json"
-    man = json.loads(man_path.read_text(encoding="utf-8"))
-    man["files"]["dossier.json"]["byte_size"] = dossier_file.stat().st_size
-    man["files"]["dossier.json"]["sha256"] = hashlib.sha256(dossier_file.read_bytes()).hexdigest()
-    man_path.write_text(json.dumps(man, indent=2), encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "dossier.json")
 
     verifier = BundleVerifier(out_dir)
     ok = verifier.audit_all()
     assert ok is False, "Auditor must fail on unbacked dossier statement"
     assert any("empty backed_claim_ids" in err for err in verifier.errors)
+
+
+def test_auditor_catches_mutation_president_of_mars_semantic_injection(tmp_path):
+    """
+    Mutation D: Statement claims 'President of Mars' while deceptively citing a valid claim [VCLM-01].
+    Auditor semantic inspection MUST detect ungrounded alien entity / token discrepancy and fail-close.
+    """
+    out_dir = tmp_path / "test_mutation_president_of_mars"
+    copy_julia_fixture(out_dir)
+
+    # Inject into dossier statement citing valid claim ID VCLM-01
+    dossier_file = out_dir / "dossier.json"
+    dossier = json.loads(dossier_file.read_text(encoding="utf-8"))
+    dossier["statements"].append({
+        "statement_id": "STMT-INJECTED-MARS",
+        "section": "Public Health",
+        "rendered_text": "[CAND-01] Julia Moniz Ganem is President of Mars.",
+        "backed_claim_ids": ["VCLM-01"],
+    })
+    dossier_file.write_text(json.dumps(dossier, indent=2), encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "dossier.json")
+
+    # Inject into report as well
+    report_file = out_dir / "recall_report.md"
+    content = report_file.read_text(encoding="utf-8")
+    content += "\n* [VCLM-01] President of Mars appointment."
+    report_file.write_text(content, encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "recall_report.md")
+
+    verifier = BundleVerifier(out_dir)
+    ok = verifier.audit_all()
+    assert ok is False, "Auditor must fail on 'President of Mars' semantic injection"
+    assert any("alien" in err.lower() or "grounding" in err.lower() or "injection" in err.lower() for err in verifier.errors)
+
+
+def test_auditor_catches_mutation_null_primary_with_fake_correlate_leads(tmp_path):
+    """
+    Mutation E: Bundle has null primary_candidate_id, but a lead falsely asserts clue correlation.
+    Auditor MUST fail-close.
+    """
+    out_dir = tmp_path / "test_mutation_null_primary_lead"
+    copy_julia_fixture(out_dir)
+
+    # Set primary_candidate_id to None in dossier
+    dossier_file = out_dir / "dossier.json"
+    dossier = json.loads(dossier_file.read_text(encoding="utf-8"))
+    dossier["primary_candidate_id"] = None
+    dossier_file.write_text(json.dumps(dossier, indent=2), encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "dossier.json")
+
+    # Inject fake clue-correlation lead
+    lead_file = out_dir / "corroborated_leads.jsonl"
+    leads = [json.loads(l) for l in lead_file.read_text(encoding="utf-8").splitlines() if l.strip()]
+    leads.append({
+        "lead_id": f"LEAD-{len(leads)+1:02d}",
+        "candidate_id": "CAND-01",
+        "description": "Candidate signals correlate with clues provided in investigation query.",
+        "corroborating_source_ids": ["SRC-01"],
+    })
+    lead_file.write_text("\n".join(json.dumps(l) for l in leads) + "\n", encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "corroborated_leads.jsonl")
+
+    # Cite in report
+    report_file = out_dir / "recall_report.md"
+    content = report_file.read_text(encoding="utf-8")
+    content += f"\n* [LEAD-{len(leads):02d}] Candidate signals correlate with clues."
+    report_file.write_text(content, encoding="utf-8")
+    update_manifest_file_checksum(out_dir, "recall_report.md")
+
+    verifier = BundleVerifier(out_dir)
+    ok = verifier.audit_all()
+    assert ok is False, "Auditor must fail when null primary candidate has clue correlation leads"
+    assert any("asserts clue correlation when primary_candidate_id is null" in err for err in verifier.errors)

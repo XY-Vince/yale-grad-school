@@ -1,0 +1,13 @@
+{
+  "run_id": "RUN-4bc4f7d40ce9",
+  "run_outcome": "ambiguous_identity",
+  "run_fingerprint": "43a3fa21f0c34885ace69ac30a30521f0b3890c2cc015bd9d3f4c77d0cdda6ab",
+  "tool_version": "verify-public-person-profile/1.0.0",
+  "model_name": "deterministic_pipeline",
+  "query_budget": 20,
+  "queries_executed": 4,
+  "pages_fetched": 3,
+  "crawl_errors": [],
+  "abstention_records": [],
+  "execution_time_seconds": 0.402
+}

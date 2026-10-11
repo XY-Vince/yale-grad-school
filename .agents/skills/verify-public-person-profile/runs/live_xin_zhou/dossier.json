@@ -1,0 +1,12 @@
+{
+  "dossier_id": "DOS-AMBIGUOUS-756a46ba",
+  "candidate_entity_id": null,
+  "proposed_cluster_id": null,
+  "statements": [],
+  "ambiguous_candidates": [
+    "CAND-1940fe4aefdf",
+    "CAND-238ef964c826",
+    "CAND-d0241505f6c6"
+  ],
+  "generated_at": "2026-09-15T14:00:46.437344Z"
+}

@@ -23,4 +23,3 @@
 | `2fda9ea` 自造 WARC 套件 | 预写文本打进本地合成 WARC | `synthetic_fixture_only` | 仅保留用于内部格式兼容性测试，不作为真实证据来源。 |
 | `5a516a6` 初版外部载荷 | 抓取真实载荷，但报告层存在外推与硬编码 | `partially_provenance_valid` | 来源层有效，综合报告层通过 Round 1 已按规程纠偏闭环。 |
 | `investigations/yao_sun_rerun` | 纯净目录、参数化入口、机械证据回放 | `reproducible_real_investigation` | 正式黄金基线。 |
-

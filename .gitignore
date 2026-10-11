@@ -28,6 +28,7 @@ __pycache__/
 /.agents/skills/verify-public-person-profile/runs/*
 !/.agents/skills/verify-public-person-profile/runs/xin_zhou_disambiguation/
 !/.agents/skills/verify-public-person-profile/runs/pilot_yao_sun_recall/
+!/.agents/skills/verify-public-person-profile/runs/live_xin_zhou/
 /.agents/skills/verify-public-person-profile/scratch/
 
 # Binaries and archives
