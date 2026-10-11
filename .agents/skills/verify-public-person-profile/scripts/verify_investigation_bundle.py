@@ -67,6 +67,8 @@ class BundleVerifier:
         self.warnings: List[str] = []
         self.info: List[str] = []
         self.sources: Dict[str, dict] = {}
+        self.claims: Dict[str, dict] = {}
+        self.leads: Dict[str, dict] = {}
         self.verified_claim_ids: Set[str] = set()
         self.lead_ids: Set[str] = set()
         self.question_ids: Set[str] = set()
@@ -224,6 +226,7 @@ class BundleVerifier:
 
             claim_id = c.get("claim_id") or f"line-{line_idx}"
             self.verified_claim_ids.add(claim_id)
+            self.claims[claim_id] = c
 
             cand_id = c.get("candidate_id")
             if cand_id:
@@ -326,6 +329,7 @@ class BundleVerifier:
                     ld = json.loads(line)
                     lid = ld.get("lead_id") or f"LEAD-{lead_count:02d}"
                     self.lead_ids.add(lid)
+                    self.leads[lid] = ld
                     cand_id = ld.get("candidate_id")
                     if cand_id:
                         self.candidate_ids.add(cand_id)
@@ -444,18 +448,73 @@ class BundleVerifier:
         dossier_file = self.bundle_dir / "dossier.json"
         report_file = self.bundle_dir / "recall_report.md"
 
+        dossier = None
         if not dossier_file.exists():
             self.errors.append("dossier.json missing in bundle root.")
         else:
             try:
                 dossier = json.loads(dossier_file.read_text(encoding="utf-8"))
+                primary_id = dossier.get("primary_candidate_id")
+
+                # Clue gating check: If primary_candidate_id is null/None, no clue-correlation leads allowed
+                if primary_id is None and not self.is_abstention:
+                    for lid, ld in self.leads.items():
+                        desc = ld.get("description", "").lower()
+                        if "correlate with clues" in desc or "signals correlate" in desc:
+                            self.errors.append(
+                                f"Lead {lid} asserts clue correlation when primary_candidate_id is null: {ld.get('description')}"
+                            )
+
+                # Semantic alignment check on each dossier statement
                 for stmt in dossier.get("statements", []):
+                    stmt_id = stmt.get("statement_id", "")
+                    rendered_text = stmt.get("rendered_text", "")
                     backed = stmt.get("backed_claim_ids", [])
                     if not backed:
-                        self.errors.append(f"Dossier statement {stmt.get('statement_id', '')} has empty backed_claim_ids.")
+                        self.errors.append(f"Dossier statement {stmt_id} has empty backed_claim_ids.")
+                        continue
+
+                    # Collect supported text tokens from backed claims
+                    backed_supported_tokens = set()
                     for cid in backed:
                         if cid not in self.verified_claim_ids:
                             self.errors.append(f"Dossier statement cites unbacked claim ID: {cid}")
+                            continue
+                        c = self.claims.get(cid, {})
+                        c_text = f"{c.get('subject', '')} {c.get('predicate', '')} {c.get('object', '')} {c.get('verbatim_excerpt', '')}".lower()
+                        for tok in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", c_text):
+                            if len(tok) > 1:
+                                backed_supported_tokens.add(tok)
+
+                    # Extract substantive tokens from statement (excluding boilerplate/stop words)
+                    exempt_words = {
+                        "cand", "stmt", "vclm", "status", "状态", "as_of_publication", "historical", "current",
+                        "the", "a", "an", "in", "on", "at", "to", "for", "of", "and", "or", "is", "was", "with",
+                        "by", "from", "as", "affiliated_with", "authored_work", "holds_position", "graduated_from",
+                        "mentioned_in", "received_degree", "employed_by", "published", "fellow", "author", "work",
+                        "researcher", "institution"
+                    }
+                    stmt_substantive_tokens = {
+                        tok.lower() for tok in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", rendered_text)
+                        if len(tok) > 2 and tok.lower() not in exempt_words and not tok.isdigit()
+                    }
+
+                    # Must have grounding overlap with backed claims
+                    overlap = stmt_substantive_tokens.intersection(backed_supported_tokens)
+                    if stmt_substantive_tokens and not overlap:
+                        self.errors.append(
+                            f"Dossier statement {stmt_id} text '{rendered_text}' has ZERO semantic grounding in backed claims {backed}."
+                        )
+
+                    # Explicitly detect ungrounded / injected entities (e.g. 'President of Mars')
+                    suspicious_injections = {"mars", "president", "fake_fact", "fabricated", "jupiter"}
+                    if any(sinj in stmt_substantive_tokens for sinj in suspicious_injections):
+                        alien_found = stmt_substantive_tokens.intersection(suspicious_injections)
+                        if not alien_found.issubset(backed_supported_tokens):
+                            self.errors.append(
+                                f"Dossier statement {stmt_id} contains ungrounded alien token(s) {alien_found} not backed by claims."
+                            )
+
                 self.info.append("Dossier JSON parsed and validated.")
             except Exception as e:
                 self.errors.append(f"Invalid dossier.json: {e}")
@@ -474,6 +533,27 @@ class BundleVerifier:
         for cid in cited_claims:
             if cid not in self.verified_claim_ids:
                 self.errors.append(f"recall_report.md cites phantom claim ID not in verified_claims: {cid}")
+
+        # Check report lines for ungrounded citations (e.g. fake facts citing real claim IDs)
+        for line in report_text.splitlines():
+            line_cids = re.findall(r"\[(VCLM-\d+)\]", line)
+            if not line_cids:
+                continue
+            line_lower = line.lower()
+            if any(alien in line_lower for alien in ["president of mars", "fake_fact", "fabricated"]):
+                self.errors.append(f"recall_report.md contains ungrounded claim injection: '{line.strip()}'")
+
+            # For claim bullet items, ensure the claim object appears in the bullet
+            for cid in line_cids:
+                if line.strip().startswith(f"* [{cid}]"):
+                    c = self.claims.get(cid, {})
+                    c_obj = str(c.get("object", "")).strip().lower()
+                    c_obj_tokens = {t for t in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", c_obj) if len(t) > 2}
+                    line_tokens = {t for t in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", line_lower) if len(t) > 2}
+                    if c_obj_tokens and not line_tokens.intersection(c_obj_tokens):
+                        self.errors.append(
+                            f"recall_report.md claim bullet * [{cid}] does not contain object of claim {cid}"
+                        )
 
         cited_leads = set(re.findall(r"\[(LEAD-\d+)\]", report_text))
         for lid in cited_leads:
