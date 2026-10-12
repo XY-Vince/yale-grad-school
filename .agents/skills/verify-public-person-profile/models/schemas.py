@@ -40,19 +40,13 @@ class AdjudicationStatus(str, Enum):
     UNRESOLVED = "unresolved"
 
 
-PREDICATE_ALLOWLIST = {
-    "holds_position",
-    "employed_by",
-    "graduated_from",
-    "received_degree",
-    "member_of",
-    "authored_publication",
-    "awarded_honor",
-    "affiliated_with",
-    "based_in",
-}
-
-RELATION_REQUIRED_PREDICATES = set(PREDICATE_ALLOWLIST)
+from models.predicate_registry import (
+    CANONICAL_PREDICATE_ALIASES,
+    PREDICATE_ALLOWLIST,
+    PREDICATE_REGISTRY,
+    RELATION_REQUIRED_PREDICATES,
+    canonicalize_predicate,
+)
 
 
 class DatePrecision(str, Enum):
