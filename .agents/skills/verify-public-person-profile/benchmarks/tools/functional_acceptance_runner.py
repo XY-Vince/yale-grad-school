@@ -76,6 +76,10 @@ PREDICATE_KEYWORD_PATTERNS: Dict[str, List[str]] = {
 }
 
 
+HARD_PRECISION_FLOOR: float = 0.95
+HARD_MIN_RECALL: float = 0.80
+
+
 def get_git_commit(repo_dir: Path) -> Optional[str]:
     try:
         res = subprocess.run(
@@ -103,9 +107,9 @@ def is_git_dirty(repo_dir: Path) -> bool:
         )
         if res.returncode == 0:
             return bool(res.stdout.strip())
+        return True
     except Exception:
-        pass
-    return False
+        return True
 
 
 def compute_file_sha256(path: Path) -> str:
@@ -152,8 +156,10 @@ def _normalize_match_text(value: str) -> str:
 def _normalize_temporal(temp_str: Optional[str]) -> str:
     """Normalize temporal semantics into canonical classes."""
     val = (temp_str or "").strip().lower()
-    if val in ("current", "present", "active", "as_of_publication"):
+    if val in ("current", "present", "active"):
         return "current"
+    if val in ("as_of_publication",):
+        return "as_of_publication"
     if val in ("historical", "past", "former", "alumni", "completed"):
         return "historical"
     if val in ("future", "stated_future", "upcoming"):
@@ -185,17 +191,17 @@ def check_5d_match(
 ) -> bool:
     """
     Strict 5D entailment matching (Fail-Closed):
-    1. Subject: Must match target name.
+    1. Subject: Must be explicitly provided and strictly match. Missing subject fails closed.
     2. Predicate: Canonical predicate identity (no degree/graduation conflation).
     3. Object: Strict normalized match or explicit gold equivalence set.
     4. Polarity: Exact match.
     5. Temporal status: Candidate with unknown/missing temporal status fails against specified gold.
     """
-    c_sub = claim.get("subject") or claim.get("subject_raw") or target_name or ""
-    g_sub = gold_fact.get("subject") or target_name or ""
+    c_sub = claim.get("subject") or claim.get("subject_raw")
+    g_sub = gold_fact.get("subject")
     if not c_sub or not g_sub:
         return False
-    if _normalize_match_text(c_sub) != _normalize_match_text(g_sub):
+    if _normalize_match_text(str(c_sub)) != _normalize_match_text(str(g_sub)):
         return False
 
     c_raw_pred = str(claim.get("predicate", "")).strip().lower()
@@ -218,6 +224,36 @@ def check_5d_match(
     g_temp_norm = _normalize_temporal(gold_fact.get("temporal_status"))
     if g_temp_norm != "unknown":
         if c_temp_norm == "unknown" or c_temp_norm != g_temp_norm:
+            return False
+
+    return True
+
+
+def check_homonym_fact_signature_match(claim: Dict[str, Any], homonym_fact: Dict[str, Any]) -> bool:
+    """
+    Match 4D fact signature (predicate + object + polarity + temporal)
+    WITHOUT requiring subject match, to catch foreign facts mistakenly attributed to target.
+    """
+    c_raw_pred = str(claim.get("predicate", "")).strip().lower()
+    h_raw_pred = str(homonym_fact.get("predicate", "")).strip().lower()
+    c_canon = canonicalize_predicate(c_raw_pred) or c_raw_pred
+    h_canon = canonicalize_predicate(h_raw_pred) or h_raw_pred
+    if c_canon != h_canon:
+        return False
+
+    c_obj = str(claim.get("object") or claim.get("object_raw") or "").strip()
+    if not strict_object_match(c_obj, homonym_fact):
+        return False
+
+    c_pol = str(claim.get("polarity", "affirmative")).strip().lower()
+    h_pol = str(homonym_fact.get("polarity", "affirmative")).strip().lower()
+    if c_pol != h_pol:
+        return False
+
+    c_temp_norm = _normalize_temporal(claim.get("temporal_status"))
+    h_temp_norm = _normalize_temporal(homonym_fact.get("temporal_status"))
+    if h_temp_norm != "unknown":
+        if c_temp_norm == "unknown" or c_temp_norm != h_temp_norm:
             return False
 
     return True
@@ -324,44 +360,108 @@ def evaluate_structural_and_byte_replay(bundle_dir: Path) -> Dict[str, Any]:
     }
 
 
-def evaluate_profile_coverage(claims: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Evaluates coverage of allowlisted dimensions and privacy compliance."""
-    dimension_claim_counts: Dict[str, int] = {p: 0 for p in PREDICATE_REGISTRY}
+def evaluate_profile_coverage(
+    claims: List[Dict[str, Any]],
+    primary_candidate_id: Optional[str] = None,
+    candidate_bundle_dir: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """
+    Evaluates coverage of allowlisted dimensions and privacy compliance.
+    Strictly audits:
+    1. Target-scoped coverage (primary_candidate_id) vs All-candidate coverage.
+    2. Prohibited privacy attempts across claims, query_logs.jsonl, and source_inventory.jsonl.
+    """
+    total_dims = len(PREDICATE_REGISTRY)
+
+    def _compute_cov(sub_claims: List[Dict[str, Any]]) -> Dict[str, Any]:
+        counts: Dict[str, int] = {p: 0 for p in PREDICATE_REGISTRY}
+        for c in sub_claims:
+            raw_pred = str(c.get("predicate", "")).strip().lower()
+            pred = canonicalize_predicate(raw_pred) or raw_pred
+            if pred in counts:
+                counts[pred] += 1
+        covered = [p for p, count in counts.items() if count > 0]
+        uncovered = [p for p, count in counts.items() if count == 0]
+        ratio = len(covered) / total_dims if total_dims > 0 else 0.0
+        return {
+            "total_in_scope_dimensions": total_dims,
+            "covered_dimensions_count": len(covered),
+            "covered_dimensions": covered,
+            "uncovered_dimensions": uncovered,
+            "dimension_counts": counts,
+            "coverage_ratio": ratio,
+        }
+
+    target_claims = (
+        [c for c in claims if c.get("candidate_id") == primary_candidate_id]
+        if primary_candidate_id
+        else claims
+    )
+    target_coverage = _compute_cov(target_claims)
+    all_candidate_coverage = _compute_cov(claims)
+
     privacy_violations: List[Dict[str, Any]] = []
 
+    # 1. Audit Claims
     for c in claims:
         raw_pred = str(c.get("predicate", "")).strip().lower()
-        pred = canonicalize_predicate(raw_pred) or raw_pred
         obj = str(c.get("object") or c.get("object_raw") or "")
         sub = str(c.get("subject") or "")
         exc = str(c.get("verbatim_excerpt") or "")
         cid = c.get("claim_id", "unknown")
-
-        if pred in dimension_claim_counts:
-            dimension_claim_counts[pred] += 1
-
         full_claim_text = f"{sub} {raw_pred} {obj} {exc}"
         for pat in PROHIBITED_PRIVACY_PATTERNS:
             if re.search(pat, full_claim_text, re.IGNORECASE):
                 privacy_violations.append({
+                    "source": "claim",
                     "claim_id": cid,
                     "predicate": raw_pred,
                     "pattern": pat,
                     "snippet": full_claim_text[:120],
                 })
 
-    covered = [p for p, count in dimension_claim_counts.items() if count > 0]
-    uncovered = [p for p, count in dimension_claim_counts.items() if count == 0]
-    total_dims = len(PREDICATE_REGISTRY)
-    cov_ratio = len(covered) / total_dims if total_dims > 0 else 0.0
+    # 2. Audit Query Logs & Search Attempts
+    if candidate_bundle_dir:
+        q_logs_file = candidate_bundle_dir / "query_logs.jsonl"
+        if q_logs_file.exists():
+            for line_idx, line in enumerate(q_logs_file.read_text(encoding="utf-8").splitlines(), 1):
+                line = line.strip()
+                if not line:
+                    continue
+                for pat in PROHIBITED_PRIVACY_PATTERNS:
+                    if re.search(pat, line, re.IGNORECASE):
+                        privacy_violations.append({
+                            "source": "query_logs",
+                            "line_number": line_idx,
+                            "pattern": pat,
+                            "snippet": line[:120],
+                        })
+
+        # 3. Audit Source Inventory & Seed URLs
+        inv_file = candidate_bundle_dir / "source_inventory.jsonl"
+        if inv_file.exists():
+            for line_idx, line in enumerate(inv_file.read_text(encoding="utf-8").splitlines(), 1):
+                line = line.strip()
+                if not line:
+                    continue
+                for pat in PROHIBITED_PRIVACY_PATTERNS:
+                    if re.search(pat, line, re.IGNORECASE):
+                        privacy_violations.append({
+                            "source": "source_inventory",
+                            "line_number": line_idx,
+                            "pattern": pat,
+                            "snippet": line[:120],
+                        })
 
     return {
+        "target_coverage": target_coverage,
+        "all_candidate_coverage": all_candidate_coverage,
         "total_in_scope_dimensions": total_dims,
-        "covered_dimensions_count": len(covered),
-        "covered_dimensions": covered,
-        "uncovered_dimensions": uncovered,
-        "dimension_counts": dimension_claim_counts,
-        "coverage_ratio": cov_ratio,
+        "covered_dimensions_count": target_coverage["covered_dimensions_count"],
+        "covered_dimensions": target_coverage["covered_dimensions"],
+        "uncovered_dimensions": target_coverage["uncovered_dimensions"],
+        "dimension_counts": target_coverage["dimension_counts"],
+        "coverage_ratio": target_coverage["coverage_ratio"],
         "privacy_violations": privacy_violations,
         "privacy_gate_pass": len(privacy_violations) == 0,
     }
@@ -421,7 +521,7 @@ def evaluate_withheld_gold(
 
     for c in target_claims:
         for hom in annotated_homonyms:
-            if check_5d_match(c, hom, target_name=target_name):
+            if check_homonym_fact_signature_match(c, hom):
                 contaminated_claims.append({
                     "claim_id": c.get("claim_id"),
                     "matched_homonym": hom.get("homonym_entity") or hom.get("subject"),
@@ -432,7 +532,7 @@ def evaluate_withheld_gold(
 
     for c in alternate_claims:
         for hom in annotated_homonyms:
-            if check_5d_match(c, hom, target_name=target_name):
+            if check_homonym_fact_signature_match(c, hom):
                 isolated_homonym_claims.append({
                     "claim_id": c.get("claim_id"),
                     "candidate_id": c.get("candidate_id"),
@@ -713,6 +813,82 @@ def render_markdown_report(results: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+class GoldContractError(ValueError):
+    """Raised when a Gold dataset violates the strict GoldContract specification."""
+    pass
+
+
+def validate_and_load_gold_contract(
+    gold_path: Path,
+    bundle_target_name: Optional[str] = None,
+    bundle_primary_candidate_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Strictly validates and loads GoldContract (Fail-Closed).
+    Requirements:
+    1. Must be a valid JSON dictionary. Naked lists are rejected.
+    2. 'target_name' must be a non-empty string.
+    3. 'primary_candidate_id' must be a non-empty string.
+    4. 'reference_completeness' must be explicitly declared and strictly 'complete' or 'partial'.
+    5. 'facts' must be a non-empty list of facts.
+    6. If bundle target_name is known, gold target_name must match.
+    7. If bundle primary_candidate_id is known, gold primary_candidate_id must match.
+    """
+    if not gold_path.exists():
+        raise GoldContractError(f"Withheld gold file does not exist: {gold_path}")
+
+    try:
+        data = json.loads(gold_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        raise GoldContractError(f"Withheld gold file is not valid JSON: {e}")
+
+    if not isinstance(data, dict):
+        raise GoldContractError(
+            f"GoldContract violation: Expected JSON dictionary/object, got {type(data).__name__}. "
+            "Raw arrays/lists are strictly prohibited."
+        )
+
+    # 1. target_name
+    gold_target = data.get("target_name")
+    if not gold_target or not isinstance(gold_target, str) or not gold_target.strip():
+        raise GoldContractError("GoldContract violation: 'target_name' is missing, empty, or not a string.")
+
+    # 2. primary_candidate_id
+    gold_primary_id = data.get("primary_candidate_id")
+    if not gold_primary_id or not isinstance(gold_primary_id, str) or not gold_primary_id.strip():
+        raise GoldContractError("GoldContract violation: 'primary_candidate_id' is missing, empty, or not a string.")
+
+    # 3. reference_completeness
+    completeness = data.get("reference_completeness")
+    if completeness not in ("complete", "partial"):
+        raise GoldContractError(
+            f"GoldContract violation: 'reference_completeness' must be explicitly 'complete' or 'partial', "
+            f"got {repr(completeness)}."
+        )
+
+    # 4. facts
+    facts = data.get("facts")
+    if not isinstance(facts, list) or len(facts) == 0:
+        raise GoldContractError("GoldContract violation: 'facts' must be a non-empty list of facts.")
+
+    # 5. Cross-check against bundle
+    if bundle_target_name:
+        if _normalize_match_text(gold_target) != _normalize_match_text(bundle_target_name):
+            raise GoldContractError(
+                f"GoldContract violation: target_name mismatch between Gold ({gold_target}) "
+                f"and Bundle ({bundle_target_name})."
+            )
+
+    if bundle_primary_candidate_id:
+        if gold_primary_id.strip() != bundle_primary_candidate_id.strip():
+            raise GoldContractError(
+                f"GoldContract violation: primary_candidate_id mismatch between Gold ({gold_primary_id}) "
+                f"and Bundle ({bundle_primary_candidate_id})."
+            )
+
+    return data
+
+
 def run_functional_acceptance(
     candidate_bundle_dir: Path,
     evaluate_existing: bool = True,
@@ -777,8 +953,12 @@ def run_functional_acceptance(
     primary_candidate_id = dossier_data.get("primary_candidate_id") or manifest_data.get("primary_candidate_id") or "CAND-01"
     target_name = name or dossier_data.get("target_name") or manifest_data.get("target_name")
 
-    # 4. Profile Dimension Coverage & Privacy
-    cov_eval = evaluate_profile_coverage(claims)
+    # 4. Profile Dimension Coverage & Privacy (Audits claims, query_logs, and source_inventory)
+    cov_eval = evaluate_profile_coverage(
+        claims,
+        primary_candidate_id=primary_candidate_id,
+        candidate_bundle_dir=candidate_bundle_dir,
+    )
 
     # 5. Query Saturation Analysis
     sat_eval = evaluate_query_saturation(candidate_bundle_dir, manifest_data, len(claims))
@@ -792,20 +972,30 @@ def run_functional_acceptance(
         annotated_homonyms = loaded_h.get("homonyms", loaded_h) if isinstance(loaded_h, dict) else loaded_h
 
     withheld_gold_facts: List[Dict[str, Any]] = []
-    reference_completeness = "complete"
+    reference_completeness = "unknown"
     gold_sha256 = None
-    if withheld_gold_path and withheld_gold_path.exists():
-        gold_sha256 = compute_file_sha256(withheld_gold_path)
-        loaded = json.loads(withheld_gold_path.read_text(encoding="utf-8"))
-        if isinstance(loaded, dict):
-            withheld_gold_facts = loaded.get("facts", [])
-            reference_completeness = loaded.get("reference_completeness", "complete")
-            if "primary_candidate_id" in loaded:
-                primary_candidate_id = loaded["primary_candidate_id"]
-            if not annotated_homonyms and "annotated_homonyms" in loaded:
-                annotated_homonyms = loaded["annotated_homonyms"]
-        elif isinstance(loaded, list):
-            withheld_gold_facts = loaded
+    gold_contract_pass = None
+    gold_contract_error = None
+
+    if withheld_gold_path:
+        gold_sha256 = compute_file_sha256(withheld_gold_path) if withheld_gold_path.exists() else None
+        try:
+            gold_data = validate_and_load_gold_contract(
+                gold_path=withheld_gold_path,
+                bundle_target_name=target_name,
+                bundle_primary_candidate_id=primary_candidate_id,
+            )
+            gold_contract_pass = True
+            withheld_gold_facts = gold_data.get("facts", [])
+            reference_completeness = gold_data.get("reference_completeness", "unknown")
+            primary_candidate_id = gold_data.get("primary_candidate_id", primary_candidate_id)
+            if not annotated_homonyms and "annotated_homonyms" in gold_data:
+                annotated_homonyms = gold_data["annotated_homonyms"]
+        except GoldContractError as e:
+            gold_contract_pass = False
+            gold_contract_error = str(e)
+            withheld_gold_facts = []
+            reference_completeness = "invalid"
 
     gold_eval = evaluate_withheld_gold(
         all_claims=claims,
@@ -842,33 +1032,44 @@ def run_functional_acceptance(
             delta_min=delta_min,
         )
 
+    # Minimum non-negotiable hard floors: cannot be relaxed by caller
+    effective_precision_floor = max(float(precision_floor), HARD_PRECISION_FLOOR)
+    effective_min_recall = max(float(min_recall), HARD_MIN_RECALL)
+
     # 9. Gate Synthesis
     struct_pass = replay_eval["structural_pass"]
     privacy_pass = cov_eval["privacy_gate_pass"]
     replay_pass = replay_eval["replay_gate_pass"]
     contam_pass = gold_eval["contamination_gate_pass"]
     has_gold = gold_eval["has_withheld_gold"]
-    is_complete_gold = has_gold and (reference_completeness == "complete")
+    is_complete_gold = bool(has_gold and (reference_completeness == "complete") and (gold_contract_pass is True))
 
     prec_pass = (
-        gold_eval["verified_claim_precision"] >= precision_floor
+        gold_eval["verified_claim_precision"] >= effective_precision_floor
         if is_complete_gold and gold_eval["verified_claim_precision"] is not None
         else None
     )
     recall_pass = (
-        gold_eval["withheld_fact_recall"] >= min_recall
+        gold_eval["withheld_fact_recall"] >= effective_min_recall
         if has_gold and gold_eval["withheld_fact_recall"] is not None
         else None
     )
     claim_count_pass = len(claims) > 0 or replay_eval["is_abstention"]
 
-    # Git tree cleanliness
+    # Git tree cleanliness (Fail-Closed)
     git_dirty_flag = is_git_dirty(candidate_bundle_dir) or is_git_dirty(SKILL_ROOT)
-    git_clean_pass = (not git_dirty_flag) if enforce_git_clean else True
+    git_clean_pass = not git_dirty_flag
+
+    # Mode synthesis:
+    # ACCEPTANCE mode strictly requires complete validated gold, zero git dirty, and strict gates.
+    # Any dirty tree (even with dirty override) or invalid/partial gold MUST issue DIAGNOSTIC!
+    mode = "DIAGNOSTIC"
+    if is_complete_gold and not git_dirty_flag:
+        mode = "ACCEPTANCE"
 
     # Hard acceptance decision:
     overall_acceptance_pass = bool(
-        is_complete_gold
+        mode == "ACCEPTANCE"
         and struct_pass
         and privacy_pass
         and replay_pass
@@ -880,6 +1081,7 @@ def run_functional_acceptance(
     )
 
     gates = {
+        "gold_contract_pass": gold_contract_pass,
         "structural_validation_pass": struct_pass,
         "privacy_gate_pass": privacy_pass,
         "provenance_replay_pass": replay_pass,
@@ -889,7 +1091,7 @@ def run_functional_acceptance(
         "precision_floor_pass": prec_pass,
         "recall_gate_pass": recall_pass,
         "overall_acceptance_pass": overall_acceptance_pass,
-        "mode": "ACCEPTANCE" if is_complete_gold else "DIAGNOSTIC",
+        "mode": mode,
     }
 
     evaluator_path = Path(__file__).resolve()
@@ -901,12 +1103,13 @@ def run_functional_acceptance(
         "candidate_bundle_dir": str(candidate_bundle_dir.resolve()),
         "candidate_commit": get_git_commit(candidate_bundle_dir) or get_git_commit(SKILL_ROOT),
         "git_dirty": git_dirty_flag,
+        "gold_contract_error": gold_contract_error,
         "evaluator_sha256": evaluator_sha256,
         "gold_sha256": gold_sha256,
         "homonym_set_sha256": homonym_set_sha256,
         "bundle_digest_sha256": compute_bundle_digest(candidate_bundle_dir),
-        "precision_floor": precision_floor,
-        "min_recall": min_recall,
+        "precision_floor": effective_precision_floor,
+        "min_recall": effective_min_recall,
         "delta_min": delta_min,
         "gates": gates,
         "byte_replay": replay_eval,
@@ -923,6 +1126,7 @@ def run_functional_acceptance(
         "timestamp_utc": results["timestamp_utc"],
         "candidate_commit": results["candidate_commit"],
         "git_dirty": results["git_dirty"],
+        "gold_contract_error": gold_contract_error,
         "evaluator_sha256": results["evaluator_sha256"],
         "gold_sha256": results["gold_sha256"],
         "homonym_set_sha256": results["homonym_set_sha256"],
@@ -930,8 +1134,8 @@ def run_functional_acceptance(
         "primary_candidate_id": primary_candidate_id,
         "gates": gates,
         "thresholds": {
-            "precision_floor": precision_floor,
-            "min_recall": min_recall,
+            "precision_floor": effective_precision_floor,
+            "min_recall": effective_min_recall,
             "delta_min": delta_min,
         },
         "metrics": {
@@ -982,6 +1186,9 @@ def main():
 
     eval_existing = not args.live
 
+    precision_floor = max(args.precision_floor, HARD_PRECISION_FLOOR)
+    min_recall = max(args.min_recall, HARD_MIN_RECALL)
+
     results = run_functional_acceptance(
         candidate_bundle_dir=args.candidate_dir,
         evaluate_existing=eval_existing,
@@ -992,8 +1199,8 @@ def main():
         withheld_gold_path=args.withheld_gold,
         annotated_homonyms_path=args.annotated_homonyms,
         output_dir=args.output_dir,
-        precision_floor=args.precision_floor,
-        min_recall=args.min_recall,
+        precision_floor=precision_floor,
+        min_recall=min_recall,
         delta_min=args.delta_min,
         enforce_git_clean=not args.ignore_git_dirty,
     )
@@ -1006,6 +1213,8 @@ def main():
         print("INVESTIGATION ACCEPTANCE & DIAGNOSTIC RESULT")
         print("=" * 60)
         print(f"Mode:                  {gates['mode']}")
+        if gates.get("gold_contract_pass") is not None:
+            print(f"Gold Contract Gate:    {'PASS' if gates['gold_contract_pass'] else 'FAIL'}")
         print(f"Structural Validation: {'PASS' if gates['structural_validation_pass'] else 'FAIL'}")
         print(f"Privacy Compliance:    {'PASS' if gates['privacy_gate_pass'] else 'FAIL'}")
         print(f"Byte Provenance Replay:{'PASS' if gates['provenance_replay_pass'] else 'FAIL'}")
