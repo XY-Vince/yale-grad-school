@@ -20,7 +20,11 @@ from pathlib import Path
 import pytest
 
 from benchmarks.tools.functional_acceptance_runner import (
+    HARD_MIN_RECALL,
+    HARD_PRECISION_FLOOR,
+    GoldContractError,
     check_5d_match,
+    check_homonym_fact_signature_match,
     compute_before_after_delta,
     evaluate_profile_coverage,
     evaluate_query_saturation,
@@ -29,6 +33,7 @@ from benchmarks.tools.functional_acceptance_runner import (
     maximum_bipartite_matching,
     run_functional_acceptance,
     strict_object_match,
+    validate_and_load_gold_contract,
 )
 
 
@@ -323,7 +328,7 @@ def test_real_yao_sun_bundle_evaluate_existing(tmp_path: Path):
     assert res["query_saturation"]["query_count"] == 33
 
 
-def test_real_yao_sun_bundle_with_complete_gold(tmp_path: Path):
+def test_real_yao_sun_bundle_with_complete_gold(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """
     Evaluates real Yao Sun bundle with a complete reference gold set.
     Verifies:
@@ -332,6 +337,8 @@ def test_real_yao_sun_bundle_with_complete_gold(tmp_path: Path):
     3. Recall = 1.0 (>= 0.80 non-negotiable floor).
     4. Acceptance gate passes.
     """
+    monkeypatch.setattr("benchmarks.tools.functional_acceptance_runner.is_git_dirty", lambda p: False)
+
     yao_bundle = Path("investigations/yao_sun")
     assert yao_bundle.exists()
 
@@ -345,7 +352,7 @@ def test_real_yao_sun_bundle_with_complete_gold(tmp_path: Path):
             {"subject": "Yao Sun", "predicate": "affiliated_with", "object_raw": "Yale University", "polarity": "affirmative", "temporal_status": "current"},
             {"subject": "Yao Sun", "predicate": "employed_by", "object_raw": "Yale Institution for Social and Policy Studies", "polarity": "affirmative", "temporal_status": "current"},
             {"subject": "Yao Sun", "predicate": "affiliated_with", "object_raw": "ZCAFE", "polarity": "affirmative", "temporal_status": "current"},
-            {"subject": "Yao Sun", "predicate": "affiliated_with", "object_raw": "University of Michigan", "polarity": "affirmative", "temporal_status": "current"},
+            {"subject": "Yao Sun", "predicate": "affiliated_with", "object_raw": "University of Michigan", "polarity": "affirmative", "temporal_status": "as_of_publication"},
             {"subject": "Yao Sun", "predicate": "received_degree", "object_raw": "M.S. in Survey Methodology", "polarity": "affirmative", "temporal_status": "historical"},
             {"subject": "Yao Sun", "predicate": "awarded_honor", "object_raw": "Burns \"Bud\" Roper AAPOR Fellow Award", "polarity": "affirmative", "temporal_status": "historical"},
             {"subject": "Yao Sun", "predicate": "awarded_honor", "object_raw": "MPSDS Tuition Fellowship", "polarity": "affirmative", "temporal_status": "historical"},
@@ -399,3 +406,368 @@ def test_real_yao_sun_bundle_with_complete_gold(tmp_path: Path):
     assert gold_metrics["verified_claim_precision"] == 1.0
     assert gold_metrics["contamination_count"] == 0
     assert gold_metrics["isolated_homonym_count"] == 1
+
+
+def test_gold_contract_fail_closed_on_missing_fields_or_naked_list(tmp_path: Path):
+    """
+    GoldContract must fail closed:
+    1. Naked arrays/lists are rejected with GoldContractError.
+    2. Missing reference_completeness or non-complete/partial value is rejected.
+    3. Missing target_name or primary_candidate_id is rejected.
+    4. Mismatched target_name or primary_candidate_id against bundle is rejected.
+    5. In run_functional_acceptance, GoldContractError forces mode=DIAGNOSTIC and overall_acceptance_pass=False.
+    """
+    # 1. Naked list
+    naked_path = tmp_path / "naked_gold.json"
+    naked_path.write_text(json.dumps([{"subject": "Alice Wang"}]), encoding="utf-8")
+    with pytest.raises(GoldContractError, match="Raw arrays/lists are strictly prohibited"):
+        validate_and_load_gold_contract(naked_path)
+
+    # 2. Missing reference_completeness
+    missing_comp = tmp_path / "missing_comp.json"
+    missing_comp.write_text(
+        json.dumps({
+            "target_name": "Alice Wang",
+            "primary_candidate_id": "CAND-01",
+            "facts": [{"subject": "Alice Wang"}],
+        }),
+        encoding="utf-8",
+    )
+    with pytest.raises(GoldContractError, match="reference_completeness"):
+        validate_and_load_gold_contract(missing_comp)
+
+    # 3. Missing primary_candidate_id
+    missing_id = tmp_path / "missing_id.json"
+    missing_id.write_text(
+        json.dumps({
+            "target_name": "Alice Wang",
+            "reference_completeness": "complete",
+            "facts": [{"subject": "Alice Wang"}],
+        }),
+        encoding="utf-8",
+    )
+    with pytest.raises(GoldContractError, match="primary_candidate_id"):
+        validate_and_load_gold_contract(missing_id)
+
+    # 4. Target name mismatch
+    valid_gold = tmp_path / "valid_structure.json"
+    valid_gold.write_text(
+        json.dumps({
+            "target_name": "Bob Smith",
+            "primary_candidate_id": "CAND-01",
+            "reference_completeness": "complete",
+            "facts": [{"subject": "Bob Smith"}],
+        }),
+        encoding="utf-8",
+    )
+    with pytest.raises(GoldContractError, match="target_name mismatch"):
+        validate_and_load_gold_contract(valid_gold, bundle_target_name="Alice Wang")
+
+    # 5. Integration: passing naked list to run_functional_acceptance forces DIAGNOSTIC and overall_acceptance_pass=False
+    bundle_dir = tmp_path / "dummy_bundle"
+    bundle_dir.mkdir()
+    (bundle_dir / "verified_claims.jsonl").write_text("", encoding="utf-8")
+    (bundle_dir / "source_inventory.jsonl").write_text("", encoding="utf-8")
+    (bundle_dir / "manifest.json").write_text(
+        json.dumps({"target_name": "Alice Wang", "primary_candidate_id": "CAND-01"}),
+        encoding="utf-8",
+    )
+    out_dir = tmp_path / "eval_out"
+
+    res = run_functional_acceptance(
+        candidate_bundle_dir=bundle_dir,
+        evaluate_existing=True,
+        withheld_gold_path=naked_path,
+        output_dir=out_dir,
+        enforce_git_clean=False,
+    )
+    assert res["gates"]["gold_contract_pass"] is False
+    assert res["gates"]["mode"] == "DIAGNOSTIC"
+    assert res["gates"]["overall_acceptance_pass"] is False
+
+
+def test_hard_floors_prevent_pass_on_low_precision_or_low_recall(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """
+    HARD_PRECISION_FLOOR (0.95) and HARD_MIN_RECALL (0.80) cannot be relaxed by caller.
+    Even if caller specifies precision_floor=0.10 and min_recall=0.10:
+    effective floors remain 0.95 and 0.80, and substandard scores fail acceptance.
+    """
+    import hashlib
+
+    monkeypatch.setattr("benchmarks.tools.functional_acceptance_runner.is_git_dirty", lambda p: False)
+
+    bundle_dir = tmp_path / "substandard_bundle"
+    bundle_dir.mkdir()
+    raw_dir = bundle_dir / "raw_sources"
+    raw_dir.mkdir()
+    content = b"<html><body>Alice Wang is a Professor. She is also a Painter.</body></html>"
+    (raw_dir / "s1.html").write_bytes(content)
+    sha = hashlib.sha256(content).hexdigest()
+
+    (bundle_dir / "verified_claims.jsonl").write_text(
+        json.dumps({
+            "claim_id": "C-1",
+            "candidate_id": "CAND-01",
+            "subject": "Alice Wang",
+            "predicate": "holds_position",
+            "object": "Professor",
+            "source_id": "SRC-01",
+            "source_file": "raw_sources/s1.html",
+            "verbatim_excerpt": "Alice Wang is a Professor.",
+            "temporal_status": "CURRENT",
+        })
+        + "\n"
+        + json.dumps({
+            "claim_id": "C-2",
+            "candidate_id": "CAND-01",
+            "subject": "Alice Wang",
+            "predicate": "holds_position",
+            "object": "Painter",
+            "source_id": "SRC-01",
+            "source_file": "raw_sources/s1.html",
+            "verbatim_excerpt": "She is also a Painter.",
+            "temporal_status": "CURRENT",
+        })
+        + "\n",
+        encoding="utf-8",
+    )
+    (bundle_dir / "source_inventory.jsonl").write_text(
+        json.dumps({
+            "source_id": "SRC-01",
+            "url": "https://example.org/alice",
+            "final_url": "https://example.org/alice",
+            "http_status": 200,
+            "byte_size": len(content),
+            "raw_bytes_sha256": sha,
+            "local_path": "raw_sources/s1.html",
+        })
+        + "\n",
+        encoding="utf-8",
+    )
+    (bundle_dir / "manifest.json").write_text(
+        json.dumps({"target_name": "Alice Wang", "primary_candidate_id": "CAND-01"}),
+        encoding="utf-8",
+    )
+
+    gold_data = {
+        "target_name": "Alice Wang",
+        "primary_candidate_id": "CAND-01",
+        "reference_completeness": "complete",
+        "facts": [
+            {"subject": "Alice Wang", "predicate": "holds_position", "object_raw": "Professor", "polarity": "affirmative", "temporal_status": "current"},
+            {"subject": "Alice Wang", "predicate": "holds_position", "object_raw": "Dean", "polarity": "affirmative", "temporal_status": "current"},
+        ],
+    }
+    gold_path = tmp_path / "gold.json"
+    gold_path.write_text(json.dumps(gold_data), encoding="utf-8")
+
+    res = run_functional_acceptance(
+        candidate_bundle_dir=bundle_dir,
+        evaluate_existing=True,
+        withheld_gold_path=gold_path,
+        output_dir=tmp_path / "out",
+        precision_floor=0.10,
+        min_recall=0.10,
+        enforce_git_clean=False,
+    )
+
+    assert res["precision_floor"] == HARD_PRECISION_FLOOR == 0.95
+    assert res["min_recall"] == HARD_MIN_RECALL == 0.80
+    assert res["withheld_gold"]["verified_claim_precision"] == 0.5
+    assert res["withheld_gold"]["withheld_fact_recall"] == 0.5
+    assert res["gates"]["precision_floor_pass"] is False
+    assert res["gates"]["recall_gate_pass"] is False
+    assert res["gates"]["overall_acceptance_pass"] is False
+
+
+def test_5d_missing_subject_and_as_of_publication_semantics():
+    """
+    1. Missing subject in claim or gold strictly fails 5D match (no target_name fallback).
+    2. 'as_of_publication' is an independent temporal status and does NOT match 'current'.
+    """
+    gold_standard = {
+        "subject": "Alice Wang",
+        "predicate": "holds_position",
+        "object_raw": "Professor",
+        "polarity": "affirmative",
+        "temporal_status": "current",
+    }
+
+    # Subject missing in claim
+    claim_no_sub = {
+        "subject": None,
+        "predicate": "holds_position",
+        "object": "Professor",
+        "polarity": "affirmative",
+        "temporal_status": "current",
+    }
+    assert check_5d_match(claim_no_sub, gold_standard, target_name="Alice Wang") is False
+
+    # Subject missing in gold
+    gold_no_sub = {
+        "subject": "",
+        "predicate": "holds_position",
+        "object_raw": "Professor",
+        "polarity": "affirmative",
+        "temporal_status": "current",
+    }
+    claim_with_sub = {
+        "subject": "Alice Wang",
+        "predicate": "holds_position",
+        "object": "Professor",
+        "polarity": "affirmative",
+        "temporal_status": "current",
+    }
+    assert check_5d_match(claim_with_sub, gold_no_sub, target_name="Alice Wang") is False
+
+    # as_of_publication vs current
+    gold_aop = {
+        "subject": "Alice Wang",
+        "predicate": "affiliated_with",
+        "object_raw": "Yale University",
+        "polarity": "affirmative",
+        "temporal_status": "as_of_publication",
+    }
+    claim_current = {
+        "subject": "Alice Wang",
+        "predicate": "affiliated_with",
+        "object": "Yale University",
+        "polarity": "affirmative",
+        "temporal_status": "current",
+    }
+    claim_aop = {
+        "subject": "Alice Wang",
+        "predicate": "affiliated_with",
+        "object": "Yale University",
+        "polarity": "affirmative",
+        "temporal_status": "as_of_publication",
+    }
+    assert check_5d_match(claim_current, gold_aop) is False
+    assert check_5d_match(claim_aop, gold_aop) is True
+
+
+def test_homonym_contamination_catches_misattributed_fact_with_altered_subject():
+    """
+    Homonym 4D signature matching:
+    When a fact belonging to a homonym (e.g. Derek Sun) is incorrectly extracted
+    and attributed to the target candidate with the subject rewritten as 'Yao Sun',
+    4D signature matching (predicate + object + polarity + temporal) must detect
+    the contamination regardless of subject alteration.
+    """
+    homonym_fact = {
+        "homonym_entity": "Derek Teen-Yao Sun",
+        "subject": "Derek Teen-Yao Sun",
+        "predicate": "employed_by",
+        "object_raw": "GUGGENHEIM SECURITIES, LLC",
+        "polarity": "affirmative",
+        "temporal_status": "historical",
+    }
+
+    misattributed_claim = {
+        "claim_id": "C-MISATTRIBUTED",
+        "candidate_id": "CAND-01",
+        "subject": "Yao Sun",
+        "predicate": "employed_by",
+        "object": "Guggenheim Securities, LLC",
+        "polarity": "affirmative",
+        "temporal_status": "historical",
+    }
+
+    assert check_homonym_fact_signature_match(misattributed_claim, homonym_fact) is True
+
+    res = evaluate_withheld_gold(
+        all_claims=[misattributed_claim],
+        withheld_gold_facts=[],
+        primary_candidate_id="CAND-01",
+        annotated_homonyms=[homonym_fact],
+        target_name="Yao Sun",
+    )
+    assert res["contamination_count"] == 1
+    assert res["contamination_gate_pass"] is False
+
+
+def test_zero_privacy_search_attempt_audits_query_logs_and_urls(tmp_path: Path):
+    """
+    Privacy audit:
+    Scans query_logs.jsonl and source_inventory.jsonl for prohibited privacy attempts,
+    and partitions profile dimension coverage into target_coverage and all_candidate_coverage.
+    """
+    bundle_dir = tmp_path / "privacy_test_bundle"
+    bundle_dir.mkdir()
+
+    (bundle_dir / "query_logs.jsonl").write_text(
+        json.dumps({"query": "Alice Wang home address apartment", "engine": "duckduckgo"}) + "\n",
+        encoding="utf-8",
+    )
+
+    (bundle_dir / "source_inventory.jsonl").write_text(
+        json.dumps({
+            "source_id": "SRC-01",
+            "url": "https://example.com/search?q=Alice+Wang+spouse+children",
+            "final_url": "https://example.com/search?q=Alice+Wang+spouse+children",
+            "http_status": 200,
+            "raw_bytes_sha256": "abc",
+            "byte_size": 100,
+            "local_path": "raw_sources/s1.html",
+        })
+        + "\n",
+        encoding="utf-8",
+    )
+
+    claims = [
+        {"claim_id": "C-1", "candidate_id": "CAND-01", "predicate": "holds_position", "object": "Professor"},
+        {"claim_id": "C-2", "candidate_id": "CAND-02", "predicate": "received_degree", "object": "Ph.D."},
+    ]
+
+    cov = evaluate_profile_coverage(
+        claims,
+        primary_candidate_id="CAND-01",
+        candidate_bundle_dir=bundle_dir,
+    )
+
+    assert cov["privacy_gate_pass"] is False
+    assert len(cov["privacy_violations"]) >= 2
+    sources = {v["source"] for v in cov["privacy_violations"]}
+    assert "query_logs" in sources
+    assert "source_inventory" in sources
+
+    assert "target_coverage" in cov
+    assert "all_candidate_coverage" in cov
+    assert cov["target_coverage"]["covered_dimensions"] == ["holds_position"]
+    assert set(cov["all_candidate_coverage"]["covered_dimensions"]) == {"holds_position", "received_degree"}
+
+
+def test_git_dirty_forces_diagnostic_even_with_override(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """
+    Git dirty tree must fail-closed:
+    Even with enforce_git_clean=False and complete valid Gold,
+    dirty status forces mode=DIAGNOSTIC and overall_acceptance_pass=False.
+    """
+    monkeypatch.setattr("benchmarks.tools.functional_acceptance_runner.is_git_dirty", lambda p: True)
+
+    yao_bundle = Path("investigations/yao_sun")
+    assert yao_bundle.exists()
+
+    gold_data = {
+        "target_name": "Yao Sun",
+        "primary_candidate_id": "CAND-01",
+        "reference_completeness": "complete",
+        "facts": [
+            {"subject": "Yao Sun", "predicate": "holds_position", "object_raw": "Predoctoral Fellow", "polarity": "affirmative", "temporal_status": "current"},
+        ],
+    }
+    gold_path = tmp_path / "gold.json"
+    gold_path.write_text(json.dumps(gold_data), encoding="utf-8")
+
+    res = run_functional_acceptance(
+        candidate_bundle_dir=yao_bundle,
+        evaluate_existing=True,
+        withheld_gold_path=gold_path,
+        output_dir=tmp_path / "dirty_out",
+        enforce_git_clean=False,
+    )
+
+    assert res["gates"]["git_clean_gate_pass"] is False
+    assert res["git_dirty"] is True
+    assert res["gates"]["mode"] == "DIAGNOSTIC"
+    assert res["gates"]["overall_acceptance_pass"] is False
