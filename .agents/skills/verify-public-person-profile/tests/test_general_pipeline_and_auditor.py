@@ -36,6 +36,105 @@ def update_manifest_file_checksum(bundle_dir: Path, rel_filename: str):
     man_path.write_text(json.dumps(man, indent=2), encoding="utf-8")
 
 
+def test_candidate_qualified_subject_preserves_raw_grounding(tmp_path):
+    out_dir = copy_julia_fixture(tmp_path / "qualified_subject")
+    claims_path = out_dir / "verified_claims.jsonl"
+    claims = [json.loads(line) for line in claims_path.read_text().splitlines() if line.strip()]
+    claim = claims[0]
+    claim["subject_raw"] = claim["subject"]
+    claim["subject"] = f"{claim['subject_raw']} ({claim['candidate_id']}, candidate label)"
+    claims_path.write_text(
+        "\n".join(json.dumps(item, ensure_ascii=False) for item in claims) + "\n",
+        encoding="utf-8",
+    )
+    verifier = BundleVerifier(out_dir)
+    verifier.audit_sources()
+    verifier.audit_claims()
+    assert not verifier.errors, verifier.errors
+
+    claim["subject"] = f"{claim['subject_raw']} (CAND-WRONG, candidate label)"
+    claims_path.write_text(
+        "\n".join(json.dumps(item, ensure_ascii=False) for item in claims) + "\n",
+        encoding="utf-8",
+    )
+    verifier = BundleVerifier(out_dir)
+    verifier.audit_sources()
+    verifier.audit_claims()
+    assert any("qualified subject" in error for error in verifier.errors)
+
+
+def make_subject_closure_bundle(tmp_path, subject, subject_raw=None):
+    """Synthetic local evidence; exercise atomic grounding before both consumers."""
+    raw_name = subject_raw or subject
+    excerpt = f"{raw_name} is a student at Yale University."
+    (tmp_path / "source.txt").write_text(excerpt, encoding="utf-8")
+    claim = {
+        "claim_id": "VCLM-01", "candidate_id": "CAND-01",
+        "subject": subject, "predicate": "affiliated_with",
+        "object": "Yale University", "source_id": "SRC-01",
+        "verbatim_excerpt": excerpt,
+    }
+    if subject_raw is not None:
+        claim["subject_raw"] = subject_raw
+    (tmp_path / "verified_claims.jsonl").write_text(
+        json.dumps(claim) + "\n", encoding="utf-8",
+    )
+    dossier = {
+        "primary_candidate_id": "CAND-01",
+        "statements": [{
+            "statement_id": "STMT-01", "rendered_text": excerpt,
+            "backed_claim_ids": ["VCLM-01"],
+        }],
+    }
+    (tmp_path / "dossier.json").write_text(json.dumps(dossier), encoding="utf-8")
+    (tmp_path / "recall_report.md").write_text(
+        f"## Candidate Matrix\n* [VCLM-01] {excerpt}\n", encoding="utf-8",
+    )
+    verifier = BundleVerifier(tmp_path)
+    verifier.sources = {"SRC-01": {"local_path": "source.txt"}}
+    verifier.audit_claims()
+    assert not verifier.errors, verifier.errors
+    return verifier
+
+
+@pytest.mark.parametrize("subject,subject_raw", [
+    ("Alice Wang (CAND-01, candidate label)", "Alice Wang"),
+    ("Alice Wang (CAND-01)", "Alice Wang"),
+    ("Alice Wang", None),
+    ("Alice (Ally) Wang (CAND-01, candidate label)", "Alice (Ally) Wang"),
+])
+def test_subject_closure_preserves_grounded_text(tmp_path, subject, subject_raw):
+    verifier = make_subject_closure_bundle(tmp_path, subject, subject_raw)
+    verifier.audit_dossier_and_report_closure()
+    assert not verifier.errors, verifier.errors
+
+
+@pytest.mark.parametrize("consumer", ["dossier", "report"])
+def test_subject_closure_rejects_display_label_fact_injection(tmp_path, consumer):
+    verifier = make_subject_closure_bundle(
+        tmp_path,
+        "Alice Wang (CAND-01, Nobel Prize Laureate and Dean of Science)",
+        "Alice Wang",
+    )
+    false_text = (
+        "Alice Wang was awarded Nobel Prize Laureate and became "
+        "Dean of Science at Yale University."
+    )
+    if consumer == "dossier":
+        path = tmp_path / "dossier.json"
+        dossier = json.loads(path.read_text(encoding="utf-8"))
+        dossier["statements"][0]["rendered_text"] = false_text
+        path.write_text(json.dumps(dossier), encoding="utf-8")
+        expected_error = "Dossier statement STMT-01 fails semantic grounding"
+    else:
+        (tmp_path / "recall_report.md").write_text(
+            f"## Candidate Matrix\n* [VCLM-01] {false_text}\n", encoding="utf-8",
+        )
+        expected_error = "line citing [VCLM-01] contains ungrounded tokens"
+    verifier.audit_dossier_and_report_closure()
+    assert any(expected_error in error for error in verifier.errors), verifier.errors
+
+
 def test_unconfigured_nonexistent_entity_abstains_without_synthetic_files(tmp_path):
     """
     Ensure an unconfigured non-existent target (e.g. Jane Q Public) triggers

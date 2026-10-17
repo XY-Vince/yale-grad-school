@@ -1,0 +1,228 @@
+{
+  "dossier_id": "DOS-he_ruohang-20261013",
+  "target_name": "贺若航",
+  "investigation_status": "MATCHED_HIGH_CONFIDENCE",
+  "primary_candidate_id": "CAND-01",
+  "provenance": "agent_synthesized",
+  "synthesis_mode": "agent_orchestrated_deterministic_grounded",
+  "note": "档案依据官方录取公示、大学毕业典礼名册、上市公司监管问询核查文件及青年峰会报道综合整理。事实与线索分层明确，同名医学学者严格隔离。",
+  "statements": [
+    {
+      "statement_id": "STMT-01",
+      "candidate_id": "CAND-01",
+      "subject": "贺若航",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "贺若航 graduated_from '深圳中学'",
+      "backed_claim_ids": [
+        "VCLM-01"
+      ]
+    },
+    {
+      "statement_id": "STMT-02",
+      "candidate_id": "CAND-01",
+      "subject": "贺若航",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "贺若航 affiliated_with '香港中文大学（深圳）'",
+      "backed_claim_ids": [
+        "VCLM-02"
+      ]
+    },
+    {
+      "statement_id": "STMT-03",
+      "candidate_id": "CAND-01",
+      "subject": "Ruohang He",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Ruohang He affiliated_with 'University of Michigan'",
+      "backed_claim_ids": [
+        "VCLM-03"
+      ]
+    },
+    {
+      "statement_id": "STMT-04",
+      "candidate_id": "CAND-01",
+      "subject": "Ruohang He",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Ruohang He awarded_honor 'University of Michigan Honors Convocation'",
+      "backed_claim_ids": [
+        "VCLM-04"
+      ]
+    },
+    {
+      "statement_id": "STMT-05",
+      "candidate_id": "CAND-01",
+      "subject": "Ruohang He",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Ruohang He graduated_from 'University of Michigan'",
+      "backed_claim_ids": [
+        "VCLM-05"
+      ]
+    },
+    {
+      "statement_id": "STMT-06",
+      "candidate_id": "CAND-01",
+      "subject": "贺若航",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "贺若航 employed_by 'BUBLUE LLC'",
+      "backed_claim_ids": [
+        "VCLM-06"
+      ]
+    },
+    {
+      "statement_id": "STMT-07",
+      "candidate_id": "CAND-01",
+      "subject": "贺若航",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "贺若航 participated_in '2022胡润百富美国青年精英榜单揭晓仪式及商业高峰论坛'",
+      "backed_claim_ids": [
+        "VCLM-07"
+      ]
+    },
+    {
+      "statement_id": "STMT-08",
+      "candidate_id": "CAND-01",
+      "subject": "贺若航",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "贺若航 holds_position '2025耶鲁中美峰会医疗健康分论坛负责人'",
+      "backed_claim_ids": [
+        "VCLM-08"
+      ]
+    },
+    {
+      "statement_id": "STMT-09",
+      "candidate_id": "CAND-01",
+      "subject": "贺若航",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "贺若航 affiliated_with '耶鲁中美峰会'",
+      "backed_claim_ids": [
+        "VCLM-09"
+      ]
+    },
+    {
+      "statement_id": "STMT-10",
+      "candidate_id": "CAND-02",
+      "subject": "Ruohang He (CAND-02, Wuhan Union Hospital)",
+      "evidence_strength": "S1",
+      "section": "alternate",
+      "rendered_text": "Ruohang He (CAND-02, Wuhan Union Hospital) affiliated_with 'Wuhan Union Hospital'",
+      "backed_claim_ids": [
+        "VCLM-10"
+      ]
+    }
+  ],
+  "candidate_matrix": [
+    {
+      "candidate_id": "CAND-01",
+      "canonical_name": "贺若航 (Ruohang He)",
+      "affiliation": "University of Michigan / 耶鲁中美峰会 / BUBLUE",
+      "match_status": "PRIMARY_TARGET",
+      "differentiation_rationale": "符合目标人物全名，具备深圳中学、港中深录取、密歇根大学本科毕业、跨境智能硬件初创股东及2025耶鲁中美峰会医疗健康分论坛负责人的连贯履历轨迹。",
+      "evidence_citations": [
+        "VCLM-01",
+        "VCLM-02",
+        "VCLM-03",
+        "VCLM-04",
+        "VCLM-05",
+        "VCLM-06",
+        "VCLM-07",
+        "VCLM-08",
+        "VCLM-09"
+      ]
+    },
+    {
+      "candidate_id": "CAND-02",
+      "canonical_name": "Ruohang He (CAND-02, Wuhan Union Hospital)",
+      "affiliation": "华中科技大学同济医学院附属协和医院消化内科",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "同拼音医学研究人员，发表10篇IBD/消化道医学论文。工作机构与学术产出均为消化内科临床，与CAND-01完全无关，严格隔离。",
+      "evidence_citations": [
+        "VCLM-10"
+      ]
+    }
+  ],
+  "corroborated_leads": [
+    {
+      "lead_id": "LEAD-01",
+      "candidate_id": "CAND-01",
+      "title": "港中深与密歇根大学的学业转换路径",
+      "evidence_strength": "S4",
+      "status": "UNRESOLVED",
+      "description": "公开录取名单显示其2018年被香港中文大学（深圳）理科试验班录取，后于2022-2023年出现于密歇根大学本科荣誉与毕业名单。两校之间是否属于联合培养项目（如联合学位/转学）尚未见第一方公开CV说明。",
+      "corroborating_source_ids": [
+        "SRC-01",
+        "SRC-05",
+        "SRC-06"
+      ],
+      "locator": "SRC-01 & SRC-05/06",
+      "verbatim_excerpt": "贺若航 深圳中学 理科试验班 综合评价录取",
+      "next_action": "查阅个人第一方公开学术简历以核实完整学位授予与专业转换过程。"
+    },
+    {
+      "lead_id": "LEAD-02",
+      "candidate_id": "CAND-01",
+      "title": "BUBLUE 智能硬件出海业务的存续与调整",
+      "evidence_strength": "S4",
+      "status": "PARTIALLY_DESCRIBED",
+      "description": "监管回复披露其作为初创股东参与BUBLUE LLC，主要在亚马逊从事除湿机/智能泳池机等跨境销售，后配合上市核查进行业务剥离注销。其在境内关联企业（如杭州部蓝科技）中的当前持股与任职未闭合。",
+      "corroborating_source_ids": [
+        "SRC-04"
+      ],
+      "locator": "SRC-04 paragraph 2",
+      "verbatim_excerpt": "BUBLUE LLC股东包括陈骞、贺若航、胡伟康、江越祺",
+      "next_action": "检索国家企业信用信息公示系统以核验是否存在境内关联实体的在职工商登记。"
+    },
+    {
+      "lead_id": "LEAD-03",
+      "candidate_id": "CAND-01",
+      "title": "耶鲁中美峰会职务与耶鲁大学常设身份的区隔",
+      "evidence_strength": "S4",
+      "status": "RESOLVED_DISTINCTION",
+      "description": "2025耶鲁中美峰会由耶鲁在校中国学生学者等主办，贺若航担任医疗健康分论坛负责人（与李瑶共同负责）。该职务代表青年峰会组织职责，不直接构成耶鲁大学官方教职或学位就读证明。",
+      "corroborating_source_ids": [
+        "SRC-03"
+      ],
+      "locator": "SRC-03 paragraph 3",
+      "verbatim_excerpt": "2025耶鲁中美峰会医疗健康分论坛负责人：贺若航、李瑶",
+      "next_action": "核实其是否在耶鲁大学相关院系注册有后续学术访问或就读记录。"
+    }
+  ],
+  "open_questions": [
+    {
+      "question_id": "OQ-01",
+      "candidate_id": "CAND-01",
+      "title": "密歇根大学本科学位的主修专业",
+      "description": "密歇根大学官方典礼名单确认了 Ruohang He 的学位候选人身份与荣誉大会表彰，但公开大名单未注明具体主修院系与专业方向（如工程学院、文理学院或商学院）。",
+      "status": "OPEN",
+      "next_action": "获取第一方个人学术简历或系级项目名册。"
+    },
+    {
+      "question_id": "OQ-02",
+      "candidate_id": "CAND-01",
+      "title": "2025年峰会之后的最新职业与深造动向",
+      "description": "目前公开确凿记录截至2025年3月耶鲁中美峰会，其当前最新常设雇主、全职创业项目或后续研究生深造机构尚未在开放网络形成稳定足迹。",
+      "status": "OPEN",
+      "next_action": "持续追踪公开行业报道或学术会议最新参会记录。"
+    },
+    {
+      "question_id": "OQ-03",
+      "candidate_id": "CAND-02",
+      "title": "同名同拼音医学学者 Ruohang He 的绝对排他性隔离",
+      "description": "武汉协和医院消化内科发表10篇高水平医学论文的 Ruohang He 医生，经学术领域与教育轨迹比对，确系完全独立的医学研究人员，需持续维持消歧隔离。",
+      "status": "OPEN",
+      "next_action": "在后续自动化检索中设置学术领域负向关键词排除。"
+    }
+  ],
+  "claim_strength_counts": {
+    "S1": 10,
+    "S2": 0,
+    "S3": 0
+  }
+}

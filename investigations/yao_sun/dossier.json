@@ -5,182 +5,270 @@
   "primary_candidate_id": "CAND-01",
   "provenance": "agent_synthesized",
   "synthesis_mode": "agent_orchestrated_deterministic_grounded",
-  "note": "Constructed through Agent multi-source reading and semantic disambiguation with cryptographic and verbatim ground truth.",
+  "note": "Edited for user delivery from the existing captured sources; fact, intention, context and lead strengths are explicit.",
   "statements": [
     {
       "statement_id": "STMT-VCLM-01",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun holds_position 'Predoctoral Fellow' (状态: CURRENT)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun holds_position 'Predoctoral Fellow'",
       "backed_claim_ids": [
         "VCLM-01"
       ]
     },
     {
       "statement_id": "STMT-VCLM-02",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Yale University' (状态: CURRENT)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun affiliated_with 'Yale University'",
       "backed_claim_ids": [
         "VCLM-02"
       ]
     },
     {
       "statement_id": "STMT-VCLM-03",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun employed_by 'Yale Institution for Social and Policy Studies' (状态: CURRENT)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun employed_by 'Yale Institution for Social and Policy Studies'",
       "backed_claim_ids": [
         "VCLM-03"
       ]
     },
     {
       "statement_id": "STMT-VCLM-04",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'ZCAFE' (状态: CURRENT)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun affiliated_with 'ZCAFE'",
       "backed_claim_ids": [
         "VCLM-04"
       ]
     },
     {
       "statement_id": "STMT-VCLM-05",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'University of Michigan' (状态: AS_OF_PUBLICATION)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun affiliated_with 'University of Michigan'",
       "backed_claim_ids": [
         "VCLM-05"
       ]
     },
     {
       "statement_id": "STMT-VCLM-06",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun received_degree 'M.S. in Survey Methodology' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun received_degree 'M.S. in Survey Methodology'",
       "backed_claim_ids": [
         "VCLM-06"
       ]
     },
     {
       "statement_id": "STMT-VCLM-07",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'Burns \"Bud\" Roper AAPOR Fellow Award' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun honored_with 'Burns \"Bud\" Roper AAPOR Fellow Award'",
       "backed_claim_ids": [
         "VCLM-07"
       ]
     },
     {
       "statement_id": "STMT-VCLM-08",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Tuition Fellowship' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun honored_with 'MPSDS Tuition Fellowship'",
       "backed_claim_ids": [
         "VCLM-08"
       ]
     },
     {
       "statement_id": "STMT-VCLM-09",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'MPSDS Travel Award & Rackham Conference Travel Funding' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun honored_with 'MPSDS Travel Award & Rackham Conference Travel Funding'",
       "backed_claim_ids": [
         "VCLM-09"
       ]
     },
     {
       "statement_id": "STMT-VCLM-10",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'Survey and Data Science Travel Award' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun honored_with 'Survey and Data Science Travel Award'",
       "backed_claim_ids": [
         "VCLM-10"
       ]
     },
     {
       "statement_id": "STMT-VCLM-11",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'UW-Madison' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun reported_scholarship_association 'UW-Madison'",
       "backed_claim_ids": [
         "VCLM-11"
       ]
     },
     {
       "statement_id": "STMT-VCLM-12",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'UW-Madison Undergraduate Scholarship' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun honored_with 'UW-Madison Undergraduate Scholarship'",
       "backed_claim_ids": [
         "VCLM-12"
       ]
     },
     {
       "statement_id": "STMT-VCLM-13",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun received_degree 'master’s program in Survey and Data Science' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun received_degree 'master’s program in Survey and Data Science'",
       "backed_claim_ids": [
         "VCLM-13"
       ]
     },
     {
       "statement_id": "STMT-VCLM-14",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun honored_with 'UofSC-Academic Excellence Scholarship' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun honored_with 'UofSC-Academic Excellence Scholarship'",
       "backed_claim_ids": [
         "VCLM-14"
       ]
     },
     {
       "statement_id": "STMT-VCLM-15",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun presented_paper 'Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health Outcomes among Korean American Adults' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun listed_conference_contribution 'Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health Outcomes among Korean American Adults'",
       "backed_claim_ids": [
         "VCLM-15"
       ]
     },
     {
-      "statement_id": "STMT-VCLM-16",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun researched_topic 'environmental justice screening tool' (状态: HISTORICAL)",
-      "backed_claim_ids": [
-        "VCLM-16"
-      ]
-    },
-    {
       "statement_id": "STMT-VCLM-17",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun participated_in 'Yale Population Studies Workshop' (状态: CURRENT)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S2",
+      "section": "target",
+      "rendered_text": "Yao Sun expressed_interest_in 'Yale Population Studies Workshop'",
       "backed_claim_ids": [
         "VCLM-17"
       ]
     },
     {
       "statement_id": "STMT-VCLM-18",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun conducted_research 'Detroit Street View Program' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S3",
+      "section": "target",
+      "rendered_text": "Yao Sun acknowledged_research_resource 'Detroit Street View Program'",
       "backed_claim_ids": [
         "VCLM-18"
       ]
     },
     {
       "statement_id": "STMT-VCLM-19",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-02] Derek Teen-Yao Sun employed_by 'GUGGENHEIM SECURITIES, LLC' (状态: HISTORICAL)",
+      "candidate_id": "CAND-02",
+      "subject": "Derek Teen-Yao Sun (CAND-02, FINRA)",
+      "evidence_strength": "S1",
+      "section": "alternate_candidates",
+      "rendered_text": "Derek Teen-Yao Sun (CAND-02, FINRA) employed_by 'GUGGENHEIM SECURITIES, LLC'",
       "backed_claim_ids": [
         "VCLM-19"
       ]
     },
     {
       "statement_id": "STMT-VCLM-20",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-03] Yao Sun affiliated_with 'Zhejiang Provincial Key Laboratory of Pancreatic Disease' (状态: HISTORICAL)",
+      "candidate_id": "CAND-03",
+      "subject": "Yao Sun (CAND-03, Zhejiang medical author)",
+      "evidence_strength": "S1",
+      "section": "alternate_candidates",
+      "rendered_text": "Yao Sun (CAND-03, Zhejiang medical author) affiliated_with 'Zhejiang Provincial Key Laboratory of Pancreatic Disease'",
       "backed_claim_ids": [
         "VCLM-20"
       ]
     },
     {
       "statement_id": "STMT-VCLM-21",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-04] Yao Sun holds_position 'Professor, Pediatrics' (状态: CURRENT)",
+      "candidate_id": "CAND-04",
+      "subject": "Yao Sun (CAND-04, UCSF)",
+      "evidence_strength": "S1",
+      "section": "alternate_candidates",
+      "rendered_text": "Yao Sun (CAND-04, UCSF) holds_position 'Professor, Pediatrics'",
       "backed_claim_ids": [
         "VCLM-21"
       ]
     },
     {
       "statement_id": "STMT-VCLM-22",
-      "section": "学术产出与机构经历 (Publications & Affiliations)",
-      "rendered_text": "[CAND-01] Yao Sun affiliated_with 'Survey Research Center, Institute for Social Research, University of Michigan' (状态: HISTORICAL)",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun affiliated_with 'Survey Research Center, Institute for Social Research, University of Michigan'",
       "backed_claim_ids": [
         "VCLM-22"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-23",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun reported_education_period 'University of Michigan - Rackham Graduate School'",
+      "backed_claim_ids": [
+        "VCLM-23"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-24",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun reported_conference_presentation 'American Association for Public Opinion Research Conference'",
+      "backed_claim_ids": [
+        "VCLM-24"
+      ]
+    },
+    {
+      "statement_id": "STMT-VCLM-25",
+      "candidate_id": "CAND-01",
+      "subject": "Yao Sun",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Yao Sun reported_research_experience 'geospatial data, computer vision models, environmental health and intervention design, and advanced statistical tools'",
+      "backed_claim_ids": [
+        "VCLM-25"
       ]
     }
   ],
@@ -190,7 +278,7 @@
       "canonical_name": "Yao Sun",
       "affiliation": "Yale University / Z-CAFE",
       "match_status": "PRIMARY_TARGET",
-      "differentiation_rationale": "Matches provided institutional and topical clues (currently at Yale; Z-CAFE; Sociology). Current Predoctoral Fellow at Yale Z-CAFE Lab and ISPS; holds M.S. in Survey Methodology and Data Science from University of Michigan ('26) and undergraduate degree in Sociology from UW-Madison ('23); recipient of 2026 AAPOR Burns Bud Roper Fellow Award.",
+      "differentiation_rationale": "Yale/Z-CAFE supervisor announcement, matching personal profile and Michigan survey/data-science history. Undergraduate institution/major remain unresolved.",
       "evidence_citations": [
         "VCLM-01",
         "VCLM-02",
@@ -207,38 +295,40 @@
         "VCLM-13",
         "VCLM-14",
         "VCLM-15",
-        "VCLM-16",
         "VCLM-17",
         "VCLM-18",
-        "VCLM-22"
+        "VCLM-22",
+        "VCLM-23",
+        "VCLM-24",
+        "VCLM-25"
       ]
     },
     {
       "candidate_id": "CAND-02",
-      "canonical_name": "Derek Teen-Yao Sun",
-      "affiliation": "Guggenheim Securities / Ross School of Business",
+      "canonical_name": "Derek Teen-Yao Sun (CAND-02, FINRA)",
+      "affiliation": "GUGGENHEIM SECURITIES, LLC (historical registration)",
       "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Financial analyst and registered broker (CRD 7569730) at Guggenheim Securities in New York; former Michigan undergraduate business alumnus (Ross BBA '23); pure financial services career with zero affiliation with Yale or sociology.",
+      "differentiation_rationale": "Different full name and a FINRA registration history; Ross BBA and lack of any Yale link are not established by this bundle.",
       "evidence_citations": [
         "VCLM-19"
       ]
     },
     {
       "candidate_id": "CAND-03",
-      "canonical_name": "Dr. Yao Sun",
-      "affiliation": "浙江大学医学院 (Zhejiang University School of Medicine) / UMich Physiology",
+      "canonical_name": "Yao Sun (CAND-03, Zhejiang medical author)",
+      "affiliation": "Zhejiang Provincial Key Laboratory of Pancreatic Disease, The First Affiliated Hospital, Zhejiang University School of Medicine (as of publication)",
       "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Biomedical researcher at Zhejiang Provincial Key Laboratory of Pancreatic Disease; co-authored Nature Cell Biology (2023) paper on SEL1L-HRD1 ERAD and STING immunity with University of Michigan Medical School co-authors (PMID 37142791); basic medical biology discipline.",
+      "differentiation_rationale": "Separate medical-author record with Zhejiang pancreatic-disease affiliation as of publication; not attributed to the Yale target.",
       "evidence_citations": [
         "VCLM-20"
       ]
     },
     {
       "candidate_id": "CAND-04",
-      "canonical_name": "Dr. Yao Sun",
+      "canonical_name": "Yao Sun (CAND-04, UCSF)",
       "affiliation": "University of California San Francisco (UCSF) / Pediatrics",
       "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Professor of Pediatrics and Neonatologist at UCSF Benioff Children's Hospital; Medical Director of William H. Tooley Intensive Care Nursery; holds M.D. from UCLA (1989) and Ph.D. in Computer Science from MIT (2002); clinical pediatrics medicine.",
+      "differentiation_rationale": "Separate UCSF institutional profile reporting Professor, Pediatrics; not attributed to the Yale target.",
       "evidence_citations": [
         "VCLM-21"
       ]
@@ -246,34 +336,206 @@
     {
       "candidate_id": "CAND-05",
       "canonical_name": "Dr. Yao Sun",
-      "affiliation": "University of Glasgow / UESTC Glasgow College",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Lecturer in James Watt School of Engineering at University of Glasgow and Glasgow College UESTC; research specializes in semantic communications, 6G wireless networks, and blockchain; IEEE author based in Chengdu/Glasgow.",
-      "evidence_citations": []
+      "affiliation": "UNVERIFIED historical lead: University of Glasgow / UESTC Glasgow College",
+      "match_status": "UNVERIFIED_CANDIDATE_LEAD",
+      "differentiation_rationale": "Historical candidate description retained for recall. No supporting identity-bearing source in this bundle; relationship to target unresolved.",
+      "evidence_citations": [],
+      "backed_lead_ids": [
+        "LEAD-04"
+      ]
     },
     {
       "candidate_id": "CAND-06",
       "canonical_name": "Yao Sun",
-      "affiliation": "Bellorita, LLC",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Commercial marketing manager at Bellorita, LLC; corporate commercial industry career profile without academic research appointments.",
-      "evidence_citations": []
+      "affiliation": "UNVERIFIED historical lead: Bellorita, LLC",
+      "match_status": "UNVERIFIED_CANDIDATE_LEAD",
+      "differentiation_rationale": "Historical candidate description retained for recall. No supporting identity-bearing source in this bundle; relationship to target unresolved.",
+      "evidence_citations": [],
+      "backed_lead_ids": [
+        "LEAD-05"
+      ]
     },
     {
       "candidate_id": "CAND-07",
       "canonical_name": "Yao Sun",
-      "affiliation": "Adolescent Socialization / Ph.D. Researcher",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Ph.D. researcher investigating family discussions and bidirectional racial/civic socialization; distinct author entity without Z-CAFE predoctoral fellowship affiliation.",
-      "evidence_citations": []
+      "affiliation": "UNVERIFIED historical lead: Adolescent Socialization / Ph.D. Researcher",
+      "match_status": "UNVERIFIED_CANDIDATE_LEAD",
+      "differentiation_rationale": "Historical candidate description retained for recall. No supporting identity-bearing source in this bundle; relationship to target unresolved.",
+      "evidence_citations": [],
+      "backed_lead_ids": [
+        "LEAD-06"
+      ]
     },
     {
       "candidate_id": "CAND-08",
       "canonical_name": "Yao Sun",
-      "affiliation": "Columbia University - SIPA",
-      "match_status": "DIFFERENTIATED_HOMONYM",
-      "differentiation_rationale": "Student at Columbia University School of International and Public Affairs (SIPA) in New York; separate higher-education institution.",
-      "evidence_citations": []
+      "affiliation": "UNVERIFIED historical lead: Columbia University - SIPA",
+      "match_status": "UNVERIFIED_CANDIDATE_LEAD",
+      "differentiation_rationale": "Historical candidate description retained for recall. No supporting identity-bearing source in this bundle; relationship to target unresolved.",
+      "evidence_citations": [],
+      "backed_lead_ids": [
+        "LEAD-07"
+      ]
+    }
+  ],
+  "delivery_revision": "2026-10-12",
+  "as_of_capture": "2026-10-11",
+  "strength_definitions": {
+    "S1": "已确认发生：来源明确陈述；自述与独立记录须分别标明。",
+    "S2": "公开意向：来源表达期待或将做，不能改写为已经参与。",
+    "S3": "研究环境关联：工作场景、致谢或引用中的关联，参与程度不明。",
+    "S4": "传闻线索：间接、历史遗留或未闭合线索，不进入事实性结论。"
+  },
+  "leads": [
+    {
+      "lead_id": "LEAD-01",
+      "candidate_id": "CAND-01",
+      "title": "本科教育仍待核实",
+      "evidence_strength": "S4",
+      "status": "UNRESOLVED",
+      "description": "UW-Madison scholarship wording and an education-card logo are consistent with a Wisconsin connection. The visible educational name and qualification are masked; B.S., Sociology, and the connection of the 2021-09/2023-12 dates to a named degree are not verified.",
+      "corroborating_source_ids": [
+        "SRC-02"
+      ],
+      "locator": "Person.awards; masked education card and Person.alumniOf",
+      "verbatim_excerpt": "UW-Madison Undergraduate Scholarship for Summer Study",
+      "next_action": "Locate an unmasked self-published CV or university biography before assigning a degree or major."
+    },
+    {
+      "lead_id": "LEAD-02",
+      "candidate_id": "CAND-01",
+      "title": "街景与视觉模型工作的具体成果",
+      "evidence_strength": "S3",
+      "status": "PARTIALLY_DESCRIBED",
+      "description": "The personal June update mentions computer vision and vision-language approaches and thanks the GIS team for a research resource. The exact project title, task ownership, collaborator roles, and resulting publications remain open.",
+      "corroborating_source_ids": [
+        "SRC-02"
+      ],
+      "locator": "JSON-LD DiscussionForumPosting[1].text",
+      "verbatim_excerpt": "I also want to thank Alexis Castellanos for helping me navigate different computer vision and vision-language approaches throughout this work.",
+      "next_action": "Find a linked abstract, slides, repository, or project page attributable to this candidate."
+    },
+    {
+      "lead_id": "LEAD-03",
+      "candidate_id": "CAND-01",
+      "title": "环境正义背景数据的可能研究用途",
+      "evidence_strength": "S4",
+      "status": "UNRESOLVED",
+      "formerly_claim_id": "VCLM-16",
+      "description": "The post reports noticing the removal of an environmental justice screening tool while looking for contextual data. It does not establish use of the tool, a dataset, a project, or collaboration.",
+      "corroborating_source_ids": [
+        "SRC-02"
+      ],
+      "locator": "JSON-LD DiscussionForumPosting[4].text",
+      "verbatim_excerpt": "I just now discovered that EDA’s environmental justice screening tool had been removed as I was searching for relevant contextual data for my work. Thanks to the Public Environmental Data Partners for preserving the public resources for the community.",
+      "source_published_at": "2025-07-23T02:02:15.679Z",
+      "next_action": "Check the actual methods or data section of an attributable research output."
+    },
+    {
+      "lead_id": "LEAD-04",
+      "candidate_id": "CAND-05",
+      "title": "Glasgow / UESTC 通信研究候选",
+      "evidence_strength": "S4",
+      "status": "LEGACY_UNVERIFIED_CANDIDATE",
+      "description": "Retained from the prior dossier's candidate list. No identity-bearing raw source in the present bundle substantiates this affiliation or excludes a connection to the target.",
+      "corroborating_source_ids": [],
+      "next_action": "Find and capture a readable first-party profile before assigning facts or merging."
+    },
+    {
+      "lead_id": "LEAD-05",
+      "candidate_id": "CAND-06",
+      "title": "Bellorita 商业履历候选",
+      "evidence_strength": "S4",
+      "status": "LEGACY_UNVERIFIED_CANDIDATE",
+      "description": "Retained from the prior dossier's candidate list. No identity-bearing raw source in the present bundle substantiates this affiliation or excludes a connection to the target.",
+      "corroborating_source_ids": [],
+      "next_action": "Find and capture a readable first-party profile before assigning facts or merging."
+    },
+    {
+      "lead_id": "LEAD-06",
+      "candidate_id": "CAND-07",
+      "title": "Adolescent Socialization 研究候选",
+      "evidence_strength": "S4",
+      "status": "LEGACY_UNVERIFIED_CANDIDATE",
+      "description": "Retained from the prior dossier's candidate list. No identity-bearing raw source in the present bundle substantiates this affiliation or excludes a connection to the target.",
+      "corroborating_source_ids": [],
+      "next_action": "Find and capture a readable first-party profile before assigning facts or merging."
+    },
+    {
+      "lead_id": "LEAD-07",
+      "candidate_id": "CAND-08",
+      "title": "Columbia SIPA 候选",
+      "evidence_strength": "S4",
+      "status": "LEGACY_UNVERIFIED_CANDIDATE",
+      "description": "Retained from the prior dossier's candidate list. No identity-bearing raw source in the present bundle substantiates this affiliation or excludes a connection to the target.",
+      "corroborating_source_ids": [],
+      "next_action": "Find and capture a readable first-party profile before assigning facts or merging."
+    }
+  ],
+  "open_questions": [
+    {
+      "question_id": "OQ-01",
+      "candidate_id": "CAND-01",
+      "title": "Yale 任期与后续深造",
+      "description": "Exact start/end dates, contractual role and future PhD destination are not established.",
+      "status": "OPEN",
+      "next_action": "Yale ISPS and Z-CAFE personnel pages or a dated self-published CV."
+    },
+    {
+      "question_id": "OQ-02",
+      "candidate_id": "CAND-01",
+      "title": "本科与更早教育",
+      "description": "Degree name, major and institution for masked educational entries remain unverified; scholarship names cannot substitute for degrees.",
+      "status": "OPEN",
+      "next_action": "Unmasked CV or institutional alumni biography."
+    },
+    {
+      "question_id": "OQ-03",
+      "candidate_id": "CAND-01",
+      "title": "2020–2021 教育记录",
+      "description": "The raw profile contains a masked educational entry dated 2020-09 to 2021-05. This is an unresolved entry, not proof of an empty 2020-06 to 2021-08 period.",
+      "status": "OPEN",
+      "next_action": "Read a voluntarily public CV; do not infer masked names from character counts."
+    },
+    {
+      "question_id": "OQ-04",
+      "candidate_id": "CAND-01",
+      "title": "学术产出清单",
+      "description": "No uniquely disambiguated ORCID/Google Scholar profile or full bibliography has been captured.",
+      "status": "OPEN",
+      "next_action": "Search with name plus Michigan/ISPS and known coauthors; verify affiliation and title matches."
+    },
+    {
+      "question_id": "OQ-05",
+      "candidate_id": "CAND-01",
+      "title": "AAPOR 2026 汇报与街景研究",
+      "description": "The exact AAPOR 2026 contribution, full authorship and street-view project responsibilities are not closed.",
+      "status": "OPEN",
+      "next_action": "AAPOR 2026 program/abstract and an attributable project or repository."
+    }
+  ],
+  "claim_strength_counts": {
+    "S1": 22,
+    "S2": 1,
+    "S3": 1
+  },
+  "corrections": [
+    {
+      "record_id": "VCLM-16",
+      "disposition": "removed_from_verified_ledger",
+      "replacement_id": "LEAD-03"
+    },
+    {
+      "record_id": "VCLM-17",
+      "disposition": "S2_public_intention_not_attendance"
+    },
+    {
+      "record_id": "VCLM-18",
+      "disposition": "S3_resource_context_not_program_participation"
+    },
+    {
+      "record_id": "VCLM-19/20/21",
+      "disposition": "qualified_subject_with_separate_subject_raw"
     }
   ]
 }

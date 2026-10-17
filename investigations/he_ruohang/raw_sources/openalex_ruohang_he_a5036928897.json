@@ -1,0 +1,15 @@
+{
+  "id": "https://openalex.org/A5036928897",
+  "display_name": "Ruohang He",
+  "works_count": 10,
+  "cited_by_count": 261,
+  "last_known_institutions": [
+    {
+      "id": "https://openalex.org/I4210129222",
+      "display_name": "Wuhan Union Hospital",
+      "country_code": "CN",
+      "type": "healthcare"
+    }
+  ],
+  "_text_summary": "Ruohang He last_known_institutions Wuhan Union Hospital"
+}

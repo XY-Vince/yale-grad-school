@@ -60,6 +60,15 @@ def normalize_whitespace(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def claim_grounding_text(claim: dict) -> str:
+    """Use the atomic auditor's raw-subject fallback, never display qualifiers."""
+    subject = (claim.get("subject_raw") or claim.get("subject") or "").strip()
+    return (
+        f"{subject} {claim.get('predicate', '')} {claim.get('object', '')} "
+        f"{claim.get('verbatim_excerpt', '')}"
+    ).lower()
+
+
 NON_PERSON_WORDS = {
     "university", "college", "institute", "department", "center", "school", "program", "hospital",
     "united", "states", "new", "york", "san", "francisco", "north", "south", "east", "west",
@@ -309,7 +318,19 @@ class BundleVerifier:
                 continue
 
             # Atomic Evidence Unit Grounding and Cross-Entity Checks
-            subject = (c.get("subject") or "").strip()
+            display_subject = (c.get("subject") or "").strip()
+            subject = (c.get("subject_raw") or display_subject).strip()
+            # Qualified ledger labels are not words quoted from the source.
+            if subject != display_subject and (
+                not cand_id or not (
+                    display_subject == f"{subject} ({cand_id})"
+                    or display_subject.startswith(f"{subject} ({cand_id},")
+                )
+            ):
+                self.errors.append(
+                    f"Claim {claim_id} qualified subject does not match subject_raw and candidate_id."
+                )
+                continue
             obj = (c.get("object") or c.get("object_raw") or "").strip()
             if not subject:
                 self.errors.append(f"Claim {claim_id} missing subject.")
@@ -915,7 +936,7 @@ class BundleVerifier:
                             self.errors.append(f"Dossier statement cites unbacked claim ID: {cid}")
                             continue
                         c = self.claims.get(cid, {})
-                        c_text = f"{c.get('subject', '')} {c.get('predicate', '')} {c.get('object', '')} {c.get('verbatim_excerpt', '')}".lower()
+                        c_text = claim_grounding_text(c)
                         for tok in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", c_text):
                             if len(tok) > 1:
                                 backed_supported_tokens.add(tok)
@@ -965,10 +986,11 @@ class BundleVerifier:
             line_cids = re.findall(r"\[(VCLM-\d+)\]", line)
             if not line_cids:
                 continue
-            line_lower = line.lower()
+            # Link destinations locate evidence; they are not factual prose.
+            line_lower = re.sub(r"\]\([^)]*\)", "]", line).lower()
             for cid in line_cids:
                 c = self.claims.get(cid, {})
-                c_text = f"{c.get('subject', '')} {c.get('predicate', '')} {c.get('object', '')} {c.get('verbatim_excerpt', '')}".lower()
+                c_text = claim_grounding_text(c)
                 c_tokens = {t for t in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", c_text) if len(t) > 2}
                 line_tokens = {t for t in re.findall(r"[a-zA-Z0-9_\u4e00-\u9fa5]+", line_lower) if len(t) > 2 and t not in exempt_words}
                 line_unbacked = line_tokens - c_tokens

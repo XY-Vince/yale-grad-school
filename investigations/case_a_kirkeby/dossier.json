@@ -1,0 +1,434 @@
+{
+ "dossier_id": "case_a_kirkeby",
+ "target_name": "Maja H. Kirkeby",
+ "investigation_status": "PRIMARY_TARGET_IDENTIFIED",
+ "primary_candidate_id": "CAND-01",
+ "provenance": "agent_synthesized",
+ "synthesis_mode": "agent_orchestrated_deterministic_grounded",
+ "note": "Migration test bundle. Target identified via ORCID record + Roskilde University institutional portal + Crossref/OpenAlex publisher metadata. All facts S1; no S2/S3/S4 assertions were required because the evidence base is institutional/registry rather than announcement-based.",
+ "as_of_capture": "2026-10-12",
+ "strength_definitions": {
+  "S1": "已确认发生：原文明确陈述已发生",
+  "S2": "公开意向：将做/期待类表达",
+  "S3": "研究环境关联：致谢/引用/工作场景，参与度不明",
+  "S4": "传闻线索：间接、未闭合、历史描述"
+ },
+ "statements": [
+  {
+   "statement_id": "STMT-VCLM-01",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Hanne Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Hanne Kirkeby holds_position 'Associate Professor, Department of People and Technology; Programming, Logic and Intelligent Systems；Associate Professor（副教授），Department of People and Technology；Programming, Logic and Intelligent Systems；同一页眉还保留 Assistant Professor 字符串'",
+   "backed_claim_ids": [
+    "VCLM-01"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-02",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Hanne Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Hanne Kirkeby affiliated_with 'Roskilde University；Roskilde University（罗斯基勒大学）研究门户个人页'",
+   "backed_claim_ids": [
+    "VCLM-02"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-18",
+   "candidate_id": "CAND-01",
+   "subject": "Kirkeby, M. H. (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Kirkeby, M. H. participated_in_project 'Green IT-procurement (project participant) 01/01/2024 to 31/07/2028；Green IT-procurement（项目参与人）2024-01-01 至 2028-07-07'",
+   "backed_claim_ids": [
+    "VCLM-18"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-19",
+   "candidate_id": "CAND-01",
+   "subject": "Kirkeby, M. H. (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Kirkeby, M. H. participated_in_project 'Energy and Performance Trade-offs in Hardware and Software Implementations (project manager) 01/02/2022 to 31/01/2023, Digital Research Centre Denmark - DIREC；Energy and Performance Trade-offs in Hardware and Software Implementations（项目经理）2022-02 至 2023-01，Digital Research Centre Denmark - DIREC'",
+   "backed_claim_ids": [
+    "VCLM-19"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-20",
+   "candidate_id": "CAND-01",
+   "subject": "Kirkeby, M. H. (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Kirkeby, M. H. participated_in_activity 'CERCIRAS Training School 2022 (organizer) 19-24 Sept 2022；CERCIRAS Training School 2022（组织者）2022-09-19 至 24'",
+   "backed_claim_ids": [
+    "VCLM-20"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-21",
+   "candidate_id": "CAND-01",
+   "subject": "Kirkeby, M. H. (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Kirkeby, M. H. participated_in_activity '31st International Symposium on Logic-based Program Synthesis and Transformation (portal activity type: membership in committee/council/board) 7 Sept 2021；31st International Symposium on Logic-based Program Synthesis and Transformation（委员会/理事会/董事会成员）2021-09-07'",
+   "backed_claim_ids": [
+    "VCLM-21"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-22",
+   "candidate_id": "CAND-01",
+   "subject": "Kirkeby, M. H. (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Kirkeby, M. H. participated_in_activity 'Energy-Labeling Web-based IT Systems (speaker; portal type Lecture and oral contribution) 17 Mar 2021；Energy-Labeling Web-based IT Systems（演讲者，公开报告）2021-03-17'",
+   "backed_claim_ids": [
+    "VCLM-22"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-24",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Hanne Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Hanne Kirkeby research_topic 'Energy consumption of Software, Analysis of Software, Program Transformation；研究方向：energy consumption of software、analysis of software、program transformation；关键词 Program Inversion、Energy-aware Software Development、Program Analysis'",
+   "backed_claim_ids": [
+    "VCLM-24"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-23",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Hanne Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Hanne Kirkeby appeared_in_media 'Registered media coverage on data-centre and AI electricity consumption: Ingeniøren (national, web), 01/11/2024, producer Bjørn Godske；媒体露面记录：Ingeniøren（全国级，网页）2024-11-01，作者 Bjørn Godske；Persons 字段列出本人'",
+   "backed_claim_ids": [
+    "VCLM-23"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-04",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Hanne Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Hanne Kirkeby received_degree 'PhD dissertation 'Probabilistic program analysis', Roskilde Universitet, 2018, 139 pages, series 'Roskilde Universitet. Computer Science. Computer Science Research Report'；PhD 论文《Probabilistic program analysis》，Roskilde Universitet，2018 年，139 页'",
+   "backed_claim_ids": [
+    "VCLM-04"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-28",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Hanne Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Hanne Kirkeby received_degree 'Publication type 'Ph.d.-afhandling' (PhD dissertation) on the portal record；门户记录类型 'Ph.d.-afhandling'（博士论文）'",
+   "backed_claim_ids": [
+    "VCLM-28"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-05",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Kirkeby holds_position 'VIP, PhD Fellow, Department of Communication, Business and Information Technologies, Roskilde University, 2012-12-01 to 2015-12-17；VIP, PhD Fellow，Department of Communication, Business and Information Technologies，Roskilde University，2012-12-01 至 2015-12-17；ORCID 自述'",
+   "backed_claim_ids": [
+    "VCLM-05"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-06",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Kirkeby holds_position 'VIP, Associate Professor, Department of People and Technology, Roskilde University (ORCID entry, start 2012-12-01, no end date)；VIP, Associate Professor，Department of People and Technology，Roskilde University；ORCID 条目起始 2012-12-01，无结束日期'",
+   "backed_claim_ids": [
+    "VCLM-06"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-07",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Kirkeby holds_position 'VIP, Programming, Logic and Intelligent Systems, Roskilde University (ORCID entry, start 2012-12-01, no end date)；VIP, Programming, Logic and Intelligent Systems，Roskilde University；ORCID 条目起始 2012-12-01，无结束日期'",
+   "backed_claim_ids": [
+    "VCLM-07"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-08",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Kirkeby reported_name_variant 'Maja Kirkeby (ORCID given/family) and Maja Hanne Kirkeby (ORCID other-name)；姓名变体：Maja Kirkeby（ORCID 名/姓）与 Maja Hanne Kirkeby（ORCID other-name）'",
+   "backed_claim_ids": [
+    "VCLM-08"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-09",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Kirkeby holds_identifier 'ORCID 0000-0003-0033-2438, record claimed and email-verified；ORCID 0000-0003-0033-2438，记录已领取（claimed）且邮箱已验证'",
+   "backed_claim_ids": [
+    "VCLM-09"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-26",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Kirkeby holds_role 'Reviewer for a journal registered under ISSN 0167-6423 (Elsevier client deposit, created 2024-06-15)；期刊审稿人：ISSN 0167-6423（Elsevier 客户端存入，2024-06-15）'",
+   "backed_claim_ids": [
+    "VCLM-26"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-27",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Kirkeby has_public_profile_link 'Roskilde University research-portal profile, linked from ORCID, deposited by the Roskilde University client；Roskilde University 研究门户 profile，由 ORCID 链接；由 RUC 客户端存入'",
+   "backed_claim_ids": [
+    "VCLM-27"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-03",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby affiliated_with 'Research group PLIS: Programming, Logic and Intelligent Systems, Department of People and Technology, Roskilde University (affiliation as deposited for the 2017 article)；Research group PLIS（Programming, Logic and Intelligent Systems），Department of People and Technology，Roskilde University；2017 年发表时的单位'",
+   "backed_claim_ids": [
+    "VCLM-03"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-11",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby authored_work ''On proving confluence modulo equivalence for Constraint Handling Rules' (Formal Aspects of Computing, published 2017-01), with Henning Christiansen；《On proving confluence modulo equivalence for Constraint Handling Rules》（Formal Aspects of Computing，2017-01），与 Henning Christiansen 合著'",
+   "backed_claim_ids": [
+    "VCLM-11"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-12",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby authored_work ''Confluence and convergence modulo equivalence in probabilistically terminating reduction systems' (International Journal of Approximate Reasoning, volume 105, pages 217-228, issue published 2019-02)；《Confluence and convergence modulo equivalence in probabilistically terminating reduction systems》（International Journal of Approximate Reasoning，volume 105，pages 217-228，2019-02）'",
+   "backed_claim_ids": [
+    "VCLM-12"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-10",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby published_work ''Probabilistic program analysis' (PhD thesis, publication_date 2018-01-01), sole author, Roskilde University；《Probabilistic program analysis》（PhD 论文，2018-01-01），唯一作者，Roskilde University'",
+   "backed_claim_ids": [
+    "VCLM-10"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-13",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby published_work ''Compiling Haskell for Energy Efficiency: Empirical Analysis of Individual Transformations' (SAC 2024), with Bernardo Santos, João Paulo Fernandes, Alberto Pardo；《Compiling Haskell for Energy Efficiency: Empirical Analysis of Individual Transformations》（SAC 2024），与 Bernardo Santos、João Paulo Fernandes、Alberto Pardo 合著'",
+   "backed_claim_ids": [
+    "VCLM-13"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-14",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby published_work ''Framework Matters: Energy Efficiency of UI Automation Testing Frameworks' (SAC 2026, pp. 1636-1645), with Timmie M. R. Lagermann, Kristina Carter, Su Mei Gwen Ho, Luís Cruz, Kerstin Eder；《Framework Matters: Energy Efficiency of UI Automation Testing Frameworks》（SAC 2026，pp. 1636-1645），与 Timmie M. R. Lagermann、Kristina Carter、Su Mei Gwen Ho、Luís Cruz、Kerstin Eder 合著'",
+   "backed_claim_ids": [
+    "VCLM-14"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-15",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby published_work ''Power Assumptions Matter: Evaluating End-User Laptop Energy Models for Sustainability Reporting of Browser-Based Web Services' (SANER-C 2026 companion, pp. 189-196), with Timmie M. R. Lagermann；《Power Assumptions Matter: Evaluating End-User Laptop Energy Models for Sustainability Reporting of Browser-Based Web Services》（SANER-C 2026，pp. 189-196），与 Timmie M. R. Lagermann 合著'",
+   "backed_claim_ids": [
+    "VCLM-15"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-16",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby published_work ''Bridging the gap between industry and academia: sustainability in LLM-assisted software engineering' (GREENS 2026, pp. 153-157), with Pepijn de Reus, Ana Oprescu, Kalle Pronk, Qin Zhao, Fernando Castor, João Paulo Fernandes；《Bridging the gap between industry and academia: sustainability in LLM-assisted software engineering》（GREENS 2026，pp. 153-157），与 Pepijn de Reus、Ana Oprescu、Kalle Pronk、Qin Zhao、Fernando Castor、João Paulo Fernandes 合著'",
+   "backed_claim_ids": [
+    "VCLM-16"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-25",
+   "candidate_id": "CAND-01",
+   "subject": "Maja H. Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja H. Kirkeby has_publication_record 'OpenAlex index: 39 works, 81 citations, h-index 5, i10 2 (aggregated index, not a personal CV)；OpenAlex 索引：39 项成果、81 次被引、h-index 5'",
+   "backed_claim_ids": [
+    "VCLM-25"
+   ]
+  },
+  {
+   "statement_id": "STMT-VCLM-17",
+   "candidate_id": "CAND-01",
+   "subject": "Maja Hanne Kirkeby (CAND-01)",
+   "evidence_strength": "S1",
+   "section": "target",
+   "rendered_text": "Maja Hanne Kirkeby co_authored_preprint ''Teaching Energy-Efficient Software -- An Experience Report' (arXiv:2504.19707), with Henrik Bærbak Christensen, Bent Thomsen, Lone Leth Thomsen；《Teaching Energy-Efficient Software -- An Experience Report》（arXiv:2504.19707），与 Henrik Bærbak Christensen、Bent Thomsen、Lone Leth Thomsen 合著'",
+   "backed_claim_ids": [
+    "VCLM-17"
+   ]
+  }
+ ],
+ "candidate_matrix": [
+  {
+   "candidate_id": "CAND-01",
+   "identity": "Maja Hanne Kirkeby - Roskilde University computer science researcher, ORCID 0000-0003-0033-2438",
+   "status": "PRIMARY_TARGET",
+   "evidence": [
+    "SRC-01",
+    "SRC-02",
+    "SRC-03",
+    "SRC-04",
+    "SRC-05",
+    "SRC-06",
+    "SRC-07",
+    "SRC-08",
+    "SRC-09",
+    "SRC-10"
+   ]
+  },
+  {
+   "candidate_id": "CAND-02",
+   "identity": "No second Maja/Maja H. Kirkeby entity identified; same-name checks were incomplete (DBLP, Google Scholar blocked).",
+   "status": "NOT_FOUND_INCOMPLETE_CHECK",
+   "evidence": []
+  }
+ ],
+ "leads": [
+  {
+   "lead_id": "LEAD-01",
+   "candidate_id": "CAND-01",
+   "title": "Title ambiguity: Assistant Professor vs Associate Professor",
+   "evidence_strength": "S4",
+   "status": "UNRESOLVED"
+  },
+  {
+   "lead_id": "LEAD-02",
+   "candidate_id": "CAND-01",
+   "title": "Education record before the PhD (master's and bachelor's)",
+   "evidence_strength": "S4",
+   "status": "UNRESOLVED"
+  },
+  {
+   "lead_id": "LEAD-03",
+   "candidate_id": "CAND-01",
+   "title": "PhD defence and supervision details",
+   "evidence_strength": "S4",
+   "status": "UNRESOLVED"
+  },
+  {
+   "lead_id": "LEAD-04",
+   "candidate_id": "CAND-01",
+   "title": "Teaching activity and course responsibility",
+   "evidence_strength": "S4",
+   "status": "UNRESOLVED"
+  },
+  {
+   "lead_id": "LEAD-05",
+   "candidate_id": "CAND-01",
+   "title": "Full citation metrics and Scholar identity",
+   "evidence_strength": "S4",
+   "status": "UNRESOLVED"
+  },
+  {
+   "lead_id": "LEAD-06",
+   "candidate_id": "CAND-01",
+   "title": "Two remaining portal projects not readable on the profile page",
+   "evidence_strength": "S4",
+   "status": "UNRESOLVED"
+  }
+ ],
+ "open_questions": [
+  {
+   "question_id": "OQ-01",
+   "candidate_id": "CAND-01",
+   "title": "Current exact academic title and rank date",
+   "status": "OPEN"
+  },
+  {
+   "question_id": "OQ-02",
+   "candidate_id": "CAND-01",
+   "title": "Pre-PhD education",
+   "status": "OPEN"
+  },
+  {
+   "question_id": "OQ-03",
+   "candidate_id": "CAND-01",
+   "title": "Whether 'Maja Kirkeby' outside Danish CS refers to the same person",
+   "status": "OPEN"
+  },
+  {
+   "question_id": "OQ-04",
+   "candidate_id": "CAND-01",
+   "title": "Current project funding and role on the 2024-2028 Green IT-procurement project",
+   "status": "OPEN"
+  },
+  {
+   "question_id": "OQ-05",
+   "candidate_id": "CAND-01",
+   "title": "Country/affiliation on the 2026 international co-authored papers",
+   "status": "OPEN"
+  }
+ ],
+ "claim_strength_counts": {
+  "S1": 28,
+  "S2": 0,
+  "S3": 0,
+  "S4": 0
+ },
+ "corrections": []
+}

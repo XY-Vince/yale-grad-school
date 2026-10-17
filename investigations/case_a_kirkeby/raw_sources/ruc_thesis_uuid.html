@@ -1,0 +1,656 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="da" class="nexus-font-support">
+
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="google" content="nositelinkssearchbox"/>
+    <meta name="tdm-reservation" content="0">
+    <title>
+        Probabilistic program analysis
+      -  Roskilde Universitets forskningsportal</title>
+    
+    
+    
+
+<link rel='alternate' hreflang='da-dk' href='https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/' /><link rel='alternate' hreflang='en-gb' href='https://forskning.ruc.dk/en/publications/probabilistic-program-analysis/' />
+
+<meta property="og:site_name" content="Roskilde Universitets forskningsportal">
+
+
+    <meta property="og:title" content="Probabilistic program analysis"/>
+
+
+<meta property="og:url" content="https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/">
+<meta property="og:locale" content="da_DK">
+
+
+
+
+    
+        <meta property="og:image" content="https://forskning.ruc.dk/skin/headerImage/">
+    
+
+
+
+
+    
+        <meta property="og:type" content="article">
+    
+
+    
+
+    
+
+
+    <link rel="stylesheet" href="/assets/application-d8c4196ba42289b701050fcf209ab3eb.css" />
+    <!-- OneTrust Cookies Consent Notice start -->
+<script async src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" type="text/javascript" charset="UTF-8" data-domain-script="bed2c2bb-0256-43fc-94c4-69bcb07cb0b7" data-document-language="true"></script>
+<script type="text/javascript">
+    document.cookieConsentBannerShowAll = true;
+    function OptanonWrapper() { }
+</script>
+<!-- OneTrust Cookies Consent Notice end -->
+    
+        <link rel="shortcut icon" href="/skin/favIcon/"/>
+    
+    <link href="/skin/css/" rel="stylesheet"/>
+    
+    <script src="/skin/script/" type="text/javascript"></script>
+    <script type="text/javascript" src="/assets/application-d9c3c96b32ee7877543159e1191a25d2.js" ></script>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="/assets/html5shiv.min-ca5300beead9a4a9d2c9c584a9016410.js" ></script>
+    <script type="text/javascript" src="/assets/respond.min-678d372b349e434d9923e1b591f14a1e.js" ></script>
+    <![endif]-->
+    
+        
+        
+        <meta name="citation_title" content="Probabilistic program analysis"></meta><meta name="citation_author" content="Maja Hanne Kirkeby"></meta><meta name="citation_author_institution" content="Programmering, logik og intelligente systemer"></meta><meta name="citation_author_institution" content="Institut for Mennesker og Teknologi"></meta><meta name="citation_author_email" content="majaht@ruc.dk"></meta><meta name="citation_author_orcid" content="0000-0003-0033-2438"></meta><meta name="citation_publication_date" content="2018"></meta><meta name="citation_pdf_url" content="https://forskning.ruc.dk/files/124782107/KirkebyThesis.pdf"></meta><meta name="citation_online_date" content="2018/11/21"></meta><meta name="citation_language" content="Engelsk"></meta>
+        <script src="/assets/Chart.min-27bff060c3e539ceb22e763c8f2e9e10.js"></script>
+        <script src="/assets/jquery.content-chart-9c09bb79ba3fc3829b6478d0e114f737.js"></script>
+        
+    
+    
+    <!-- Google Analytics: No account ID (G) found -->
+    <script src="//assets.adobedtm.com/4a848ae9611a/ea83f870454d/launch-af020409b299.min.js" class="optanon-category-2" type="text/plain" async=""></script>
+    
+    
+</head>
+
+<body class="" data-page="publications">
+
+<div id="aria-polite" aria-live="polite"></div>
+<div id="aria-assertive" aria-live="assertive"></div>
+
+<a href="#main-navigation" class="sr-only sr-only-focusable">Spring til hovednavigation</a>
+
+    <a href="#main-search" class="sr-only sr-only-focusable">Spring til søgning</a>
+
+<a href="#main-content" class="sr-only sr-only-focusable">Spring til hovedindhold</a>
+
+
+
+
+
+
+
+    <header class="header" id="page-header">
+        <div class="primary with-right-background ">
+            <div class="container">
+                
+                    <div class="primary-right-background clearfix">
+                
+                <a href="/da/" class="logo">
+                    
+                        <span class="sr-only">Roskilde Universitets forskningsportal Forside</span>
+                        <img src="/skin/headerImage/" alt="Roskilde Universitets forskningsportal Logo"/>
+                    
+                </a>
+                
+                    <ul class="header-tools ">
+                        
+                        
+                            <li class="language-dropdown dropdown">
+                                <button data-toggle="dropdown" class="language_btn" aria-label="Vælg sprog" aria-expanded="false">
+                                    <i class="icon icon-globe" aria-hidden="true"></i></button>
+
+                                <div class="dropdown-container">
+                                    <ul class='language-selector dropdown-menu'><li class='selected'><a href="/da/publications/probabilistic-program-analysis/" aria-current="true" lang="da">Dansk</a></li><li><a href="/en/publications/probabilistic-program-analysis/" lang="en">English</a></li></ul>
+                                </div>
+                            </li>
+                        
+                    </ul>
+                
+                
+                
+                    </div>
+                
+            </div>
+        </div>
+
+        
+            <div class="header-search">
+                
+<form action="/da/searchAll/index/probabilistic-program-analysis/" method="get"
+      class="search-form" id="search-everything">
+
+    <div class="global-search-wrapper">
+        <div class="global-search mini">
+            <div class="field-button-wrapper">
+                <div class="search-cell search-field">
+                    <label for="main-search" class="sr-only">Søg efter indhold i Roskilde Universitets forskningsportal</label>
+                    <input id="main-search" class="search-field" value="" name="search"
+                           placeholder="Søg…"/>
+                </div>
+
+                <div class="search-submit">
+                    <button type="submit" aria-label="Søgning">
+                        <i class="icon icon-magnifying-glass" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $(function () {
+        var searchForm = $("#search-everything");
+        var searchField = $(".search-field", searchForm);
+        searchForm.on("submit", function () {
+            var field = searchField.find("input");
+            var searchString = field.val();
+
+            // No enter key submit nothing :-)
+            if (!searchString) return false;
+
+            if (searchString.length >= 200) {
+                searchForm.attr("method", "post");
+                searchForm.attr("action", "/da/concepts/copypaste/");
+                field.attr("name", "text");
+            }
+        });
+    });
+</script>
+            </div>
+        
+
+
+        
+        
+            <div class="subMenu">
+                <div class="secondary">
+                    <div class="container">
+                        <nav id="main-navigation" aria-label="Hovednavigation" class="content-navigation three-third">
+                            <ul data-value="Mere" role="menubar" aria-label="Hovednavigation">
+                                <li class="" role="none">
+                                    <a href="/da/" role="menuitem" tabindex="-1">Forside</a>
+                                </li>
+
+                                
+                                    <li class="" role="none">
+                                        <a class="portal_link" tabindex="-1" role="menuitem" href="/da/persons/"><span>Profiler</span></a>
+                                    </li>
+                                
+                                    <li class="" role="none">
+                                        <a class="portal_link" tabindex="-1" role="menuitem" href="/da/organisations/"><span>Forskningsenheder</span></a>
+                                    </li>
+                                
+                                    <li class="selected" role="none">
+                                        <a class="portal_link" tabindex="0" role="menuitem" href="/da/publications/"><span>Publikationer</span></a>
+                                    </li>
+                                
+                                    <li class="" role="none">
+                                        <a class="portal_link" tabindex="-1" role="menuitem" href="/da/projects/"><span>Projekter</span></a>
+                                    </li>
+                                
+                                    <li class="" role="none">
+                                        <a class="portal_link" tabindex="-1" role="menuitem" href="/da/activities/"><span>Aktiviteter</span></a>
+                                    </li>
+                                
+                                    <li class="" role="none">
+                                        <a class="portal_link" tabindex="-1" role="menuitem" href="/da/clippings/"><span>Presse/medier</span></a>
+                                    </li>
+                                
+                                    <li class="" role="none">
+                                        <a class="portal_link" tabindex="-1" role="menuitem" href="/da/datasets/"><span>Forskningsdatasæt</span></a>
+                                    </li>
+                                
+                                    <li class="" role="none">
+                                        <a class="portal_link" tabindex="-1" role="menuitem" href="/da/prizes/"><span>Priser</span></a>
+                                    </li>
+                                
+                            </ul>
+                        </nav>
+
+                    </div>
+                </div>
+            </div>
+        
+    </header>
+
+    <main id="page-content">
+        
+    <div class="page-section page-section-publications page-section-publications-view ">
+
+        
+        
+        
+        
+        <section
+                class="page-section-header page-section-header-publications page-section-header-publications-view
+                 no-backdrop-image"
+                data-stickyheader=""
+                style="">
+            
+            
+        
+
+
+<div class="container">
+    <div class="row">
+        <div class="introduction no-metrics">
+            <div class="rendering"><h1><span>Probabilistic program analysis</span></h1></div>
+            <div class="rendering rendering_researchoutput  rendering_researchoutput_associatespersonsclassifiedportal rendering_thesis rendering_associatespersonsclassifiedportal rendering_thesis_associatespersonsclassifiedportal"><ul class="relations persons"><li><a rel="Person" href="https://forskning.ruc.dk/da/persons/majaht/" class="link person"><span>Maja Hanne Kirkeby</span></a></li></div>
+            <div class="rendering rendering_researchoutput  rendering_researchoutput_associatesorganisationsportal rendering_thesis rendering_associatesorganisationsportal rendering_thesis_associatesorganisationsportal"><ul class="relations organisations"><li class="researchgroup"><a rel="Organisation" href="https://forskning.ruc.dk/da/organisations/programmering-logik-og-intelligente-systemer/" class="link"><span>Programmering, logik og intelligente systemer</span></a></li><li class="institute"><a rel="Organisation" href="https://forskning.ruc.dk/da/organisations/institut-for-mennesker-og-teknologi/" class="link"><span>Institut for Mennesker og Teknologi</span></a></li></ul></div>
+            
+            <div class="rendering rendering_researchoutput  rendering_researchoutput_publicationcontenttyperendererportalng rendering_thesis rendering_publicationcontenttyperendererportalng rendering_thesis_publicationcontenttyperendererportalng"><p class="type"><span class="type_family">Publikation<span class="type_family_sep">: </span></span><span class="type_classification_parent">Ph.d.- afhandling<span class="type_parent_sep"> › </span></span><span class="type_classification">Ph.d.-afhandling</span></p></div>
+        </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="publication-metrics" role="region" aria-label="Afsnit med metrik til publikationer">
+        
+            <div class="metrics-container">
+                
+                    <div class="metrics-wrap metrics-top one">
+                        
+                        
+                            <div class="metric metrics-downloads">
+                                <span class="count tooltipped tooltipped-n" aria-label="Samlet antal downloads for dette arbejde">450</span>
+                                <span class="label">Downloads
+(Pure)</span>
+                            </div>
+                        
+                    </div>
+                
+                
+                    <div class="metrics-wrap metrics-bottom one">
+                        
+
+                        
+                            <div class="metric metric-altmetric">
+                                
+                                    <div data-badge-popover="top" data-badge-type="donut" data-uri="https://forskning.ruc.dk/da/publications/action--probabilistic-program-analysis/"
+                                         data-hide-no-mentions="true" data-link-target='_blank' class="altmetric-embed"></div>
+                                
+                            </div>
+                        
+                    </div>
+                
+            </div>
+        
+    </div>
+
+
+    </div>
+
+</div>
+<div class="subMenu">
+    <div class="content-profile-navigation">
+    <div class="container">
+        <nav role="navigation">
+            <ul role="menubar">
+                <li class="selected" role="none">
+                    <a class="portal_link" role="menuitem" href="/da/publications/probabilistic-program-analysis/"><span>
+                        <i class="icon icon-publication" aria-hidden="true"></i>
+                        <span class="label">Oversigt</span>
+                    </span></a>
+                </li>
+                
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+
+            </ul>
+        </nav>
+    </div>
+    </div>
+</div>
+
+    
+        </section>
+
+        <div id="main-content"
+             class="page-section-content page-section-content-publications page-section-content-publications-view   ">
+            
+        <section class="page-section content-relation-section">
+            <div class="container">
+                <div class="clearfix">
+                    <div class="content-content publication-content">
+                        
+                        
+                        <div class="rendering rendering_researchoutput  rendering_researchoutput_detailsportal rendering_thesis rendering_detailsportal rendering_thesis_detailsportal"><div class="phd_thesis"><table class="properties"><tbody><tr class="language"><th scope="row">Originalsprog</th><td>Engelsk</td></tr><tr><th scope="row">Udgivelsessted</th><td>Roskilde</td></tr><tr><th scope="row">Udgiver</th><td><ul class="relations"><li><a rel="Publisher" href="#" class="link"><span><span class="rendering rendering_inline rendering_publisher rendering_publisher_inline">Roskilde Universitet</span></span></a></li></ul></td></tr><tr class="status"><th scope="row">Status</th><td><span class="prefix">Udgivet - </span><span class="date">2018</span></td></tr></tbody></table></div></div>
+                        
+
+                        
+
+                        
+
+                        
+
+                    </div>
+
+                    <div class="content-sidebar publication-sidebar">
+                        
+                            <h2 class="subheader">Adgang til dokumentet</h2>
+                        <div class="rendering rendering_researchoutput  rendering_researchoutput_publicationaccessrenderer rendering_thesis rendering_publicationaccessrenderer rendering_thesis_publicationaccessrenderer"><ul class="documents"><li class="open-access"><div class="document"><a onclick="if (this.href) {window.open(this.href)}; return false;" href="/files/124782107/KirkebyThesis.pdf" class="link document-link"><span>KirkebyThesis</span></a><span class="meta">Forlagets udgivne version, 1,14 MB</span></div></li></ul></div>
+
+                        <div class="rendering rendering_researchoutput  rendering_researchoutput_publicationsfxportalrenderer rendering_thesis rendering_publicationsfxportalrenderer rendering_thesis_publicationsfxportalrenderer"><h2 class="subheader">KB link</h2><span class="globe"><a href="https://soeg.kb.dk/openurl/45KBDK_KGL/45KBDK_KGL:KGL?ctx_ver=Z39.88-2004&amp;ctx_tim=2026-10-12T21%3A50%3A58UTC&amp;ctx_enc=info%3Aofi%2FencUTF-8&amp;url_ver=Z39.88-2004&amp;url_ctx_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Actx&amp;rft.genre=unknown&amp;rfr_id=info%3Asid%2Fpure.atira.dk%3Apure&amp;rft.atitle=Probabilistic%20program%20analysis&amp;rft.aulast=Kirkeby&amp;rft.aufirst=Maja%20Hanne&amp;rft.auinit=M&amp;rft.date=2018&amp;rft.pub=Roskilde%20Universitet&amp;rft.place=Roskilde">Søg efter materialet på Det Kgl. Bibliotek</a></span></div>
+
+                        
+
+                        
+
+                        <div class="rendering rendering_researchoutput  rendering_researchoutput_versioneddocumentspureportal rendering_thesis rendering_versioneddocumentspureportal rendering_thesis_versioneddocumentspureportal"><ul class="relations documents"></ul></div>
+
+                        
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+        <section class="page-section cite">
+            <div class="container">
+                <section class="publication-cite" aria-labelledby="publications-cite-title">
+    <h2 class="subheader" id="publications-cite-title">Citationsformater</h2>
+    <ul class="tabs" role="tablist" aria-label="Citationsformater">
+        
+            <li class="selected" role="tab" id="tab-0" aria-controls="cite-apa" tabindex="-1"  aria-selected="false" >
+                APA
+            </li>
+        
+            <li class="" role="tab" id="tab-1" aria-controls="cite-author" tabindex="-1"  aria-selected="false" >
+                Author
+            </li>
+        
+            <li class="" role="tab" id="tab-2" aria-controls="cite-BIBTEX" tabindex="-1"  aria-selected="false" >
+                BIBTEX
+            </li>
+        
+            <li class="" role="tab" id="tab-3" aria-controls="cite-harvard" tabindex="-1"  aria-selected="false" >
+                Harvard
+            </li>
+        
+            <li class="" role="tab" id="tab-4" aria-controls="cite-standard" tabindex="-1"  aria-selected="false" >
+                Standard
+            </li>
+        
+            <li class="" role="tab" id="tab-5" aria-controls="cite-RIS" tabindex="-1"  aria-selected="false" >
+                RIS
+            </li>
+        
+            <li class="" role="tab" id="tab-6" aria-controls="cite-vancouver" tabindex="-1"  aria-selected="false" >
+                Vancouver
+            </li>
+        
+    </ul>
+    <div class="tab-container">
+        
+            <div id="cite-apa" class="tab selected" role="tabpanel" aria-labelledby="tab-0" tabindex="-1" aria-hidden="true">
+                <div class="rendering rendering_researchoutput  rendering_researchoutput_apa rendering_thesis rendering_apa rendering_thesis_apa"><a rel="Person" href="https://forskning.ruc.dk/da/persons/majaht/" class="link"><span>Kirkeby, M. H.</span></a> (2018). <a rel="Thesis" href="https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/" class="link"><span><em>Probabilistic program analysis</em></span></a>. Roskilde Universitet.</div>
+            </div>
+        
+            <div id="cite-author" class="tab " role="tabpanel" aria-labelledby="tab-1" tabindex="-1" aria-hidden="true">
+                <div class="rendering rendering_researchoutput  rendering_researchoutput_author rendering_thesis rendering_author rendering_thesis_author"><a rel="Person" href="https://forskning.ruc.dk/da/persons/majaht/" class="link"><span>Kirkeby, Maja Hanne</span></a>. / <a rel="Thesis" href="https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/" class="link"><span><strong>Probabilistic program analysis</strong></span></a>. Roskilde : Roskilde Universitet, 2018. 139 s.</div>
+            </div>
+        
+            <div id="cite-BIBTEX" class="tab " role="tabpanel" aria-labelledby="tab-2" tabindex="-1" aria-hidden="true">
+                <div class="rendering rendering_researchoutput  rendering_researchoutput_bibtex rendering_thesis rendering_bibtex rendering_thesis_bibtex"><div>@misc{3a45383660c748918ec1395a175aea1c,</div><div>  title     = "Probabilistic program analysis",</div><div>  author    = "Kirkeby, \{Maja Hanne\}",</div><div>  year      = "2018",</div><div>  language  = "English",</div><div>  series    = "Roskilde Universitet. Computer Science. Computer Science Research Report",</div><div>  publisher = "Roskilde Universitet",</div><p>}</p></div>
+            </div>
+        
+            <div id="cite-harvard" class="tab " role="tabpanel" aria-labelledby="tab-3" tabindex="-1" aria-hidden="true">
+                <div class="rendering rendering_researchoutput  rendering_researchoutput_harvard rendering_thesis rendering_harvard rendering_thesis_harvard"><a rel="Person" href="https://forskning.ruc.dk/da/persons/majaht/" class="link"><span>Kirkeby, MH</span></a> 2018, '<a rel="Thesis" href="https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/" class="link harvard_title"><span>Probabilistic program analysis</span></a>', Roskilde.</div>
+            </div>
+        
+            <div id="cite-standard" class="tab " role="tabpanel" aria-labelledby="tab-4" tabindex="-1" aria-hidden="true">
+                <div class="rendering rendering_researchoutput  rendering_researchoutput_standard rendering_thesis rendering_standard rendering_thesis_standard"><a rel="Thesis" href="https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/" class="link"><span><strong>Probabilistic program analysis.</strong></span></a> / <a rel="Person" href="https://forskning.ruc.dk/da/persons/majaht/" class="link"><span>Kirkeby, Maja Hanne</span></a>. <br />Roskilde: Roskilde Universitet, 2018. 139 s.<p class="type"><span class="type_family">Publikation<span class="type_family_sep">: </span></span><span class="type_classification_parent">Ph.d.- afhandling<span class="type_parent_sep"> › </span></span><span class="type_classification">Ph.d.-afhandling</span></p></div>
+            </div>
+        
+            <div id="cite-RIS" class="tab " role="tabpanel" aria-labelledby="tab-5" tabindex="-1" aria-hidden="true">
+                <div class="rendering rendering_researchoutput  rendering_researchoutput_ris rendering_thesis rendering_ris rendering_thesis_ris"><p>TY  - GEN</p><p>T1  - Probabilistic program analysis</p><p>AU  - Kirkeby, Maja Hanne</p><p>PY  - 2018</p><p>Y1  - 2018</p><p>M3  - PhD thesis</p><p>T3  - Roskilde Universitet. Computer Science. Computer Science Research Report</p><p>PB  - Roskilde Universitet</p><p>CY  - Roskilde</p><p>ER  - </p></div>
+            </div>
+        
+            <div id="cite-vancouver" class="tab " role="tabpanel" aria-labelledby="tab-6" tabindex="-1" aria-hidden="true">
+                <div class="rendering rendering_researchoutput  rendering_researchoutput_vancouver rendering_thesis rendering_vancouver rendering_thesis_vancouver"><a rel="Person" href="https://forskning.ruc.dk/da/persons/majaht/" class="link"><span>Kirkeby MH</span></a>. <span class="title"><a rel="Thesis" href="https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/" class="link"><span>Probabilistic program analysis</span></a></span>. Roskilde: Roskilde Universitet, 2018. 139 s.</div>
+            </div>
+        
+
+        <script>
+            $(function() {
+                $(".tab-container .rendering a:not([href^='http://dx.doi.org'])").contents().unwrap();
+            });
+        </script>
+    </div>
+</section>
+
+            </div>
+        </section>
+        <script>
+    $(function () {
+        if($('.publication-sidebar').length > 0){
+            if($('a.document-link').length === 0){
+                $(".metrics-top").addClass("one");
+                $('div.metrics-downloads').remove();
+            }
+        }
+    });
+
+    function plumXError(e) {
+        $(e).closest('.metric-plum-x').closest('.metrics-bottom').addClass('one');
+        $(e).closest('.metric-plum-x').remove();
+    }
+    $('div.altmetric-embed').on('altmetric:hide', function () {
+        $(this).closest('.metric-altmetric').closest('.metrics-bottom').addClass('one');
+        $(this).closest('.metric-altmetric').remove();
+    });
+</script>
+        
+
+
+
+    
+    
+    
+    
+    
+    
+
+    
+        
+        
+        
+    
+
+    <div class="share-box">
+        <ul>
+            <li class="icon-share"></li>
+            <li><a aria-label="Del på Facebook"
+                   href="https://www.facebook.com/sharer.php?u=https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/%3Futm_source%3Dfacebook%26utm_medium%3Dsocial%26utm_campaign%3Dsharelink&p[summary]=Tjek+denne+publikation+ud+p%C3%A5+Roskilde+Universitets+forskningsportal%3A+Probabilistic+program+analysis"
+                   class="icon-facebook"
+                   onclick="window.location.origin('https://www.facebook.com/sharer.php?u=https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/%3Futm_source%3Dfacebook%26utm_medium%3Dsocial%26utm_campaign%3Dsharelink&p[summary]=Tjek+denne+publikation+ud+p%C3%A5+Roskilde+Universitets+forskningsportal%3A+Probabilistic+program+analysis', 'Facebook', 'width=600,height=600,scrollbars=no,resizable=no');
+                   return false;" target="popup"></a></li>
+            <li><a aria-label="Del på Twitter"
+                   href="https://twitter.com/intent/tweet?url=https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/%3Futm_source%3Dtwitter%26utm_medium%3Dsocial%26utm_campaign%3Dsharelink&text=Tjek+denne+publikation+ud+p%C3%A5+Roskilde+Universitets+forskningsportal%3A+Probabilistic+program+analysis"
+                   onclick="window.location.origin('https://twitter.com/intent/tweet?url=https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/%3Futm_source%3Dtwitter%26utm_medium%3Dsocial%26utm_campaign%3Dsharelink&text=Tjek+denne+publikation+ud+p%C3%A5+Roskilde+Universitets+forskningsportal%3A+Probabilistic+program+analysis ', 'Twitter', 'width=600,height=600,scrollbars=no,resizable=no');
+                   return false;" class="twitter" target="popup"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 300 271">
+                    
+                    <path d="m236 0h46l-101 115 118 156h-92.6l-72.5-94.8-83 94.8h-46l107-123-113-148h94.9l65.5 86.6zm-16.1 244h25.5l-165-218h-27.4z"></path>
+                </svg></a></li>
+            <li><a aria-label="Del på LinkedIn"
+                   href="https://www.linkedin.com/shareArticle?mini=true&url=https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/%3Futm_source%3Dlinkedin%26utm_medium%3Dsocial%26utm_campaign%3Dsharelink&summary=Tjek+denne+publikation+ud+p%C3%A5+Roskilde+Universitets+forskningsportal%3A+Probabilistic+program+analysis"
+                   onclick="window.location.origin('https://www.linkedin.com/shareArticle?mini=true&url=https://forskning.ruc.dk/da/publications/probabilistic-program-analysis/%3Futm_source%3Dlinkedin%26utm_medium%3Dsocial%26utm_campaign%3Dsharelink&summary=Tjek+denne+publikation+ud+p%C3%A5+Roskilde+Universitets+forskningsportal%3A+Probabilistic+program+analysis ', 'LinkedIn', 'width=600,height=600,scrollbars=no,resizable=no');
+                   return false;" class="icon-linkedin" target="popup"></a></li>
+            <li><a aria-label="Del via e-mail" href="/cdn-cgi/l/email-protection#043b7771666e6167703954766b6665666d686d77706d6721363474766b63766569213634656a65687d776d7722666b607d39506e616f21363460616a6a61213634747166686d6f65706d6b6a213634716021363474214737214531213634566b776f6d686061213634516a6d726176776d70617077213634626b76776f6a6d6a6377746b7670656821374521363454766b6665666d686d77706d6721363474766b63766569213634656a65687d776d772478246c707074773e2b2b626b76776f6a6d6a632a7671672a606f2b60652b747166686d6765706d6b6a772b74766b6665666d686d77706d672974766b6376656929656a65687d776d772b3b7170695b776b71766761396169656d68226569743f7170695b6961606d7169396169656d68226569743f7170695b67656974656d636a39776c657661686d6a6f" class="icon-email"></a></li>
+        </ul>
+    </div>
+
+
+
+
+    
+        </div>
+    </div>
+
+    <div id="new-modal-overlay"></div>
+    
+    </main>
+
+    <footer id="page-footer" class="main-footer">
+        <div class="container">
+            <div class="footer-wrapper">
+                <div class="content-navigation three-third">
+                    <div dir="ltr" class="footer-columns">
+                        
+                            <div class="footer-column">
+                                <div class="footer-icon">
+                                    <img src="/skin/footerIcon/" alt="Roskilde Universitets forskningsportal Logo"/>
+                                </div>
+                            </div>
+                        
+                        <div class="footer-column">
+                            <p>
+                                Drevet af <a href="http://www.elsevier.com/online-tools/research-intelligence/products-and-services/pure">Pure</a>, <a href="http://www.scopus.com/">Scopus</a> & <a href="https://www.elsevier.com/products/elsevier-fingerprint-engine">Elsevier Fingerprint Engine&trade;</a>
+                            </p>
+
+                            <p>
+                                Alt indhold på dette websted: Copyright © 2026 Roskilde Universitets forskningsportal, dets licensgivere og bidragydere. Alle rettigheder forbeholdes, herunder dem til tekst- og datamining, AI-træning og lignende teknologier. For alt Open Access indhold gælder de relevante licensbetingelser.
+                            </p>
+
+                            <p>Vi bruger cookies til at hjælpe med at tilvejebringe og forbedre vores service og tilpasse indhold. Ved at fortsætte accepterer du <a href="/da/about/cookies/">brug af cookies</a></p>
+                            <p><button id="ot-sdk-btn" class="ot-sdk-show-settings"></button></p>
+                            
+                                <p><a href="https://rucforsk.ruc.dk/admin/workspace.xhtml" rel="nofollow" target="_blank">Log ind i Pure <span class="sr-only">&nbsp; Link åbnes på en ny fane</span></a></p>
+                            
+                            <p></p>
+                        </div>
+
+                        <div class="footer-column">
+                            
+                                <p><a href="https://ruc.dk/om-websitet-rucdk" target="_blank">Roskilde Universitets forskningsportal databeskyttelsespolitik <span class="sr-only">&nbsp; Link åbnes på en ny fane</span></a></p>
+                            
+                            
+                            
+                                <p><a href="/da/web-accessibility/" rel="nofollow" target="_blank">Om webtilgængelighed <span class="sr-only">&nbsp; Link åbnes på en ny fane</span></a></p>
+                            
+
+                            <p>
+                                
+                            </p>
+
+                            <p>
+                                
+                            </p>
+
+                            <p>
+                                <a href="https://elsevier.responsibledisclosure.com/hc/en-us/requests/new" target="_blank" rel="nofollow">Rapport sårbarhed <span class="sr-only">&nbsp; Link åbnes på en ny fane</span></a>
+                            </p>
+                        </div>
+
+                        
+                            <div class="footer-column">
+                                
+                                    
+                                        <p>
+                                            <a href="/da/contact/index/"> Kontakt os</a>
+                                        </p>
+                                    
+                                
+
+                            </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="back-to-top">
+            <a href="#" class="back-to-top" aria-label="Gå til toppen"><i class="icon icon-up-open"></i></a>
+        </div>
+    </footer>
+
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="//d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+
+
+
+    
+
+    
+
+
+<script>window.appData = window.appData || [];</script><script type="text/javascript">
+try {(function() {
+appData.push({...{"page":{"businessUnit":"ELS:RP:ST","cmsName":"Pure Portal","environment":"prod","language":"da","loadTime":"164","loadTimestamp":"1791848616823","name":"pure portal:publications:view","noTracking":"false","productName":"PR","type":"CP-CA"},"visitor":{"accountId":"","accountName":"pr:Roskilde Universitet","ipAddress":"","accessType":"pr:ANON_GUEST","loginStatus":"anonymous"},"content":[{"id":"3a453836-60c7-4891-8ec1-395a175aea1c","title":"Probabilistic program analysis","recordType":"researchoutput"}]}, event: "pageLoad"});})();} catch(e) {if(console) { console.log(e) } }</script>
+<script>function trackPage(){try {(function() {
+window.appData = window.appData || [];
+})();} catch(e) {if(console) { console.log(e) } }}</script>
+
+</body>
+</html>
+

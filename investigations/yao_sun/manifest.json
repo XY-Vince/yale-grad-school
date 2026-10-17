@@ -10,59 +10,111 @@
   "discovery_mode": "HYBRID_LIVE_AND_PRIMARY",
   "discovery_input_hash": null,
   "files": {
+    "corroborated_leads.jsonl": {
+      "byte_size": 4367,
+      "sha256": "4cad360797f7133a005687120d5735dc645fcc9ad8e611e6a9b2b419aa62684d"
+    },
     "discovery_results.jsonl": {
       "byte_size": 9685,
       "sha256": "b6beba22953095f5b29a8aa57d7ff29a940d4ff9486fdb1a97d4b94562ec2fd6"
     },
-    "verified_claims.jsonl": {
-      "byte_size": 11258,
-      "sha256": "71ec4811b35bda8a85ff2081f15cd1d69131b988e228e03c71f1903bedeaea92"
+    "dossier.json": {
+      "byte_size": 20415,
+      "sha256": "827db31051250a663b1ec4431350805f997980cbdbb70c55090dec229947cb1d"
     },
-    "corroborated_leads.jsonl": {
-      "byte_size": 943,
-      "sha256": "6dc2b29a6b5d2b8bdeb4cef3c382f761ec266f23bea1915b2b12268be8434853"
-    },
-    "source_inventory.jsonl": {
-      "byte_size": 14043,
-      "sha256": "296d3fd849d5984fc29492b9881804a0a3d0a7031dfe98157de1fcfc98e92513"
-    },
-    "recall_report.md": {
-      "byte_size": 13730,
-      "sha256": "b2bf7107e9dd282a25efcfeda5a8356636c5f56e19b16b36e6ce5476bf0a2dc0"
+    "evidence_index.md": {
+      "byte_size": 22248,
+      "sha256": "c5ae52c8b670df0635a2389073d952c6daedee9adf05022dd723d5db16be8a98"
     },
     "open_questions.jsonl": {
-      "byte_size": 335,
-      "sha256": "491ebacf4516b34ab6f147ddb4de41d6edff4ee2f2fe26b0f8c16d301d66931a"
-    },
-    "dossier.json": {
-      "byte_size": 11426,
-      "sha256": "41e8ce8be76db16e3bb7532296ed3a48af8d11c4095a34718a5cbe3f810db352"
+      "byte_size": 1656,
+      "sha256": "5b19dbf4f2431f05777f46409a469d893efc10085d9e95cae8319640bbbd7e1e"
     },
     "query_logs.jsonl": {
       "byte_size": 7706,
       "sha256": "4ce8fefefa61cc14fe717457996f6631e64828fd3bb2173df6510685e368d180"
     },
-    "raw_sources/web_src-03__yao_jpn.html": {
-      "byte_size": 1156971,
-      "sha256": "934083ee9ff18336abb1604719939ac7f6fb9e3097c77b21e18fcf3fd97c4dcc"
+    "raw_sources/aapor_past_roper.html": {
+      "byte_size": 72922,
+      "sha256": "46e94b58b88eddca002789a39f26f90c34bfc1bdedbaf2b7c34b8075b7b09578"
     },
-    "raw_sources/web_src-01_index.html": {
-      "byte_size": 1140548,
-      "sha256": "112cba06411580148a5e6aef61862ff12337cbf360f0ee7469fdf916f755a415"
+    "raw_sources/emma_zang_linkedin_post.html": {
+      "byte_size": 91269,
+      "sha256": "6dda79385b3353bc663f6ec41324428fc197447df82d3c2d0f035115122fe8c6"
     },
-    "raw_sources/web_src-20_in_yao_sun_0232347.html": {
-      "byte_size": 1530,
-      "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
+    "raw_sources/finra_brokercheck_7569730.json": {
+      "byte_size": 1764,
+      "sha256": "4b34204916a475a94166d00013689a6707a596ba4566eb015ca6e5d7363e560b"
+    },
+    "raw_sources/mapor_2025_program.pdf": {
+      "byte_size": 9084229,
+      "sha256": "c835cbe8b16e23ca8f8a22ed63f79e3c1a1b7561edbdc07c2da519dd5dc00f48"
     },
     "raw_sources/pubmed_efetch_37142791.xml": {
       "byte_size": 48186,
       "sha256": "c73754cfa2e4ed4443418422db3f732734e9eccc5e7c76eb579b66e4069e1b4a"
     },
+    "raw_sources/ucsf_profiles_yao_sun.html": {
+      "byte_size": 118229,
+      "sha256": "000ecd62539bb230b47b4af31abe131643d4e0324c0c3429ce5160ea5597fde2"
+    },
+    "raw_sources/web_src-01_index.html": {
+      "byte_size": 1140548,
+      "sha256": "112cba06411580148a5e6aef61862ff12337cbf360f0ee7469fdf916f755a415"
+    },
+    "raw_sources/web_src-03__yao_jpn.html": {
+      "byte_size": 1156971,
+      "sha256": "934083ee9ff18336abb1604719939ac7f6fb9e3097c77b21e18fcf3fd97c4dcc"
+    },
+    "raw_sources/web_src-05_blog_yao_meaning_in_chinese_po.html": {
+      "byte_size": 33943,
+      "sha256": "464e172f98d7bd3ca27b2f94c30a169f052eb0a4a05062809c633aa968473beb"
+    },
+    "raw_sources/web_src-06_wiki_YAO___E3_83_90_E3_83_B3_E.html": {
+      "byte_size": 94643,
+      "sha256": "ce3963e498069e147a1db4c59fa9ba306e4cf3a84720fef83910f97320eacc16"
+    },
+    "raw_sources/web_src-07_channel_UCFSft9_RKiVrSaPsfAsvm.html": {
+      "byte_size": 2039673,
+      "sha256": "bfc833ab48b37e9ce33eec06eecb31e736736582a4bbb5fbcda4a177c6778216"
+    },
+    "raw_sources/web_src-09_grammar_five_uses_yao.html": {
+      "byte_size": 189319,
+      "sha256": "073f07bb225824701627067b9c14acc520791df8f12203a91f8456f4650d257b"
+    },
+    "raw_sources/web_src-10_dictionary_Yao.html": {
+      "byte_size": 5583,
+      "sha256": "ebc306926c59564ee63c5af45e696bfd312f4b7dd6cbbd7e629f1a3e795d7189"
+    },
     "raw_sources/web_src-11_in_yao_sun_9955061b3.html": {
       "byte_size": 221971,
       "sha256": "94bc2ba60ae4e64bd84fa6e181332c2276eebe2e9fe2385f77a8692033ac8564"
     },
+    "raw_sources/web_src-12_posts_yao_sun_9955061b3_one_mo.html": {
+      "byte_size": 128123,
+      "sha256": "54c7abecc8604843ddc4dbcf55d669cd39677a98fe483694d8a9890c5ca37097"
+    },
+    "raw_sources/web_src-13_DrEmmaZang_status_205680174592.html": {
+      "byte_size": 100608,
+      "sha256": "f586360072ed71f03cace4b867b32a7107c0722e91ecbcb252d6d66cca888ee9"
+    },
+    "raw_sources/web_src-14_suncafe2025.html": {
+      "byte_size": 737148,
+      "sha256": "5bcce1821426889201c72ccab7a82071c8eb800fdc2085b4c934cef62fdf6c9b"
+    },
+    "raw_sources/web_src-15_in_yao_sun_535858194.html": {
+      "byte_size": 1530,
+      "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
+    },
     "raw_sources/web_src-16_pub_dir_Yao_Sun_us_0_United_St.html": {
+      "byte_size": 1530,
+      "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
+    },
+    "raw_sources/web_src-17_pub_dir_Yao_20_Sun.html": {
+      "byte_size": 1530,
+      "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
+    },
+    "raw_sources/web_src-18_in_yao_sun_59b67718.html": {
       "byte_size": 1530,
       "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
     },
@@ -70,77 +122,45 @@
       "byte_size": 1530,
       "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
     },
-    "raw_sources/web_src-14_suncafe2025.html": {
-      "byte_size": 737148,
-      "sha256": "5bcce1821426889201c72ccab7a82071c8eb800fdc2085b4c934cef62fdf6c9b"
-    },
-    "raw_sources/web_src-09_grammar_five_uses_yao.html": {
-      "byte_size": 189319,
-      "sha256": "073f07bb225824701627067b9c14acc520791df8f12203a91f8456f4650d257b"
-    },
-    "raw_sources/yale_zcafe_homepage.html": {
-      "byte_size": 48046,
-      "sha256": "fa4ece5781839924d2c43248adcb0334da25e1a5876ef58c22f7f16c72f2e7da"
-    },
-    "raw_sources/web_src-06_wiki_YAO___E3_83_90_E3_83_B3_E.html": {
-      "byte_size": 94643,
-      "sha256": "ce3963e498069e147a1db4c59fa9ba306e4cf3a84720fef83910f97320eacc16"
-    },
-    "raw_sources/web_src-17_pub_dir_Yao_20_Sun.html": {
+    "raw_sources/web_src-20_in_yao_sun_0232347.html": {
       "byte_size": 1530,
       "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
-    },
-    "raw_sources/web_src-12_posts_yao_sun_9955061b3_one_mo.html": {
-      "byte_size": 128123,
-      "sha256": "54c7abecc8604843ddc4dbcf55d669cd39677a98fe483694d8a9890c5ca37097"
-    },
-    "raw_sources/mapor_2025_program.pdf": {
-      "byte_size": 9084229,
-      "sha256": "c835cbe8b16e23ca8f8a22ed63f79e3c1a1b7561edbdc07c2da519dd5dc00f48"
-    },
-    "raw_sources/aapor_past_roper.html": {
-      "byte_size": 72922,
-      "sha256": "46e94b58b88eddca002789a39f26f90c34bfc1bdedbaf2b7c34b8075b7b09578"
-    },
-    "raw_sources/web_src-07_channel_UCFSft9_RKiVrSaPsfAsvm.html": {
-      "byte_size": 2039673,
-      "sha256": "bfc833ab48b37e9ce33eec06eecb31e736736582a4bbb5fbcda4a177c6778216"
-    },
-    "raw_sources/finra_brokercheck_7569730.json": {
-      "byte_size": 1764,
-      "sha256": "4b34204916a475a94166d00013689a6707a596ba4566eb015ca6e5d7363e560b"
     },
     "raw_sources/yale_emma_zang_profile.html": {
       "byte_size": 34690,
       "sha256": "677d8db1e4a9958ccb29b74f2beea78f048fb0bef20ea6edcda5f47be045e3b1"
     },
-    "raw_sources/ucsf_profiles_yao_sun.html": {
-      "byte_size": 118229,
-      "sha256": "000ecd62539bb230b47b4af31abe131643d4e0324c0c3429ce5160ea5597fde2"
+    "raw_sources/yale_zcafe_homepage.html": {
+      "byte_size": 48046,
+      "sha256": "fa4ece5781839924d2c43248adcb0334da25e1a5876ef58c22f7f16c72f2e7da"
     },
-    "raw_sources/web_src-05_blog_yao_meaning_in_chinese_po.html": {
-      "byte_size": 33943,
-      "sha256": "464e172f98d7bd3ca27b2f94c30a169f052eb0a4a05062809c633aa968473beb"
+    "recall_report.md": {
+      "byte_size": 13337,
+      "sha256": "1cf2922a12f53d8dcd19a46500d03b092706fe89d2287475faa199febc7d27ba"
     },
-    "raw_sources/emma_zang_linkedin_post.html": {
-      "byte_size": 91269,
-      "sha256": "6dda79385b3353bc663f6ec41324428fc197447df82d3c2d0f035115122fe8c6"
+    "source_inventory.jsonl": {
+      "byte_size": 16700,
+      "sha256": "2389cd61b8ffe7050d191048eeee0bbb359f9d6cf726a847290c62fdceb9e160"
     },
-    "raw_sources/web_src-18_in_yao_sun_59b67718.html": {
-      "byte_size": 1530,
-      "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
-    },
-    "raw_sources/web_src-15_in_yao_sun_535858194.html": {
-      "byte_size": 1530,
-      "sha256": "644031a68bde879af85bcc9cb3e6fa1e9a6b0f61d49307581974b5dbc09d3de8"
-    },
-    "raw_sources/web_src-10_dictionary_Yao.html": {
-      "byte_size": 5583,
-      "sha256": "ebc306926c59564ee63c5af45e696bfd312f4b7dd6cbbd7e629f1a3e795d7189"
-    },
-    "raw_sources/web_src-13_DrEmmaZang_status_205680174592.html": {
-      "byte_size": 100608,
-      "sha256": "f586360072ed71f03cace4b867b32a7107c0722e91ecbcb252d6d66cca888ee9"
+    "verified_claims.jsonl": {
+      "byte_size": 18704,
+      "sha256": "0b1a33bb5bf2f2ace506042b0bd562b6de92baab6edcb32e3390e0556e2c8a38"
     }
+  },
+  "delivery_revision": {
+    "date": "2026-10-12",
+    "editor": "Codex",
+    "purpose": "Step 0 ledger corrections and Step 1 user dossier delivery",
+    "new_network_requests": 0,
+    "source_capture_preserved": true,
+    "verified_ledger_records": 24,
+    "statement_strength_counts": {
+      "S1": 22,
+      "S2": 1,
+      "S3": 1
+    },
+    "lead_records": 7,
+    "open_question_records": 5,
+    "baseline_commit": "1d1cd716f02df0dbebd0244ca9a47331d6781251"
   }
 }

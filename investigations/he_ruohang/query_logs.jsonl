@@ -1,0 +1,11 @@
+{"query_text": "\"贺若航\"", "engine": "google_search", "timestamp": "2026-10-13T12:18:01Z", "status": "EXECUTED", "results_count": 8}
+{"query_text": "\"Ruohang He\"", "engine": "google_search", "timestamp": "2026-10-13T12:18:11Z", "status": "EXECUTED", "results_count": 10}
+{"query_text": "\"贺若航\" 耶鲁", "engine": "google_search", "timestamp": "2026-10-13T12:18:17Z", "status": "EXECUTED", "results_count": 4}
+{"query_text": "\"贺若航\" 深圳中学", "engine": "google_search", "timestamp": "2026-10-13T12:18:52Z", "status": "EXECUTED", "results_count": 6}
+{"query_text": "\"aacyf\" \"贺若航\"", "engine": "google_search", "timestamp": "2026-10-13T12:19:04Z", "status": "EXECUTED", "results_count": 5}
+{"query_text": "\"贺若航\" BUBLUE", "engine": "google_search", "timestamp": "2026-10-13T12:19:13Z", "status": "EXECUTED", "results_count": 7}
+{"query_text": "\"贺若航\" \"香港中文大学\"", "engine": "google_search", "timestamp": "2026-10-13T12:19:26Z", "status": "EXECUTED", "results_count": 5}
+{"query_text": "\"欧伦电气\" \"贺若航\" \"BUBLUE\"", "engine": "google_search", "timestamp": "2026-10-13T12:22:41Z", "status": "EXECUTED", "results_count": 8}
+{"query_text": "\"Ruohang He\" Michigan OR Yale", "engine": "google_search", "timestamp": "2026-10-13T12:23:29Z", "status": "EXECUTED", "results_count": 9}
+{"query_text": "\"Ruohang He\" commencement site:umich.edu", "engine": "google_search", "timestamp": "2026-10-13T12:23:44Z", "status": "EXECUTED", "results_count": 5}
+{"query_text": "https://api.openalex.org/authors/A5036928897", "engine": "openalex_api", "timestamp": "2026-10-13T12:21:36Z", "status": "EXECUTED", "results_count": 1}

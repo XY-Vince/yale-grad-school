@@ -1,0 +1,99 @@
+{
+ "bundle_version": "1.0",
+ "created_at": "2026-10-12T19:52:00Z",
+ "bundle_name": "Maja H. Kirkeby Investigation Bundle (Case A migration test)",
+ "target_name": "Maja H. Kirkeby",
+ "run_outcome": "COMPLETED",
+ "provenance": "agent_synthesized",
+ "synthesis_mode": "agent_orchestrated_deterministic_grounded",
+ "note": "Migration test for verify-public-person-profile SKILL.md. Chosen by the harness as an institutional/CV-type person; no seed links provided.",
+ "discovery_mode": "AGENT_API_DIRECT",
+ "discovery_input_hash": null,
+ "delivery_revision": "r1",
+ "files": {
+  "verified_claims.jsonl": {
+   "byte_size": 269366,
+   "sha256": "9a60b23320b7607a8e7a06d3a7f1cea815228e6af453d4401a1db21ada3acc02"
+  },
+  "corroborated_leads.jsonl": {
+   "byte_size": 4060,
+   "sha256": "2ec0e122de7cb1180e4f11ed0a697d14b8ab67ca4ed7b6dec6f5551c3b5e9db2"
+  },
+  "source_inventory.jsonl": {
+   "byte_size": 10441,
+   "sha256": "f0b763c5bd9249044128dd68943c1e9c40b14e449c8847aefd8f8da2ed9820dc"
+  },
+  "recall_report.md": {
+   "byte_size": 14170,
+   "sha256": "ed1a6214806fcb1166c2c4ecd35edf41343fe0c810f62e6d226303ae38d6e41b"
+  },
+  "open_questions.jsonl": {
+   "byte_size": 2059,
+   "sha256": "8b7f4793fa2c742af395217ca1d687bc6528956587369dfcf1597f96ca8668c6"
+  },
+  "dossier.json": {
+   "byte_size": 18272,
+   "sha256": "b737d7b8664332432ca2eb4d0131538177e26c0a3aeb077b211559aab8781604"
+  },
+  "evidence_index.md": {
+   "byte_size": 15401,
+   "sha256": "789add0a186a7d7277edcc86fc7492176af26217e5a2c8d08d228eeaf99373dc"
+  },
+  "query_logs.jsonl": {
+   "byte_size": 9309,
+   "sha256": "b6730445d9cb7430757f8c61fd309e61402f1eb2b7525cdef9d85fda5876b462"
+  },
+  "raw_sources/crossref_ijar_single.json": {
+   "byte_size": 9399,
+   "sha256": "80cac61976c806eb768826b512a26515ae8ba41cb9c4552b6a3d0b12d304b9d7"
+  },
+  "raw_sources/springer_fac_confluence_BLOCKED.html": {
+   "byte_size": 3038,
+   "sha256": "32ed63159c77e21ee19ca1b9aa3213ccf0218eb59539560b132a8e68ef0e18ea"
+  },
+  "raw_sources/ruc_thesis_uuid.html": {
+   "byte_size": 34521,
+   "sha256": "78575c6fbc2d56deff4b1dfa6577302ffff81d57081cafd124a14e240171e9b9"
+  },
+  "raw_sources/orcid_0000-0003-0033-2438.json": {
+   "byte_size": 171806,
+   "sha256": "fd2405c5e70598737ec03b807bd0c21fe140f2cf68fce6154af5fc6653decdc4"
+  },
+  "raw_sources/ruc_clipping_ai_expert.html": {
+   "byte_size": 26362,
+   "sha256": "074b49f9bd7259db39153af30a682e6a82d25e2a5ec06eda4993cf86010620f1"
+  },
+  "raw_sources/arxiv_2504_19707.html": {
+   "byte_size": 40086,
+   "sha256": "cab921ab9bc040039294f1dad62d85e03e93879518bc9b1c701371001bc0f2d5"
+  },
+  "raw_sources/openalex_work_phd_thesis.json": {
+   "byte_size": 7667,
+   "sha256": "6c24ffe14176dfb143cbe51170ccb7693243c9049a2cbb1d590cd1b506e1e75e"
+  },
+  "raw_sources/ruc_KirkebyThesis_BLOCKED.html": {
+   "byte_size": 5559,
+   "sha256": "eb3cc8741b2ae8019ab9dc2c24b4a0dadbcf7271838dd1d1cef9efe9496db37f"
+  },
+  "raw_sources/openalex_author_A5034230236.json": {
+   "byte_size": 6862,
+   "sha256": "9b204d7f131140da9814ca3617f1eea2c2ba3b04daa634d2dca0dcd7e7974045"
+  },
+  "raw_sources/openalex_works_A5034230236.json": {
+   "byte_size": 186345,
+   "sha256": "01cb8bed4dc03d7d25fde7d69198b2877b950259ed95249365b8b2d397f0b630"
+  },
+  "raw_sources/crossref_works_batch.json": {
+   "byte_size": 22773,
+   "sha256": "fedede0be7a9b828c0c5c9119af79d1e3f889f4f924749c32a3dc2f39a1b22d1"
+  },
+  "raw_sources/crossref_fac_confluence_single.json": {
+   "byte_size": 13486,
+   "sha256": "a2d72f09492b825f2ef371c21d7580daef899af86efa341028694437f2b957f6"
+  },
+  "raw_sources/ruc_profile_kirkeby.html": {
+   "byte_size": 91249,
+   "sha256": "517637e3c12e5f000ed72f3b3eac1a26d566ab392f644a1f45b9b3c85e8cb130"
+  }
+ }
+}

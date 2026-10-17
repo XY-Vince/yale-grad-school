@@ -1,0 +1,4854 @@
+{
+  "orcid-identifier" : {
+    "uri" : "https://orcid.org/0000-0003-0033-2438",
+    "path" : "0000-0003-0033-2438",
+    "host" : "orcid.org"
+  },
+  "preferences" : {
+    "locale" : "en"
+  },
+  "history" : {
+    "creation-method" : "DIRECT",
+    "completion-date" : null,
+    "submission-date" : {
+      "value" : 1523958411320
+    },
+    "last-modified-date" : {
+      "value" : 1789199896797
+    },
+    "claimed" : true,
+    "source" : null,
+    "deactivation-date" : null,
+    "verified-email" : true,
+    "verified-primary-email" : true
+  },
+  "person" : {
+    "last-modified-date" : {
+      "value" : 1619423932280
+    },
+    "name" : {
+      "created-date" : {
+        "value" : 1523958411320
+      },
+      "last-modified-date" : {
+        "value" : 1523958411543
+      },
+      "given-names" : {
+        "value" : "Maja"
+      },
+      "family-name" : {
+        "value" : "Kirkeby"
+      },
+      "credit-name" : null,
+      "source" : null,
+      "visibility" : "public",
+      "path" : "0000-0003-0033-2438"
+    },
+    "other-names" : {
+      "last-modified-date" : {
+        "value" : 1523958437693
+      },
+      "other-name" : [ {
+        "created-date" : {
+          "value" : 1523958437693
+        },
+        "last-modified-date" : {
+          "value" : 1523958437693
+        },
+        "source" : {
+          "source-orcid" : {
+            "uri" : "https://orcid.org/0000-0003-0033-2438",
+            "path" : "0000-0003-0033-2438",
+            "host" : "orcid.org"
+          },
+          "source-client-id" : null,
+          "source-name" : {
+            "value" : "Maja Kirkeby"
+          },
+          "assertion-origin-orcid" : null,
+          "assertion-origin-client-id" : null,
+          "assertion-origin-name" : null
+        },
+        "content" : "Maja Hanne Kirkeby",
+        "visibility" : "public",
+        "path" : "/0000-0003-0033-2438/other-names/1090979",
+        "put-code" : 1090979,
+        "display-index" : 1
+      } ],
+      "path" : "/0000-0003-0033-2438/other-names"
+    },
+    "biography" : null,
+    "researcher-urls" : {
+      "last-modified-date" : {
+        "value" : 1537432299850
+      },
+      "researcher-url" : [ {
+        "created-date" : {
+          "value" : 1537432299850
+        },
+        "last-modified-date" : {
+          "value" : 1537432299850
+        },
+        "source" : {
+          "source-orcid" : null,
+          "source-client-id" : {
+            "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+            "path" : "0000-0002-7223-7870",
+            "host" : "orcid.org"
+          },
+          "source-name" : {
+            "value" : "Roskilde University"
+          },
+          "assertion-origin-orcid" : null,
+          "assertion-origin-client-id" : null,
+          "assertion-origin-name" : null
+        },
+        "url-name" : "Roskilde University profile page",
+        "url" : {
+          "value" : "https://forskning.ruc.dk/en/persons/6cfe17de-77a5-4277-961e-3be12eba1414"
+        },
+        "visibility" : "public",
+        "path" : "/0000-0003-0033-2438/researcher-urls/1542260",
+        "put-code" : 1542260,
+        "display-index" : 0
+      } ],
+      "path" : "/0000-0003-0033-2438/researcher-urls"
+    },
+    "emails" : {
+      "last-modified-date" : null,
+      "email" : [ ],
+      "path" : "/0000-0003-0033-2438/email"
+    },
+    "addresses" : {
+      "last-modified-date" : {
+        "value" : 1536838223345
+      },
+      "address" : [ {
+        "created-date" : {
+          "value" : 1536838223344
+        },
+        "last-modified-date" : {
+          "value" : 1536838223345
+        },
+        "source" : {
+          "source-orcid" : {
+            "uri" : "https://orcid.org/0000-0003-0033-2438",
+            "path" : "0000-0003-0033-2438",
+            "host" : "orcid.org"
+          },
+          "source-client-id" : null,
+          "source-name" : {
+            "value" : "Maja Kirkeby"
+          },
+          "assertion-origin-orcid" : null,
+          "assertion-origin-client-id" : null,
+          "assertion-origin-name" : null
+        },
+        "country" : {
+          "value" : "DK"
+        },
+        "visibility" : "public",
+        "path" : "/0000-0003-0033-2438/address/1058882",
+        "put-code" : 1058882,
+        "display-index" : 1
+      } ],
+      "path" : "/0000-0003-0033-2438/address"
+    },
+    "keywords" : {
+      "last-modified-date" : null,
+      "keyword" : [ ],
+      "path" : "/0000-0003-0033-2438/keywords"
+    },
+    "external-identifiers" : {
+      "last-modified-date" : {
+        "value" : 1619423932280
+      },
+      "external-identifier" : [ {
+        "created-date" : {
+          "value" : 1603696287029
+        },
+        "last-modified-date" : {
+          "value" : 1603696287029
+        },
+        "source" : {
+          "source-orcid" : null,
+          "source-client-id" : {
+            "uri" : "https://orcid.org/client/0000-0002-5982-8983",
+            "path" : "0000-0002-5982-8983",
+            "host" : "orcid.org"
+          },
+          "source-name" : {
+            "value" : "Scopus - Elsevier"
+          },
+          "assertion-origin-orcid" : {
+            "uri" : "https://orcid.org/0000-0003-0033-2438",
+            "path" : "0000-0003-0033-2438",
+            "host" : "orcid.org"
+          },
+          "assertion-origin-client-id" : null,
+          "assertion-origin-name" : {
+            "value" : "Maja Kirkeby"
+          }
+        },
+        "external-id-type" : "Scopus Author ID",
+        "external-id-value" : "56875426700",
+        "external-id-url" : {
+          "value" : "http://www.scopus.com/inward/authorDetails.url?authorID=56875426700&partnerID=MN8TOARS"
+        },
+        "external-id-relationship" : "self",
+        "visibility" : "public",
+        "path" : "/0000-0003-0033-2438/external-identifiers/1850034",
+        "put-code" : 1850034,
+        "display-index" : 0
+      }, {
+        "created-date" : {
+          "value" : 1619423932280
+        },
+        "last-modified-date" : {
+          "value" : 1619423932280
+        },
+        "source" : {
+          "source-orcid" : null,
+          "source-client-id" : {
+            "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+            "path" : "0000-0002-7223-7870",
+            "host" : "orcid.org"
+          },
+          "source-name" : {
+            "value" : "Roskilde University"
+          },
+          "assertion-origin-orcid" : null,
+          "assertion-origin-client-id" : null,
+          "assertion-origin-name" : null
+        },
+        "external-id-type" : "Scopus Author ID",
+        "external-id-value" : "56875426700",
+        "external-id-url" : {
+          "value" : "http://www.scopus.com/authid/detail.url?authorId=56875426700"
+        },
+        "external-id-relationship" : "self",
+        "visibility" : "public",
+        "path" : "/0000-0003-0033-2438/external-identifiers/2055569",
+        "put-code" : 2055569,
+        "display-index" : 0
+      } ],
+      "path" : "/0000-0003-0033-2438/external-identifiers"
+    },
+    "path" : "/0000-0003-0033-2438/person"
+  },
+  "activities-summary" : {
+    "last-modified-date" : {
+      "value" : 1789199896875
+    },
+    "distinctions" : {
+      "last-modified-date" : null,
+      "affiliation-group" : [ ],
+      "path" : "/0000-0003-0033-2438/distinctions"
+    },
+    "educations" : {
+      "last-modified-date" : null,
+      "affiliation-group" : [ ],
+      "path" : "/0000-0003-0033-2438/educations"
+    },
+    "employments" : {
+      "last-modified-date" : {
+        "value" : 1689063098010
+      },
+      "affiliation-group" : [ {
+        "last-modified-date" : {
+          "value" : 1689063097565
+        },
+        "external-ids" : {
+          "external-id" : [ ]
+        },
+        "summaries" : [ {
+          "employment-summary" : {
+            "created-date" : {
+              "value" : 1689063097565
+            },
+            "last-modified-date" : {
+              "value" : 1689063097565
+            },
+            "source" : {
+              "source-orcid" : null,
+              "source-client-id" : {
+                "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+                "path" : "0000-0002-7223-7870",
+                "host" : "orcid.org"
+              },
+              "source-name" : {
+                "value" : "Roskilde University"
+              },
+              "assertion-origin-orcid" : null,
+              "assertion-origin-client-id" : null,
+              "assertion-origin-name" : null
+            },
+            "put-code" : 20754472,
+            "department-name" : "Department of People and Technology",
+            "role-title" : "VIP, Associate Professor",
+            "start-date" : {
+              "year" : {
+                "value" : "2012"
+              },
+              "month" : {
+                "value" : "12"
+              },
+              "day" : {
+                "value" : "01"
+              }
+            },
+            "end-date" : null,
+            "organization" : {
+              "name" : "Roskilde University",
+              "address" : {
+                "city" : "Roskilde",
+                "region" : null,
+                "country" : "DK"
+              },
+              "disambiguated-organization" : {
+                "disambiguated-organization-identifier" : "6976",
+                "disambiguation-source" : "RINGGOLD"
+              }
+            },
+            "url" : null,
+            "external-ids" : null,
+            "display-index" : "0",
+            "visibility" : "public",
+            "path" : "/0000-0003-0033-2438/employment/20754472"
+          }
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1689063097780
+        },
+        "external-ids" : {
+          "external-id" : [ ]
+        },
+        "summaries" : [ {
+          "employment-summary" : {
+            "created-date" : {
+              "value" : 1689063097780
+            },
+            "last-modified-date" : {
+              "value" : 1689063097780
+            },
+            "source" : {
+              "source-orcid" : null,
+              "source-client-id" : {
+                "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+                "path" : "0000-0002-7223-7870",
+                "host" : "orcid.org"
+              },
+              "source-name" : {
+                "value" : "Roskilde University"
+              },
+              "assertion-origin-orcid" : null,
+              "assertion-origin-client-id" : null,
+              "assertion-origin-name" : null
+            },
+            "put-code" : 20754473,
+            "department-name" : "Programming, Logic and Intelligent Systems",
+            "role-title" : "VIP",
+            "start-date" : {
+              "year" : {
+                "value" : "2012"
+              },
+              "month" : {
+                "value" : "12"
+              },
+              "day" : {
+                "value" : "01"
+              }
+            },
+            "end-date" : null,
+            "organization" : {
+              "name" : "Roskilde University",
+              "address" : {
+                "city" : "Roskilde",
+                "region" : null,
+                "country" : "DK"
+              },
+              "disambiguated-organization" : {
+                "disambiguated-organization-identifier" : "6976",
+                "disambiguation-source" : "RINGGOLD"
+              }
+            },
+            "url" : null,
+            "external-ids" : null,
+            "display-index" : "0",
+            "visibility" : "public",
+            "path" : "/0000-0003-0033-2438/employment/20754473"
+          }
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1689063098010
+        },
+        "external-ids" : {
+          "external-id" : [ ]
+        },
+        "summaries" : [ {
+          "employment-summary" : {
+            "created-date" : {
+              "value" : 1689063098010
+            },
+            "last-modified-date" : {
+              "value" : 1689063098010
+            },
+            "source" : {
+              "source-orcid" : null,
+              "source-client-id" : {
+                "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+                "path" : "0000-0002-7223-7870",
+                "host" : "orcid.org"
+              },
+              "source-name" : {
+                "value" : "Roskilde University"
+              },
+              "assertion-origin-orcid" : null,
+              "assertion-origin-client-id" : null,
+              "assertion-origin-name" : null
+            },
+            "put-code" : 20754474,
+            "department-name" : "The Department of Communication, Business and Information Technologies",
+            "role-title" : "VIP, PhD Fellow",
+            "start-date" : {
+              "year" : {
+                "value" : "2012"
+              },
+              "month" : {
+                "value" : "12"
+              },
+              "day" : {
+                "value" : "01"
+              }
+            },
+            "end-date" : {
+              "year" : {
+                "value" : "2015"
+              },
+              "month" : {
+                "value" : "12"
+              },
+              "day" : {
+                "value" : "17"
+              }
+            },
+            "organization" : {
+              "name" : "Roskilde University",
+              "address" : {
+                "city" : "Roskilde",
+                "region" : null,
+                "country" : "DK"
+              },
+              "disambiguated-organization" : {
+                "disambiguated-organization-identifier" : "6976",
+                "disambiguation-source" : "RINGGOLD"
+              }
+            },
+            "url" : null,
+            "external-ids" : null,
+            "display-index" : "0",
+            "visibility" : "public",
+            "path" : "/0000-0003-0033-2438/employment/20754474"
+          }
+        } ]
+      } ],
+      "path" : "/0000-0003-0033-2438/employments"
+    },
+    "fundings" : {
+      "last-modified-date" : null,
+      "group" : [ ],
+      "path" : "/0000-0003-0033-2438/fundings"
+    },
+    "invited-positions" : {
+      "last-modified-date" : null,
+      "affiliation-group" : [ ],
+      "path" : "/0000-0003-0033-2438/invited-positions"
+    },
+    "memberships" : {
+      "last-modified-date" : null,
+      "affiliation-group" : [ ],
+      "path" : "/0000-0003-0033-2438/memberships"
+    },
+    "peer-reviews" : {
+      "last-modified-date" : {
+        "value" : 1726805943338
+      },
+      "group" : [ {
+        "last-modified-date" : {
+          "value" : 1726805943338
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "peer-review",
+            "external-id-value" : "issn:0167-6423",
+            "external-id-normalized" : null,
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : null
+          } ]
+        },
+        "peer-review-group" : [ {
+          "last-modified-date" : {
+            "value" : 1718424999835
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "a0904cf9-7d96-4a5b-915c-c47734cccf3c",
+              "external-id-normalized" : {
+                "value" : "a0904cf9-7d96-4a5b-915c-c47734cccf3c",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : {
+                "value" : ""
+              },
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "peer-review-summary" : [ {
+            "created-date" : {
+              "value" : 1718424999835
+            },
+            "last-modified-date" : {
+              "value" : 1718424999835
+            },
+            "source" : {
+              "source-orcid" : null,
+              "source-client-id" : {
+                "uri" : "https://orcid.org/client/0000-0002-7423-0090",
+                "path" : "0000-0002-7423-0090",
+                "host" : "orcid.org"
+              },
+              "source-name" : {
+                "value" : "Elsevier Editorial "
+              },
+              "assertion-origin-orcid" : null,
+              "assertion-origin-client-id" : null,
+              "assertion-origin-name" : null
+            },
+            "reviewer-role" : "reviewer",
+            "external-ids" : {
+              "external-id" : [ {
+                "external-id-type" : "source-work-id",
+                "external-id-value" : "a0904cf9-7d96-4a5b-915c-c47734cccf3c",
+                "external-id-normalized" : {
+                  "value" : "a0904cf9-7d96-4a5b-915c-c47734cccf3c",
+                  "transient" : true
+                },
+                "external-id-normalized-error" : null,
+                "external-id-url" : {
+                  "value" : ""
+                },
+                "external-id-relationship" : "self"
+              } ]
+            },
+            "review-url" : null,
+            "review-type" : "review",
+            "completion-date" : {
+              "year" : {
+                "value" : "2024"
+              },
+              "month" : null,
+              "day" : null
+            },
+            "review-group-id" : "issn:0167-6423",
+            "convening-organization" : {
+              "name" : "Elsevier, Inc.",
+              "address" : {
+                "city" : "New York",
+                "region" : "NY",
+                "country" : "US"
+              },
+              "disambiguated-organization" : {
+                "disambiguated-organization-identifier" : "5993",
+                "disambiguation-source" : "RINGGOLD"
+              }
+            },
+            "visibility" : "public",
+            "put-code" : 15018007,
+            "path" : "/0000-0003-0033-2438/peer-review/15018007",
+            "display-index" : "0"
+          } ]
+        }, {
+          "last-modified-date" : {
+            "value" : 1726805943338
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "d6b58a4b-91b5-4abb-98d0-a25bdc0e020c",
+              "external-id-normalized" : {
+                "value" : "d6b58a4b-91b5-4abb-98d0-a25bdc0e020c",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : {
+                "value" : ""
+              },
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "peer-review-summary" : [ {
+            "created-date" : {
+              "value" : 1726805943338
+            },
+            "last-modified-date" : {
+              "value" : 1726805943338
+            },
+            "source" : {
+              "source-orcid" : null,
+              "source-client-id" : {
+                "uri" : "https://orcid.org/client/0000-0002-7423-0090",
+                "path" : "0000-0002-7423-0090",
+                "host" : "orcid.org"
+              },
+              "source-name" : {
+                "value" : "Elsevier Editorial "
+              },
+              "assertion-origin-orcid" : null,
+              "assertion-origin-client-id" : null,
+              "assertion-origin-name" : null
+            },
+            "reviewer-role" : "reviewer",
+            "external-ids" : {
+              "external-id" : [ {
+                "external-id-type" : "source-work-id",
+                "external-id-value" : "d6b58a4b-91b5-4abb-98d0-a25bdc0e020c",
+                "external-id-normalized" : {
+                  "value" : "d6b58a4b-91b5-4abb-98d0-a25bdc0e020c",
+                  "transient" : true
+                },
+                "external-id-normalized-error" : null,
+                "external-id-url" : {
+                  "value" : ""
+                },
+                "external-id-relationship" : "self"
+              } ]
+            },
+            "review-url" : null,
+            "review-type" : "review",
+            "completion-date" : {
+              "year" : {
+                "value" : "2024"
+              },
+              "month" : null,
+              "day" : null
+            },
+            "review-group-id" : "issn:0167-6423",
+            "convening-organization" : {
+              "name" : "Elsevier, Inc.",
+              "address" : {
+                "city" : "New York",
+                "region" : "NY",
+                "country" : "US"
+              },
+              "disambiguated-organization" : {
+                "disambiguated-organization-identifier" : "5993",
+                "disambiguation-source" : "RINGGOLD"
+              }
+            },
+            "visibility" : "public",
+            "put-code" : 16519820,
+            "path" : "/0000-0003-0033-2438/peer-review/16519820",
+            "display-index" : "1"
+          } ]
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1676462656628
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "peer-review",
+            "external-id-value" : "issn:1469-7653",
+            "external-id-normalized" : null,
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : null
+          } ]
+        },
+        "peer-review-group" : [ {
+          "last-modified-date" : {
+            "value" : 1676462656628
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "other-id",
+              "external-id-value" : "PnU3XodP",
+              "external-id-normalized" : {
+                "value" : "pnu3xodp",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : {
+                "value" : "https://publons.com/wos-op/review/author/PnU3XodP/"
+              },
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "peer-review-summary" : [ {
+            "created-date" : {
+              "value" : 1676462656628
+            },
+            "last-modified-date" : {
+              "value" : 1676462656628
+            },
+            "source" : {
+              "source-orcid" : null,
+              "source-client-id" : {
+                "uri" : "https://orcid.org/client/APP-1DSJAQCZ1PW1VN5X",
+                "path" : "APP-1DSJAQCZ1PW1VN5X",
+                "host" : "orcid.org"
+              },
+              "source-name" : {
+                "value" : "Web of Science Researcher Profile Sync"
+              },
+              "assertion-origin-orcid" : null,
+              "assertion-origin-client-id" : null,
+              "assertion-origin-name" : null
+            },
+            "reviewer-role" : "reviewer",
+            "external-ids" : {
+              "external-id" : [ {
+                "external-id-type" : "other-id",
+                "external-id-value" : "PnU3XodP",
+                "external-id-normalized" : {
+                  "value" : "pnu3xodp",
+                  "transient" : true
+                },
+                "external-id-normalized-error" : null,
+                "external-id-url" : {
+                  "value" : "https://publons.com/wos-op/review/author/PnU3XodP/"
+                },
+                "external-id-relationship" : "self"
+              } ]
+            },
+            "review-url" : {
+              "value" : "https://publons.com/wos-op/review/author/PnU3XodP/"
+            },
+            "review-type" : "review",
+            "completion-date" : {
+              "year" : {
+                "value" : "2023"
+              },
+              "month" : null,
+              "day" : null
+            },
+            "review-group-id" : "issn:1469-7653",
+            "convening-organization" : {
+              "name" : "Publons",
+              "address" : {
+                "city" : "Wellington",
+                "region" : null,
+                "country" : "NZ"
+              },
+              "disambiguated-organization" : null
+            },
+            "visibility" : "public",
+            "put-code" : 8613895,
+            "path" : "/0000-0003-0033-2438/peer-review/8613895",
+            "display-index" : "0"
+          } ]
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1669789475354
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "peer-review",
+            "external-id-value" : "issn:1572-8641",
+            "external-id-normalized" : null,
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : null
+          } ]
+        },
+        "peer-review-group" : [ {
+          "last-modified-date" : {
+            "value" : 1669789475354
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "496ee12c-5a77-445b-9d9f-1ef2336e2a63",
+              "external-id-normalized" : {
+                "value" : "496ee12c-5a77-445b-9d9f-1ef2336e2a63",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : {
+                "value" : ""
+              },
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "peer-review-summary" : [ {
+            "created-date" : {
+              "value" : 1669789475354
+            },
+            "last-modified-date" : {
+              "value" : 1669789475354
+            },
+            "source" : {
+              "source-orcid" : null,
+              "source-client-id" : {
+                "uri" : "https://orcid.org/client/APP-945VYTN20C7BZXYT",
+                "path" : "APP-945VYTN20C7BZXYT",
+                "host" : "orcid.org"
+              },
+              "source-name" : {
+                "value" : "Springer Nature @ Editorial Manager"
+              },
+              "assertion-origin-orcid" : null,
+              "assertion-origin-client-id" : null,
+              "assertion-origin-name" : null
+            },
+            "reviewer-role" : "reviewer",
+            "external-ids" : {
+              "external-id" : [ {
+                "external-id-type" : "source-work-id",
+                "external-id-value" : "496ee12c-5a77-445b-9d9f-1ef2336e2a63",
+                "external-id-normalized" : {
+                  "value" : "496ee12c-5a77-445b-9d9f-1ef2336e2a63",
+                  "transient" : true
+                },
+                "external-id-normalized-error" : null,
+                "external-id-url" : {
+                  "value" : ""
+                },
+                "external-id-relationship" : "self"
+              } ]
+            },
+            "review-url" : null,
+            "review-type" : "review",
+            "completion-date" : {
+              "year" : {
+                "value" : "2022"
+              },
+              "month" : null,
+              "day" : null
+            },
+            "review-group-id" : "issn:1572-8641",
+            "convening-organization" : {
+              "name" : "Springer Nature",
+              "address" : {
+                "city" : "New York",
+                "region" : null,
+                "country" : "US"
+              },
+              "disambiguated-organization" : {
+                "disambiguated-organization-identifier" : "grid.467660.5",
+                "disambiguation-source" : "GRID"
+              }
+            },
+            "visibility" : "public",
+            "put-code" : 7834488,
+            "path" : "/0000-0003-0033-2438/peer-review/7834488",
+            "display-index" : "0"
+          } ]
+        } ]
+      } ],
+      "path" : "/0000-0003-0033-2438/peer-reviews"
+    },
+    "qualifications" : {
+      "last-modified-date" : null,
+      "affiliation-group" : [ ],
+      "path" : "/0000-0003-0033-2438/qualifications"
+    },
+    "research-resources" : {
+      "last-modified-date" : null,
+      "group" : [ ],
+      "path" : "/0000-0003-0033-2438/research-resources"
+    },
+    "services" : {
+      "last-modified-date" : null,
+      "affiliation-group" : [ ],
+      "path" : "/0000-0003-0033-2438/services"
+    },
+    "works" : {
+      "last-modified-date" : {
+        "value" : 1789199896875
+      },
+      "group" : [ {
+        "last-modified-date" : {
+          "value" : 1787126304133
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-105044701232",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-105044701232",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1145/3786148.3788638",
+            "external-id-normalized" : {
+              "value" : "10.1145/3786148.3788638",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "e145641e-421e-40b6-a33e-fff8e2be88a8",
+            "external-id-normalized" : {
+              "value" : "e145641e-421e-40b6-a33e-fff8e2be88a8",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 222001831,
+          "created-date" : {
+            "value" : 1785225499193
+          },
+          "last-modified-date" : {
+            "value" : 1787126304133
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Bridging the gap between industry and academia"
+            },
+            "subtitle" : {
+              "value" : "Sustainability in LLM-assisted software engineering"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "e145641e-421e-40b6-a33e-fff8e2be88a8",
+              "external-id-normalized" : {
+                "value" : "e145641e-421e-40b6-a33e-fff8e2be88a8",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-105044701232",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-105044701232",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1145/3786148.3788638",
+              "external-id-normalized" : {
+                "value" : "10.1145/3786148.3788638",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "9798400723810",
+              "external-id-normalized" : {
+                "value" : "9798400723810",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/e145641e-421e-40b6-a33e-fff8e2be88a8"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2026"
+            },
+            "month" : {
+              "value" : "07"
+            },
+            "day" : {
+              "value" : "06"
+            }
+          },
+          "journal-title" : {
+            "value" : "Proceedings - 2026 IEEE/ACM 10th International Workshop on Green and Sustainable Software, GREENS 2026"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/222001831",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1784879898201
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-105042869661",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-105042869661",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1145/3748522.3779954",
+            "external-id-normalized" : {
+              "value" : "10.1145/3748522.3779954",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "55aec2d2-2186-4a07-9820-b6009209bf57",
+            "external-id-normalized" : {
+              "value" : "55aec2d2-2186-4a07-9820-b6009209bf57",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 221677906,
+          "created-date" : {
+            "value" : 1784879898201
+          },
+          "last-modified-date" : {
+            "value" : 1784879898201
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Framework Matters"
+            },
+            "subtitle" : {
+              "value" : "Energy Efficiency of UI Automation Testing Frameworks"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "55aec2d2-2186-4a07-9820-b6009209bf57",
+              "external-id-normalized" : {
+                "value" : "55aec2d2-2186-4a07-9820-b6009209bf57",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-105042869661",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-105042869661",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1145/3748522.3779954",
+              "external-id-normalized" : {
+                "value" : "10.1145/3748522.3779954",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "9798400722943",
+              "external-id-normalized" : {
+                "value" : "9798400722943",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/55aec2d2-2186-4a07-9820-b6009209bf57"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2026"
+            },
+            "month" : {
+              "value" : "06"
+            },
+            "day" : {
+              "value" : "09"
+            }
+          },
+          "journal-title" : {
+            "value" : "SAC 2026 - 41st Annual ACM Symposium on Applied Computing"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/221677906",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1789199896875
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-105040729022",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-105040729022",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1109/SANER-C67878.2026.00031",
+            "external-id-normalized" : {
+              "value" : "10.1109/saner-c67878.2026.00031",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "4c341414-0d95-4621-9bf5-409db892e996",
+            "external-id-normalized" : {
+              "value" : "4c341414-0d95-4621-9bf5-409db892e996",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "wosuid",
+            "external-id-value" : "001838999200024",
+            "external-id-normalized" : {
+              "value" : "001838999200024",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 217798537,
+          "created-date" : {
+            "value" : 1781596703170
+          },
+          "last-modified-date" : {
+            "value" : 1789199896875
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Power Assumptions Matter"
+            },
+            "subtitle" : {
+              "value" : "Evaluating End-User Laptop Energy Models for Sustainability Reporting of Browser-Based Web Services"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "4c341414-0d95-4621-9bf5-409db892e996",
+              "external-id-normalized" : {
+                "value" : "4c341414-0d95-4621-9bf5-409db892e996",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-105040729022",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-105040729022",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "wosuid",
+              "external-id-value" : "001838999200024",
+              "external-id-normalized" : {
+                "value" : "001838999200024",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1109/SANER-C67878.2026.00031",
+              "external-id-normalized" : {
+                "value" : "10.1109/saner-c67878.2026.00031",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "9798331585891",
+              "external-id-normalized" : {
+                "value" : "9798331585891",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/4c341414-0d95-4621-9bf5-409db892e996"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2026"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Proceedings - 2026 IEEE International Conference on Software Analysis, Evolution and Reengineering - Companion, SANER-C 2026"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/217798537",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768912106303
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "7f12345b-13e6-4986-a310-0d31e9be1394",
+            "external-id-normalized" : {
+              "value" : "7f12345b-13e6-4986-a310-0d31e9be1394",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/978-3-032-08187-2_8",
+            "external-id-normalized" : {
+              "value" : "10.1007/978-3-032-08187-2_8",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-105024530567",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-105024530567",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 202862615,
+          "created-date" : {
+            "value" : 1768813096495
+          },
+          "last-modified-date" : {
+            "value" : 1768912106303
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Static Analysis for Hardware Design"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "7f12345b-13e6-4986-a310-0d31e9be1394",
+              "external-id-normalized" : {
+                "value" : "7f12345b-13e6-4986-a310-0d31e9be1394",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-105024530567",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-105024530567",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-032-08187-2_8",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-032-08187-2_8",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-032-08187-2",
+              "external-id-normalized" : {
+                "value" : "9783032081872",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-032-08186-5",
+              "external-id-normalized" : {
+                "value" : "9783032081865",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/7f12345b-13e6-4986-a310-0d31e9be1394"
+          },
+          "type" : "book-chapter",
+          "publication-date" : {
+            "year" : {
+              "value" : "2026"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Languages, Compilers, Analysis - From Beautiful Theory to Useful Practice"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/202862615",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1789113502607
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.4204/EPTCS.420.4",
+            "external-id-normalized" : {
+              "value" : "10.4204/eptcs.420.4",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.48550/arXiv.2505.20849",
+            "external-id-normalized" : {
+              "value" : "10.48550/arxiv.2505.20849",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-105007018986",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-105007018986",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "2c0a882c-f0ab-442e-bf06-5a6ebc44ea74",
+            "external-id-normalized" : {
+              "value" : "2c0a882c-f0ab-442e-bf06-5a6ebc44ea74",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 185837980,
+          "created-date" : {
+            "value" : 1749715518710
+          },
+          "last-modified-date" : {
+            "value" : 1789113502607
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Static Communication Analysis for Hardware Design"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "2c0a882c-f0ab-442e-bf06-5a6ebc44ea74",
+              "external-id-normalized" : {
+                "value" : "2c0a882c-f0ab-442e-bf06-5a6ebc44ea74",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-105007018986",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-105007018986",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.48550/arXiv.2505.20849",
+              "external-id-normalized" : {
+                "value" : "10.48550/arxiv.2505.20849",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.4204/EPTCS.420.4",
+              "external-id-normalized" : {
+                "value" : "10.4204/eptcs.420.4",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/2c0a882c-f0ab-442e-bf06-5a6ebc44ea74"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2025"
+            },
+            "month" : {
+              "value" : "05"
+            },
+            "day" : {
+              "value" : "27"
+            }
+          },
+          "journal-title" : {
+            "value" : "Proceedings 16th International Workshop on Programming Language Approaches to Concurrency and Communication-cEntric Software"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/185837980",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317311844
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "ac061396-4422-4687-8435-2b851650cd67",
+            "external-id-normalized" : {
+              "value" : "ac061396-4422-4687-8435-2b851650cd67",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.2298/CSIS240914028K",
+            "external-id-normalized" : {
+              "value" : "10.2298/csis240914028k",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-105007003183",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-105007003183",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "wosuid",
+            "external-id-value" : "001505169100010",
+            "external-id-normalized" : {
+              "value" : "001505169100010",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 185761126,
+          "created-date" : {
+            "value" : 1749628991355
+          },
+          "last-modified-date" : {
+            "value" : 1768317311844
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Energy-efficiency of software and hardware algorithms"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "ac061396-4422-4687-8435-2b851650cd67",
+              "external-id-normalized" : {
+                "value" : "ac061396-4422-4687-8435-2b851650cd67",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-105007003183",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-105007003183",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "wosuid",
+              "external-id-value" : "001505169100010",
+              "external-id-normalized" : {
+                "value" : "001505169100010",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.2298/CSIS240914028K",
+              "external-id-normalized" : {
+                "value" : "10.2298/csis240914028k",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/ac061396-4422-4687-8435-2b851650cd67"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2025"
+            },
+            "month" : {
+              "value" : "04"
+            },
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Computer Science and Information Systems"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/185761126",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1786608472586
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "14433bb9-21f7-4bbd-8f6f-3905cb35861e",
+            "external-id-normalized" : {
+              "value" : "14433bb9-21f7-4bbd-8f6f-3905cb35861e",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.48550/ARXIV.2506.01774",
+            "external-id-normalized" : {
+              "value" : "10.48550/arxiv.2506.01774",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1145/3743095.3743099",
+            "external-id-normalized" : {
+              "value" : "10.1145/3743095.3743099",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 193638713,
+          "created-date" : {
+            "value" : 1759824312131
+          },
+          "last-modified-date" : {
+            "value" : 1786608472586
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Greening AI-enabled Systems with Software Engineering: A Research Agenda for Environmentally Sustainable AI Practices"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "14433bb9-21f7-4bbd-8f6f-3905cb35861e",
+              "external-id-normalized" : {
+                "value" : "14433bb9-21f7-4bbd-8f6f-3905cb35861e",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.48550/ARXIV.2506.01774",
+              "external-id-normalized" : {
+                "value" : "10.48550/arxiv.2506.01774",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1145/3743095.3743099",
+              "external-id-normalized" : {
+                "value" : "10.1145/3743095.3743099",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/14433bb9-21f7-4bbd-8f6f-3905cb35861e"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2025"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "ACM SIGSOFT Software Engineering Notes"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/193638713",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317312448
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "0326bb86-c45a-44a3-b5c0-5b9fe43f3408",
+            "external-id-normalized" : {
+              "value" : "0326bb86-c45a-44a3-b5c0-5b9fe43f3408",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "wosuid",
+            "external-id-value" : "001505169100001",
+            "external-id-normalized" : {
+              "value" : "001505169100001",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.2298/CSIS250200iR",
+            "external-id-normalized" : {
+              "value" : "10.2298/csis250200ir",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-105007974051",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-105007974051",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 186637289,
+          "created-date" : {
+            "value" : 1750838556673
+          },
+          "last-modified-date" : {
+            "value" : 1768317312448
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Special Issue on Computer Systems and Resource Awareness"
+            },
+            "subtitle" : {
+              "value" : "Editorial"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "0326bb86-c45a-44a3-b5c0-5b9fe43f3408",
+              "external-id-normalized" : {
+                "value" : "0326bb86-c45a-44a3-b5c0-5b9fe43f3408",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-105007974051",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-105007974051",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "wosuid",
+              "external-id-value" : "001505169100001",
+              "external-id-normalized" : {
+                "value" : "001505169100001",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.2298/CSIS250200iR",
+              "external-id-normalized" : {
+                "value" : "10.2298/csis250200ir",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/0326bb86-c45a-44a3-b5c0-5b9fe43f3408"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2025"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Computer Science and Information Systems"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/186637289",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317310910
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "c83e2d97-24f8-4417-8b97-319e4cc4d467",
+            "external-id-normalized" : {
+              "value" : "c83e2d97-24f8-4417-8b97-319e4cc4d467",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 161832784,
+          "created-date" : {
+            "value" : 1718697798155
+          },
+          "last-modified-date" : {
+            "value" : 1768317310910
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Digitalisering og bæredygtighed: En vej mod fremtiden"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "c83e2d97-24f8-4417-8b97-319e4cc4d467",
+              "external-id-normalized" : {
+                "value" : "c83e2d97-24f8-4417-8b97-319e4cc4d467",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/c83e2d97-24f8-4417-8b97-319e4cc4d467"
+          },
+          "type" : "online-resource",
+          "publication-date" : {
+            "year" : {
+              "value" : "2024"
+            },
+            "month" : {
+              "value" : "06"
+            },
+            "day" : {
+              "value" : "14"
+            }
+          },
+          "journal-title" : null,
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/161832784",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317311535
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85197726185",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85197726185",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1145/3605098.3635915",
+            "external-id-normalized" : {
+              "value" : "10.1145/3605098.3635915",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "067cec2a-9f0d-4c7d-be85-08d295a795a2",
+            "external-id-normalized" : {
+              "value" : "067cec2a-9f0d-4c7d-be85-08d295a795a2",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 165143347,
+          "created-date" : {
+            "value" : 1723104196130
+          },
+          "last-modified-date" : {
+            "value" : 1768317311535
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Compiling Haskell for Energy Efficiency"
+            },
+            "subtitle" : {
+              "value" : "Empirical Analysis of Individual Transformations"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "067cec2a-9f0d-4c7d-be85-08d295a795a2",
+              "external-id-normalized" : {
+                "value" : "067cec2a-9f0d-4c7d-be85-08d295a795a2",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85197726185",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85197726185",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1145/3605098.3635915",
+              "external-id-normalized" : {
+                "value" : "10.1145/3605098.3635915",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "9798400702433",
+              "external-id-normalized" : {
+                "value" : "9798400702433",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/067cec2a-9f0d-4c7d-be85-08d295a795a2"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2024"
+            },
+            "month" : {
+              "value" : "04"
+            },
+            "day" : {
+              "value" : "08"
+            }
+          },
+          "journal-title" : {
+            "value" : "39th Annual ACM Symposium on Applied Computing, SAC 2024"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/165143347",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1786608472060
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "3d551954-ae6a-4cd1-8ecd-aec0050cace9",
+            "external-id-normalized" : {
+              "value" : "3d551954-ae6a-4cd1-8ecd-aec0050cace9",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85195862754",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85195862754",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/978-3-031-62076-8_6",
+            "external-id-normalized" : {
+              "value" : "10.1007/978-3-031-62076-8_6",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 162592221,
+          "created-date" : {
+            "value" : 1719648159410
+          },
+          "last-modified-date" : {
+            "value" : 1786608472060
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Exploring the Energy Overhead of Reversible Programs Executed on Irreversible Hardware"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "3d551954-ae6a-4cd1-8ecd-aec0050cace9",
+              "external-id-normalized" : {
+                "value" : "3d551954-ae6a-4cd1-8ecd-aec0050cace9",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85195862754",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85195862754",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-031-62076-8_6",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-031-62076-8_6",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "9783031620751",
+              "external-id-normalized" : {
+                "value" : "9783031620751",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/3d551954-ae6a-4cd1-8ecd-aec0050cace9"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2024"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Reversible Computation - 16th International Conference, RC 2024, Proceedings"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/162592221",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317310416
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "f1d450f4-bfa1-4030-ab17-1b3e04dc4546",
+            "external-id-normalized" : {
+              "value" : "f1d450f4-bfa1-4030-ab17-1b3e04dc4546",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 109226697,
+          "created-date" : {
+            "value" : 1646396267751
+          },
+          "last-modified-date" : {
+            "value" : 1768317310416
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Teknologi belaster klimaet: Sådan mindsker du aftrykket fra software og hardware CO2-reduktion Data"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "f1d450f4-bfa1-4030-ab17-1b3e04dc4546",
+              "external-id-normalized" : {
+                "value" : "f1d450f4-bfa1-4030-ab17-1b3e04dc4546",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/f1d450f4-bfa1-4030-ab17-1b3e04dc4546"
+          },
+          "type" : "online-resource",
+          "publication-date" : {
+            "year" : {
+              "value" : "2021"
+            },
+            "month" : {
+              "value" : "12"
+            },
+            "day" : {
+              "value" : "01"
+            }
+          },
+          "journal-title" : null,
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/109226697",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1786608471833
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85115213254",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85115213254",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "79b58d5a-ecc1-456c-8dfb-03c2aceb5352",
+            "external-id-normalized" : {
+              "value" : "79b58d5a-ecc1-456c-8dfb-03c2aceb5352",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.4204/EPTCS.341.3",
+            "external-id-normalized" : {
+              "value" : "10.4204/eptcs.341.3",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 100994172,
+          "created-date" : {
+            "value" : 1633432682758
+          },
+          "last-modified-date" : {
+            "value" : 1786608471833
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "An inversion tool for conditional term rewriting systems – A case study of Ackermann inversion"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "79b58d5a-ecc1-456c-8dfb-03c2aceb5352",
+              "external-id-normalized" : {
+                "value" : "79b58d5a-ecc1-456c-8dfb-03c2aceb5352",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85115213254",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85115213254",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.4204/EPTCS.341.3",
+              "external-id-normalized" : {
+                "value" : "10.4204/eptcs.341.3",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/79b58d5a-ecc1-456c-8dfb-03c2aceb5352"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2021"
+            },
+            "month" : {
+              "value" : "09"
+            },
+            "day" : {
+              "value" : "06"
+            }
+          },
+          "journal-title" : {
+            "value" : "Proceedings of the 9th International Workshop on Verification and Program Transformation"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/100994172",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317310669
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "146966b9-6ecb-4ed7-8879-505d7dad9c08",
+            "external-id-normalized" : {
+              "value" : "146966b9-6ecb-4ed7-8879-505d7dad9c08",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85131311509",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85131311509",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 116745512,
+          "created-date" : {
+            "value" : 1659525510732
+          },
+          "last-modified-date" : {
+            "value" : 1768317310669
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "An Approach to Estimating Energy Consumption of Web-based IT Systems"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "146966b9-6ecb-4ed7-8879-505d7dad9c08",
+              "external-id-normalized" : {
+                "value" : "146966b9-6ecb-4ed7-8879-505d7dad9c08",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85131311509",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85131311509",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/146966b9-6ecb-4ed7-8879-505d7dad9c08"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2021"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "CEUR Workshop Proceedings"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/116745512",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317309146
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "39053cb8-134f-4b35-b1e4-a1ce05c0ea3b",
+            "external-id-normalized" : {
+              "value" : "39053cb8-134f-4b35-b1e4-a1ce05c0ea3b",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85092765927",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85092765927",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1145/3414080.3414089",
+            "external-id-normalized" : {
+              "value" : "10.1145/3414080.3414089",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 86743203,
+          "created-date" : {
+            "value" : 1610540291175
+          },
+          "last-modified-date" : {
+            "value" : 1768317309146
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Inversion Framework"
+            },
+            "subtitle" : {
+              "value" : "Reasoning about Inversion by Conditional Term Rewriting Systems"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "39053cb8-134f-4b35-b1e4-a1ce05c0ea3b",
+              "external-id-normalized" : {
+                "value" : "39053cb8-134f-4b35-b1e4-a1ce05c0ea3b",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85092765927",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85092765927",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1145/3414080.3414089",
+              "external-id-normalized" : {
+                "value" : "10.1145/3414080.3414089",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-1-4503-8821-4",
+              "external-id-normalized" : {
+                "value" : "9781450388214",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/39053cb8-134f-4b35-b1e4-a1ce05c0ea3b"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2020"
+            },
+            "month" : {
+              "value" : "09"
+            },
+            "day" : {
+              "value" : "01"
+            }
+          },
+          "journal-title" : {
+            "value" : "Proceedings of the 22nd International Symposium on Principles and Practice of Declarative Programming, PPDP 2020 - Part of BOPL 2020 - Bologna Federated Conference on Programming Languages 2020"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/86743203",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317309800
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85084171945",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85084171945",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "18851924-80a5-4ced-b454-3397ae30c2ee",
+            "external-id-normalized" : {
+              "value" : "18851924-80a5-4ced-b454-3397ae30c2ee",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/978-3-030-45260-5_15",
+            "external-id-normalized" : {
+              "value" : "10.1007/978-3-030-45260-5_15",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 86443262,
+          "created-date" : {
+            "value" : 1610101097023
+          },
+          "last-modified-date" : {
+            "value" : 1768317309800
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Semi-inversion of Conditional Constructor Term Rewriting Systems"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "18851924-80a5-4ced-b454-3397ae30c2ee",
+              "external-id-normalized" : {
+                "value" : "18851924-80a5-4ced-b454-3397ae30c2ee",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85084171945",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85084171945",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-030-45260-5_15",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-030-45260-5_15",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-030-45260-5",
+              "external-id-normalized" : {
+                "value" : "9783030452605",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-030-45259-9",
+              "external-id-normalized" : {
+                "value" : "9783030452599",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/18851924-80a5-4ced-b454-3397ae30c2ee"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2020"
+            },
+            "month" : {
+              "value" : "04"
+            },
+            "day" : {
+              "value" : "01"
+            }
+          },
+          "journal-title" : {
+            "value" : "Logic-Based Program Synthesis and Transformation - 29th International Symposium, LOPSTR 2019, Revised Selected Papers"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/86443262",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317309470
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.4204/EPTCS.312.4",
+            "external-id-normalized" : {
+              "value" : "10.4204/eptcs.312.4",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "c4642c2d-8b19-4789-be72-8a596fd49031",
+            "external-id-normalized" : {
+              "value" : "c4642c2d-8b19-4789-be72-8a596fd49031",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85079340606",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85079340606",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 86443265,
+          "created-date" : {
+            "value" : 1610101097400
+          },
+          "last-modified-date" : {
+            "value" : 1768317309470
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Probabilistic Output Analyses for Deterministic Programs"
+            },
+            "subtitle" : {
+              "value" : "Reusing Existing Non-probabilistic Analyses"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "c4642c2d-8b19-4789-be72-8a596fd49031",
+              "external-id-normalized" : {
+                "value" : "c4642c2d-8b19-4789-be72-8a596fd49031",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85079340606",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85079340606",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.4204/EPTCS.312.4",
+              "external-id-normalized" : {
+                "value" : "10.4204/eptcs.312.4",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/c4642c2d-8b19-4789-be72-8a596fd49031"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2020"
+            },
+            "month" : {
+              "value" : "01"
+            },
+            "day" : {
+              "value" : "20"
+            }
+          },
+          "journal-title" : {
+            "value" : "Proceedings 16th Workshop on Quantitative Aspects of Programming Languages and Systems Prague, Czech Republic, 7th April 2019"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/86443265",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1786608471562
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1016/j.ijar.2018.11.018",
+            "external-id-normalized" : {
+              "value" : "10.1016/j.ijar.2018.11.018",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "29664f90-c84d-44cb-ab15-044e1a6edf78",
+            "external-id-normalized" : {
+              "value" : "29664f90-c84d-44cb-ab15-044e1a6edf78",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85057778152",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85057778152",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 60587742,
+          "created-date" : {
+            "value" : 1565942549741
+          },
+          "last-modified-date" : {
+            "value" : 1786608471562
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence and convergence modulo equivalence in probabilistically terminating reduction systems"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "29664f90-c84d-44cb-ab15-044e1a6edf78",
+              "external-id-normalized" : {
+                "value" : "29664f90-c84d-44cb-ab15-044e1a6edf78",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85057778152",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85057778152",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1016/j.ijar.2018.11.018",
+              "external-id-normalized" : {
+                "value" : "10.1016/j.ijar.2018.11.018",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/29664f90-c84d-44cb-ab15-044e1a6edf78"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2019"
+            },
+            "month" : {
+              "value" : "02"
+            },
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "International Journal of Approximate Reasoning"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/60587742",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317308527
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/978-3-030-13838-7_6",
+            "external-id-normalized" : {
+              "value" : "10.1007/978-3-030-13838-7_6",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85064035022",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85064035022",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "fbbbcb9a-afe7-45de-8fad-adaa7026456f",
+            "external-id-normalized" : {
+              "value" : "fbbbcb9a-afe7-45de-8fad-adaa7026456f",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 86655749,
+          "created-date" : {
+            "value" : 1610441908409
+          },
+          "last-modified-date" : {
+            "value" : 1768317308527
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence of CHR Revisited"
+            },
+            "subtitle" : {
+              "value" : "Invariants and Modulo Equivalence"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "fbbbcb9a-afe7-45de-8fad-adaa7026456f",
+              "external-id-normalized" : {
+                "value" : "fbbbcb9a-afe7-45de-8fad-adaa7026456f",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85064035022",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85064035022",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-030-13838-7_6",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-030-13838-7_6",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-030-13838-7",
+              "external-id-normalized" : {
+                "value" : "9783030138387",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-030-13837-0",
+              "external-id-normalized" : {
+                "value" : "9783030138370",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/fbbbcb9a-afe7-45de-8fad-adaa7026456f"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2019"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Logic-Based Program Synthesis and Transformation"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/86655749",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317308837
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "afc6ba97-3fe8-4904-a618-baa124dbaf06",
+            "external-id-normalized" : {
+              "value" : "afc6ba97-3fe8-4904-a618-baa124dbaf06",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85064038766",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85064038766",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/978-3-030-16202-3_7",
+            "external-id-normalized" : {
+              "value" : "10.1007/978-3-030-16202-3_7",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 86655750,
+          "created-date" : {
+            "value" : 1610441908550
+          },
+          "last-modified-date" : {
+            "value" : 1768317308837
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Towards a Constraint Solver for Proving Confluence with Invariant and Equivalence of Realistic CHR Programs"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "afc6ba97-3fe8-4904-a618-baa124dbaf06",
+              "external-id-normalized" : {
+                "value" : "afc6ba97-3fe8-4904-a618-baa124dbaf06",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85064038766",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85064038766",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-030-16202-3_7",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-030-16202-3_7",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-030-16201-6",
+              "external-id-normalized" : {
+                "value" : "9783030162016",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/afc6ba97-3fe8-4904-a618-baa124dbaf06"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2019"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Functional and Constraint Logic Programming"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/86655750",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317307914
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "3ebc1c4a-5d43-48be-b79a-5d6836e8f255",
+            "external-id-normalized" : {
+              "value" : "3ebc1c4a-5d43-48be-b79a-5d6836e8f255",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "isbn",
+            "external-id-value" : "0109-9779",
+            "external-id-normalized" : null,
+            "external-id-normalized-error" : {
+              "error-code" : "8001",
+              "error-message" : "Cannot normalize identifier value isbn:0109-9779",
+              "transient" : true
+            },
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 52264055,
+          "created-date" : {
+            "value" : 1546679028091
+          },
+          "last-modified-date" : {
+            "value" : 1768317307914
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence of CHR revisited"
+            },
+            "subtitle" : {
+              "value" : "invariants and modulo equivalence [Extended version with proofs]"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "3ebc1c4a-5d43-48be-b79a-5d6836e8f255",
+              "external-id-normalized" : {
+                "value" : "3ebc1c4a-5d43-48be-b79a-5d6836e8f255",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "0109-9779",
+              "external-id-normalized" : null,
+              "external-id-normalized-error" : {
+                "error-code" : "8001",
+                "error-message" : "Cannot normalize identifier value isbn:0109-9779",
+                "transient" : true
+              },
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/3ebc1c4a-5d43-48be-b79a-5d6836e8f255"
+          },
+          "type" : "report",
+          "publication-date" : {
+            "year" : {
+              "value" : "2018"
+            },
+            "month" : {
+              "value" : "10"
+            },
+            "day" : {
+              "value" : "03"
+            }
+          },
+          "journal-title" : {
+            "value" : "Roskilde Universitet. Computer Science. Computer Science Research Report"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/52264055",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317307427
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "e41227cd-e2d3-4a60-8e6c-c865732b8fb4",
+            "external-id-normalized" : {
+              "value" : "e41227cd-e2d3-4a60-8e6c-c865732b8fb4",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85050334249",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85050334249",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/978-3-319-94460-9_10",
+            "external-id-normalized" : {
+              "value" : "10.1007/978-3-319-94460-9_10",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 53788957,
+          "created-date" : {
+            "value" : 1549616523791
+          },
+          "last-modified-date" : {
+            "value" : 1768317307427
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence and Convergence in Probabilistically Terminating Reduction Systems"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "e41227cd-e2d3-4a60-8e6c-c865732b8fb4",
+              "external-id-normalized" : {
+                "value" : "e41227cd-e2d3-4a60-8e6c-c865732b8fb4",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85050334249",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85050334249",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-319-94460-9_10",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-319-94460-9_10",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-319-94460-9",
+              "external-id-normalized" : {
+                "value" : "9783319944609",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-319-94459-3",
+              "external-id-normalized" : {
+                "value" : "9783319944593",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/e41227cd-e2d3-4a60-8e6c-c865732b8fb4"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2018"
+            },
+            "month" : {
+              "value" : "07"
+            },
+            "day" : {
+              "value" : "10"
+            }
+          },
+          "journal-title" : {
+            "value" : "Logic-Based Program Synthesis and Transformation"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/53788957",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317307667
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "ab351978-bcf7-43ea-90ab-56956a58b809",
+            "external-id-normalized" : {
+              "value" : "ab351978-bcf7-43ea-90ab-56956a58b809",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 53788958,
+          "created-date" : {
+            "value" : 1549616523799
+          },
+          "last-modified-date" : {
+            "value" : 1768317307667
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence in Constraint Handling Rules"
+            },
+            "subtitle" : {
+              "value" : "A retrospective overview. Extended abstract of an invited talk given at IWC 2018 7th International Workshop on Confluence, July 7th 2018, Oxford, United Kingdom"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "ab351978-bcf7-43ea-90ab-56956a58b809",
+              "external-id-normalized" : {
+                "value" : "ab351978-bcf7-43ea-90ab-56956a58b809",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/ab351978-bcf7-43ea-90ab-56956a58b809"
+          },
+          "type" : "conference-presentation",
+          "publication-date" : {
+            "year" : {
+              "value" : "2018"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "7th International Workshop on Confluence, Oxford, United Kingdom, 07/07/2018"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/53788958",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317307110
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "3a453836-60c7-4891-8ec1-395a175aea1c",
+            "external-id-normalized" : {
+              "value" : "3a453836-60c7-4891-8ec1-395a175aea1c",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 48413991,
+          "created-date" : {
+            "value" : 1537356280163
+          },
+          "last-modified-date" : {
+            "value" : 1768317307110
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Probabilistic program analysis"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "3a453836-60c7-4891-8ec1-395a175aea1c",
+              "external-id-normalized" : {
+                "value" : "3a453836-60c7-4891-8ec1-395a175aea1c",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/3a453836-60c7-4891-8ec1-395a175aea1c"
+          },
+          "type" : "dissertation-thesis",
+          "publication-date" : {
+            "year" : {
+              "value" : "2018"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Roskilde Universitet. Computer Science. Computer Science Research Report"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/48413991",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1523958652108
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "arxiv",
+            "external-id-value" : "1709.05123",
+            "external-id-normalized" : {
+              "value" : "arXiv:1709.05123",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 43710806,
+          "created-date" : {
+            "value" : 1523958652108
+          },
+          "last-modified-date" : {
+            "value" : 1523958652108
+          },
+          "source" : {
+            "source-orcid" : {
+              "uri" : "https://orcid.org/0000-0003-0033-2438",
+              "path" : "0000-0003-0033-2438",
+              "host" : "orcid.org"
+            },
+            "source-client-id" : null,
+            "source-name" : {
+              "value" : "Maja Kirkeby"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence and Convergence in Probabilistically Terminating Reduction\n               Systems"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "arxiv",
+              "external-id-value" : "1709.05123",
+              "external-id-normalized" : {
+                "value" : "arXiv:1709.05123",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "http://arxiv.org/abs/1709.05123"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2017"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "CoRR"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/43710806",
+          "display-index" : "1"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1786608471333
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/s00165-016-0396-9",
+            "external-id-normalized" : {
+              "value" : "10.1007/s00165-016-0396-9",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "6136f6ae-d333-45a4-a733-6e71379987ad",
+            "external-id-normalized" : {
+              "value" : "6136f6ae-d333-45a4-a733-6e71379987ad",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-84996636611",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-84996636611",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 43710792,
+          "created-date" : {
+            "value" : 1523958617711
+          },
+          "last-modified-date" : {
+            "value" : 1523958617711
+          },
+          "source" : {
+            "source-orcid" : {
+              "uri" : "https://orcid.org/0000-0003-0033-2438",
+              "path" : "0000-0003-0033-2438",
+              "host" : "orcid.org"
+            },
+            "source-client-id" : null,
+            "source-name" : {
+              "value" : "Maja Kirkeby"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "On proving confluence modulo equivalence for Constraint Handling Rules"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/s00165-016-0396-9",
+              "external-id-normalized" : {
+                "value" : "10.1007/s00165-016-0396-9",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://doi.org/10.1007/s00165-016-0396-9"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2017"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Formal Asp. Comput."
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/43710792",
+          "display-index" : "1"
+        }, {
+          "put-code" : 48413990,
+          "created-date" : {
+            "value" : 1537356280155
+          },
+          "last-modified-date" : {
+            "value" : 1786608471333
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "On proving confluence modulo equivalence for Constraint Handling Rules"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "6136f6ae-d333-45a4-a733-6e71379987ad",
+              "external-id-normalized" : {
+                "value" : "6136f6ae-d333-45a4-a733-6e71379987ad",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-84996636611",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-84996636611",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/s00165-016-0396-9",
+              "external-id-normalized" : {
+                "value" : "10.1007/s00165-016-0396-9",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/6136f6ae-d333-45a4-a733-6e71379987ad"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2017"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Formal Aspects of Computing"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/48413990",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317306557
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "cf15c8ec-d958-47eb-ab3f-970a4902b833",
+            "external-id-normalized" : {
+              "value" : "cf15c8ec-d958-47eb-ab3f-970a4902b833",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1016/j.micpro.2016.07.003",
+            "external-id-normalized" : {
+              "value" : "10.1016/j.micpro.2016.07.003",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-84998814297",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-84998814297",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 43710802,
+          "created-date" : {
+            "value" : 1523958638058
+          },
+          "last-modified-date" : {
+            "value" : 1523958638058
+          },
+          "source" : {
+            "source-orcid" : {
+              "uri" : "https://orcid.org/0000-0003-0033-2438",
+              "path" : "0000-0003-0033-2438",
+              "host" : "orcid.org"
+            },
+            "source-client-id" : null,
+            "source-name" : {
+              "value" : "Maja Kirkeby"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "ENTRA: Whole-systems energy transparency"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1016/j.micpro.2016.07.003",
+              "external-id-normalized" : {
+                "value" : "10.1016/j.micpro.2016.07.003",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://doi.org/10.1016/j.micpro.2016.07.003"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2016"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Microprocessors and Microsystems - Embedded Hardware Design"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/43710802",
+          "display-index" : "1"
+        }, {
+          "put-code" : 48413989,
+          "created-date" : {
+            "value" : 1537356280148
+          },
+          "last-modified-date" : {
+            "value" : 1768317306557
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "ENTRA"
+            },
+            "subtitle" : {
+              "value" : "Whole-systems energy transparency"
+            },
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "cf15c8ec-d958-47eb-ab3f-970a4902b833",
+              "external-id-normalized" : {
+                "value" : "cf15c8ec-d958-47eb-ab3f-970a4902b833",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-84998814297",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-84998814297",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1016/j.micpro.2016.07.003",
+              "external-id-normalized" : {
+                "value" : "10.1016/j.micpro.2016.07.003",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/cf15c8ec-d958-47eb-ab3f-970a4902b833"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2016"
+            },
+            "month" : {
+              "value" : "11"
+            },
+            "day" : {
+              "value" : "01"
+            }
+          },
+          "journal-title" : {
+            "value" : "Microprocessors and Microsystems"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/48413989",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317306246
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-84958058587",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-84958058587",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "cdedbab0-928f-42fb-ad73-0b87325c666f",
+            "external-id-normalized" : {
+              "value" : "cdedbab0-928f-42fb-ad73-0b87325c666f",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.4204/EPTCS.194.8",
+            "external-id-normalized" : {
+              "value" : "10.4204/eptcs.194.8",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 43710853,
+          "created-date" : {
+            "value" : 1523958772445
+          },
+          "last-modified-date" : {
+            "value" : 1523958772445
+          },
+          "source" : {
+            "source-orcid" : {
+              "uri" : "https://orcid.org/0000-0003-0033-2438",
+              "path" : "0000-0003-0033-2438",
+              "host" : "orcid.org"
+            },
+            "source-client-id" : null,
+            "source-name" : {
+              "value" : "Maja Kirkeby"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Probabilistic Output Analysis by Program Manipulation"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.4204/EPTCS.194.8",
+              "external-id-normalized" : {
+                "value" : "10.4204/eptcs.194.8",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://doi.org/10.4204/EPTCS.194.8"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2015"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Proceedings Thirteenth Workshop on Quantitative Aspects of Programming\n               Languages and Systems, QAPL 2015, London, UK, 11th-12th April 2015."
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/43710853",
+          "display-index" : "1"
+        }, {
+          "put-code" : 48413988,
+          "created-date" : {
+            "value" : 1537356280137
+          },
+          "last-modified-date" : {
+            "value" : 1768317306246
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Probabilistic Output Analysis by Program Manipulation"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "cdedbab0-928f-42fb-ad73-0b87325c666f",
+              "external-id-normalized" : {
+                "value" : "cdedbab0-928f-42fb-ad73-0b87325c666f",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-84958058587",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-84958058587",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.4204/EPTCS.194.8",
+              "external-id-normalized" : {
+                "value" : "10.4204/eptcs.194.8",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/cdedbab0-928f-42fb-ad73-0b87325c666f"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2015"
+            },
+            "month" : {
+              "value" : "09"
+            },
+            "day" : {
+              "value" : "29"
+            }
+          },
+          "journal-title" : {
+            "value" : "Electronic Proceedings in Theoretical Computer Science"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/48413988",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317305872
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-85007565908",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-85007565908",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "a62378b8-22f5-4fd6-9b0c-70ef5f3b03a4",
+            "external-id-normalized" : {
+              "value" : "a62378b8-22f5-4fd6-9b0c-70ef5f3b03a4",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/978-3-319-46559-3_4",
+            "external-id-normalized" : {
+              "value" : "10.1007/978-3-319-46559-3_4",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 43710830,
+          "created-date" : {
+            "value" : 1523958733710
+          },
+          "last-modified-date" : {
+            "value" : 1523958733710
+          },
+          "source" : {
+            "source-orcid" : {
+              "uri" : "https://orcid.org/0000-0003-0033-2438",
+              "path" : "0000-0003-0033-2438",
+              "host" : "orcid.org"
+            },
+            "source-client-id" : null,
+            "source-name" : {
+              "value" : "Maja Kirkeby"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Probabilistic Resource Analysis by Program Transformation"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-319-46559-3_4",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-319-46559-3_4",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://doi.org/10.1007/978-3-319-46559-3_4"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2015"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Foundational and Practical Aspects of Resource Analysis - 4th International\n               Workshop, FOPARA 2015, London, UK, April 11, 2015, Revised Selected\n               Papers"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/43710830",
+          "display-index" : "1"
+        }, {
+          "put-code" : 48413987,
+          "created-date" : {
+            "value" : 1537356280128
+          },
+          "last-modified-date" : {
+            "value" : 1768317305872
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Probabilistic Resource Analysis by Program Transformation"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "a62378b8-22f5-4fd6-9b0c-70ef5f3b03a4",
+              "external-id-normalized" : {
+                "value" : "a62378b8-22f5-4fd6-9b0c-70ef5f3b03a4",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-85007565908",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-85007565908",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-319-46559-3_4",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-319-46559-3_4",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/a62378b8-22f5-4fd6-9b0c-70ef5f3b03a4"
+          },
+          "type" : "journal-article",
+          "publication-date" : {
+            "year" : {
+              "value" : "2016"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Lecture Notes in Computer Science"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/48413987",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317305566
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "eid",
+            "external-id-value" : "2-s2.0-84942513705",
+            "external-id-normalized" : {
+              "value" : "2-s2.0-84942513705",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "doi",
+            "external-id-value" : "10.1007/978-3-319-17822-6_3",
+            "external-id-normalized" : {
+              "value" : "10.1007/978-3-319-17822-6_3",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          }, {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "8a96d272-d913-4346-b123-1d67cdbb4505",
+            "external-id-normalized" : {
+              "value" : "8a96d272-d913-4346-b123-1d67cdbb4505",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 43710851,
+          "created-date" : {
+            "value" : 1523958752776
+          },
+          "last-modified-date" : {
+            "value" : 1523958752776
+          },
+          "source" : {
+            "source-orcid" : {
+              "uri" : "https://orcid.org/0000-0003-0033-2438",
+              "path" : "0000-0003-0033-2438",
+              "host" : "orcid.org"
+            },
+            "source-client-id" : null,
+            "source-name" : {
+              "value" : "Maja Kirkeby"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence Modulo Equivalence in Constraint Handling Rules"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-319-17822-6_3",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-319-17822-6_3",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://doi.org/10.1007/978-3-319-17822-6_3"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2014"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Logic-Based Program Synthesis and Transformation - 24th International\n               Symposium, LOPSTR 2014, Canterbury, UK, September 9-11, 2014. Revised\n               Selected Papers"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/43710851",
+          "display-index" : "1"
+        }, {
+          "put-code" : 48413986,
+          "created-date" : {
+            "value" : 1537356280116
+          },
+          "last-modified-date" : {
+            "value" : 1768317305566
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence Modulo Equivalence in Constraint Handling Rules"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "8a96d272-d913-4346-b123-1d67cdbb4505",
+              "external-id-normalized" : {
+                "value" : "8a96d272-d913-4346-b123-1d67cdbb4505",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "eid",
+              "external-id-value" : "2-s2.0-84942513705",
+              "external-id-normalized" : {
+                "value" : "2-s2.0-84942513705",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "doi",
+              "external-id-value" : "10.1007/978-3-319-17822-6_3",
+              "external-id-normalized" : {
+                "value" : "10.1007/978-3-319-17822-6_3",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : " 978-3-319-17822-6",
+              "external-id-normalized" : {
+                "value" : "9783319178226",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            }, {
+              "external-id-type" : "isbn",
+              "external-id-value" : "978-3-319-17821-9",
+              "external-id-normalized" : {
+                "value" : "9783319178219",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "part-of"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/8a96d272-d913-4346-b123-1d67cdbb4505"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2015"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Logic-Based Program Synthesis and Transformation"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/48413986",
+          "display-index" : "0"
+        } ]
+      }, {
+        "last-modified-date" : {
+          "value" : 1768317305194
+        },
+        "external-ids" : {
+          "external-id" : [ {
+            "external-id-type" : "source-work-id",
+            "external-id-value" : "03c82f0f-9fd7-4283-9f84-3bcb6256e46a",
+            "external-id-normalized" : {
+              "value" : "03c82f0f-9fd7-4283-9f84-3bcb6256e46a",
+              "transient" : true
+            },
+            "external-id-normalized-error" : null,
+            "external-id-url" : null,
+            "external-id-relationship" : "self"
+          } ]
+        },
+        "work-summary" : [ {
+          "put-code" : 48413985,
+          "created-date" : {
+            "value" : 1537356280095
+          },
+          "last-modified-date" : {
+            "value" : 1768317305194
+          },
+          "source" : {
+            "source-orcid" : null,
+            "source-client-id" : {
+              "uri" : "https://orcid.org/client/0000-0002-7223-7870",
+              "path" : "0000-0002-7223-7870",
+              "host" : "orcid.org"
+            },
+            "source-name" : {
+              "value" : "Roskilde University"
+            },
+            "assertion-origin-orcid" : null,
+            "assertion-origin-client-id" : null,
+            "assertion-origin-name" : null
+          },
+          "title" : {
+            "title" : {
+              "value" : "Confluence Modulo Equivalence in Constraint Handling Rules"
+            },
+            "subtitle" : null,
+            "translated-title" : null
+          },
+          "external-ids" : {
+            "external-id" : [ {
+              "external-id-type" : "source-work-id",
+              "external-id-value" : "03c82f0f-9fd7-4283-9f84-3bcb6256e46a",
+              "external-id-normalized" : {
+                "value" : "03c82f0f-9fd7-4283-9f84-3bcb6256e46a",
+                "transient" : true
+              },
+              "external-id-normalized-error" : null,
+              "external-id-url" : null,
+              "external-id-relationship" : "self"
+            } ]
+          },
+          "url" : {
+            "value" : "https://forskning.ruc.dk/en/publications/03c82f0f-9fd7-4283-9f84-3bcb6256e46a"
+          },
+          "type" : "conference-paper",
+          "publication-date" : {
+            "year" : {
+              "value" : "2014"
+            },
+            "month" : null,
+            "day" : null
+          },
+          "journal-title" : {
+            "value" : "Logic-Based Program Synthesis and Transformation"
+          },
+          "visibility" : "public",
+          "path" : "/0000-0003-0033-2438/work/48413985",
+          "display-index" : "0"
+        } ]
+      } ],
+      "path" : "/0000-0003-0033-2438/works"
+    },
+    "path" : "/0000-0003-0033-2438/activities"
+  },
+  "path" : "/0000-0003-0033-2438"
+}

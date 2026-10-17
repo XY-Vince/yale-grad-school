@@ -1,0 +1,228 @@
+{
+  "dossier_id": "DOS-anran_li-20261013",
+  "target_name": "Anran Li",
+  "investigation_status": "MATCHED_HIGH_CONFIDENCE",
+  "primary_candidate_id": "CAND-01",
+  "provenance": "agent_synthesized",
+  "synthesis_mode": "agent_orchestrated_deterministic_grounded",
+  "note": "档案依据耶鲁医学院官方活动名册、个人学术主页、预印本文献库及开放学术图谱 OpenAlex 综合构建。同名经济学学者已严格隔离。",
+  "statements": [
+    {
+      "statement_id": "STMT-01",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li received_degree 'University of Science and Technology of China'",
+      "backed_claim_ids": [
+        "VCLM-01"
+      ]
+    },
+    {
+      "statement_id": "STMT-02",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li holds_position 'Yale University School of Medicine'",
+      "backed_claim_ids": [
+        "VCLM-02"
+      ]
+    },
+    {
+      "statement_id": "STMT-03",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li employed_by 'Yale University'",
+      "backed_claim_ids": [
+        "VCLM-03"
+      ]
+    },
+    {
+      "statement_id": "STMT-04",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li participated_in 'Yale NLP/LLM Interest Group'",
+      "backed_claim_ids": [
+        "VCLM-04"
+      ]
+    },
+    {
+      "statement_id": "STMT-05",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li mentioned_in 'Yale School of Medicine'",
+      "backed_claim_ids": [
+        "VCLM-05"
+      ]
+    },
+    {
+      "statement_id": "STMT-06",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li employed_by 'Nanyang Technological University'",
+      "backed_claim_ids": [
+        "VCLM-06"
+      ]
+    },
+    {
+      "statement_id": "STMT-07",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li holds_position 'University of Science and Technology of China'",
+      "backed_claim_ids": [
+        "VCLM-07"
+      ]
+    },
+    {
+      "statement_id": "STMT-08",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li authored_work 'Memorization in Large Language Models in Medicine: Prevalence, Characteristics, and Implications'",
+      "backed_claim_ids": [
+        "VCLM-08"
+      ]
+    },
+    {
+      "statement_id": "STMT-09",
+      "candidate_id": "CAND-01",
+      "subject": "Anran Li",
+      "evidence_strength": "S1",
+      "section": "target",
+      "rendered_text": "Anran Li affiliated_with 'Yale University'",
+      "backed_claim_ids": [
+        "VCLM-09"
+      ]
+    },
+    {
+      "statement_id": "STMT-10",
+      "candidate_id": "CAND-02",
+      "subject": "Anran Li (CAND-02, Economics)",
+      "evidence_strength": "S1",
+      "section": "alternate",
+      "rendered_text": "Anran Li (CAND-02, Economics) participated_in 'Commitment, Competition, and Preventive Care Provision'",
+      "backed_claim_ids": [
+        "VCLM-10"
+      ]
+    }
+  ],
+  "candidate_matrix": [
+    {
+      "candidate_id": "CAND-01",
+      "canonical_name": "Anran Li / 李安然 (PhD)",
+      "affiliation": "University of Science and Technology of China / Yale University School of Medicine / NTU",
+      "match_status": "PRIMARY_TARGET",
+      "differentiation_rationale": "符合目标人物姓名与'Yale'明确从属，具备中科大博士、南洋理工大学 Research Fellow、耶鲁大学医学院生物医学信息与数据科学系（BIDS）博士后副研究员、中科大特任教授的完整学术履历。",
+      "evidence_citations": [
+        "VCLM-01",
+        "VCLM-02",
+        "VCLM-03",
+        "VCLM-04",
+        "VCLM-05",
+        "VCLM-06",
+        "VCLM-07",
+        "VCLM-08",
+        "VCLM-09"
+      ]
+    },
+    {
+      "candidate_id": "CAND-02",
+      "canonical_name": "Anran Li (Economics, Cornell / Northwestern / UMN)",
+      "affiliation": "Cornell University / University of Minnesota / NBER",
+      "match_status": "DIFFERENTIATED_HOMONYM",
+      "differentiation_rationale": "同名经济学学者，主要研究医疗市场竞争与预防医学经济学。曾受邀参加耶鲁大学考尔斯夏季研讨会做学术汇报，在耶鲁无任何常设聘任或学位记录，与目标人物计算机/医学人工智能学者严格隔离。",
+      "evidence_citations": [
+        "VCLM-10"
+      ]
+    }
+  ],
+  "corroborated_leads": [
+    {
+      "lead_id": "LEAD-01",
+      "candidate_id": "CAND-01",
+      "title": "耶鲁大学医学院出站后的学术兼职与持续合作网络",
+      "evidence_strength": "S4",
+      "status": "PARTIALLY_DESCRIBED",
+      "description": "李安然于2026年3月出站耶鲁大学医学院博士后并入职中科大计算机学院担任特任教授，但其与耶鲁医学院 BIDS 团队（如 Prof. Qingyu Chen、Prof. Hua Xu）在医疗大模型与多中心联邦学习课题上的跨国合作论文仍在陆续录用刊发，推断其仍维持稳定的客座或外部学术合作网络。",
+      "corroborating_source_ids": [
+        "SRC-01",
+        "SRC-04",
+        "SRC-05"
+      ],
+      "locator": "SRC-01 Work Experience & Recent News",
+      "verbatim_excerpt": "2026.03-Present, Pre-Tenure Professor, School of Computer Science and Technology, University of Science and Technology of China, Hefei, China",
+      "next_action": "跟踪后续顶会顶刊合作作者单位标注及中科大个人官方主页更新。"
+    },
+    {
+      "lead_id": "LEAD-02",
+      "candidate_id": "CAND-01",
+      "title": "博士期间校企联合研究驻留经历（腾讯等）",
+      "evidence_strength": "S4",
+      "status": "VERIFIED_RESIDENCY",
+      "description": "主页工作经历登记其在2021年下半年博士毕业初期曾作为 Visiting Researcher 在上海腾讯公司从事工业界合作研究。该经历属于学术型联合访问，未改变其高等院校科研人员的职业轨迹。",
+      "corroborating_source_ids": [
+        "SRC-01"
+      ],
+      "locator": "SRC-01 Work Experience line 5",
+      "verbatim_excerpt": "2021.07-2021.12, Visiting Researcher (industry collaboration), Tencent, Shanghai, China",
+      "next_action": "检索该阶段产出的产学研联合发明专利或技术报告。"
+    },
+    {
+      "lead_id": "LEAD-03",
+      "candidate_id": "CAND-02",
+      "title": "经济学同名学者在耶鲁的学术足迹界定",
+      "evidence_strength": "S4",
+      "status": "RESOLVED_DISTINCTION",
+      "description": "经济学学者 Anran Li（北大本科、芝加哥大学硕士、西北大学博士、康奈尔大学助理教授、明尼苏达大学教职）曾先后出席2024耶鲁考尔斯夏季研讨会与2025耶鲁 Models and Measurement 研讨会。该活动属于学术会议报告与外部同行交流，确认其在耶鲁大学并无教职、学籍或受雇关系。",
+      "corroborating_source_ids": [
+        "SRC-07"
+      ],
+      "locator": "SRC-07 paragraph 2",
+      "verbatim_excerpt": "Anran Li (Northwestern University) presented ‘Commitment, Competition, and Preventive Care Provision’",
+      "next_action": "在经济学与计算机领域文献索引中持续维持 OpenAlex 作者 ID 分离。"
+    }
+  ],
+  "open_questions": [
+    {
+      "question_id": "OQ-01",
+      "candidate_id": "CAND-01",
+      "title": "中科大可信人工智能与医疗大模型实验室招募进展",
+      "description": "主页显示其2026年3月入职中科大后正积极招募博士生、科研助理与访问学生。新建课题组的具体实验室编号及国家级青年人才项目资助详情尚未完全公布。",
+      "status": "OPEN",
+      "next_action": "持续关注中科大计算机学院研究生招生名录及科研主页更新。"
+    },
+    {
+      "question_id": "OQ-02",
+      "candidate_id": "CAND-01",
+      "title": "医疗大模型记忆风险研究在 Nature Communications 的正式卷期与DOI",
+      "description": "主页新闻记载论文于2026年2月被 Nature Communications 接收，但正式版印刷卷期与最终 DOI 尚未在 arXiv 预印本页面完全关联更新。",
+      "status": "OPEN",
+      "next_action": "在 PubMed / Nature 官网检索正式出版物上线状态。"
+    },
+    {
+      "question_id": "OQ-03",
+      "candidate_id": "CAND-02",
+      "title": "经济学同名学者的常设教职机构变迁追踪",
+      "description": "经济学 Anran Li 从康奈尔大学助理教授转向明尼苏达大学经济系及 NBER 兼任，其后续在顶级经济学期刊（AER、JPE等）发表时需继续与计算机领域李安然严格隔离。",
+      "status": "OPEN",
+      "next_action": "在自动化文献采集规则中加入学科白名单过滤（JEL分类号与ACM分类号分流）。"
+    }
+  ],
+  "claim_strength_counts": {
+    "S1": 10,
+    "S2": 0,
+    "S3": 0
+  }
+}

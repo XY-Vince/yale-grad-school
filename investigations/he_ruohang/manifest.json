@@ -1,0 +1,73 @@
+{
+  "bundle_version": "1.0",
+  "created_at": "2026-10-13T16:39:52.971244+00:00",
+  "bundle_name": "贺若航 (Ruohang He) Comprehensive Investigation Bundle",
+  "target_name": "贺若航",
+  "primary_candidate_id": "CAND-01",
+  "run_outcome": "COMPLETED",
+  "provenance": "agent_synthesized",
+  "synthesis_mode": "agent_orchestrated_deterministic_grounded",
+  "note": "Constructed through Agent reading, multi-entity disambiguation, and timeline synthesis with cryptographic source anchoring and verbatim text replay.",
+  "files": {
+    "corroborated_leads.jsonl": {
+      "byte_size": 2197,
+      "sha256": "33aaba3e3e54fc185dc3781c31b5105341ce916344e5f6aa37797959cf427a8d"
+    },
+    "dossier.json": {
+      "byte_size": 8892,
+      "sha256": "af2703df6773982d6969bc736e5a4750d047a9514e0b9c1761c165c151008f3f"
+    },
+    "evidence_index.md": {
+      "byte_size": 4866,
+      "sha256": "cda454bf38b29866f947bf45c2d9472b4b9568229c5a1cdd52701dd238da4e21"
+    },
+    "open_questions.jsonl": {
+      "byte_size": 1301,
+      "sha256": "7a28aacca93e95d62c79e1eec6d01dc175f8e01f259cbb969818d9f9cae4b1ec"
+    },
+    "query_logs.jsonl": {
+      "byte_size": 1685,
+      "sha256": "320ab19341905a8162d2cb2f7a59caa1940a95128851b5fac0c8da8a050e6a91"
+    },
+    "recall_report.md": {
+      "byte_size": 5278,
+      "sha256": "a690fdeec26ac6cc269560986966b2636900ce280428b1bcf3cbf3c717f56603"
+    },
+    "source_inventory.jsonl": {
+      "byte_size": 3711,
+      "sha256": "744fb6de92917e7df1f8122a4114bd855aa7f00aff18d41cb9cd7662988a5bbe"
+    },
+    "verified_claims.jsonl": {
+      "byte_size": 6491,
+      "sha256": "edd55cf7fb0a95108f4928772b342f3447ce53f542070e7e9a37153672f3e306"
+    },
+    "raw_sources/aacyf_hurun_2022_summit.html": {
+      "byte_size": 719,
+      "sha256": "70019ead68bd8621a825d09a00820ab07b4d3435b490888f67a429a88a8a20bf"
+    },
+    "raw_sources/gaokao_zhitongche_cuhksz_2018.html": {
+      "byte_size": 634,
+      "sha256": "efd36626a900277d591449d599c8bfbef0b996ec390ea9ebafca779f81295606"
+    },
+    "raw_sources/openalex_ruohang_he_a5036928897.json": {
+      "byte_size": 399,
+      "sha256": "972ef7dab6b21a12b7516d70ec733cf3ebd45b32dff1ce53214e98dc5b28fefb"
+    },
+    "raw_sources/oulun_electric_ipo_inquiry_reply.html": {
+      "byte_size": 725,
+      "sha256": "47e1d5ed05a574168a31e5f36e657dda8f8728dadaff58ce7635ae71fdb97f48"
+    },
+    "raw_sources/umich_commencement_winter_2023.html": {
+      "byte_size": 419,
+      "sha256": "0159b862cad3e473ac8bacd6a08ace3a3473b322f04b0bf3a8ffa40bdbd9aced"
+    },
+    "raw_sources/umich_honors_convocation_2022.html": {
+      "byte_size": 459,
+      "sha256": "51cbc6d1406169035e71ce765c7ab2bf30607a353ce63f4690c8b740d0e2d4c6"
+    },
+    "raw_sources/yale_us_china_forum_2025.html": {
+      "byte_size": 665,
+      "sha256": "340687972a55a9f2bb0b2789c5ef2bcb2682ba839206ec229f61350c7eca67ed"
+    }
+  }
+}

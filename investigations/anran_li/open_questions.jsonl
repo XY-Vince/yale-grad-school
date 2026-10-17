@@ -1,0 +1,3 @@
+{"question_id": "OQ-01", "candidate_id": "CAND-01", "title": "中科大可信人工智能与医疗大模型实验室招募进展", "description": "主页显示其2026年3月入职中科大后正积极招募博士生、科研助理与访问学生。新建课题组的具体实验室编号及国家级青年人才项目资助详情尚未完全公布。", "status": "OPEN", "next_action": "持续关注中科大计算机学院研究生招生名录及科研主页更新。"}
+{"question_id": "OQ-02", "candidate_id": "CAND-01", "title": "医疗大模型记忆风险研究在 Nature Communications 的正式卷期与DOI", "description": "主页新闻记载论文于2026年2月被 Nature Communications 接收，但正式版印刷卷期与最终 DOI 尚未在 arXiv 预印本页面完全关联更新。", "status": "OPEN", "next_action": "在 PubMed / Nature 官网检索正式出版物上线状态。"}
+{"question_id": "OQ-03", "candidate_id": "CAND-02", "title": "经济学同名学者的常设教职机构变迁追踪", "description": "经济学 Anran Li 从康奈尔大学助理教授转向明尼苏达大学经济系及 NBER 兼任，其后续在顶级经济学期刊（AER、JPE等）发表时需继续与计算机领域李安然严格隔离。", "status": "OPEN", "next_action": "在自动化文献采集规则中加入学科白名单过滤（JEL分类号与ACM分类号分流）。"}

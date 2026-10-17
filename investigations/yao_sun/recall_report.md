@@ -1,119 +1,144 @@
-# 人物全景调查报告: Yao Sun (Agent 语义综合与确定性物理接地版)
+# Yao Sun 人物档案
 
-> **调查对象**: Yao Sun
-> **先验线索**: `currently at Yale`, `Z-CAFE`, `Sociology`, `BS from UMich (先验澄清)`
-> **生成模式**: `agent_synthesized` (由 Agent 负责多源搜索、跨实体消歧与时间线综合，底层由确定性程序进行精确字符切片、哈希校验与引用闭包审计)
-> **调查结论**: `MATCHED_HIGH_CONFIDENCE` (唯一锁定目标人物：耶鲁大学预博士研究员 Yao Sun)
+编辑日期：2026-10-12。依据本案 2026-10-11 留存的公开页面、机构记录与会议程序册；本次编辑没有重新抓取网页。目标线索为“目前在 Yale”，其余教育线索用于对照，不当作既定事实。
 
----
+报告中的标识可点击，进入[证据索引](/Users/xiang-yu/Desktop/GradQuest/investigations/yao_sun/evidence_index.md)，查看原文、定位和本地载荷。每项都标明来源性质；本人公开自述与机构独立记录分别呈现。
 
-## 一、 首屏执行摘要 (Executive Summary)
+## A. 目标人物：CAND-01
 
-### 1. 目标人物身份锁定 (CAND-01)
-目标人物 Yao Sun 目前在耶鲁大学 (Yale University) 担任预博士研究员 (Predoctoral Fellow)，隶属于计算老龄化与家庭证据实验室 (Z-CAFE)，并受聘于耶鲁社会与政策研究所 (Yale Institution for Social and Policy Studies, ISPS)，联络邮箱为 yao.sun@yale.edu。该任职由其实验室负责人、耶鲁大学社会学系副教授 Emma Zang 博士于公开公告中正式宣布，并经由 Yao Sun 本人公开学术档案及 2026 年 9 月参加耶鲁人口研究工作坊（Yale Population Studies Workshop）的实名记录双向印证。
+### 身份与最有用的结论
 
-### 2. 完整教育与经历时间线 (Chronological Timeline)
-- **2019-09 ~ 2020-05**: 南卡罗来纳大学 (University of South Carolina / UofSC)，国际加速课程项目，荣获学术卓越奖学金。
-- **2021-09 ~ 2023-12**: 威斯康星大学麦迪逊分校 (University of Wisconsin–Madison)，主修社会学 (Sociology)，荣获本科暑期学习奖学金。
-- **2024-08 ~ 2026-05**: 密歇根大学拉克汉姆研究生院 (University of Michigan - Rackham Graduate School) / 社会研究院 (ISR) 调查研究中心 (SRC)，攻读并获得调查与数据科学理学硕士学位 (M.S. in Survey and Data Science / Survey Methodology)，期间荣获密歇根调查与数据科学项目学费奖学金及会议旅行资助。
-- **2026-05 ~ 至今**: 耶鲁大学 (Yale University)，计算老龄化与家庭证据实验室 (Z-CAFE) 与社会与政策研究所 (ISPS) 预博士研究员 (Predoctoral Fellow)。
+主管公开招募公告将 Yao Sun 列为 Yale ZCAFE **Predoctoral Fellow（预博士研究员）**。[VCLM-01](evidence_index.md#vclm-01)
 
-### 3. 学术研究项目与成果
-- **底特律街景 (Detroit Street View, DSV) 移动测绘与安全感知项目**: 运用视觉语言模型 (VLMs) 与计算机视觉方法，对底特律高密度街景图像进行大尺度采集与邻里安全感知建模。合作者包括 Alexis Castellanos、Dr. Sunghee Lee 与 Dr. Brady West，合作支持来自底特律企业 GIS 团队。
-- **邻里环境与少数族裔健康空间调查 (MAPOR 2025 会议口头汇报)**: 在第 50 届中西部民意研究学会年会（MAPOR 2025）发表长篇论文口头汇报：*Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health Outcomes among Korean American Adults*（共同作者：密歇根大学 Sunghee Lee 教授；见 MAPOR 官方程序册第 15 页）。
-- **环境正义筛查数据分析**: 运用环境正义筛查工具及公共环境数据合作伙伴 (Public Environmental Data Partners) 数据集进行社区环境指标分析。
-- **AI for Social Science 与耶鲁人口研究研讨**: 在 Emma Zang 实验室开展 AI 在社会科学中的应用研究，并积极参与耶鲁人口研究工作坊。
+本人公开档案的雇主字段为 **Yale Institution for Social and Policy Studies（ISPS）**。[VCLM-03](evidence_index.md#vclm-03)
 
-### 4. 权威学术荣誉与奖项
-- **AAPOR 2026 Burns "Bud" Roper Fellow Award**: 美国民意研究学会（AAPOR）官方历届名册证实，Yao Sun 荣获 2026 年度 Bud Roper Fellow Award。
-- **密歇根大学 MPSDS 学费奖学金 (MPSDS Tuition Fellowship)**。
-- **MPSDS 旅行奖及 Rackham 会议差旅资助 (MPSDS Travel Award & Rackham Conference Travel Funding)**。
-- **调查与数据科学旅行奖 (Survey and Data Science Travel Award)**。
-- **威斯康星大学麦迪逊分校本科暑期奖学金 (UW-Madison Undergraduate Scholarship for Summer Study)**。
-- **南卡罗来纳大学学术卓越奖学金 (UofSC-Academic Excellence Scholarship)**。
+其公开档案显示 Yale University 关联。[VCLM-02](evidence_index.md#vclm-02)
 
----
+其公开档案也指向 **ZCAFE**。[VCLM-04](evidence_index.md#vclm-04)
 
-## 二、 候选实体全景横向比对矩阵 (Candidate Matrix)
+主管公告将其硕士写为 **M.S. in Survey Methodology，University of Michigan**。[VCLM-06](evidence_index.md#vclm-06)
 
-| 候选 ID | 候选人标识 | 核心机构与当前身份 | 耶鲁关联 (Yale) | 密歇根关联 (UMich) | 学科专业领域 | 匹配状态 | 消歧判据与证据来源 |
-|:---|:---|:---|:---|:---|:---|:---|:---|
-| **CAND-01** | **Yao Sun** | **Yale University / Z-CAFE**<br>Predoctoral Fellow | **在任预博士研究员**<br>(Z-CAFE / ISPS) | **M.S. 校友 ('26)**<br>(Rackham / ISR) | 计算社会学、调查与数据科学 | **PRIMARY_TARGET** | Emma Zang 官方官宣 + 个人公开主页 + AAPOR/MAPOR 历届程序册闭环（详见硬事实账本清单）。 |
-| **CAND-02** | **Derek Teen-Yao Sun** | **Guggenheim Securities**<br>前投资银行代表 | 无关联 | 本科校友<br>(UMich Ross BBA '23) | 投资银行、证券经纪 (FINRA CRD 7569730) | **DIFFERENTIATED_HOMONYM** | 官方金融监管档案确认中间名为 Teen-Yao，为华尔街证券代表，无学术任职。 |
-| **CAND-03** | **Dr. Yao Sun** | **浙江大学医学院 / UMich**<br>医学研究员 | 无关联 | 2023 医学院生理学论文合作 | 胰腺癌免疫、STING 信号通路、细胞生物学 | **DIFFERENTIATED_HOMONYM** | 基础医学与肿瘤免疫学者，合作发表 Nature Cell Biology (2023) 论文 (PMID 37142791)，属基础医学研究。 |
-| **CAND-04** | **Dr. Yao Sun** | **UCSF Benioff Children's Hospital**<br>儿科学正教授 | 无关联 | 无关联 | 新生儿重症医学、临床医学 (M.D., Ph.D.) | **DIFFERENTIATED_HOMONYM** | 加州大学旧金山分校资深儿科医学教授与重症监护主任，UCLA 医学院 M.D. 及 MIT 计算机博士。 |
-| **CAND-05** | **Dr. Yao Sun** | **University of Glasgow / UESTC**<br>工程学院讲师 | 无关联 | 无关联 | 6G 移动通信、智能语义网络 | **DIFFERENTIATED_HOMONYM** | 格拉斯哥大学与电子科技大学联合办学讲师，IEEE 作者，从事无线通信物理层研究。 |
-| **CAND-06** | **Yao Sun** | **Bellorita, LLC**<br>市场经理 | 无关联 | 无关联 | 企业商业市场营销 | **DIFFERENTIATED_HOMONYM** | 商业公司职场经理，无学术研究与大学任职。 |
-| **CAND-07** | **Yao Sun** | **Adolescent Socialization**<br>博士研究者 | 无关联 | 无关联 | 青少年家庭讨论与双向社会化 | **DIFFERENTIATED_HOMONYM** | 专注于青少年与家庭种族/公民社会化机制的博士研究者，无 Z-CAFE 履历。 |
-| **CAND-08** | **Yao Sun** | **Columbia University - SIPA**<br>国际与公共事务学院在读学生 | 无关联 | 无关联 | 国际与公共事务 | **DIFFERENTIATED_HOMONYM** | 哥伦比亚大学 SIPA 学院学生，常驻纽约，无耶鲁或密歇根调查数据科学硕士背景。 |
+本人毕业更新使用 **master’s program in Survey and Data Science** 这一名称，说明已从 Michigan 的项目毕业。[VCLM-13](evidence_index.md#vclm-13)
 
----
+两种名称放在同一硕士经历下理解，不据此计作两个学位。“本科来自 UMich”目前没有本案证据支撑；本科院校、学位名称与专业仍待核实。[LEAD-01](evidence_index.md#lead-01)
 
-## 三、 已验证硬事实账本 (Verified Claims)
+### 强度读法
 
-* [VCLM-01] Yao Sun holds_position 'Predoctoral Fellow'
-* [VCLM-02] Yao Sun affiliated_with 'Yale University'
-* [VCLM-03] Yao Sun employed_by 'Yale Institution for Social and Policy Studies'
-* [VCLM-04] Yao Sun affiliated_with 'ZCAFE'
-* [VCLM-05] Yao Sun affiliated_with 'University of Michigan'
-* [VCLM-06] Yao Sun received_degree 'M.S. in Survey Methodology'
-* [VCLM-07] Yao Sun honored_with 'Burns "Bud" Roper AAPOR Fellow Award'
-* [VCLM-08] Yao Sun honored_with 'MPSDS Tuition Fellowship'
-* [VCLM-09] Yao Sun honored_with 'MPSDS Travel Award & Rackham Conference Travel Funding'
-* [VCLM-10] Yao Sun honored_with 'Survey and Data Science Travel Award'
-* [VCLM-11] Yao Sun affiliated_with 'UW-Madison'
-* [VCLM-12] Yao Sun honored_with 'UW-Madison Undergraduate Scholarship'
-* [VCLM-13] Yao Sun received_degree 'master’s program in Survey and Data Science'
-* [VCLM-14] Yao Sun honored_with 'UofSC-Academic Excellence Scholarship'
-* [VCLM-15] Yao Sun presented_paper 'Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health Outcomes among Korean American Adults'
-* [VCLM-16] Yao Sun researched_topic 'environmental justice screening tool'
-* [VCLM-17] Yao Sun participated_in 'Yale Population Studies Workshop'
-* [VCLM-18] Yao Sun conducted_research 'Detroit Street View Program'
-* [VCLM-19] Derek Teen-Yao Sun employed_by 'GUGGENHEIM SECURITIES, LLC'
-* [VCLM-20] Yao Sun affiliated_with 'Zhejiang Provincial Key Laboratory of Pancreatic Disease'
-* [VCLM-21] Yao Sun holds_position 'Professor, Pediatrics'
-* [VCLM-22] Yao Sun affiliated_with 'Survey Research Center, Institute for Social Research, University of Michigan'
+| 档位 | 本案使用方式 |
+|---|---|
+| S1 已确认发生 | 原文明确陈述。本人自述仍标为自述，机构记录标为机构记录。 |
+| S2 公开意向 | 期待或将做的表达，不能当作已参与或已经到岗。 |
+| S3 研究环境关联 | 工作场景、致谢或引用中的关联，实际职责与参与程度未闭合。 |
+| S4 传闻线索 | 间接信息、历史候选描述或尚未核实的推测，只用于继续搜索。 |
 
----
+### S1：教育、任职与可读时间线
 
-## 四、 高置信协同线索账本 (Corroborated Leads)
+| 时间 | 支撑到的经历 | 来源与边界 |
+|---|---|---|
+| 2024-08 → 2026-05 | Yao Sun 在 University of Michigan - Rackham Graduate School 的档案登记教育期间。 | 日期自述。[VCLM-23](evidence_index.md#vclm-23) |
+| 2025 年会议 | 程序册列出 Yao Sun 的 Survey Data / Geospatial Data / Health Outcomes 报告。 | 程序册列名，并有本人后续汇报自述；见下节。[VCLM-15](evidence_index.md#vclm-15) |
+| 2026-05-19 | 主管公告欢迎 Yao Sun 成为 Yale ZCAFE 的 Predoctoral Fellow，所列硕士来自 University of Michigan。 | 公告日期；正式到岗日期待查。[VCLM-01](evidence_index.md#vclm-01) |
+| 2026-06-12 | 本人发文说明已从 Michigan 的 Survey and Data Science 硕士项目毕业。 | 毕业自述的发布日期。[VCLM-13](evidence_index.md#vclm-13) |
+| 2026-10-11 留存状态 | Yao Sun 本人档案列出 Yale Institution for Social and Policy Studies。 | 捕获时的个人档案状态；任期起止仍未知。[VCLM-03](evidence_index.md#vclm-03) |
 
-- [LEAD-01] 威斯康星大学麦迪逊分校社会学本科学历: 结合领英主页登记的教育跨度 (2021-09 至 2023-12) 证实其本科就读于 UW-Madison 社会学专业。
-- [LEAD-02] 底特律街景 (DSV) 移动测绘与安全感知助研项目: 结合科研纪实证实其与 Dr. Sunghee Lee、Dr. Brady West 等团队合作完成了底特律高密度街景多模态大模型安全感知测度研究。
+个人档案 **alumniOf** 列为 University of Michigan - Rackham Graduate School，本报告按校友经历呈现。[VCLM-05](evidence_index.md#vclm-05)
 
----
+AAPOR 的名册列出其 **Survey Research Center, Institute for Social Research, University of Michigan** 关联。[VCLM-22](evidence_index.md#vclm-22)
 
-## 五、 开放性待证问题 (Open Questions)
+较早阶段保留两项教育关联：公开奖学金条目中的 UW-Madison 和 UofSC。它们不能单独证明学位完成、专业或精确就读月份。[LEAD-01](evidence_index.md#lead-01)
 
-- [OQ-01] 耶鲁预博士研究员任期与未来深造去向: Yao Sun 在耶鲁大学 Z-CAFE / ISPS 的任期及未来攻读全奖博士学位的项目去向仍待后续公开更新跟踪。
+### S1：研究主题、方法与公开产出
 
----
+**MAPOR 2025。** 程序册第 15 页列出的标题为 *Linking Survey Data and Geospatial Data to Examine Environmental Effects on Health Outcomes among Korean American Adults*；列名 Yao Sun 与 Sunghee Lee。本人 2025-12-13 的公开更新也自述曾在 MAPOR 汇报将邻里环境指标与少数族裔健康结果连接的分析。[VCLM-15](evidence_index.md#vclm-15)
 
-## 六、 本地原始证据清单 (Source Inventory)
+**方法经历。** 本人 2025-12-13 自述获得了 geospatial data、computer vision models、environmental health and intervention design、advanced statistical tools 方面的经验。这里记录经验自述，不评价熟练程度。[VCLM-25](evidence_index.md#vclm-25)
 
-所有证据文件均完整保存在本地目录 `raw_sources/`，并已通过 SHA-256 和字节尺寸双向校验：
-- **SRC-01**: [Emma Zang on X: Exciting news from Yale's ZCAFE Predoctoral Fellows](https://x.com/DrEmmaZang/status/2056801745926308057) (`raw_sources/web_src-13_DrEmmaZang_status_205680174592.html`)
-- **SRC-02**: [Yao Sun - Yale Institution for Social and Policy Studies | LinkedIn](https://www.linkedin.com/in/yao-sun-9955061b3) (`raw_sources/web_src-11_in_yao_sun_9955061b3.html`)
-- **SRC-03**: [Yao Sun Post: Next Chapter in New Haven with Emma's Lab](https://www.linkedin.com/posts/yao-sun-9955061b3_one-more-update-im-very-excited-to-start-activity-7471281905892732929-Sz9T) (`raw_sources/web_src-12_posts_yao_sun_9955061b3_one_mo.html`)
-- **SRC-04**: [Past Roper Fellow Award Winners - AAPOR](https://aapor.org/past-roper/) (`raw_sources/aapor_past_roper.html`)
-- **SRC-05**: [50th Annual MAPOR Conference Program Book (2025)](https://mapor.org/wp-content/uploads/2025/11/2025-MAPOR-Program-Book-Final.pdf) (`raw_sources/mapor_2025_program.pdf`)
-- **SRC-06**: [Emma Zang Post on LinkedIn: Welcoming Predoctoral Fellows to Z-CAFE](https://www.linkedin.com/posts/dr-emma-zang_exciting-news-from-yales-zcafe-activity-205680174592) (`raw_sources/emma_zang_linkedin_post.html`)
-- **SRC-07**: [Z-CAFE Lab Homepage - Yale University](https://zcafe.yale.edu/) (`raw_sources/yale_zcafe_homepage.html`)
-- **SRC-08**: [Emma Zang | Yale Department of Sociology](https://sociology.yale.edu/profile/emma-zang) (`raw_sources/yale_emma_zang_profile.html`)
-- **SRC-09**: [FINRA BrokerCheck API Record for Derek Teen-Yao Sun (CRD 7569730)](https://api.brokercheck.finra.org/search/individual/7569730) (`raw_sources/finra_brokercheck_7569730.json`)
-- **SRC-10**: [PubMed Record PMID 37142791: Nature Cell Biology (2023)](https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=37142791&retmode=xml) (`raw_sources/pubmed_efetch_37142791.xml`)
-- **SRC-11**: [Yao Sun, MD, PhD | UCSF Profiles](https://profiles.ucsf.edu/yao.sun) (`raw_sources/ucsf_profiles_yao_sun.html`)
-- **SRC-12**: [Web Record: https://www.yahoo.com/](https://www.yahoo.com/) (`raw_sources/web_src-01_index.html`)
-- **SRC-13**: [Web Record: https://www.youtube.com/@yao_jpn](https://www.youtube.com/@yao_jpn) (`raw_sources/web_src-03__yao_jpn.html`)
-- **SRC-14**: [Web Record: https://www.wukongsch.com/blog/yao-meaning-in-chinese-post-52839/](https://www.wukongsch.com/blog/yao-meaning-in-chinese-post-52839/) (`raw_sources/web_src-05_blog_yao_meaning_in_chinese_po.html`)
-- **SRC-15**: [Web Record: https://ja.wikipedia.org/wiki/YAO_(%E3%83%90%E3%83%B3%E3%83%89)](https://ja.wikipedia.org/wiki/YAO_(%E3%83%90%E3%83%B3%E3%83%89)) (`raw_sources/web_src-06_wiki_YAO___E3_83_90_E3_83_B3_E.html`)
-- **SRC-16**: [Web Record: https://www.youtube.com/channel/UCFSft9_RKiVrSaPsfAsvmjA](https://www.youtube.com/channel/UCFSft9_RKiVrSaPsfAsvmjA) (`raw_sources/web_src-07_channel_UCFSft9_RKiVrSaPsfAsvm.html`)
-- **SRC-17**: [Web Record: https://www.chineseboost.com/grammar/five-uses-yao/](https://www.chineseboost.com/grammar/five-uses-yao/) (`raw_sources/web_src-09_grammar_five_uses_yao.html`)
-- **SRC-18**: [Web Record: https://www.merriam-webster.com/dictionary/Yao](https://www.merriam-webster.com/dictionary/Yao) (`raw_sources/web_src-10_dictionary_Yao.html`)
-- **SRC-19**: [Web Record: https://www.instagram.com/suncafe2025/](https://www.instagram.com/suncafe2025/) (`raw_sources/web_src-14_suncafe2025.html`)
-- **SRC-20**: [Web Record: https://www.linkedin.com/in/yao-sun-535858194](https://www.linkedin.com/in/yao-sun-535858194) (`raw_sources/web_src-15_in_yao_sun_535858194.html`)
-- **SRC-21**: [Web Record: https://www.linkedin.com/pub/dir/Yao/Sun/us-0-United-States](https://www.linkedin.com/pub/dir/Yao/Sun/us-0-United-States) (`raw_sources/web_src-16_pub_dir_Yao_Sun_us_0_United_St.html`)
-- **SRC-22**: [Web Record: https://www.linkedin.com/pub/dir/Yao%20/Sun](https://www.linkedin.com/pub/dir/Yao%20/Sun) (`raw_sources/web_src-17_pub_dir_Yao_20_Sun.html`)
-- **SRC-23**: [Web Record: https://www.linkedin.com/in/yao-sun-59b67718](https://www.linkedin.com/in/yao-sun-59b67718) (`raw_sources/web_src-18_in_yao_sun_59b67718.html`)
-- **SRC-24**: [Web Record: https://www.linkedin.com/in/yao-sun-b2a75469](https://www.linkedin.com/in/yao-sun-b2a75469) (`raw_sources/web_src-19_in_yao_sun_b2a75469.html`)
-- **SRC-25**: [Web Record: https://www.linkedin.com/in/yao-sun-0232347](https://www.linkedin.com/in/yao-sun-0232347) (`raw_sources/web_src-20_in_yao_sun_0232347.html`)
+**AAPOR 汇报。** 本人 2026-06-12 自述毕业后参加 American Association for Public Opinion Research Conference，并与 Dr. Sunghee Lee、Dr. Brady West 一同汇报工作。具体题目与正式作者名单仍需会议材料核对。[VCLM-24](evidence_index.md#vclm-24)
+
+街景和视觉语言模型方向的具体工作、Alexis Castellanos 的协助及对应成果，保留为继续寻找项目材料的入口。[LEAD-02](evidence_index.md#lead-02)
+
+### S1：荣誉与资助
+
+下面区分官方名册与本人自列资助；资助金额、评选标准和资助期间没有在本案确认。
+
+- **Burns "Bud" Roper AAPOR Fellow Award**：本人档案列出该奖项。[VCLM-07](evidence_index.md#vclm-07)
+- **2026 年 AAPOR 名册**：官方页面列出 Yao Sun，Michigan Program in Survey and Data Science / Survey Research Center / Institute for Social Research / University of Michigan。[VCLM-22](evidence_index.md#vclm-22)
+- **MPSDS Tuition Fellowship**：本人档案列出的学费资助。[VCLM-08](evidence_index.md#vclm-08)
+- **MPSDS Travel Award & Rackham Conference Travel Funding**：本人档案列出的差旅资助。[VCLM-09](evidence_index.md#vclm-09)
+- **Survey and Data Science Travel Award**：本人档案另列的旅行奖，是否与其他条目部分重叠未核实。[VCLM-10](evidence_index.md#vclm-10)
+- **UW-Madison Undergraduate Scholarship for Summer Study**：本人档案中的本科暑期奖学金条目。[VCLM-12](evidence_index.md#vclm-12)
+- **UW-Madison 关联**：来自 Undergraduate Scholarship for Summer Study 条目，不等同于学位证明。[VCLM-11](evidence_index.md#vclm-11)
+- **UofSC-Academic Excellence Scholarship (International Accelerated Program)**：本人档案列出的资助。[VCLM-14](evidence_index.md#vclm-14)
+
+### S2：公开意向
+
+2026-09-14，本人写道 “Looking forward to the first talk of this year's **Yale Population Studies Workshop**.” 可确认其公开表达期待；这句话不足以证明实际出席、组织职责或持续参与。[VCLM-17](evidence_index.md#vclm-17)
+
+### S3：研究环境关联
+
+本人毕业更新致谢 Detroit's Enterprise GIS team 维护 **Detroit Street View Program**，并说明这些图像支持大规模图像采集。可记录其研究环境与资源关联；不能写成其受聘于该团队、主持该项目或负责移动测绘。[VCLM-18](evidence_index.md#vclm-18)
+
+### S4：保留的线索
+
+- **本科教育**：UW-Madison 的奖学金条目和教育卡片图标有提示作用，但可见学历字段被遮蔽。此前“B.S. in Sociology”这一确定表述撤回，等待可读 CV 或机构简介。[LEAD-01](evidence_index.md#lead-01)
+- **街景与视觉模型研究的细节**：本人提到方法协助和资源致谢；正式项目名、职责、完整合作关系与成果链接仍需补齐。[LEAD-02](evidence_index.md#lead-02)
+- **环境正义背景数据**：2025-07-23 的帖子说，在寻找工作所需背景数据时发现 environmental justice screening tool 被下架。它只能提供下一步方法/数据核查线索，不足以断言实际使用了该工具或某个数据集。[LEAD-03](evidence_index.md#lead-03)
+
+## B. 同名候选实体：全部保留，分别读证据
+
+本节与 CAND-01 的事实分开。没有查到关联不等于证明没有关联；历史候选描述缺少本地支撑时直接标为未核实。
+
+| 候选 | 本案保留的身份记录或线索 | 当前处理 |
+|---|---|---|
+| CAND-02 | Derek Teen-Yao Sun；FINRA 历史登记中的 GUGGENHEIM SECURITIES, LLC。 | 有独立监管记录，单列。[VCLM-19](evidence_index.md#vclm-19) |
+| CAND-03 | Yao Sun；论文作者节点中的 Zhejiang Provincial Key Laboratory of Pancreatic Disease。 | 有独立医学作者记录，单列。[VCLM-20](evidence_index.md#vclm-20) |
+| CAND-04 | Yao Sun；UCSF 人物页的 Professor, Pediatrics。 | 有独立机构人物页，单列。[VCLM-21](evidence_index.md#vclm-21) |
+| CAND-05 | 历史候选清单所称 Glasgow / UESTC 通信研究人员。 | S4，尚无本案可读身份来源。[LEAD-04](evidence_index.md#lead-04) |
+| CAND-06 | 历史候选清单所称 Bellorita 商业履历。 | S4，尚无本案可读身份来源。[LEAD-05](evidence_index.md#lead-05) |
+| CAND-07 | 历史候选清单所称 Adolescent Socialization 研究人员。 | S4，机构与身份尚未闭合。[LEAD-06](evidence_index.md#lead-06) |
+| CAND-08 | 历史候选清单所称 Columbia SIPA 人员。 | S4，尚无本案可读身份来源。[LEAD-07](evidence_index.md#lead-07) |
+
+**CAND-02：Derek Teen-Yao Sun。** FINRA 的历史登记列出 GUGGENHEIM SECURITIES, LLC，期间为 2023-08-14 至 2025-07-24。这里记录证券登记历史，不把它写成当前就业；本案也没有独立证明其 Ross BBA 学历。[VCLM-19](evidence_index.md#vclm-19)
+
+**CAND-03：Yao Sun（浙江医学论文作者）。** PubMed 的具体作者节点将其连接到 Zhejiang Provincial Key Laboratory of Pancreatic Disease，单位完整字段还包含 The First Affiliated Hospital, Zhejiang University School of Medicine。只据论文发表时的署名记录，不移入 Yale 目标履历。[VCLM-20](evidence_index.md#vclm-20)
+
+**CAND-04：Yao Sun（UCSF）。** UCSF 的人物页面列出 Professor, Pediatrics。该职衔属于 CAND-04，不能因为同名而挂到 CAND-01。[VCLM-21](evidence_index.md#vclm-21)
+
+CAND-05 至 CAND-08 的历史描述保留在候选表和线索账本中。在找到实际人物页前，不声称其“没有 Yale 关联”，也不自动合并到目标。
+
+## C. 缺口、检索留痕与下一步
+
+### 用户现在还不知道什么
+
+1. **Yale 任期及后续博士去向**：当前证据没有给出正式任期起止或已获博士录取信息。[OQ-01](evidence_index.md#oq-01)
+2. **本科与更早教育**：学位名称、专业、部分学校名称未从可读原文闭合。[OQ-02](evidence_index.md#oq-02)
+3. **2020–2021 教育条目**：原始档案确有 2020-09 至 2021-05 的教育登记，但名称被遮蔽。不能把整个 2020-06 至 2021-08 写成“没有经历”。[OQ-03](evidence_index.md#oq-03)
+4. **完整学术产出**：还没有经消歧的 ORCID / Google Scholar 主页或完整论文清单。[OQ-04](evidence_index.md#oq-04)
+5. **AAPOR 2026 和街景工作的具体内容**：汇报题目、正式作者顺序、项目职责与成果链接仍待补齐。[OQ-05](evidence_index.md#oq-05)
+
+### 已保存的来源如何使用
+
+| 来源 | 本案用途 |
+|---|---|
+| SRC-01–06 | 目标证据：主管公告、个人档案/更新、AAPOR 名册、MAPOR 程序册；不是六项独立身份认证。 |
+| SRC-07–08 | Yale 实验室及主管背景；只能解释机构背景，不能单独支持目标的具体职责。 |
+| SRC-09–11 | CAND-02、03、04 的独立来源，与目标履历分开。 |
+| SRC-12–18 | Yahoo 首页、视频/乐队及词典/语法等检索噪声；已留痕，不用作目标证据。 |
+| SRC-19 | 未与目标建立身份联系的 Instagram 账号；不纳入目标画像。 |
+| SRC-20–25 | 六份 LinkedIn authwall 重定向页面，HTTP 999；不是六份人物履历。 |
+
+原始文件继续保留在 [raw_sources/](/Users/xiang-yu/Desktop/GradQuest/investigations/yao_sun/raw_sources/)。检索尝试见 [query_logs.jsonl](/Users/xiang-yu/Desktop/GradQuest/investigations/yao_sun/query_logs.jsonl)，来源用途与原始哈希见 [source_inventory.jsonl](/Users/xiang-yu/Desktop/GradQuest/investigations/yao_sun/source_inventory.jsonl)。本次没有新增检索，不能把编辑动作计作新发现。
+
+### 下一轮最值得搜索的内容
+
+1. **公开 CV / 个人主页与 Yale ISPS 人员页**：先补本科、任期和具名项目；使用 Yao Sun + ISPS / Z-CAFE / Michigan 组合，不从遮蔽字段猜名称。
+2. **AAPOR 2026 程序册与摘要**：对照 Yao Sun、Sunghee Lee、Brady West，确认汇报题目及作者。
+3. **ORCID / Google Scholar**：同时核对机构、主题与已知合作者，建立属于 CAND-01 的产出清单。
+4. **项目页、幻灯片或代码仓库**：追踪街景、计算机视觉与环境健康主题，明确资源使用和项目职责的区别。
+5. **遗留同名候选人物页**：优先补 CAND-05–08 的真实来源，继续保留无法核实的状态。
+
+### 账本说明
+
+本案经编辑的账本含 24 条记录：22 条 S1、1 条 S2、1 条 S3；其中 3 条属于其他候选。它们是证据记录，不是 24 个互不重复的成就；硕士的两个名称、资助条目之间可能有重叠。另有 7 条线索与 5 个开放问题。`verified_claims.jsonl` 中的 S2/S3 仅表示相关公开表达或资源关联得到原文支撑，不能当作事件发生。
+
+VCLM-16 已退出事实账本，其内容保留为 LEAD-03；编号不重新排列。候选限定的 `subject` 与来源原名 `subject_raw` 分开保存，便于读者及程序正确使用。字节哈希和引文核对证明来源留存与引用一致；本档案的语义取舍由编辑及一次独立语义复核承担。

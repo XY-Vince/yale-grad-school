@@ -1,0 +1,21 @@
+{
+  "id": "https://openalex.org/A5000173131",
+  "display_name": "Anran Li",
+  "works_count": 76,
+  "cited_by_count": 1101,
+  "last_known_institutions": [
+    {
+      "id": "https://openalex.org/I111979921",
+      "display_name": "University of Science and Technology of China",
+      "country_code": "CN",
+      "type": "education"
+    },
+    {
+      "id": "https://openalex.org/I32971472",
+      "display_name": "Yale University",
+      "country_code": "US",
+      "type": "education"
+    }
+  ],
+  "_text_summary": "Anran Li last_known_institutions Yale University"
+}

@@ -1,0 +1,3 @@
+{"question_id": "OQ-01", "candidate_id": "CAND-01", "title": "密歇根大学本科学位的主修专业", "description": "密歇根大学官方典礼名单确认了 Ruohang He 的学位候选人身份与荣誉大会表彰，但公开大名单未注明具体主修院系与专业方向（如工程学院、文理学院或商学院）。", "status": "OPEN", "next_action": "获取第一方个人学术简历或系级项目名册。"}
+{"question_id": "OQ-02", "candidate_id": "CAND-01", "title": "2025年峰会之后的最新职业与深造动向", "description": "目前公开确凿记录截至2025年3月耶鲁中美峰会，其当前最新常设雇主、全职创业项目或后续研究生深造机构尚未在开放网络形成稳定足迹。", "status": "OPEN", "next_action": "持续追踪公开行业报道或学术会议最新参会记录。"}
+{"question_id": "OQ-03", "candidate_id": "CAND-02", "title": "同名同拼音医学学者 Ruohang He 的绝对排他性隔离", "description": "武汉协和医院消化内科发表10篇高水平医学论文的 Ruohang He 医生，经学术领域与教育轨迹比对，确系完全独立的医学研究人员，需持续维持消歧隔离。", "status": "OPEN", "next_action": "在后续自动化检索中设置学术领域负向关键词排除。"}

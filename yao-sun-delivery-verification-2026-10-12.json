@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-12",
+  "recorded_at": "2026-10-12T22:56:29.218841+00:00",
+  "scope": "delivery-plan Step 0 and Step 1",
+  "baseline_commit": "1d1cd716f02df0dbebd0244ca9a47331d6781251",
+  "new_network_requests": 0,
+  "bundle_audit_exit_code": 0,
+  "bundle_audit_output": "======================================================================\nINVESTIGATION BUNDLE AUDIT: /Users/xiang-yu/Desktop/GradQuest/investigations/yao_sun\n======================================================================\n  [INFO] Audited 25 sources in inventory.\n  [INFO] Audited 24 verified claims.\n  [INFO] Audited 7 corroborated leads.\n  [INFO] Audited 5 open questions.\n  [INFO] Audited 33 query log entries.\n  [INFO] Manifest integrity, file closure, and run_outcome verified.\n  [INFO] Dossier JSON parsed and validated.\n  [INFO] Citation closure verified: 24 claims, 7 leads, 5 questions cited.\n----------------------------------------------------------------------\nRESULT: PASS (All checks verified successfully)\n",
+  "raw_source_files_preserved_against_baseline": 25,
+  "query_history_byte_identical_to_baseline": true,
+  "ledger_record_count": 24,
+  "ledger_strength_counts": {
+    "S1": 22,
+    "S2": 1,
+    "S3": 1
+  },
+  "target_ledger_records": 21,
+  "alternate_ledger_records": 3,
+  "leads": 7,
+  "open_questions": 5,
+  "citation_links_resolved": 47,
+  "supplemental_quotes_replayed": true,
+  "independent_semantic_review": {
+    "type": "separate_read_only_agent",
+    "agent_id": "01a1324e-61a6-7a41-a199-9c1aceaae107",
+    "findings": 1,
+    "finding_fixed": "CAND-03 Michigan affiliation inherited from other paper authors removed.",
+    "not_external_human_review": true
+  },
+  "syntax_check": "AST parse passed for both changed Python files",
+  "auditor_sha256": "bdaf7d9f3154d54fd8fdfabfc41dafa7228d9b6a035078bd989f41ae1b6a6454",
+  "manifest_sha256": "07ccba003a3f5543f34cc25e789170db06101a76beb88a3af9b7cfff9e0df6eb",
+  "completion_boundary": "Usable edited dossier delivered; Step 2 skill rewrite and Step 3 migration cases remain for AG.",
+  "targeted_tests": {
+    "result": "2 passed, 11 deselected",
+    "scope": "candidate-qualified subject grounding and existing cross-entity claim injection",
+    "warnings": "5 PyMuPDF/SWIG deprecation warnings; no failed test"
+  },
+  "patch_hygiene": "git diff --check passed"
+}

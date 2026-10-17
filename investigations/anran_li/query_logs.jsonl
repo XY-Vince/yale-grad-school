@@ -1,0 +1,11 @@
+{"query_text": "\"Anran Li\" Yale", "engine": "google_search", "timestamp": "2026-10-13T12:47:28Z", "status": "EXECUTED", "results_count": 10}
+{"query_text": "\"Anran Li\" site:yale.edu", "engine": "google_search", "timestamp": "2026-10-13T12:47:36Z", "status": "EXECUTED", "results_count": 8}
+{"query_text": "\"Anran Li\" \"github.io\" OR \"homepage\" USTC Yale", "engine": "google_search", "timestamp": "2026-10-13T12:47:42Z", "status": "EXECUTED", "results_count": 9}
+{"query_text": "https://anranli515.github.io/AnranLi.github.io/", "engine": "http_fetch", "timestamp": "2026-10-13T12:49:25Z", "status": "EXECUTED", "results_count": 1}
+{"query_text": "\"Anran Li\" site:medicine.yale.edu", "engine": "google_search", "timestamp": "2026-10-13T12:49:40Z", "status": "EXECUTED", "results_count": 7}
+{"query_text": "https://api.openalex.org/authors?search=Anran+Li", "engine": "openalex_api", "timestamp": "2026-10-13T12:50:02Z", "status": "EXECUTED", "results_count": 5}
+{"query_text": "https://api.openalex.org/authors/A5000173131", "engine": "openalex_api", "timestamp": "2026-10-13T12:50:11Z", "status": "EXECUTED", "results_count": 1}
+{"query_text": "https://medicine.yale.edu/media-player/yale-nlpllm-interest-group-session-19-anran-li/", "engine": "http_fetch", "timestamp": "2026-10-13T12:51:12Z", "status": "EXECUTED", "results_count": 1}
+{"query_text": "https://clinicalnlp.org/2024-twentieth-nlp-llm-ig.html", "engine": "http_fetch", "timestamp": "2026-10-13T12:52:13Z", "status": "EXECUTED", "results_count": 1}
+{"query_text": "https://arxiv.org/abs/2509.08604", "engine": "http_fetch", "timestamp": "2026-10-13T12:52:26Z", "status": "EXECUTED", "results_count": 1}
+{"query_text": "\"Anran Li\" \"Cornell\" economics", "engine": "google_search", "timestamp": "2026-10-13T12:53:27Z", "status": "EXECUTED", "results_count": 8}
