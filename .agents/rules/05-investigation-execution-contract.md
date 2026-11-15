@@ -1,6 +1,9 @@
-# Public Person Investigation — Execution Contract & Governance Rule
+---
+trigger: model_decision
+description: "Apply to all public person investigation, profile verification, recall optimization, and verify-public-person-profile tasks, including bare person-name or short search queries in Chinese or English."
+---
 
-Activation: Antigravity Workspace Rule for Investigation & Profile Verification Tasks (`verify-public-person-profile`).
+# Public Person Investigation — Execution Contract & Governance Rule
 
 Use this rule for all autonomous and human-guided profiling, investigation, and recall optimization tasks.
 
@@ -39,6 +42,14 @@ Per `references/source-policy.md`, investigation adheres to purpose limitation a
 - **Affiliations & Memberships**: `affiliated_with`, `member_of`.
 - **Honors & Recognition**: `awarded_honor` (canonical for `honored_with`, `received_award`).
 - **Scholarship & Research Activities**: `authored_publication` (canonical for `authored_work`), `presented_paper` (canonical for `presented_work`), `conducted_research`, `researched_topic`, `participated_in`.
+
+The registry above governs the legacy deterministic pipeline and its benchmark,
+not the vocabulary of agent-synthesized investigation ledgers. The latter may
+also use evidence-specific relations such as `candidate_for_degree`,
+`listed_course_repository`, `studied_at`, `contact_channel`, `username`, and
+`identifier`. Such relations retain their narrower meanings: a candidate is not
+an awarded degree, and a repository is not proof of course completion. Do not
+silently equate them with registry predicates for evaluation.
 
 ### Strictly Prohibited Categories (Out of Scope — Never Penalized)
 The pipeline must **never** attempt to search for, extract, or score the following:

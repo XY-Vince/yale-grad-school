@@ -1,6 +1,9 @@
-# GradQuest Verification Rules
+---
+trigger: always_on
+description: "GradQuest verification checklist and completion standard before reporting code or repository changes done."
+---
 
-Activation: Always On
+# GradQuest Verification Rules
 
 Use this rule before reporting completion.
 
@@ -12,6 +15,10 @@ Run these after meaningful code changes:
 2. `git diff --check`
 3. `python3 -m compileall -q <changed-python-files>` when Python changed
 4. `git status --short`
+
+For `investigations/` bundle edits without code changes, run the skill bundle
+auditor (`verify_investigation_bundle.py`) alongside `git diff --check` and
+`git status --short`.
 
 If Playwright cannot launch Chromium in a sandbox, request approval and rerun
 the same `python3 run_tests.py` command outside the sandbox.

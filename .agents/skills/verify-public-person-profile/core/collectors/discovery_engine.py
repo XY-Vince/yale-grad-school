@@ -5,20 +5,20 @@ Executes parameter-driven public search queries across general search engines
 and academic registries. Outputs discovery_results.jsonl without target-specific hardcoding.
 """
 
+import base64
+import html
 import json
 import re
-import ssl
 import time
 import urllib.parse
-import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-import certifi
+import requests
+from bs4 import BeautifulSoup
 
-
-import base64
+from .base import SSRFSecurityError, safe_fetch
 
 
 def extract_significant_tokens(clues: List[str]) -> List[str]:
@@ -48,16 +48,14 @@ class UniversalDiscoveryEngine:
 
     def __init__(self, query_budget: int = 30):
         self.query_budget = query_budget
-        self.ssl_ctx = ssl.create_default_context(cafile=certifi.where())
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Referer": "https://html.duckduckgo.com/",
-            "Content-Type": "application/x-www-form-urlencoded",
         }
         self.discovery_records: List[Dict[str, Any]] = []
         self.discovered_urls: Set[str] = set()
         self.query_logs: List[Dict[str, Any]] = []
+        self.last_search_attempts: List[Dict[str, Any]] = []
 
     def generate_query_families(self, name: str, clues: List[str]) -> List[Tuple[str, List[str]]]:
         """
@@ -112,88 +110,109 @@ class UniversalDiscoveryEngine:
         Returns: (results, status, error_details)
         status: 'COMPLETED', 'BLOCKED', or 'FAILED'
         """
-        results = []
-        bing_err = None
-        # 1. Primary: Bing Search
-        try:
-            url_bing = "https://www.bing.com/search?q=" + urllib.parse.quote(query)
-            req_bing = urllib.request.Request(url_bing, headers=self.headers)
-            with urllib.request.urlopen(req_bing, context=self.ssl_ctx, timeout=8) as resp:
-                if resp.status == 200:
-                    html_txt = resp.read().decode("utf-8", errors="ignore")
+        self.last_search_attempts = []
+        endpoints = [
+            ("Bing", "https://www.bing.com/search?q=" + urllib.parse.quote(query), "GET", None),
+            ("DuckDuckGo", "https://html.duckduckgo.com/html/", "POST",
+             urllib.parse.urlencode({"q": query}).encode("utf-8")),
+        ]
+        for engine, url, method, data in endpoints:
+            attempt = {"engine": engine, "url": url, "method": method, "http_status": None}
+            self.last_search_attempts.append(attempt)
+            try:
+                headers = dict(self.headers)
+                if engine == "DuckDuckGo":
+                    headers.update({
+                        "Referer": "https://html.duckduckgo.com/",
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    })
+                response = safe_fetch(url, timeout=8, method=method, data=data, headers=headers)
+                attempt["http_status"] = response.status_code
+                if response.status_code != 200:
+                    attempt["status"] = "BLOCKED" if response.status_code in (401, 403, 429) else "FAILED"
+                    attempt["error"] = f"HTTP {response.status_code}"
+                    continue
+                html_txt = response.content.decode("utf-8", errors="replace")
+                results = []
+                if engine == "Bing":
                     matches = re.finditer(
                         r'<h2[^>]*><a[^>]+href=\"(https?://[^\"]+)\"[^>]*>(.*?)</a></h2>(?:.*?<p[^>]*>(.*?)</p>)?',
-                        html_txt,
-                        re.DOTALL
+                        html_txt, re.DOTALL,
                     )
-                    for m in matches:
-                        raw_href = m.group(1)
-                        title_clean = re.sub(r"<[^>]+>", "", m.group(2)).strip()
-                        snippet_clean = re.sub(r"<[^>]+>", "", m.group(3) or "").strip()
+                    for match in matches:
+                        raw_href = html.unescape(match.group(1))
                         target_url = raw_href
-                        m_u = re.search(r'[?&]u=a1([a-zA-Z0-9_-]+)', raw_href.replace("&amp;", "&"))
-                        if m_u:
-                            b64 = m_u.group(1).replace('-', '+').replace('_', '/')
-                            pad = len(b64) % 4
-                            if pad:
-                                b64 += '=' * (4 - pad)
+                        encoded = re.search(r"[?&]u=a1([a-zA-Z0-9_-]+)", raw_href)
+                        if encoded:
+                            b64 = encoded.group(1).replace("-", "+").replace("_", "/")
                             try:
-                                target_url = base64.b64decode(b64).decode('utf-8')
-                            except Exception:
+                                target_url = base64.b64decode(b64 + "=" * (-len(b64) % 4)).decode("utf-8")
+                            except (ValueError, UnicodeError):
                                 pass
-                        if target_url.startswith("http"):
-                            results.append({
-                                "url": target_url,
-                                "title": title_clean[:120],
-                                "snippet": snippet_clean or title_clean,
-                            })
-                            if len(results) >= max_results:
-                                break
-        except Exception as e:
-            bing_err = f"{type(e).__name__}: {str(e)}"
-
-        if results:
-            return results, "COMPLETED", None
-
-        # 2. Fallback: DuckDuckGo Form POST
-        ddg_err = None
-        data = urllib.parse.urlencode({"q": query}).encode("utf-8")
-        req = urllib.request.Request(
-            "https://html.duckduckgo.com/html/",
-            data=data,
-            headers=self.headers,
-        )
-        try:
-            with urllib.request.urlopen(req, context=self.ssl_ctx, timeout=8) as resp:
-                if resp.status == 200:
-                    html_txt = resp.read().decode("utf-8", errors="ignore")
-                    matches = re.finditer(r'<a[^>]+class="result__snippet"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', html_txt, re.DOTALL)
-                    for m in matches:
-                        raw_href = m.group(1)
-                        parsed = urllib.parse.urlparse(raw_href)
-                        qs = urllib.parse.parse_qs(parsed.query)
-                        target_url = qs.get("uddg", [raw_href])[0]
-                        clean_snippet = re.sub(r"<[^>]+>", "", m.group(2)).strip()
-                        results.append({
-                            "url": target_url,
-                            "title": clean_snippet[:80],
-                            "snippet": clean_snippet,
-                        })
+                        title = html.unescape(re.sub(r"<[^>]+>", "", match.group(2))).strip()
+                        snippet = html.unescape(re.sub(r"<[^>]+>", "", match.group(3) or "")).strip()
+                        if target_url.startswith(("http://", "https://")):
+                            results.append({"url": target_url, "title": title[:120], "snippet": snippet or title})
                         if len(results) >= max_results:
                             break
-        except Exception as e:
-            ddg_err = f"{type(e).__name__}: {str(e)}"
+                else:
+                    soup = BeautifulSoup(html_txt, "html.parser")
+                    by_url = {}
+                    snippets = {}
+                    for node in soup.select("a.result__a, .result__snippet"):
+                        link = node if node.name == "a" and node.get("href") else None
+                        if link is None:
+                            container = node.find_parent(class_="result")
+                            link = container.select_one("a.result__a[href]") if container else None
+                        if link is None:
+                            continue
+                        raw_href = link.get("href", "")
+                        target_url = urllib.parse.parse_qs(urllib.parse.urlparse(raw_href).query).get(
+                            "uddg", [raw_href]
+                        )[0]
+                        if not target_url.startswith(("http://", "https://")):
+                            continue
+                        text = node.get_text(" ", strip=True)
+                        if not text:
+                            continue
+                        if target_url not in by_url:
+                            if len(results) >= max_results:
+                                continue
+                            by_url[target_url] = {"url": target_url, "title": "", "snippet": ""}
+                            results.append(by_url[target_url])
+                        item = by_url[target_url]
+                        if "result__a" in node.get("class", []):
+                            item["title"] = text[:120]
+                        else:
+                            if len(text) > len(snippets.get(target_url, "")):
+                                snippets[target_url] = text
+                        item["snippet"] = snippets.get(target_url) or item["title"]
+                    for item in results:
+                        if not item["title"]:
+                            item["title"] = item["snippet"][:120]
+                if results:
+                    attempt["status"] = "COMPLETED"
+                    attempt["results_count"] = len(results)
+                    return results, "COMPLETED", None
+                if re.search(r"\bno results found\b|\bthere are no results for\b|class=[\"']no-results",
+                             html_txt, re.IGNORECASE):
+                    attempt["status"] = "NO_RESULTS"
+                else:
+                    attempt["status"] = "FAILED"
+                    attempt["error"] = "HTTP 200 but no recognized result or empty-result marker"
+            except (requests.RequestException, SSRFSecurityError, OSError, ValueError) as exc:
+                attempt["status"] = "BLOCKED" if isinstance(exc, SSRFSecurityError) else "FAILED"
+                attempt["error"] = f"{type(exc).__name__}: {exc}"
 
-        if results:
-            return results, "COMPLETED", None
-
-        # Evaluated when 0 results found
-        if bing_err and ddg_err:
-            combined_err = f"Bing: {bing_err}; DDG: {ddg_err}"
-            status = "BLOCKED" if any(c in combined_err for c in ("403", "429", "Forbidden")) else "FAILED"
-            return [], status, combined_err
-
-        return [], "COMPLETED", None
+        errors = "; ".join(
+            f"{attempt['engine']}: {attempt['error']}" for attempt in self.last_search_attempts
+            if attempt.get("error")
+        ) or None
+        if any(attempt["status"] == "NO_RESULTS" for attempt in self.last_search_attempts):
+            return [], "COMPLETED", errors
+        if all(attempt["status"] == "BLOCKED" for attempt in self.last_search_attempts):
+            return [], "BLOCKED", errors
+        return [], "FAILED", errors
 
     def run_discovery(
         self,
@@ -210,19 +229,30 @@ class UniversalDiscoveryEngine:
         output_dir.mkdir(parents=True, exist_ok=True)
         results_file = output_dir / "discovery_results.jsonl"
 
-        if not force_live and preloaded_file and preloaded_file.exists():
-            for line in preloaded_file.read_text(encoding="utf-8").splitlines():
+        if not force_live and preloaded_file is not None:
+            input_bytes = preloaded_file.read_bytes()
+            for line_number, line in enumerate(input_bytes.decode("utf-8").splitlines(), 1):
                 line = line.strip()
                 if line:
                     try:
                         rec = json.loads(line)
-                        if rec.get("url") and rec["url"] not in self.discovered_urls:
-                            self.discovered_urls.add(rec["url"])
-                            self.discovery_records.append(rec)
-                    except Exception:
-                        pass
-            if self.discovery_records:
-                return self.discovery_records
+                    except json.JSONDecodeError as exc:
+                        raise ValueError(f"Invalid discovery record at line {line_number}") from exc
+                    if not isinstance(rec, dict) or not isinstance(rec.get("url"), str) or not rec["url"]:
+                        raise ValueError(f"Discovery record at line {line_number} needs a URL")
+                    if rec["url"] not in self.discovered_urls:
+                        self.discovered_urls.add(rec["url"])
+                        self.discovery_records.append(rec)
+            with results_file.open("xb") as output:
+                output.write(input_bytes)
+            self.query_logs.append({
+                "backend": "CuratedDiscovery",
+                "query_text": str(preloaded_file),
+                "executed_at": datetime.now(timezone.utc).isoformat(),
+                "status": "LOADED",
+                "results_count": len(self.discovery_records),
+            })
+            return self.discovery_records
 
         families = self.generate_query_families(name, clues)
         consecutive_stagnant_families = 0
@@ -241,6 +271,7 @@ class UniversalDiscoveryEngine:
                     "executed_at": datetime.now(timezone.utc).isoformat(),
                     "status": q_status,
                     "results_count": len(search_res),
+                    "attempts": list(self.last_search_attempts),
                 }
                 if q_err:
                     q_log["error"] = q_err
@@ -280,7 +311,7 @@ class UniversalDiscoveryEngine:
             if consecutive_stagnant_families >= 3 or total_queries >= self.query_budget:
                 break
 
-        with open(results_file, "w", encoding="utf-8") as f:
+        with open(results_file, "x", encoding="utf-8") as f:
             for rec in self.discovery_records:
                 f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 

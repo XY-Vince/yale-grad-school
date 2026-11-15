@@ -1,6 +1,9 @@
-# Engineering Rigor, Terminology & Wording Standards (Antigravity 工作区规则)
+---
+trigger: always_on
+description: "Engineering rigor, banned hyperbole terms, status/tense sync, statistical scope bounds, and prototype positioning for all workspace tasks, artifacts, and Chinese/English communication."
+---
 
-Activation: Antigravity Workspace Rule
+# Engineering Rigor, Terminology & Wording Standards (Antigravity 工作区规则)
 
 Use this rule for all tasks, documentation, artifacts, and communication in this workspace.
 

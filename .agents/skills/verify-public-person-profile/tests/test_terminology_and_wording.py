@@ -6,6 +6,7 @@ phantom field names, or ungrounded claims into documentation and reports.
 
 import os
 from pathlib import Path
+import pytest
 from scripts.lint_wording import lint_files
 
 
@@ -34,3 +35,20 @@ def test_documentation_and_reports_terminology_compliance():
     success, scanned_count, errors = lint_files(required_targets)
     assert success is True, f"Terminology compliance failed ({scanned_count} scanned, errors: {errors})"
     assert scanned_count >= 3, f"Expected at least 3 files scanned, got {scanned_count}"
+
+
+def test_available_investigation_reports_terminology_compliance():
+    project_dir = Path(__file__).resolve().parents[4]
+    investigation_dir = project_dir / "investigations"
+    if not investigation_dir.is_dir():
+        pytest.skip("This checkout has no investigation bundles")
+    targets = [
+        path
+        for bundle in investigation_dir.iterdir() if bundle.is_dir()
+        for path in (bundle / "recall_report.md", bundle / "source_inventory.jsonl")
+        if path.is_file()
+    ]
+    if not targets:
+        pytest.skip("This checkout has no investigation reports")
+    success, scanned_count, errors = lint_files(targets)
+    assert success, f"Investigation wording failed ({scanned_count} scanned): {errors}"
