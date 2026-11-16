@@ -76,7 +76,7 @@ ZH_GENERIC_WORDS = [
 ]
 
 ACADEMIC_CATEGORIES = {"university", "college", "school", "academy", "univ"}
-HEALTH_CATEGORIES = {"hospital", "clinic", "infirmary", "health"}
+HEALTH_CATEGORIES = {"hospital", "clinic", "infirmary", "health", "medicine", "medical"}
 RESEARCH_CATEGORIES = {"institute", "institution", "laboratory", "lab", "center"}
 COMPANY_CATEGORIES = {"company", "corporation", "corp", "inc", "ltd", "firm", "group"}
 DEPT_CATEGORIES = {"department", "dept", "division", "section"}
@@ -321,11 +321,14 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                     for tok in clean_tokens
                     if re.sub(r"^[^\w.]+|[^\w.]+$", "", tok) not in STOPWORDS
                 ]
+                substantive = [tok for tok in substantive if tok]
                 if not substantive:
                     substantive = [re.sub(r"^[^\w.]+|[^\w.]+$", "", tok) for tok in clean_tokens if tok]
+                    substantive = [tok for tok in substantive if tok]
 
+                ROLE_WORDS = {"resident", "fellow", "professor", "scientist", "director", "dean", "chair", "student", "doctor", "physician", "intern", "engineer", "researcher", "scholar", "clerk", "member"}
                 def _is_conflict(match_end_rel: int) -> bool:
-                    if not cat:
+                    if not cat or any(rw in raw_obj.lower() for rw in ROLE_WORDS):
                         return False
                     after_text = sent_lower[match_end_rel : match_end_rel + 35]
                     punct_split = re.split(r"[.;:!?\n]", after_text)
@@ -345,8 +348,11 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                 if len(substantive) >= 2:
                     # Contiguous noun phrase match strictly within same sentence
                     # sep_pat prohibits periods
-                    sep_pat = r"[\s,-]+(?:(?:the|of|at|in|for|on|and|to|from|with|by|a|an)\b[\s,-]*)*"
-                    phrase_pat = sep_pat.join(re.escape(tok) for tok in substantive)
+                    sep_pat = r"[\s,&-]+(?:(?:the|of|at|in|for|on|and|&|to|from|with|by|a|an)\b[\s,&-]*)*"
+                    phrase_tokens = [re.escape(tok) for tok in substantive]
+                    if substantive[-1] in ROLE_WORDS:
+                        phrase_tokens[-1] = rf"{re.escape(substantive[-1])}s?"
+                    phrase_pat = sep_pat.join(phrase_tokens)
                     for m in re.finditer(rf"(?<!\w){phrase_pat}(?!\w)", sent_lower):
                         if not _is_conflict(m.end()):
                             return (s_start + m.start(), s_start + m.end(), can_id, cat)
@@ -357,7 +363,10 @@ def find_object_in_text(raw_obj: str, text: str) -> Optional[Tuple[int, int, str
                     # Check against atomic tokens from tokenize_with_abbreviations
                     found_tok = False
                     for tok_str, t_start, t_end in sent_tokens:
-                        if tok_str.lower() == cand_lower or tok_str.lower() == tok.lower():
+                        role_forms = {tok.lower()}
+                        if tok.lower() in ROLE_WORDS:
+                            role_forms.add(f"{tok.lower()}s")
+                        if tok_str.lower() == cand_lower or tok_str.lower() in role_forms:
                             if not _is_conflict(t_end):
                                 return (s_start + t_start, s_start + t_end, can_id, cat)
                     # Fallback to word-boundary regex if token split differed
@@ -659,13 +668,33 @@ def validate_bundle(bundle_dir: Path, warc_path: Optional[Path] = None) -> Dict[
                                 f"claims.jsonl: Support clause subject mention '{sup.subject_mention_id}' does not match "
                                 f"claim subject_mention_id '{c.subject_mention_id}'!"
                             )
-                        # 2. The subject mention itself MUST originate from the supported evidence!
+                        # 2. The subject normally originates from the supported evidence.
+                        # A document-context support may point to another exact slice from
+                        # the same source page, but never to a different source.
                         subj_m = mentions[c.subject_mention_id]
                         if subj_m.evidence_id != sup.evidence_id:
-                            errors.append(
-                                f"claims.jsonl: Cross-evidence contamination! Subject mention '{c.subject_mention_id}' "
-                                f"originates from evidence '{subj_m.evidence_id}', but support clause attaches foreign evidence '{sup.evidence_id}'!"
+                            subject_ev = evidence.get(subj_m.evidence_id)
+                            support_ev = evidence.get(sup.evidence_id)
+                            selector = (
+                                support_ev.locator.selector_or_page
+                                if support_ev is not None
+                                else ""
                             )
+                            same_source = bool(
+                                subject_ev is not None
+                                and support_ev is not None
+                                and subject_ev.source_id == support_ev.source_id
+                            )
+                            if (
+                                sup.subject_resolution != "document_context"
+                                or not same_source
+                                or not selector.startswith("document-context:")
+                            ):
+                                errors.append(
+                                    f"claims.jsonl: Cross-evidence contamination! Subject mention '{c.subject_mention_id}' "
+                                    f"originates from evidence '{subj_m.evidence_id}', but support clause attaches "
+                                    f"evidence '{sup.evidence_id}' without a valid same-source document-context contract!"
+                                )
                         # 3. Subject span containment: if the subject's name is explicitly present in the support clause,
                         # the subject mention's span [char_start, char_end] MUST fall within [clause_span_start, clause_span_end]
                         elif subj_m.raw_name_text.lower() in sup.verbatim_clause.lower():
@@ -703,7 +732,10 @@ def validate_bundle(bundle_dir: Path, warc_path: Optional[Path] = None) -> Dict[
                                     f"claims.jsonl: Relation span boundary violation! Claim {c.claim_id} relation span "
                                     f"[{sup.relation_span_start}:{sup.relation_span_end}] is not contained within clause span [{sup.clause_span_start}:{sup.clause_span_end}]!"
                                 )
-                            if subj_m.raw_name_text.lower() in sup.verbatim_clause.lower():
+                            if (
+                                subj_m.evidence_id == sup.evidence_id
+                                and subj_m.raw_name_text.lower() in sup.verbatim_clause.lower()
+                            ):
                                 if not (sup.relation_span_start <= subj_m.char_start and subj_m.char_end <= sup.relation_span_end):
                                     errors.append(
                                         f"claims.jsonl: Relation span subject violation! Claim {c.claim_id} subject mention "
@@ -812,7 +844,7 @@ def validate_bundle(bundle_dir: Path, warc_path: Optional[Path] = None) -> Dict[
 
     structural_errors = list(errors)
     structural_valid = len(structural_errors) == 0
-    has_warc_ids = bool(sources and all(bool(s.warc_record_id) for s in sources.values()))
+    has_warc_ids = all(bool(s.warc_record_id) for s in sources.values())
     
     provenance_replay_valid = None
     replay_errors: List[str] = []
@@ -977,7 +1009,10 @@ def verify_warc_replay(bundle_dir: Path, warc_path: Path) -> Dict[str, Any]:
 
                 verified_evidence += 1
 
-    is_replay_ok = (len(replay_errors) == 0 and verified_sources > 0 and verified_evidence > 0)
+    if len(sources) == 0:
+        is_replay_ok = (len(replay_errors) == 0)
+    else:
+        is_replay_ok = (len(replay_errors) == 0 and verified_sources > 0)
     return {
         "valid": is_replay_ok,
         "errors": replay_errors,

@@ -12,6 +12,7 @@ dependencies = [
     "pydantic>=2.5.0,<3.0.0",
     "requests>=2.28.0,<3.0.0",
     "pyyaml>=6.0,<7.0",
+    "beautifulsoup4>=4.12,<5.0",
 ]
 
 [project.scripts]
@@ -20,3 +21,7 @@ verify-profile = "verify_public_person_profile:main"
 [tool.setuptools.packages.find]
 where = ["src", "."]
 include = ["verify_public_person_profile*", "core*", "models*", "scripts*", "benchmarks*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests", "benchmarks/tools"]

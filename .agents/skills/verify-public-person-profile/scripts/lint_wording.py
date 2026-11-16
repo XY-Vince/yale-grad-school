@@ -19,6 +19,7 @@ BANNED_TERMS = [
     ("彻底根治", "Use '在当前用例中已修复/阻断' or '所列测试均通过' instead of '彻底根治'"),
     ("彻底消除", "Use '所列测试均通过' or '在当前回归集内未复现' instead of '彻底消除'"),
     ("彻底解决", "Use '已落实修复' instead of '彻底解决'"),
+    ("彻底证伪", "State the specific record and inference it contradicts"),
     ("物理隔离", "Same-UID chmod 0o000 is '文件权限访问阻断', not '物理隔离'"),
     ("内核级防窥探", "Same-UID chmod 0o000 is '文件权限访问阻断', not '内核级防窥探'"),
     (r"真实测试率\s*100%", "Avoid absolute claims; state '所列反例测试均在前置通过结构校验的前提下完成业务分支验证'"),

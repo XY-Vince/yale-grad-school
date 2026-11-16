@@ -1,6 +1,9 @@
-# GradQuest Code Rules
+---
+trigger: model_decision
+description: "Apply when editing or reviewing GradQuest JavaScript, HTML, CSS (docs/index.html, tests/browser_tests.js), Python test/playtest helpers, or game mechanics (state, defense, conferences, event routing)."
+---
 
-Activation: Model Decision
+# GradQuest Code Rules
 
 Use when editing JavaScript, HTML, CSS, Python test/playtest scripts, or game
 mechanics.

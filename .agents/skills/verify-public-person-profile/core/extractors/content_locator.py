@@ -19,6 +19,7 @@ from models.schemas import (
     LocatorType,
     SourceQualityClass,
 )
+from core.text.title_parse import extract_institution_from_title
 
 
 def _is_domain_or_subdomain(hostname: str, domain: str) -> bool:
@@ -194,13 +195,39 @@ def locate_evidence_slices(
                 e_off = min(m.end(0), s_off + 3000)
                 add_evidence(s_off, e_off, 'script[type="application/ld+json"]')
 
+    # Strategy 1b: Meta description and OpenGraph description tags
+    meta_desc_pat = re.compile(
+        r'<meta\s+[^>]*?(?:name|property)=["\'](?:description|og:description)["\'][^>]*?content=["\']([^"\']+)["\']|<meta\s+[^>]*?content=["\']([^"\']+)["\'][^>]*?(?:name|property)=["\'](?:description|og:description)["\']',
+        re.IGNORECASE,
+    )
+    for m in meta_desc_pat.finditer(html_text):
+        content = m.group(1) or m.group(2) or ""
+        if any(pat.search(content) for pat in name_patterns):
+            add_evidence(m.start(0), m.end(0), 'meta[name="description"]')
+
+    # Strategy 1c: An authoritative profile title can bind the canonical
+    # person name to an explicitly named institution in one compact slice.
+    if eff_quality in {SourceQualityClass.CLASS_A, SourceQualityClass.CLASS_B}:
+        title_pattern = re.compile(r"<title\b[^>]*>(?P<title>.*?)</title>", re.IGNORECASE | re.DOTALL)
+        for title_match in title_pattern.finditer(html_text):
+            title_person, title_institution, _ = extract_institution_from_title(
+                title_match.group(0),
+                target_name,
+            )
+            if title_person and title_institution:
+                add_evidence(
+                    title_match.start(),
+                    title_match.end(),
+                    "document-context:profile-title",
+                )
+
     # Strategy 2: Academic Profile Heading & Biography Container
-    # Look for <h1> containing target name followed by biography / roles section (skipping modal/dialog headings)
-    heading_pat = re.compile(r'<h1([^>]*)>(.*?)</h1>', re.DOTALL | re.IGNORECASE)
+    # Look for <h1-h3> containing target name followed by biography / roles section (skipping modal/dialog headings)
+    heading_pat = re.compile(r'<h[1-3]([^>]*)>(.*?)</h[1-3]>', re.DOTALL | re.IGNORECASE)
     for m in heading_pat.finditer(html_text):
-        h1_attrs = m.group(1)
+        h_attrs = m.group(1)
         heading_inner = m.group(2)
-        if re.search(r'\b(?:overlay-title|dialog|modal)\b', h1_attrs, re.IGNORECASE):
+        if re.search(r'\b(?:overlay-title|dialog|modal)\b', h_attrs, re.IGNORECASE):
             continue
         if any(pat.search(heading_inner) for pat in name_patterns):
             s_idx = m.start(0)
@@ -232,6 +259,103 @@ def locate_evidence_slices(
                 else:
                     e_idx = s_idx + node_end
                 add_evidence(s_idx, e_idx, "h1#page-title ~ .content")
+
+    # Strategy 2b: Wikipedia / Encyclopedic Lead & Career Sections
+    if "wikipedia.org" in url or "mw-parser-output" in html_text:
+        wiki_lead_pat = re.compile(
+            r'<p[^>]*>\s*<b[^>]*>([\s\S]*?)</p>',
+            re.IGNORECASE,
+        )
+        for wm in wiki_lead_pat.finditer(html_text):
+            lead_block = wm.group(0)
+            if any(pat.search(lead_block) for pat in name_patterns):
+                ws_idx = wm.start(0)
+                we_idx = min(len(html_text), ws_idx + 4500)
+                p_end = html_text.find("</p>", min(len(html_text), ws_idx + 3500))
+                if p_end != -1 and p_end < we_idx:
+                    we_idx = p_end + 4
+                add_evidence(ws_idx, we_idx, "div.mw-parser-output > p")
+                break
+
+    # Strategy 2c: Directory / Roster Group Locator
+    for pat in name_patterns:
+        for nm in pat.finditer(html_text):
+            n_pos = nm.start()
+            h_idx = html_text.rfind("<h2", max(0, n_pos - 15000), n_pos)
+            if h_idx != -1:
+                h_end = html_text.find("</h2>", h_idx)
+                if h_end != -1:
+                    heading_text = html_text[h_idx:h_end+5]
+                    if re.search(r"\b(?:students?|faculty|staff|postdoc|fellows?|scholars?|researchers?)\b", heading_text, re.IGNORECASE):
+                        e_pos = html_text.find("</div>", n_pos)
+                        if e_pos != -1:
+                            add_evidence(h_idx, min(len(html_text), e_pos + 6), "section.roster-group")
+                            break
+
+    # Strategy 2d: Personal Portfolio / Bio Introduction
+    about_pat = re.compile(
+        r'<p\b[^>]*>(?:(?!</p>)[\s\S])*?\b(?:My name is|I am|I\x27m)\b'
+        r'(?:(?!</p>)[\s\S])*?</p>',
+        re.IGNORECASE,
+    )
+    for am in about_pat.finditer(html_text):
+        ab_text = am.group(0)
+        if any(pat.search(ab_text) for pat in name_patterns):
+            as_idx = am.start(0)
+            ae_idx = min(len(html_text), as_idx + 2500)
+            p_end = html_text.find("</p>", min(len(html_text), as_idx + 1000))
+            if p_end != -1 and p_end < ae_idx:
+                ae_idx = p_end + 4
+            add_evidence(as_idx, ae_idx, "section#about p")
+
+            # Keep education cards as a separate exact slice. Subject binding
+            # happens later through a same-source document-context contract.
+            education_start = re.search(
+                r'<section\b[^>]*\bid\s*=\s*["\']?education["\']?[^>]*>',
+                html_text[am.end(): min(len(html_text), am.end() + 25000)],
+                re.IGNORECASE,
+            )
+            if education_start:
+                section_start = am.end() + education_start.start()
+                section_region = html_text[section_start: min(len(html_text), section_start + 12000)]
+                card_match = re.search(
+                    r'(?P<card><small\b[^>]*>[^<]*(?:19|20)\d{2}[^<]*</small>'
+                    r'[\s\S]{0,1800}?<h5\b[^>]*class\s*=\s*["\']?[^>]*card-title[^>]*>'
+                    r'[\s\S]*?</h5>[\s\S]{0,1200}?<h6\b[^>]*>[\s\S]*?</h6>)',
+                    section_region,
+                    re.IGNORECASE,
+                )
+                if card_match:
+                    card_start = section_start + card_match.start("card")
+                    card_end = section_start + card_match.end("card")
+                    add_evidence(
+                        card_start,
+                        card_end,
+                        "document-context:personal-education-card",
+                    )
+
+    # Strategy 2e: On an encyclopedic biography page, retain a narrowly
+    # bounded leadership paragraph that refers to the page subject by surname.
+    target_tokens = target_name.strip().split()
+    if (
+        ("wikipedia.org" in url or "mw-parser-output" in html_text)
+        and len(target_tokens) >= 2
+        and any(pat.search(re.sub(r"<[^>]+>", " ", match.group(2))) for match in heading_pat.finditer(html_text) for pat in name_patterns)
+    ):
+        surname = target_tokens[-1]
+        leadership_pattern = re.compile(
+            rf'<p\b[^>]*>\s*(?:<[^>]+>\s*)*{re.escape(surname)}\s+'
+            r'(?:was|served\s+as|became)\s+(?:the\s+)?(?:\d{4}\s+)?'
+            r'(?:(?!</p>)[\s\S])*?\b(?:President|Chair|Chairman|Chairwoman|CEO)\b'
+            r'(?:(?!</p>)[\s\S])*?</p>',
+            re.IGNORECASE,
+        )
+        for leadership_match in leadership_pattern.finditer(html_text):
+            add_evidence(
+                leadership_match.start(),
+                leadership_match.end(),
+                "document-context:encyclopedic-leadership",
+            )
 
     # Strategy 3: Pinned Item / Repository / Work Descriptions (e.g. GitHub, portfolio)
     pinned_pat = re.compile(

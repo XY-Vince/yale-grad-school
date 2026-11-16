@@ -1,13 +1,20 @@
+---
+trigger: always_on
+description: "Core GradQuest workspace always-on rules: default Simplified Chinese responses/reports, canonical game files, state names, and sentinel handling."
+---
+
 # GradQuest Always-On Rules
 
-Activation: Always On
+Use this rule for all GradQuest workspace tasks.
 
-Use this rule for all GradQuest tasks.
+## Language & Rule Activation
 
-## Read This First
-
-Treat `../../AGENTS.md` as the canonical agent briefing for this repository.
-Older project documents may be useful history, but they can be stale.
+- Respond to the user and author investigation/workspace reports in **Simplified
+  Chinese (简体中文)** by default, even when prompts are in English, unless
+  the user explicitly requests otherwise (keep code identifiers, commands,
+  paths, and `verbatim_excerpt` quotes in their original language).
+- Treat `../../AGENTS.md` as the canonical briefing for this repository.
+  Older project documents may be useful history, but they can be stale.
 
 ## Source of Truth
 
