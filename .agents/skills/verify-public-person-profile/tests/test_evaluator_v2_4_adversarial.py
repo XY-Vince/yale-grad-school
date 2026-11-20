@@ -83,13 +83,47 @@ def test_schema_v2_2_accepts_valid_supports_with_anchors():
     assert claim.supports[0].dom_container == "div.profile-header"
 
 
-def test_warc_replay_verbatim_slice_mismatch_fails_closed():
-    """Evaluator V2.4 rejects off-by-one or mismatched verbatim text slices against WARC."""
-    real_fixtures = Path(__file__).resolve().parent.parent / "benchmarks" / "fixtures" / "real_web_dev_v2"
-    warc_file = real_fixtures / "corpus.warc"
-    gold_file = real_fixtures / "gold_v2_2.json"
+@pytest.fixture
+def synthetic_gold_warc(tmp_path):
+    """An explicitly synthetic response and reference for byte-replay tests."""
+    url = "https://test.invalid/profile"
+    text = "<p>Alice Example is a Professor.</p>"
+    payload = text.encode("utf-8")
+    digest = hashlib.sha256(payload).hexdigest()
+    http = b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" + payload
+    headers = (
+        f"WARC/1.0\r\nWARC-Type: response\r\nWARC-Target-URI: {url}\r\n"
+        f"Content-Length: {len(http)}\r\n\r\n"
+    ).encode("ascii")
+    warc_file = tmp_path / "synthetic.warc"
+    warc_file.write_bytes(headers + http + b"\r\n\r\n")
+    start = text.index("Alice Example")
+    suite = GoldSuite.model_validate([{
+        "case_id": "SYNTHETIC-01", "target_name": "Alice Example",
+        "target_gold_entity_id": "ENT-01", "is_fact_bearing": True,
+        "gold_entities": [{"gold_entity_id": "ENT-01", "canonical_name": "Alice Example"}],
+        "gold_mentions": [{
+            "gold_mention_id": "MEN-01", "gold_entity_id": "ENT-01",
+            "source_content_sha256": digest, "char_start": start,
+            "char_end": start + len("Alice Example"), "verbatim_text": "Alice Example",
+        }],
+        "gold_clusters": [["MEN-01"]],
+        "gold_claims": [{
+            "claim_id": "CLM-01", "subject_gold_entity_id": "ENT-01",
+            "predicate": "holds_position", "object_raw": "Professor",
+            "polarity": "affirmative", "temporal_status": "current",
+            "supports": [{
+                "source_url": url, "source_content_sha256": digest,
+                "char_start": 0, "char_end": len(text), "verbatim_text": text,
+            }],
+        }],
+    }])
+    return suite, warc_file
 
-    suite = GoldSuite.model_validate_json(gold_file.read_text(encoding="utf-8"))
+
+def test_warc_replay_verbatim_slice_mismatch_fails_closed(synthetic_gold_warc):
+    """Evaluator V2.4 rejects mismatched verbatim slices."""
+    suite, warc_file = synthetic_gold_warc
 
     # Verify original gold passes
     verify_gold_warc_integrity(suite, warc_file)
@@ -103,13 +137,9 @@ def test_warc_replay_verbatim_slice_mismatch_fails_closed():
         verify_gold_warc_integrity(tampered_suite, warc_file)
 
 
-def test_warc_replay_url_mismatch_fails_closed():
+def test_warc_replay_url_mismatch_fails_closed(synthetic_gold_warc):
     """Evaluator V2.4 rejects claim support URL mismatch against WARC record target URI."""
-    real_fixtures = Path(__file__).resolve().parent.parent / "benchmarks" / "fixtures" / "real_web_dev_v2"
-    warc_file = real_fixtures / "corpus.warc"
-    gold_file = real_fixtures / "gold_v2_2.json"
-
-    suite = GoldSuite.model_validate_json(gold_file.read_text(encoding="utf-8"))
+    suite, warc_file = synthetic_gold_warc
 
     tampered_cases = [c.model_dump() for c in suite]
     tampered_cases[0]["gold_claims"][0]["supports"][0]["source_url"] = "https://wrong-domain.org/tampered"
@@ -119,13 +149,9 @@ def test_warc_replay_url_mismatch_fails_closed():
         verify_gold_warc_integrity(tampered_suite, warc_file)
 
 
-def test_warc_replay_missing_sha_fails_closed():
+def test_warc_replay_missing_sha_fails_closed(synthetic_gold_warc):
     """Evaluator V2.4 rejects unknown SHA-256 in gold mentions or claim supports."""
-    real_fixtures = Path(__file__).resolve().parent.parent / "benchmarks" / "fixtures" / "real_web_dev_v2"
-    warc_file = real_fixtures / "corpus.warc"
-    gold_file = real_fixtures / "gold_v2_2.json"
-
-    suite = GoldSuite.model_validate_json(gold_file.read_text(encoding="utf-8"))
+    suite, warc_file = synthetic_gold_warc
 
     tampered_cases = [c.model_dump() for c in suite]
     tampered_cases[0]["gold_mentions"][0]["source_content_sha256"] = "9999999999999999999999999999999999999999999999999999999999999999"
@@ -135,12 +161,16 @@ def test_warc_replay_missing_sha_fails_closed():
         verify_gold_warc_integrity(tampered_suite, warc_file)
 
 
-def test_asset_manifest_verification_passes_on_fixtures():
-    """Evaluator V2.4 verify_asset_manifest passes on untouched fixture files."""
-    fixtures_dir = Path(__file__).resolve().parent.parent / "benchmarks" / "fixtures" / "real_web_dev_v2"
-    manifest_path = fixtures_dir / "asset_manifest.json"
-
-    ok, errors = verify_asset_manifest(manifest_path, fixtures_dir)
+def test_asset_manifest_verification_passes_on_fixtures(tmp_path):
+    """A correctly declared synthetic asset passes manifest verification."""
+    asset = tmp_path / "asset.txt"
+    asset.write_text("synthetic test asset", encoding="utf-8")
+    data = asset.read_bytes()
+    manifest_path = tmp_path / "asset_manifest.json"
+    manifest_path.write_text(json.dumps({
+        asset.name: {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()},
+    }), encoding="utf-8")
+    ok, errors = verify_asset_manifest(manifest_path, tmp_path)
     assert ok, f"Asset manifest verification failed: {errors}"
     assert len(errors) == 0
 

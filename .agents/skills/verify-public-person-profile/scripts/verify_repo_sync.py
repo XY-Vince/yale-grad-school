@@ -152,7 +152,8 @@ def main() -> int:
     parser.add_argument(
         "--harness-skill",
         type=Path,
-        default=Path("[workspace-path]"),
+        required=True,
+        help="Path to the evaluation harness copy of the skill",
     )
     parser.add_argument(
         "--sync",

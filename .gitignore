@@ -1,0 +1,58 @@
+observations and suggestions.md
+V0_OVERVIEW.md
+BBS_RECAP.md
+strategic revision plan.md
+
+# OS junk
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Sisyphus
+.sisyphus/
+
+# Local course material and private investigation records
+/notes/
+/PROJECT_CONTEXT.md
+/TASK_SPECIFICATION.md
+/speaker_identification_prem_thomas.md
+/investigations/
+/docs/investigations/
+/.private-investigations/
+/delivery-plan-2026-10-12.md
+/recall_report.md
+/skill-rewrite-step2-record-2026-10-12.md
+/*-delivery-verification-*.json
+/*-delivery-worked-example-*.md
+
+# Temp files
+*.swp
+*.bak
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*.class
+.pytest_cache/
+
+/runs/
+/scratch/
+/.agents/skills/verify-public-person-profile/runs/*
+/.agents/skills/verify-public-person-profile/benchmarks/fixtures/real_web_dev_v2/
+/.agents/skills/verify-public-person-profile/benchmarks/test_cases/dev_regression/
+/.agents/skills/verify-public-person-profile/benchmarks/test_cases/er_benchmark/
+/.agents/skills/verify-public-person-profile/benchmarks/test_cases/extraction_fixtures/
+/.agents/skills/verify-public-person-profile/benchmarks/reports/dev_regression_v1_historical.md
+/.agents/skills/verify-public-person-profile/benchmarks/reports/dev_regression_v2_report.md
+/.agents/skills/verify-public-person-profile/benchmarks/reports/historical_regression_matrix.md
+/.agents/skills/verify-public-person-profile/benchmarks/reports/phase4_4_development_eval.json
+/.agents/skills/verify-public-person-profile/benchmarks/reports/phase4_4_development_eval.md
+/.agents/skills/verify-public-person-profile/benchmarks/reports/phase4_recall_funnel_plan.md
+/.agents/skills/verify-public-person-profile/benchmarks/reports/plan_a_implementation_record.md
+/.agents/skills/verify-public-person-profile/scratch/
+
+# Binaries and archives
+*.zip
+gh_*/

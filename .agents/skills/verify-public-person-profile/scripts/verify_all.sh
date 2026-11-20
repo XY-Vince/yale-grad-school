@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CANDIDATE_DIR="[workspace-path]"
-HARNESS_DIR="[workspace-path]"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+CANDIDATE_DIR="${CANDIDATE_DIR:-$(cd -- "$SCRIPT_DIR/../../../.." && pwd)}"
+: "${HARNESS_DIR:?Set HARNESS_DIR to the evaluation harness repository}"
 SKILL_REL=".agents/skills/verify-public-person-profile"
 
 echo "============================================================"
@@ -11,7 +12,7 @@ echo "============================================================"
 
 echo ""
 echo "[1/9] Verifying repository synchronization across shared files..."
-python3 "$CANDIDATE_DIR/$SKILL_REL/scripts/verify_repo_sync.py"
+python3 "$CANDIDATE_DIR/$SKILL_REL/scripts/verify_repo_sync.py" --harness-skill "$HARNESS_DIR/$SKILL_REL"
 
 echo ""
 echo "[2/9] Running candidate repository pytest suite..."

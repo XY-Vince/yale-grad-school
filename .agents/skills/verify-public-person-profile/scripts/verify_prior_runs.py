@@ -207,12 +207,15 @@ def main() -> int:
 
     skill_root = Path(__file__).resolve().parent.parent
     registry_path = skill_root / "benchmarks" / "registry" / "prior_runs.json"
-    prior_runs_root = Path(os.environ.get("PRIOR_RUNS_ROOT", "[workspace-path]"))
-    runtime_reg_path = Path(
-        os.environ.get(
-            "ABCD_RUNTIME_REGISTRY",
-            prior_runs_root / "ledger" / "registry" / "runtime_prior_runs.json",
-        )
+    prior_runs_root_value = os.environ.get("PRIOR_RUNS_ROOT")
+    runtime_registry_value = os.environ.get("ABCD_RUNTIME_REGISTRY")
+    if not prior_runs_root_value and not (args.check_runtime and runtime_registry_value):
+        parser.error("set PRIOR_RUNS_ROOT to the directory containing the prior runs")
+    prior_runs_root = Path(prior_runs_root_value).expanduser() if prior_runs_root_value else None
+    runtime_reg_path = (
+        Path(runtime_registry_value).expanduser()
+        if runtime_registry_value
+        else prior_runs_root / "ledger" / "registry" / "runtime_prior_runs.json"
     )
 
     anchor_path = skill_root / "benchmarks" / "registry" / "runtime_registry_anchor.json"
