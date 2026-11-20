@@ -262,5 +262,5 @@ SMART PLAYTEST SUMMARY - V2.59.2
 
 ======================================================================
 
-✅ Full report saved to: [workspace-path]
-✅ Markdown summary saved to: [workspace-path]
+✅ Full report saved to: [workspace]/smart_playtest_results.json
+✅ Markdown summary saved to: [workspace]/smart_playtest_summary.md

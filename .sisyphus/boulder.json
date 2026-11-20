@@ -1,5 +1,5 @@
 {
-  "active_plan": "[workspace-path]",
+  "active_plan": ".sisyphus/plans/refactor_constants_state.md",
   "started_at": "2026-02-02T20:45:00Z",
   "completed_at": "2026-02-02T21:30:00Z",
   "session_ids": ["ses_3e054fdafffeVvKG9VRMGkBZxB"],

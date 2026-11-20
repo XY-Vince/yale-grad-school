@@ -124,9 +124,9 @@ V2.35 is already deployed. What would you like to continue with?
 2. Refine the tabs - Make tabs actually show/hide content panels instead of just scrolling
 3. Better visualize the  panels top, pls use a dedicated tab for them so that ppl will not miss info, since ppl have to scroll back and forth
 
-*Viewed [memory.md](file://[workspace-path] *
+*Viewed [memory.md](file://[workspace]/docs/memory.md) *
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -134,13 +134,13 @@ V2.35 is already deployed. What would you like to continue with?
 
 This is a system-generated message that is sent due to the user's review policy. Proceed with the decision that you think is the most optimal here.
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
 Now I need to wrap the content in tab-content divs. Let me view more of the HTML structure:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -159,7 +159,7 @@ Let me make these changes:
 
 Now I need to wrap the Actions panel and Lab content in their respective tab-content divs:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -169,7 +169,7 @@ Now I need to update the tab navigation buttons and the switchTab() function:
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -179,7 +179,7 @@ Now I need to update the switchTab() function to properly show/hide content pane
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -187,7 +187,7 @@ Now I need to update the switchTab() function to properly show/hide content pane
 
 Now I need to update the CSS to make sure desktop shows all content (not just the active tab). Let me update the CSS and then version/docs:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -199,7 +199,7 @@ I need to add CSS to show all tab-content on desktop (above 768px). The current 
 
 Now I need to add a rule to show all tab-content on desktop. Let me add that:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -268,7 +268,7 @@ good, now unfold the top panels in status tab, so we do not need to scroll them
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -289,7 +289,7 @@ also remove the "continue" button in event panel since it would be for informati
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -297,7 +297,7 @@ also remove the "continue" button in event panel since it would be for informati
 
 Now I need to add the event modal HTML and CSS, then update the JavaScript to show modal on events:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -305,7 +305,7 @@ Now I need to add the event modal HTML and CSS, then update the JavaScript to sh
 
 Now I need to add CSS for the event modal and JavaScript functions:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -313,7 +313,7 @@ Now I need to add CSS for the event modal and JavaScript functions:
 
 Now I need to add the JavaScript functions. Let me find where to add them:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -327,9 +327,9 @@ Now I need to integrate the event modal with the game's messaging system. Let me
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -379,7 +379,7 @@ Found it! The issue is that the action "Read Event" is shown when `waitingForAck
 
 Let me also check if the modal is properly showing:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -396,7 +396,7 @@ Now I need to add a handler for the "reshow_modal" action in doAction():
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -416,7 +416,7 @@ this time we stuck in "View Event", and "continue" does not help
 
 ### Planner Response
 
-I see the bug - the modal's "Continue" button calls [confirmEventModal()](cci:1://file://[workspace-path] but doesn't reset `waitingForAcknowledge`. Let me fix this:
+I see the bug - the modal's "Continue" button calls [confirmEventModal()](cci:1://file://[workspace]/docs/index.html:2228:12-2234:13) but doesn't reset `waitingForAcknowledge`. Let me fix this:
 
 *Grep searched codebase*
 
@@ -462,9 +462,9 @@ for Status tab, I want moral and advisor on the same row, data and publications 
 only show "alignment" panel when "qual" disappear, to save space
 enlarge event panel to fit the entire screen
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -474,7 +474,7 @@ Now I need to add JavaScript to control when Alignment shows (when Quals is hidd
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -488,7 +488,7 @@ Now I need to find where quals visibility is set and add alignment toggle logic:
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -547,7 +547,7 @@ also a lot of the action items are hard to understand, try to help user understa
 
 continue
 
-*Viewed [IMPLEMENTATION_PLAN.md](file://[workspace-path] *
+*Viewed [IMPLEMENTATION_PLAN.md](file://[workspace]/IMPLEMENTATION_PLAN.md) *
 
 ### Planner Response
 
@@ -561,7 +561,7 @@ Let me first find the Help function and update it:
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -569,7 +569,7 @@ Now I need to find the help-modal HTML to update its content:
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -581,9 +581,9 @@ Now I need to update the Help modal to explain Status tab and clarify actions. L
 
 Now let me update the action descriptions in getActions() to be clearer. Let me find the actions:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -645,7 +645,7 @@ Action Descriptions (clearer):
 
 update V2.40 from IMPLEMENTATION_PLAN.md
 
-*Viewed [IMPLEMENTATION_PLAN.md](file://[workspace-path] *
+*Viewed [IMPLEMENTATION_PLAN.md](file://[workspace]/IMPLEMENTATION_PLAN.md) *
 
 *Edited relevant file*
 
@@ -661,7 +661,7 @@ Now let me find where to add the Defense Modal HTML. I'll add it near the other 
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -669,7 +669,7 @@ Now let me find where to add the Defense Modal HTML. I'll add it near the other 
 
 Now I need to add the CSS for the Defense modal:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -677,7 +677,7 @@ Now I need to add the CSS for the Defense modal:
 
 The edit was inaccurate. Let me check the current state and add the CSS properly:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -691,11 +691,11 @@ Now I need to add the JavaScript for the defense system. Let me find where to ad
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
-Now I'll replace the [thesisDefend()](cci:1://file://[workspace-path] function with the full Defense Gauntlet system:
+Now I'll replace the [thesisDefend()](cci:1://file://[workspace]/docs/index.html:5462:12-5471:13) function with the full Defense Gauntlet system:
 
 *Edited relevant file*
 
@@ -789,13 +789,13 @@ Major Revisions fallback (+6 months if <100%)"`*
 
 update to V2.41 from IMPLEMENTATION_PLAN.md
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
 Now I need to update the defense criteria logic. Let me replace the simple journal equivalent check with the flexible defense evaluator:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -815,7 +815,7 @@ Now I need to update:
 
 Now I need to update thesisDefend() to use the skepticism multiplier for starting approval:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -823,9 +823,9 @@ Now I need to update thesisDefend() to use the skepticism multiplier for startin
 
 Now let me update the defense UI to show the portfolio label and skepticism:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 ### Planner Response
 
@@ -833,7 +833,7 @@ Let me find the defense modal HTML and add a skepticism display:
 
 *Grep searched codebase*
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 
@@ -841,7 +841,7 @@ Let me find the defense modal HTML and add a skepticism display:
 
 Now I need to update updateDefenseUI() to set the portfolio label dynamically:
 
-*Viewed [index.html](file://[workspace-path] *
+*Viewed [index.html](file://[workspace]/docs/index.html) *
 
 *Edited relevant file*
 

@@ -1,9 +1,5 @@
-# 开发回归集报告索引（旧文件名）
+# 历史开发回归集
 
-本文件名不再承载评测结果，避免不同 Gold 版本互相覆盖。
-
-- 当前 V2 实测：[dev_regression_v2_report.md](dev_regression_v2_report.md)
-- V1 历史记录：[dev_regression_v1_historical.md](dev_regression_v1_historical.md)
-- Gold 版本与哈希：[gold_manifest.json](../test_cases/dev_regression/gold_manifest.json)
-
-评测器只接受具名版本 Gold；`cases_gold.json` 会被明确拒绝。
+旧开发集包含实际人物调查资料，因此数据与逐案报告保存在私有归档，不随公开代码分发。
+需要复跑时，应使用有权访问的私有归档恢复对应的 `test_cases/dev_regression/` 目录；
+公开检出的测试会明确跳过依赖该资料的检查。现有历史结果不能用于证明开放网络表现。
